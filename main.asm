@@ -2406,14 +2406,14 @@ UpdateTimers:
 		bpl.s	loc_3464
 		move.b	#12-1,(v_ani0_time).w
 		subq.b	#1,(v_ani0_frame).w
-		andi.b	#7,(v_ani0_frame).w
+		andi.b	#8-1,(v_ani0_frame).w
 
 loc_3464:
 		subq.b	#1,(v_ani1_time).w
 		bpl.s	loc_347A
 		move.b	#8-1,(v_ani1_time).w
 		addq.b	#1,(v_ani1_frame).w
-		andi.b	#3,(v_ani1_frame).w
+		andi.b	#4-1,(v_ani1_frame).w
 
 loc_347A:
 		subq.b	#1,(v_ani2_time).w
@@ -5094,7 +5094,7 @@ loc_109C2:
 		bpl.s	loc_109E0
 		move.b	#8-1,(v_ani1_time).w
 		addq.b	#1,(v_ani1_frame).w
-		andi.b	#3,(v_ani1_frame).w
+		andi.b	#4-1,(v_ani1_frame).w
 
 loc_109E0:
 		move.b	(v_ani1_frame).w,1(a1)
@@ -5107,7 +5107,7 @@ loc_109E0:
 ; ---------------------------------------------------------------------------
 ; unused
 		addq.b	#1,(v_ani2_frame).w		; the GOAL blocks were meant to flash yellow
-		andi.b	#1,(v_ani2_frame).w
+		andi.b	#2-1,(v_ani2_frame).w
 
 loc_10A02:
 		move.b	(v_ani2_frame).w,1(a1)
@@ -5117,7 +5117,7 @@ loc_10A02:
 		bpl.s	loc_10A26
 		move.b	#8-1,(v_ani0_time).w
 		subq.b	#1,(v_ani0_frame).w
-		andi.b	#3,(v_ani0_frame).w
+		andi.b	#4-1,(v_ani0_frame).w
 
 loc_10A26:
 		lea	(v_ssblocktypes+$2E).l,a1
