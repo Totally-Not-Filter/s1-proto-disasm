@@ -53,9 +53,9 @@ Vectors:
 		dc.l ErrorTrap			; IRQ level 1
 		dc.l ErrorTrap			; IRQ level 2
 		dc.l ErrorTrap			; IRQ level 3 (28)
-		dc.l HBlank				; IRQ level 4 (horizontal retrace interrupt)
+		dc.l H_Int				; IRQ level 4 (horizontal retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 5
-		dc.l VBlank				; IRQ level 6 (vertical retrace interrupt)
+		dc.l V_Int				; IRQ level 6 (vertical retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 7 (32)
 		dc.l ErrorTrap			; TRAP #00 exception
 		dc.l ErrorTrap			; TRAP #01 exception
@@ -206,7 +206,7 @@ VDPInitValues:
 		dc.b 0			; VDP $87 - background colour
 		dc.b 0			; VDP $88 - unused
 		dc.b 0			; VDP $89 - unused
-		dc.b 255		; VDP $8A - HBlank register
+		dc.b 255		; VDP $8A - H_Int register
 		dc.b 0			; VDP $8B - full screen scroll
 		dc.b $81		; VDP $8C - 40 cell display
 		dc.b vram_hscroll_prev>>10	; VDP $8D - hscroll table address
@@ -530,7 +530,7 @@ Art_Text_End
 ; Vertical interrupt
 ; ---------------------------------------------------------------------------
 
-VBlank:
+V_Int:
 		movem.l	d0-a6,-(sp)
 		tst.b	(v_vbla_routine).w
 		beq.s	VBla_Exit
@@ -539,13 +539,13 @@ VBlank:
 		move.l	(v_scrposy_dup).w,(vdp_data_port).l
 		btst	#6,(v_megadrive).w	; are we on a PAL machine?
 		beq.s	.notPAL	; if not, branch
-		move.w	#$701-1,d0	; intentionally lag the system to move the CRAM dots
+		move.w	#17930/10-1,d0	; intentionally lag the system to move the CRAM dots on PAL machines
 		dbf	d0,*
 
 .notPAL:
 		move.b	(v_vbla_routine).w,d0
 		move.b	#0,(v_vbla_routine).w
-		move.w	#1,(f_hblank).w
+		move.w	#1,(f_hint).w
 		andi.w	#$3E,d0
 		move.w	VBla_Index(pc,d0.w),d0
 		jsr	VBla_Index(pc,d0.w)
@@ -612,7 +612,7 @@ VBla_08:
 		writeCRAM	v_palette,0
 		writeVRAM	v_hscrolltablebuffer,vram_hscroll
 		move.w	#$8400+(vram_bg>>13),(a5)
-		move.w	(v_hbla_hreg).w,(a5)
+		move.w	(v_hint_hreg).w,(a5)
 		move.w	(v_bg3scrposy_vdp).w,(v_bg3scrposy_vdp_dup).w
 		writeVRAM	v_spritetablebuffer,vram_sprites
 		tst.b	(f_sonframechg).w
@@ -630,10 +630,10 @@ VBla_08:
 		move.b	(byte_FFF628).w,d0
 		move.b	(byte_FFF629).w,d1
 		cmp.b	d0,d1
-		bhs.s	loc_CA8
+		bhs.s	.higherorequal
 		move.b	d0,(byte_FFF629).w
 
-loc_CA8:
+.higherorequal:
 		move.b	#0,(byte_FFF628).w
 		tst.w	(v_generictimer).w
 		beq.w	.end
@@ -712,23 +712,23 @@ sub_E78:
 		rts
 ; ---------------------------------------------------------------------------
 
-HBlank:
-		tst.w	(f_hblank).w
-		beq.s	.locret
+H_Int:
+		tst.w	(f_hint).w
+		beq.s	.return
 		move.l	a5,-(sp)
 		writeCRAM	v_palette_fading,0
 		movem.l	(sp)+,a5
-		move.w	#0,(f_hblank).w
+		move.w	#0,(f_hint).w
 
-.locret:
+.return:
 		rte
 ; ---------------------------------------------------------------------------
 
-HBlank2:
-		tst.w	(f_hblank).w
-		beq.s	.locret
+H_Int2:
+		tst.w	(f_hint).w
+		beq.s	.return
 		movem.l	d0/a0/a5,-(sp)
-		move.w	#0,(f_hblank).w
+		move.w	#0,(f_hint).w
 		move.w	#$8400+(window_plane>>13),(vdp_control_port).l
 		move.w	#$8500+(vram_sprites>>9),(vdp_control_port).l
 		locVRAM vram_sprites
@@ -741,7 +741,7 @@ HBlank2:
 		dbf	d0,.spritetabletovdp
 		movem.l	(sp)+,d0/a0/a5
 
-.locret:
+.return:
 		rte
 ; ---------------------------------------------------------------------------
 
@@ -2005,7 +2005,7 @@ loc_2C0A:
 		move.w	#$8400+(vram_bg>>13),(a6)
 		move.w	#$8500+(vram_sprites>>9),(a6)
 		move.w	#0,(word_FFFFE8).w
-		move.w	#$8A00+175,(v_hbla_hreg).w
+		move.w	#$8A00+175,(v_hint_hreg).w
 		move.w	#$8000+%0100,(a6)
 		move.w	#$8700+%00100000,(a6)
 
@@ -2188,7 +2188,7 @@ loc_2EC8:
 		include "leftovers/obj/Debug Coordinate Sprites.asm"
 ; ---------------------------------------------------------------------------
 ; Unused, Speculated to have been for a window plane wavy masking effect
-; involving writes during HBlank. It writes its tables in the Nemesis GFX
+; involving writes during H_Int. It writes its tables in the Nemesis GFX
 ; buffer, only seemingly needing to be called once.
 ; Discovered by Filter, reconstructed by KatKuriN, Rivet, and ProjectFM
 ; ---------------------------------------------------------------------------
@@ -2492,7 +2492,7 @@ GM_Special:
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B00+%0011,(a6)
 		move.w	#$8000+%0100,(a6)
-		move.w	#$8A00+175,(v_hbla_hreg).w
+		move.w	#$8A00+175,(v_hint_hreg).w
 		move.w	#$9000+%00010001,(a6)
 		bsr.w	SS_PalCycle
 		clr.w	(v_ssangle).w

@@ -88,8 +88,8 @@ v_bgscreenposx_dup:	ds.w 1		; background screen position x (duplicate) (2 bytes)
 v_bg3scrposy_vdp:	ds.w 1
 v_bg3scrposx_vdp:	ds.w 1
 v_bg3scrposy_vdp_dup:	ds.w 1
-v_hbla_hreg:	ds.b 1		; VDP H.interrupt register buffer (8Axx)
-v_hbla_line:	ds.b 1		; screen line where water starts and palette is changed by HBlank
+v_hint_hreg:	ds.b 1		; VDP H.interrupt register buffer (8Axx)
+v_hint_line:	ds.b 1		; screen line where water starts and palette is changed by HBlank
 v_pfade_start:	ds.b 1		; palette fading - start position in bytes
 v_pfade_size:	ds.b 1		; palette fading - number of colouds
 byte_FFF628:	ds.b 1
@@ -104,7 +104,7 @@ f_pause:		ds.w 1
 			ds.b 8		; unused
 v_vdp_buffer2:	ds.w 1
 			ds.w 1		; unused
-f_hblank:		ds.w 1
+f_hint:		ds.w 1
 			ds.w 1		; unused
 f_water:		ds.w 1
 			ds.w 1		; unused
