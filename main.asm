@@ -576,9 +576,9 @@ ptr_VBla_12:	dc.w VBla_12-VBla_Index
 
 VBla_02:
 		bsr.w	sub_E78
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.w	.end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_generictimer).w
 
 .end:
 		rts
@@ -588,9 +588,9 @@ VBla_04:
 		bsr.w	sub_E78
 		bsr.w	LoadTilesAsYouMove_BGOnly
 		bsr.w	ProcessDPLC2
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.w	.end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_generictimer).w
 
 .end:
 		rts
@@ -635,9 +635,9 @@ VBla_08:
 
 loc_CA8:
 		move.b	#0,(byte_FFF628).w
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.w	.end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_generictimer).w
 
 .end:
 		rts
@@ -658,9 +658,9 @@ VBla_0A:
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.w	.end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_generictimer).w
 
 .end:
 		rts
@@ -1512,7 +1512,7 @@ GM_Sega:
 		move.w	#40,(v_pcyc_num).w	; set cycle number to 40
 		move.w	#0,(v_pal_buffer+$12).w
 		move.w	#0,(v_pal_buffer+$10).w
-		move.w	#180,(v_demolength).w
+		move.w	#180,(v_generictimer).w
 		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
@@ -1521,7 +1521,7 @@ loc_2528:
 		move.b	#2,(v_vbla_routine).w
 		bsr.w	WaitForVBla
 		bsr.w	PalCycSega
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.s	loc_2544
 		andi.b	#btnStart,(v_jpadpress1).w	; is start pressed?
 		beq.s	loc_2528	; if not, loop
@@ -1598,7 +1598,7 @@ loc_25D8:
 		move.b	#bgm_Title,d0
 		bsr.w	PlaySound_Special
 		move.b	#0,(f_debugmode).w
-		move.w	#376,(v_demolength).w	; run title screen for 376 frames
+		move.w	#376,(v_generictimer).w	; run title screen for 376 frames
 		move.b	#id_TitleSonic,(v_objslot1).w	; load big sonic object
 		move.b	#id_PSBTM,(v_objslot2).w	; load press start button text
 		move.b	#id_PSBTM,(v_objslot3).w	; load object which hides sonic
@@ -1628,7 +1628,7 @@ loc_26AE:
 ; ---------------------------------------------------------------------------
 
 loc_26E4:
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.w	loc_27F8
 		andi.b	#btnStart,(v_jpadpress1).w
 		beq.w	loc_26AE
@@ -1728,7 +1728,7 @@ LevSelOrder:
 ; ---------------------------------------------------------------------------
 
 loc_27F8:
-		move.w	#30,(v_demolength).w
+		move.w	#30,(v_generictimer).w
 
 loc_27FE:
 		move.b	#4,(v_vbla_routine).w
@@ -1746,7 +1746,7 @@ loc_27FE:
 ; ---------------------------------------------------------------------------
 
 loc_282C:
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		bne.w	loc_27FE
 		move.b	#bgm_Fade,d0
 		bsr.w	PlaySound_Special
@@ -2104,7 +2104,7 @@ loc_2D54:
 		movea.l	(a1,d0.w),a1
 		move.b	1(a1),(v_btnpushtime2).w
 		subq.b	#1,(v_btnpushtime2).w
-		move.w	#1800,(v_demolength).w
+		move.w	#1800,(v_generictimer).w
 		move.b	#8,(v_vbla_routine).w
 		bsr.w	WaitForVBla
 		move.w	#$202F,(v_pfade_start).w
@@ -2151,7 +2151,7 @@ loc_2E2E:
 loc_2E66:
 		tst.w	(f_restart).w
 		bne.s	loc_2E84
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.s	loc_2E84
 		cmpi.b	#id_Demo,(v_gamemode).w
 		beq.w	GM_LevelLoop
@@ -2165,7 +2165,7 @@ loc_2E84:
 		move.b	#id_Sega,(v_gamemode).w
 
 loc_2E92:
-		move.w	#60,(v_demolength).w
+		move.w	#60,(v_generictimer).w
 		move.w	#$3F,(v_pfade_start).w
 
 loc_2E9E:
@@ -2181,7 +2181,7 @@ loc_2E9E:
 		bsr.w	FadeOut_ToBlack
 
 loc_2EC8:
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		bne.s	loc_2E9E
 		rts
 ; ---------------------------------------------------------------------------
@@ -2507,7 +2507,7 @@ GM_Special:
 		movea.l	(a1,d0.w),a1
 		move.b	1(a1),(v_btnpushtime2).w
 		subq.b	#1,(v_btnpushtime2).w
-		move.w	#1800,(v_demolength).w
+		move.w	#1800,(v_generictimer).w
 		move.w	(v_vdp_buffer1).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
@@ -2525,7 +2525,7 @@ loc_3620:
 		bsr.w	SS_AnimateBG
 		tst.w	(f_demo).w
 		beq.s	loc_3656
-		tst.w	(v_demolength).w
+		tst.w	(v_generictimer).w
 		beq.s	loc_3662
 
 loc_3656:
