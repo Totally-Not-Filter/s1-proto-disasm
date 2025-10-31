@@ -66,8 +66,8 @@ loc_11264:
 		btst	#bitC,(v_jpadpress2).w
 		beq.s	loc_1127E
 		addq.b	#1,obAnim(a0)
-		cmpi.b	#$19,obAnim(a0)
-		bcs.s	loc_1127E
+		cmpi.b	#id_Shrink,obAnim(a0)	; is animation ID the last one?
+		bcs.s	loc_1127E	; if not, branch
 		move.b	#0,obAnim(a0)
 
 loc_1127E:
