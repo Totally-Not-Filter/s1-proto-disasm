@@ -41,12 +41,18 @@ loc_70D2:
 
 loc_70D6:
 		bsr.w	ObjectFall
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
 		bcs.s	ObjCannonball_Delete
+	if FixBugs
+		bra.w	DisplaySprite
+	else
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 ObjCannonball_Delete:
