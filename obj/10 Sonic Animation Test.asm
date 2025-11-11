@@ -33,31 +33,31 @@ Obj10_Main:
 		move.b	(v_jpadhold2).w,d4
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
-		moveq	#1,d1
-		btst	#bitUp,d4
-		beq.s	.notup
+		moveq	#1,d1	; fixed speed value
+		btst	#bitUp,d4	; is up pressed?
+		beq.s	.notup	; if not, branch
 		sub.w	d1,d2
 
 .notup:
-		btst	#bitDn,d4
-		beq.s	.notdown
+		btst	#bitDn,d4	; is down pressed?
+		beq.s	.notdown	; if not, branch
 		add.w	d1,d2
 
 .notdown:
-		btst	#bitL,d4
-		beq.s	.notleft
+		btst	#bitL,d4	; is left pressed?
+		beq.s	.notleft	; if not, branch
 		sub.w	d1,d3
 
 .notleft:
-		btst	#bitR,d4
-		beq.s	.notright
+		btst	#bitR,d4	; is right pressed?
+		beq.s	.notright	; if not, branch
 		add.w	d1,d3
 
 .notright:
 		move.w	d2,obY(a0)
 		move.w	d3,obX(a0)
-		btst	#bitB,(v_jpadpress2).w
-		beq.s	.notflip
+		btst	#bitB,(v_jpadpress2).w	; is B pressed?
+		beq.s	.notflip	; if not, branch
 		move.b	obRender(a0),d0
 		move.b	d0,d1
 		addq.b	#1,d0
@@ -67,15 +67,15 @@ Obj10_Main:
 		move.b	d0,obRender(a0)
 
 .notflip:
-		btst	#bitC,(v_jpadpress2).w
-		beq.s	.notreset
-		addq.b	#1,obAnim(a0)
+		btst	#bitC,(v_jpadpress2).w	; is C pressed?
+		beq.s	.notreset	; if not, branch
+		addq.b	#1,obAnim(a0)	; increment animation ID
 	if FixBugs
 		cmpi.b	#id_Hurt,obAnim(a0)	; is animation ID the last one?
 		ble.s	.notreset	; if lower than or equal, do not reset to the first animation ID
 	else
 		; Bug: This only does if lower than the last animation ID, when it would be better to do if lower than or equal to the last animation ID
-		; This also does not account for the last animation ID, which is id_Hurt, so once it reaches the shrinking animation, it gets set back to the first animation ID.
+		; This also does not account for the last animation ID, which is id_Hurt, so once it reaches the shrinking animation, it gets set back to the first animation
 		cmpi.b	#id_Shrink,obAnim(a0)	; is animation ID the shrinking animation?
 		blo.s	.notreset	; if lower than, do not reset to the first animation ID
 	endif
