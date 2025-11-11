@@ -119,6 +119,12 @@ Mus86_CWZ_Loop09:
 	smpsCall			Mus86_CWZ_Call03
 	smpsLoop			$00, $02, Mus86_CWZ_Loop09
 	smpsAlterVol		$08
+	if FixMusicAndSFXDataBugs
+	smpsDetune			$00
+	else
+	; [BUG] The detune in this channel is not reset upon loop,
+	; thus causing the looped intro to be slightly off-tune.
+	endif
 	smpsJump			Mus86_CWZ_FM3
 
 ; FM4 Data
