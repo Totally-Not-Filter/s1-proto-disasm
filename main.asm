@@ -2070,7 +2070,7 @@ loc_2D2A:
 
 loc_2D3A:
 		move.b	#id_SonicPlayer,(v_player).w
-		move.b	#id_HUD,(v_objslot1).w
+		move.b	#id_HUD,(v_hud).w
 		btst	#bitA,(v_jpadhold1).w
 		beq.s	loc_2D54
 		move.b	#1,(f_debugmode).w

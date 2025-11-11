@@ -51,7 +51,7 @@ loc_E892:
 		bsr.w	Sonic_Animate
 		bsr.w	TouchObjects
 		bsr.w	Sonic_SpecialChunk
-		bsr.w	Sonic_DynTiles
+		bsr.w	Sonic_LoadGfx
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -1392,7 +1392,7 @@ loc_F5FA:
 Ani_Sonic:	include "_anim/Sonic.asm"
 ; ---------------------------------------------------------------------------
 
-Sonic_DynTiles:
+Sonic_LoadGfx:
 		moveq	#0,d0
 		move.b	obFrame(a0),d0
 		cmp.b	(v_sonframenum).w,d0

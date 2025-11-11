@@ -7,7 +7,7 @@ Sonic_Hurt:
 		bsr.w	Sonic_LevelBound
 		bsr.w	sub_E952
 		bsr.w	Sonic_Animate
-		bsr.w	Sonic_DynTiles
+		bsr.w	Sonic_LoadGfx
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ Sonic_Death:
 		bsr.w	ObjectFall
 		bsr.w	sub_E952
 		bsr.w	Sonic_Animate
-		bsr.w	Sonic_DynTiles
+		bsr.w	Sonic_LoadGfx
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 

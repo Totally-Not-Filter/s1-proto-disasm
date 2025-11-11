@@ -28,7 +28,6 @@ v_hscrolltablebuffer_end:
 			ds.b $80
 v_hscrolltablebuffer_end_padded:
 v_objspace:				; RAM for object space ($600 bytes)
-v_player:
 v_objslot0:		ds.b obj.Size
 v_objslot1:		ds.b obj.Size
 v_objslot2:		ds.b obj.Size
@@ -61,6 +60,10 @@ v_objslot1C:	ds.b obj.Size
 v_objslot1D:	ds.b obj.Size
 v_objslot1E:	ds.b obj.Size
 v_objslot1F:	ds.b obj.Size
+
+v_player:	= v_objslot0
+v_hud:	= v_objslot1
+
 v_lvlobjspace:
 	rept 96
 			ds.b obj.Size

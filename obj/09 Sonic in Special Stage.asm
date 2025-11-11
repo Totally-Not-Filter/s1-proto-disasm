@@ -33,7 +33,7 @@ Obj09_Load:
 		andi.w	#2,d0
 		move.w	Obj09_Modes(pc,d0.w),d1
 		jsr	Obj09_Modes(pc,d1.w)
-		jsr	(Sonic_DynTiles).l
+		jsr	(Sonic_LoadGfx).l
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
 Obj09_Modes:
@@ -235,7 +235,7 @@ loc_10EE6:
 locret_10EF6:
 		rts
 ; ---------------------------------------------------------------------------
-ss_waitcount:	equ objoff_38
+ss_waitcount:	= objoff_38
 
 Obj09_ExitStage:
 		addi.w	#$40,(v_ssrotate).w	; increase rotation speed
@@ -251,7 +251,7 @@ loc_10F1C:
 		add.w	(v_ssrotate).w,d0
 		move.w	d0,(v_ssangle).w
 		bsr.w	Sonic_Animate
-		jsr	(Sonic_DynTiles).l
+		jsr	(Sonic_LoadGfx).l
 		bsr.w	SS_FixCamera
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
@@ -270,7 +270,7 @@ Obj09_Exit2:
 
 loc_10F66:
 		jsr	(Sonic_Animate).l
-		jsr	(Sonic_DynTiles).l
+		jsr	(Sonic_LoadGfx).l
 		bsr.w	SS_FixCamera
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
@@ -499,7 +499,7 @@ loc_11182:
 		bne.s	loc_111A8
 		tst.b	objoff_36(a0)
 		bne.s	locret_111C0
-		move.b	#$1E,objoff_36(a0)
+		move.b	#30,objoff_36(a0)
 		btst	#6,(v_ssrotate+1).w
 		beq.s	loc_111A2
 		asl	(v_ssrotate).w
@@ -516,7 +516,7 @@ loc_111A8:
 		bne.s	locret_111C0
 		tst.b	objoff_37(a0)
 		bne.s	locret_111C0
-		move.b	#$1E,objoff_37(a0)
+		move.b	#30,objoff_37(a0)
 		neg.w	(v_ssrotate).w
 		rts
 ; ---------------------------------------------------------------------------
