@@ -6,7 +6,8 @@ Obj06:
 		move.w	Obj06_Index(pc,d0.w),d1
 		jmp	Obj06_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-Obj06_Index:	dc.w Obj06_Main-Obj06_Index
+Obj06_Index:
+		dc.w Obj06_Main-Obj06_Index
 		dc.w Obj06_Display-Obj06_Index
 		dc.w Obj06_Delete-Obj06_Index
 		dc.w Obj06_Delete-Obj06_Index

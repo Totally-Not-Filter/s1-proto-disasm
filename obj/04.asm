@@ -3,14 +3,15 @@
 Obj04:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_4CCC(pc,d0.w),d1
-		jmp	off_4CCC(pc,d1.w)
+		move.w	Obj04_Index(pc,d0.w),d1
+		jmp	Obj04_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_4CCC:	dc.w Obj04_Main-off_4CCC
-		dc.w Obj04_Display-off_4CCC
-		dc.w Obj04_Delete-off_4CCC
-		dc.w Obj04_Delete-off_4CCC
+Obj04_Index:
+		dc.w Obj04_Main-Obj04_Index
+		dc.w Obj04_Display-Obj04_Index
+		dc.w Obj04_Delete-Obj04_Index
+		dc.w Obj04_Delete-Obj04_Index
 ; ---------------------------------------------------------------------------
 
 Obj04_Main:

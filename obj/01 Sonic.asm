@@ -50,7 +50,7 @@ loc_E892:
 		move.b	(v_anglebuffer2).w,objoff_37(a0)
 		bsr.w	Sonic_Animate
 		bsr.w	TouchObjects
-		bsr.w	Sonic_SpecialChunk
+		bsr.w	Sonic_Loops
 		bsr.w	Sonic_LoadGfx
 		rts
 ; ---------------------------------------------------------------------------
@@ -1149,7 +1149,7 @@ sub_F290:
 		even
 ; ---------------------------------------------------------------------------
 
-Sonic_SpecialChunk:
+Sonic_Loops:
 		cmpi.b	#id_SLZ,(v_zone).w
 		beq.s	.isSLZ
 		tst.b	(v_zone).w

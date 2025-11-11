@@ -3,15 +3,15 @@
 Obj10:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	Obj10_Table(pc,d0.w),d1
-		jmp	Obj10_Table(pc,d1.w)
+		move.w	Obj10_Index(pc,d0.w),d1
+		jmp	Obj10_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-Obj10_Table:
-		dc.w Obj10_Init-Obj10_Table
-		dc.w Obj10_Main-Obj10_Table
-		dc.w Obj10_Delete-Obj10_Table
-		dc.w Obj10_Delete-Obj10_Table
+Obj10_Index:
+		dc.w Obj10_Init-Obj10_Index
+		dc.w Obj10_Main-Obj10_Index
+		dc.w Obj10_Delete-Obj10_Index
+		dc.w Obj10_Delete-Obj10_Index
 ; ---------------------------------------------------------------------------
 
 Obj10_Init:

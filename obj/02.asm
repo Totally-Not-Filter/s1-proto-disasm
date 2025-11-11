@@ -7,8 +7,11 @@ Obj02:
 		jmp	Obj02_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-Obj02_Index:	dc.w Obj02_Main-Obj02_Index, Obj02_Display-Obj02_Index
-		dc.w Obj02_Delete-Obj02_Index, Obj02_Delete-Obj02_Index
+Obj02_Index:
+		dc.w Obj02_Main-Obj02_Index
+		dc.w Obj02_Display-Obj02_Index
+		dc.w Obj02_Delete-Obj02_Index
+		dc.w Obj02_Delete-Obj02_Index
 ; ---------------------------------------------------------------------------
 
 Obj02_Main:
