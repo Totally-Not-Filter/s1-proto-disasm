@@ -182,7 +182,7 @@ out_of_range:	macro exit,pos
 		move.w	obX(a0),d0			; get object position
 		endif
 		andi.w	#-$80,d0			; round down to nearest $80
-		move.w	(v_screenposx).w,d1		; get screen position
+		move.w	(v_scrposx).w,d1		; get screen position
 		subi.w	#128,d1
 		andi.w	#-$80,d1
 		sub.w	d1,d0				; approx distance between object and screen
@@ -202,7 +202,7 @@ out_of_range_rememberstate:	macro exit,pos
 		move.w	obX(a0),d0			; get object position
 		endif
 		andi.w	#-$80,d0			; round down to nearest $80
-		move.w	(v_screenposx).w,d1		; get screen position
+		move.w	(v_scrposx).w,d1		; get screen position
 		subi.w	#128,d1
 		andi.w	#-$80,d1
 		sub.w	d1,d0				; approx distance between object and screen

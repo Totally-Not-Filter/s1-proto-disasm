@@ -5,12 +5,12 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bgscrposx).w,a3
 		lea	(v_lvllayoutbg).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
-		lea	(v_bg2screenposx).w,a3
+		lea	(v_bg2scrposx).w,a3
 		bra.w	DrawBGScrollBlock2
 ; ---------------------------------------------------------------------------
 
@@ -18,15 +18,15 @@ LoadTilesAsYouMove:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bgscrposx).w,a3
 		lea	(v_lvllayoutbg).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
-		lea	(v_bg2screenposx).w,a3
+		lea	(v_bg2scrposx).w,a3
 		bsr.w	DrawBGScrollBlock2
 		lea	(v_fg_scroll_flags).w,a2
-		lea	(v_screenposx).w,a3
+		lea	(v_scrposx).w,a3
 		lea	(v_lvllayout).w,a4
 		move.w	#$4000,d2
 		tst.b	(a2)
@@ -488,11 +488,11 @@ Calc_VRAM_Pos_Unknown:
 LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_screenposx).w,a3
+		lea	(v_scrposx).w,a3
 		lea	(v_lvllayout).w,a4
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bgscrposx).w,a3
 		lea	(v_lvllayoutbg).w,a4
 		move.w	#$6000,d2
 ; End of function LoadTilesFromStart
@@ -518,7 +518,7 @@ DrawChunks:
 		rts
 ; ---------------------------------------------------------------------------
 ;loc_47D8:
-		lea	(v_bg3screenposx).w,a3
+		lea	(v_bg3scrposx).w,a3
 		move.w	#$6000,d2
 		move.w	#(320/2)+16,d4
 		moveq	#3-1,d6

@@ -15,7 +15,7 @@ loc_4936:
 		sub.w	(v_limitbtm2).w,d0
 		beq.s	locret_495C
 		bcc.s	loc_4952
-		move.w	(v_screenposy).w,(v_limitbtm2).w
+		move.w	(v_scrposy).w,(v_limitbtm2).w
 		andi.w	#-2,(v_limitbtm2).w
 		neg.w	d1
 
@@ -49,7 +49,7 @@ off_497C:	dc.w EventsGHZ1-off_497C, EventsGHZ2-off_497C, EventsGHZ3-off_497C
 
 EventsGHZ1:
 		move.w	#$300,(v_limitbtm1).w
-		cmpi.w	#$1780,(v_screenposx).w
+		cmpi.w	#$1780,(v_scrposx).w
 		bcs.s	locret_4996
 		move.w	#$400,(v_limitbtm1).w
 
@@ -59,13 +59,13 @@ locret_4996:
 
 EventsGHZ2:
 		move.w	#$300,(v_limitbtm1).w
-		cmpi.w	#$ED0,(v_screenposx).w
+		cmpi.w	#$ED0,(v_scrposx).w
 		bcs.s	locret_49C8
 		move.w	#$200,(v_limitbtm1).w
-		cmpi.w	#$1600,(v_screenposx).w
+		cmpi.w	#$1600,(v_scrposx).w
 		bcs.s	locret_49C8
 		move.w	#$400,(v_limitbtm1).w
-		cmpi.w	#$1D60,(v_screenposx).w
+		cmpi.w	#$1D60,(v_scrposx).w
 		bcs.s	locret_49C8
 		move.w	#$300,(v_limitbtm1).w
 
@@ -85,21 +85,21 @@ off_49D8:	dc.w loc_49DE-off_49D8, loc_4A32-off_49D8, loc_4A78-off_49D8
 
 loc_49DE:
 		move.w	#$300,(v_limitbtm1).w
-		cmpi.w	#$380,(v_screenposx).w
+		cmpi.w	#$380,(v_scrposx).w
 		bcs.s	locret_4A24
 		move.w	#$310,(v_limitbtm1).w
-		cmpi.w	#$960,(v_screenposx).w
+		cmpi.w	#$960,(v_scrposx).w
 		bcs.s	locret_4A24
-		cmpi.w	#$280,(v_screenposy).w
+		cmpi.w	#$280,(v_scrposy).w
 		bcs.s	loc_4A26
 		move.w	#$400,(v_limitbtm1).w
-		cmpi.w	#$1380,(v_screenposx).w
+		cmpi.w	#$1380,(v_scrposx).w
 		bcc.s	loc_4A1C
 		move.w	#$4C0,(v_limitbtm1).w
 		move.w	#$4C0,(v_limitbtm2).w
 
 loc_4A1C:
-		cmpi.w	#$1700,(v_screenposx).w
+		cmpi.w	#$1700,(v_scrposx).w
 		bcc.s	loc_4A26
 
 locret_4A24:
@@ -113,12 +113,12 @@ loc_4A26:
 ; ---------------------------------------------------------------------------
 
 loc_4A32:
-		cmpi.w	#$960,(v_screenposx).w
+		cmpi.w	#$960,(v_scrposx).w
 		bcc.s	loc_4A3E
 		subq.b	#2,(v_dle_routine).w
 
 loc_4A3E:
-		cmpi.w	#$2960,(v_screenposx).w
+		cmpi.w	#$2960,(v_scrposx).w
 		bcs.s	locret_4A76
 		bsr.w	FindFreeObj
 		bne.s	loc_4A5E
@@ -140,7 +140,7 @@ locret_4A76:
 ; ---------------------------------------------------------------------------
 
 loc_4A78:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_scrposx).w,(v_limitleft2).w
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -167,13 +167,13 @@ off_4AA4:	dc.w loc_4AAC-off_4AA4, sub_4ADC-off_4AA4, loc_4B20-off_4AA4, loc_4B42
 
 loc_4AAC:
 		move.w	#$1D0,(v_limitbtm1).w
-		cmpi.w	#$700,(v_screenposx).w
+		cmpi.w	#$700,(v_scrposx).w
 		bcs.s	locret_4ADA
 		move.w	#$220,(v_limitbtm1).w
-		cmpi.w	#$D00,(v_screenposx).w
+		cmpi.w	#$D00,(v_scrposx).w
 		bcs.s	locret_4ADA
 		move.w	#$340,(v_limitbtm1).w
-		cmpi.w	#$340,(v_screenposy).w
+		cmpi.w	#$340,(v_scrposy).w
 		bcs.s	locret_4ADA
 		addq.b	#2,(v_dle_routine).w
 
@@ -182,7 +182,7 @@ locret_4ADA:
 ; ---------------------------------------------------------------------------
 
 sub_4ADC:
-		cmpi.w	#$340,(v_screenposy).w
+		cmpi.w	#$340,(v_scrposy).w
 		bcc.s	loc_4AEA
 		subq.b	#2,(v_dle_routine).w
 		rts
@@ -190,14 +190,14 @@ sub_4ADC:
 
 loc_4AEA:
 		move.w	#0,(v_limittop2).w
-		cmpi.w	#$E00,(v_screenposx).w
+		cmpi.w	#$E00,(v_scrposx).w
 		bcc.s	locret_4B1E
 		move.w	#$340,(v_limittop2).w
 		move.w	#$340,(v_limitbtm1).w
-		cmpi.w	#$A90,(v_screenposx).w
+		cmpi.w	#$A90,(v_scrposx).w
 		bcc.s	locret_4B1E
 		move.w	#$500,(v_limitbtm1).w
-		cmpi.w	#$370,(v_screenposy).w
+		cmpi.w	#$370,(v_scrposy).w
 		bcs.s	locret_4B1E
 		addq.b	#2,(v_dle_routine).w
 
@@ -206,14 +206,14 @@ locret_4B1E:
 ; ---------------------------------------------------------------------------
 
 loc_4B20:
-		cmpi.w	#$370,(v_screenposy).w
+		cmpi.w	#$370,(v_scrposy).w
 		bcc.s	loc_4B2E
 		subq.b	#2,(v_dle_routine).w
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_4B2E:
-		cmpi.w	#$500,(v_screenposy).w
+		cmpi.w	#$500,(v_scrposy).w
 		bcs.s	locret_4B40
 		move.w	#$500,(v_limittop2).w
 		addq.b	#2,(v_dle_routine).w
@@ -223,7 +223,7 @@ locret_4B40:
 ; ---------------------------------------------------------------------------
 
 loc_4B42:
-		cmpi.w	#$E70,(v_screenposx).w
+		cmpi.w	#$E70,(v_scrposx).w
 		bcs.s	locret_4B50
 		move.w	#0,(v_limittop2).w
 
@@ -233,7 +233,7 @@ locret_4B50:
 
 EventsMZ2:
 		move.w	#$520,(v_limitbtm1).w
-		cmpi.w	#$1500,(v_screenposx).w
+		cmpi.w	#$1500,(v_scrposx).w
 		bcs.s	locret_4B66
 		move.w	#$540,(v_limitbtm1).w
 

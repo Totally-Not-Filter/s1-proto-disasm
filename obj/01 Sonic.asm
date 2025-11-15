@@ -31,7 +31,7 @@ loc_E830:
 
 loc_E872:
 		andi.w	#$7FF,obY(a0)
-		andi.w	#$7FF,(v_screenposy).w
+		andi.w	#$7FF,(v_scrposy).w
 		tst.w	(f_debugmode).w
 		beq.s	loc_E892
 		btst	#bitB,(v_jpadpress2).w

@@ -1589,7 +1589,7 @@ loc_25D8:
 		bsr.w	LevelLayoutLoad
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bgscrposx).w,a3
 		lea	(v_lvllayoutbg).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawChunks
@@ -2449,7 +2449,7 @@ LoadSignpostPLC:
 		beq.s	locret_34FA
 
 loc_34D4:
-		move.w	(v_screenposx).w,d0
+		move.w	(v_scrposx).w,d0
 		move.w	(v_limitright2).w,d1
 		subi.w	#$100,d1
 		cmp.w	d1,d0
@@ -2484,8 +2484,8 @@ GM_Special:
 		moveq	#palid_Special,d0
 		bsr.w	PalLoad1
 		jsr	(SS_Load).l
-		move.l	#0,(v_screenposx).w
-		move.l	#0,(v_screenposy).w
+		move.l	#0,(v_scrposx).w
+		move.l	#0,(v_scrposy).w
 		move.b	#id_SonicSpecial,(v_player).w
 		move.w	#$458,(v_player+obX).w
 		move.w	#$4A0,(v_player+obY).w
@@ -2751,21 +2751,21 @@ Pal_SSCyc2:	binclude "palette/Cycle - Special Stage 2.bin"
 SS_AnimateBG:
 		move.w	(v_ssbganim).w,d0
 		bne.s	loc_39C4
-		move.w	#0,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	#0,(v_bgscrposy).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
 
 loc_39C4:
 		cmpi.w	#8,d0
 		bhs.s	loc_3A1C
 		cmpi.w	#6,d0
 		bne.s	loc_39DE
-		addq.w	#1,(v_bg3screenposx).w
-		addq.w	#1,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		addq.w	#1,(v_bg3scrposx).w
+		addq.w	#1,(v_bgscrposy).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
 
 loc_39DE:
 		moveq	#0,d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bgscrposx).w,d0
 		neg.w	d0
 		swap	d0
 		lea	(byte_3A9A).l,a1
@@ -2792,7 +2792,7 @@ loc_39F4:
 loc_3A1C:
 		cmpi.w	#$C,d0
 		bne.s	loc_3A42
-		subq.w	#1,(v_bg3screenposx).w
+		subq.w	#1,(v_bg3scrposx).w
 		lea	(v_ssscroll_buffer).w,a3
 		move.l	#$18000,d2
 		moveq	#7-1,d1
@@ -2810,12 +2810,12 @@ loc_3A42:
 
 loc_3A4C:
 		lea	(v_hscrolltablebuffer).w,a1
-		move.w	(v_bg3screenposx).w,d0
+		move.w	(v_bg3scrposx).w,d0
 		neg.w	d0
 		swap	d0
 		moveq	#0,d3
 		move.b	(a2)+,d3
-		move.w	(v_bgscreenposy).w,d2
+		move.w	(v_bgscrposy).w,d2
 		neg.w	d2
 		andi.w	#$FF,d2
 		lsl.w	#2,d2
@@ -3571,9 +3571,9 @@ Obj_Index:
 ; ---------------------------------------------------------------------------
 
 off_8796:	dc.l 0
-		dc.l v_screenposx&$FFFFFF
-		dc.l v_bgscreenposx&$FFFFFF
-		dc.l v_bg3screenposx&$FFFFFF
+		dc.l v_scrposx&$FFFFFF
+		dc.l v_bgscrposx&$FFFFFF
+		dc.l v_bg3scrposx&$FFFFFF
 ; ---------------------------------------------------------------------------
 
 BuildSprites:
@@ -3839,12 +3839,12 @@ locret_89C4:
 
 ObjectChkOffscreen:
 		move.w	obX(a0),d0
-		sub.w	(v_screenposx).w,d0
+		sub.w	(v_scrposx).w,d0
 		bmi.s	.offscreen
 		cmpi.w	#320,d0
 		bge.s	.offscreen
 		move.w	obY(a0),d1
-		sub.w	(v_screenposy).w,d1
+		sub.w	(v_scrposy).w,d1
 		bmi.s	.offscreen
 		cmpi.w	#224,d1
 		bge.s	.offscreen
@@ -3900,7 +3900,7 @@ loc_8A38:
 loc_8A44:
 		lea	(v_objstate).w,a2
 		moveq	#0,d2
-		move.w	(v_screenposx).w,d6
+		move.w	(v_scrposx).w,d6
 		andi.w	#-$80,d6
 		cmp.w	(v_opl_screen).w,d6
 		beq.w	locret_8B20
@@ -3998,7 +3998,7 @@ loc_8AFA:
 
 loc_8B00:
 		movea.l	(v_opl_data+8).w,a0
-		move.w	(v_bg3screenposx).w,d0
+		move.w	(v_bg3scrposx).w,d0
 		addi.w	#$200,d0
 		andi.w	#-$80,d0
 		cmp.w	(a0),d0
@@ -4968,13 +4968,13 @@ SS_ShowLayout:
 		muls.w	#24,d4
 		muls.w	#24,d5
 		moveq	#0,d2
-		move.w	(v_screenposx).w,d2
+		move.w	(v_scrposx).w,d2
 		divu.w	#24,d2
 		swap	d2
 		neg.w	d2
 		addi.w	#-$B4,d2
 		moveq	#0,d3
-		move.w	(v_screenposy).w,d3
+		move.w	(v_scrposy).w,d3
 		divu.w	#24,d3
 		swap	d3
 		neg.w	d3
@@ -5014,12 +5014,12 @@ loc_108E4:
 		move.w	(sp)+,d5
 		lea	(v_ssbuffer1).l,a0
 		moveq	#0,d0
-		move.w	(v_screenposy).w,d0
+		move.w	(v_scrposy).w,d0
 		divu.w	#24,d0
 		mulu.w	#128,d0
 		adda.l	d0,a0
 		moveq	#0,d0
-		move.w	(v_screenposx).w,d0
+		move.w	(v_scrposx).w,d0
 		divu.w	#24,d0
 		adda.w	d0,a0
 		lea	(v_ssbuffer3).w,a4

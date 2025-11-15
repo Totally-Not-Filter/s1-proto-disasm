@@ -87,7 +87,7 @@ v_generictimer:	ds.w 1
 v_scrposy_dup:	ds.w 1
 v_bgscrposy_dup:	ds.w 1		; background screen position y (duplicate) (2 bytes)
 v_scrposx_dup:	ds.w 1
-v_bgscreenposx_dup:	ds.w 1		; background screen position x (duplicate) (2 bytes)
+v_bgscrposx_dup:	ds.w 1		; background screen position x (duplicate) (2 bytes)
 v_bg3scrposy_vdp:	ds.w 1
 v_bg3scrposx_vdp:	ds.w 1
 v_bg3scrposy_vdp_dup:	ds.w 1
@@ -129,14 +129,14 @@ v_plc_buffer_reg1A:	ds.w 1
 			ds.l 1		; unused
 v_plc_buffer_end:
 v_misc_variables:
-v_screenposx:	ds.l 1
-v_screenposy:	ds.l 1
-v_bgscreenposx:	ds.l 1
-v_bgscreenposy:	ds.l 1
-v_bg2screenposx:	ds.l 1
-v_bg2screenposy:	ds.l 1
-v_bg3screenposx:	ds.l 1
-v_bg3screenposy:	ds.l 1
+v_scrposx:	ds.l 1
+v_scrposy:	ds.l 1
+v_bgscrposx:	ds.l 1
+v_bgscrposy:	ds.l 1
+v_bg2scrposx:	ds.l 1
+v_bg2scrposy:	ds.l 1
+v_bg3scrposx:	ds.l 1
+v_bg3scrposy:	ds.l 1
 v_limitleft1:	ds.w 1
 			ds.w 1		; unused, was probably v_limitright1
 v_limittop1:	ds.w 1

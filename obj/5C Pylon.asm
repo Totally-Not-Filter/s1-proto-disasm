@@ -17,12 +17,12 @@ loc_E4EE:
 		move.b	#$10,obActWid(a0)
 
 loc_E506:
-		move.l	(v_screenposx).w,d1
+		move.l	(v_scrposx).w,d1
 		add.l	d1,d1
 		swap	d1
 		neg.w	d1
 		move.w	d1,obX(a0)
-		move.l	(v_screenposy).w,d1
+		move.l	(v_scrposy).w,d1
 		add.l	d1,d1
 		swap	d1
 		andi.w	#$3F,d1

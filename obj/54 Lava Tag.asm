@@ -37,7 +37,7 @@ loc_CD76:
 loc_CD84:
 		move.w	obX(a0),d0
 		andi.w	#-$80,d0
-		move.w	(v_screenposx).w,d1
+		move.w	(v_scrposx).w,d1
 		subi.w	#$80,d1
 		andi.w	#-$80,d1
 		sub.w	d1,d0

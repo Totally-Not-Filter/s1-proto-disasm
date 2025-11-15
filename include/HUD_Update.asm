@@ -188,11 +188,11 @@ Hud_TilesBase_End
 
 HudDb_XY:
 		locVRAM (ArtTile_HUD+$18)*tile_size
-		move.w	(v_screenposx).w,d1
+		move.w	(v_scrposx).w,d1
 		swap	d1
 		move.w	(v_player+obX).w,d1
 		bsr.s	sub_1183E
-		move.w	(v_screenposy).w,d1
+		move.w	(v_scrposy).w,d1
 		swap	d1
 		move.w	(v_player+obY).w,d1
 

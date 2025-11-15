@@ -93,7 +93,7 @@ loc_3C7C:
 		moveq	#0,d1
 
 loc_3C94:
-		move.w	d1,(v_screenposx).w
+		move.w	d1,(v_scrposx).w
 		moveq	#0,d0
 		move.w	(a1),d0
 		move.w	d0,(v_player+obY).w
@@ -107,7 +107,7 @@ loc_3CA8:
 		move.w	(v_limitbtm2).w,d0
 
 loc_3CB2:
-		move.w	d0,(v_screenposy).w
+		move.w	d0,(v_scrposy).w
 		bsr.w	initLevelBG
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
@@ -148,12 +148,12 @@ dword_3D6A:	dc.l $700100, $1000100
 ; ---------------------------------------------------------------------------
 
 initLevelBG:
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
+		move.w	d0,(v_bgscrposy).w
+		move.w	d0,(v_bg2scrposy).w
 		swap	d1
-		move.l	d1,(v_bgscreenposx).w
-		move.l	d1,(v_bg2screenposx).w
-		move.l	d1,(v_bg3screenposx).w
+		move.l	d1,(v_bgscrposx).w
+		move.l	d1,(v_bg2scrposx).w
+		move.l	d1,(v_bg3scrposx).w
 		moveq	#0,d2
 		move.b	(v_zone).w,d2
 		add.w	d2,d2
@@ -180,7 +180,7 @@ initLevelMZ:
 initLevelSLZ:
 		asr.l	#1,d0
 		addi.w	#$C0,d0
-		move.w	d0,(v_bgscreenposy).w
+		move.w	d0,(v_bgscrposy).w
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -190,8 +190,8 @@ initLevelSZ:
 		asl.l	#1,d0
 		add.l	d2,d0
 		asr.l	#8,d0
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
+		move.w	d0,(v_bgscrposy).w
+		move.w	d0,(v_bg2scrposy).w
 		rts
 ; ---------------------------------------------------------------------------
 
