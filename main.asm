@@ -311,7 +311,7 @@ GameInit:
 		move.l	d7,(a6)+
 		dbf	d6,.clrRAM
 		bsr.w	VDPSetupGame
-		bsr.w	SoundDriverLoad
+		bsr.w	DACDriverLoad
 		bsr.w	InitJoypads
 		move.b	#id_Sega,(v_gamemode).w
 
@@ -856,7 +856,7 @@ ClearScreen:
 		rts
 ; ---------------------------------------------------------------------------
 
-SoundDriverLoad:
+DACDriverLoad:
 		nop
 		stopZ80
 		resetZ80
