@@ -544,7 +544,7 @@ VInt:
 
 .notPAL:
 		move.b	(v_vint_routine).w,d0
-		move.b	#0,(v_vint_routine).w
+		move.b	#id_VInt_00,(v_vint_routine).w
 		move.w	#1,(f_hint).w
 		andi.w	#$3E,d0
 		move.w	VInt_Index(pc,d0.w),d0
