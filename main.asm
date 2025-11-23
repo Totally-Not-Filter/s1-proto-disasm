@@ -3904,7 +3904,8 @@ loc_8A00:
 	if FixBugs
 		move.w	#bytesToLcnt(v_objstate_end-v_objstate-2),d0
 	else
-		; Bug: This does word when it should be doing longword and the last 2 bytes of v_objstate are not accounted for.
+		; This clears longwords, but the loop counter is measured in words!
+		; This causes $17C bytes to be cleared instead of $BE.
 		move.w	#bytesToWcnt(v_objstate_end-v_objstate-2),d0
 	endif
 
@@ -3912,7 +3913,10 @@ loc_8A38:
 		clr.l	(a2)+
 		dbf	d0,loc_8A38
 	if FixBugs
+		; Clear the last word, since the above loop only does longwords.
+	if (v_objstate_end-v_objstate-2)&2
 		clr.w	(a2)+
+	endif
 	endif
 		move.w	#-1,(v_opl_screen).w
 
