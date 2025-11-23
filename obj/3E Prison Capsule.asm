@@ -95,7 +95,7 @@ locret_B75E:
 ; ---------------------------------------------------------------------------
 
 loc_B760:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
 		bne.s	loc_B7A0
 		bsr.w	FindFreeObj
@@ -128,7 +128,7 @@ locret_B7C4:
 ; ---------------------------------------------------------------------------
 
 loc_B7C6:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
 		bne.s	loc_B7E8
 		bsr.w	FindFreeObj

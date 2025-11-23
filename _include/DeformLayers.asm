@@ -7,12 +7,12 @@
 DeformLayers:
 		tst.b	(f_nobgscroll).w
 		bne.s	loc_3E18
-		tst.b	(f_res_hscroll).w
+		tst.b	(f_rst_hscroll).w
 		bne.w	loc_4258
 		bsr.w	ScrollHoriz
 
 loc_3E08:
-		tst.b	(f_res_vscroll).w
+		tst.b	(f_rst_vscroll).w
 		bne.w	loc_4276
 		bsr.w	ScrollVertical
 

@@ -108,7 +108,7 @@ locret_A7D8:
 
 loc_A7DA:
 		bsr.w	ScoreAdd
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#3,d0
 		bne.s	locret_A7D8
 		move.w	#sfx_Switch,d0

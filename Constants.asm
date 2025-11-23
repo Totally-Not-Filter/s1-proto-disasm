@@ -27,6 +27,18 @@ id_Demo:	equ ptr_GM_Demo-GameModeArray		; $08
 id_Level:	equ ptr_GM_Level-GameModeArray		; $0C
 id_Special:	equ ptr_GM_Special-GameModeArray	; $10
 
+; Vertical interrupt modes
+id_VInt_00:	equ ptr_VInt_00-VInt_Index		; $00
+id_VInt_02:	equ ptr_VInt_02-VInt_Index		; $02
+id_VInt_04:	equ ptr_VInt_04-VInt_Index		; $04
+id_VInt_06:	equ ptr_VInt_06-VInt_Index		; $06
+id_VInt_08:	equ ptr_VInt_08-VInt_Index		; $08
+id_VInt_0A:	equ ptr_VInt_0A-VInt_Index		; $0A
+id_VInt_0C:	equ ptr_VInt_0C-VInt_Index		; $0C
+id_VInt_0E:	equ ptr_VInt_0E-VInt_Index		; $0E
+id_VInt_10:	equ ptr_VInt_10-VInt_Index		; $10
+id_VInt_12:	equ ptr_VInt_12-VInt_Index		; $12
+
 ; Levels
 id_GHZ:		equ 0
 id_LZ:		equ 1
@@ -250,11 +262,15 @@ ym2612_a0:		equ z80_ram+zYM2612_A0
 ym2612_d0:		equ z80_ram+zYM2612_D0
 ym2612_a1:		equ z80_ram+zYM2612_A1
 ym2612_d1:		equ z80_ram+zYM2612_D1
-z80_version:		equ $A10001
-z80_port_1_data:	equ $A10002
-z80_port_1_control:	equ $A10008
-z80_port_2_control:	equ $A1000A
-z80_expansion_control:	equ $A1000C
+region_ver:		equ $A10001
+ctrl_port_1_data:	equ $A10002
+ctrl_port_1_data_b:	equ $A10003
+ctrl_port_1_ctrl:	equ $A10008
+ctrl_port_1_ctrl_b:	equ $A10009
+ctrl_port_2_ctrl:	equ $A1000A
+ctrl_port_2_ctrl_b:	equ $A1000B
+ctrl_expansion_ctrl:	equ $A1000C
+ctrl_expansion_ctrl_b:	equ $A1000D
 z80_bus_request:	equ $A11100
 z80_reset:		equ $A11200
 

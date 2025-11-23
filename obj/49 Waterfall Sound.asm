@@ -14,7 +14,7 @@ ObjWaterfallSnd_Init:
 		move.b	#4,obRender(a0)
 
 ObjWaterfallSnd_Act:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#$3F,d0
 		bne.s	.nosound
 		move.w	#sfx_Waterfall,d0

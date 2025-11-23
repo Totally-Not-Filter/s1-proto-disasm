@@ -106,7 +106,7 @@ loc_44BE:
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		moveq	#-16,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_size).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6
@@ -127,7 +127,7 @@ loc_44EE:
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		move.w	#320,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_size).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6
@@ -151,7 +151,7 @@ DrawBGScrollBlock2:
 		beq.s	loc_456E
 		cmpi.w	#16,(a3)
 		bcs.s	loc_456E
-		move.w	(v_scroll_block_1_size).w,d4
+		move.w	(v_scroll_block_size).w,d4
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d4
@@ -160,7 +160,7 @@ DrawBGScrollBlock2:
 		bsr.w	Calc_VRAM_Pos
 		move.w	(sp)+,d4
 		moveq	#-16,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_size).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6
@@ -174,7 +174,7 @@ DrawBGScrollBlock2:
 loc_456E:
 		bclr	#3,(a2)
 		beq.s	locret_45B0
-		move.w	(v_scroll_block_1_size).w,d4
+		move.w	(v_scroll_block_size).w,d4
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d4
@@ -183,7 +183,7 @@ loc_456E:
 		bsr.w	Calc_VRAM_Pos
 		move.w	(sp)+,d4
 		move.w	#320,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_size).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6

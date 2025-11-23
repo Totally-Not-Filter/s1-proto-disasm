@@ -1,7 +1,7 @@
 LoadLevelBounds:
 		moveq	#0,d0
-		move.b	d0,(f_res_hscroll).w
-		move.b	d0,(f_res_vscroll).w
+		move.b	d0,(f_rst_hscroll).w
+		move.b	d0,(f_rst_vscroll).w
 		move.b	d0,(unk_FFF746).w
 		move.b	d0,(unk_FFF748).w
 		move.b	d0,(v_dle_routine).w
@@ -19,7 +19,7 @@ LoadLevelBounds:
 		move.l	d0,(v_limitleft1).w
 		cmp.w	(v_limitleft2).w,d0
 		bne.s	loc_3AF2
-		move.b	#1,(f_res_hscroll).w
+		move.b	#1,(f_rst_hscroll).w
 
 loc_3AF2:
 		move.l	(a0)+,d0
@@ -27,7 +27,7 @@ loc_3AF2:
 		move.l	d0,(v_limittop1).w
 		cmp.w	(v_limittop2).w,d0
 		bne.s	loc_3B08
-		move.b	#1,(f_res_vscroll).w
+		move.b	#1,(f_rst_vscroll).w
 
 loc_3B08:
 		move.w	(v_limitleft2).w,d0
@@ -108,7 +108,7 @@ loc_3CA8:
 
 loc_3CB2:
 		move.w	d0,(v_scrposy).w
-		bsr.w	initLevelBG
+		bsr.w	InitLevelBG
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.b	#2,d0
@@ -132,7 +132,7 @@ LoadLevelUnk:
 		move.b	(v_zone).w,d0
 		lsl.w	#3,d0
 		lea	dword_3D6A(pc,d0.w),a1
-		lea	(v_scroll_block_1_size).w,a2
+		lea	(v_scroll_block_size).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
 		rts
@@ -147,7 +147,7 @@ dword_3D6A:	dc.l $700100, $1000100
 		even
 ; ---------------------------------------------------------------------------
 
-initLevelBG:
+InitLevelBG:
 		move.w	d0,(v_bgscrposy).w
 		move.w	d0,(v_bg2scrposy).w
 		swap	d1

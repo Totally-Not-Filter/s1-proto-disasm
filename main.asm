@@ -53,9 +53,9 @@ Vectors:
 		dc.l ErrorTrap			; IRQ level 1
 		dc.l ErrorTrap			; IRQ level 2
 		dc.l ErrorTrap			; IRQ level 3 (28)
-		dc.l H_Int				; IRQ level 4 (horizontal retrace interrupt)
+		dc.l HInt				; IRQ level 4 (horizontal retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 5
-		dc.l V_Int				; IRQ level 6 (vertical retrace interrupt)
+		dc.l VInt				; IRQ level 6 (vertical retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 7 (32)
 		dc.l ErrorTrap			; TRAP #00 exception
 		dc.l ErrorTrap			; TRAP #01 exception
@@ -118,14 +118,14 @@ ErrorTrap:
 
 ; This contains an earlier version of ICD_BLK4.PRG
 EntryPoint:
-		tst.l	(z80_port_1_control).l
+		tst.l	(ctrl_port_1_ctrl).l
 loc_20C:
 		bne.w	loc_306
-		tst.w	(z80_expansion_control).l
+		tst.w	(ctrl_expansion_ctrl).l
 		bne.s	loc_20C
 		lea	SetupValues(pc),a5
 		movem.l	(a5)+,d5-a4
-		move.w	z80_version-1-z80_bus_request(a1),d0
+		move.w	region_ver-1-z80_bus_request(a1),d0
 		andi.w	#$F00,d0
 		beq.s	loc_232
 		move.l	#"SEGA",security_addr-z80_bus_request(a1)
@@ -196,28 +196,28 @@ SetupValues:	dc.l $8000			; VDP register start number
 		dc.l vdp_control_port		; VDP control
 
 VDPInitValues:
-		dc.b 4			; VDP $80 - 8-colour mode
-		dc.b $14		; VDP $81 - Megadrive mode, DMA enable
+		dc.b %0100			; VDP $80 - 8-colour mode
+		dc.b %00010100		; VDP $81 - Megadrive mode, DMA enable
 		dc.b vram_fg>>10	; VDP $82 - foreground nametable address
 		dc.b window_plane_prev>>10	; VDP $83 - window nametable address
 		dc.b vram_bg>>13	; VDP $84 - background nametable address
-		dc.b vram_sprites_prev>>9		; VDP $85 - sprite table address
-		dc.b 0			; VDP $86 - unused
-		dc.b 0			; VDP $87 - background colour
-		dc.b 0			; VDP $88 - unused
-		dc.b 0			; VDP $89 - unused
-		dc.b 255		; VDP $8A - H_Int register
-		dc.b 0			; VDP $8B - full screen scroll
-		dc.b $81		; VDP $8C - 40 cell display
+		dc.b vram_sprites_prev>>9	; VDP $85 - sprite table address
+		dc.b 0				; VDP $86 - unused
+		dc.b 0				; VDP $87 - background colour
+		dc.b 0				; VDP $88 - unused
+		dc.b 0				; VDP $89 - unused
+		dc.b 255			; VDP $8A - H_Int register
+		dc.b 0				; VDP $8B - full screen scroll
+		dc.b %10000001		; VDP $8C - 40 cell display
 		dc.b vram_hscroll_prev>>10	; VDP $8D - hscroll table address
-		dc.b 0			; VDP $8E - unused
-		dc.b 1			; VDP $8F - VDP increment
-		dc.b 1			; VDP $90 - 64 cell hscroll size
-		dc.b 0			; VDP $91 - window h position
-		dc.b 0			; VDP $92 - window v position
-		dc.w $FFFF		; VDP $93/94 - DMA length
-		dc.w 0			; VDP $95/96 - DMA source
-		dc.b $80		; VDP $97 - DMA fill VRAM
+		dc.b 0				; VDP $8E - unused
+		dc.b %0001			; VDP $8F - VDP increment
+		dc.b %0001			; VDP $90 - 64 cell hscroll size
+		dc.b 0				; VDP $91 - window h position
+		dc.b 0				; VDP $92 - window v position
+		dc.w $FFFF			; VDP $93/94 - DMA length
+		dc.w 0				; VDP $95/96 - DMA source
+		dc.b %10000000		; VDP $97 - DMA fill VRAM
 VDPInitValues_End:
 
 ; Z80 initalization
@@ -266,7 +266,7 @@ PSGInitValues_End:
 ; ---------------------------------------------------------------------------
 
 loc_306:
-		btst	#6,(z80_expansion_control+1).l
+		btst	#6,(ctrl_expansion_ctrl_b).l
 		beq.s	CheckSumCheck
 		cmpi.l	#"init",(v_init).w ; has checksum routine already run?
 		beq.w	GameInit	; if yes, branch
@@ -296,9 +296,9 @@ CheckSumCheck:
 .clearRAM:
 		move.l	d7,(a6)+
 		dbf	d6,.clearRAM
-		move.b	(z80_version).l,d0
-		andi.b	#$C0,d0
-		move.b	d0,(v_megadrive).w	; get region setting
+		move.b	(region_ver).l,d0
+		andi.b	#%11000000,d0		; AND the value so it only gets the japanese bit and clock speed bit
+		move.b	d0,(v_megadrive).w	; move the region values into 68K memory for later use
 		move.w	#1,(word_FFFFE0).w	; set an unused flag to 1
 		move.l	#"init",(v_init).w	; set flag so checksum won't run again
 
@@ -307,9 +307,9 @@ GameInit:
 		moveq	#0,d7
 		move.w	#bytesToLcnt(v_crossresetram-v_start),d6
 
-.clearRAM:
+.clrRAM:
 		move.l	d7,(a6)+
-		dbf	d6,.clearRAM
+		dbf	d6,.clrRAM
 		bsr.w	VDPSetupGame
 		bsr.w	SoundDriverLoad
 		bsr.w	InitJoypads
@@ -530,10 +530,10 @@ Art_Text_End
 ; Vertical interrupt
 ; ---------------------------------------------------------------------------
 
-V_Int:
+VInt:
 		movem.l	d0-a6,-(sp)
-		tst.b	(v_vbla_routine).w
-		beq.s	VBla_Exit
+		tst.b	(v_vint_routine).w
+		beq.s	VInt_Exit
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
 		move.l	(v_scrposy_dup).w,(vdp_data_port).l
@@ -543,39 +543,39 @@ V_Int:
 		dbf	d0,*
 
 .notPAL:
-		move.b	(v_vbla_routine).w,d0
-		move.b	#0,(v_vbla_routine).w
+		move.b	(v_vint_routine).w,d0
+		move.b	#0,(v_vint_routine).w
 		move.w	#1,(f_hint).w
 		andi.w	#$3E,d0
-		move.w	VBla_Index(pc,d0.w),d0
-		jsr	VBla_Index(pc,d0.w)
+		move.w	VInt_Index(pc,d0.w),d0
+		jsr	VInt_Index(pc,d0.w)
 
-VBla_Exit:
-		addq.l	#1,(v_vbla_count).w
+VInt_Exit:
+		addq.l	#1,(v_vint_count).w
 		jsr	(UpdateMusic).l
 		movem.l	(sp)+,d0-a6
 		rte
 ; ---------------------------------------------------------------------------
 
-VBla_00:
+VInt_00:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_Index:
-ptr_VBla_00:	dc.w VBla_00-VBla_Index
-ptr_VBla_02:	dc.w VBla_02-VBla_Index
-ptr_VBla_04:	dc.w VBla_04-VBla_Index
-ptr_VBla_06:	dc.w VBla_06-VBla_Index
-ptr_VBla_08:	dc.w VBla_08-VBla_Index
-ptr_VBla_0A:	dc.w VBla_0A-VBla_Index
-ptr_VBla_0C:	dc.w VBla_0C-VBla_Index
-ptr_VBla_0E:	dc.w VBla_0E-VBla_Index
-ptr_VBla_10:	dc.w VBla_10-VBla_Index
-ptr_VBla_12:	dc.w VBla_12-VBla_Index
+VInt_Index:
+ptr_VInt_00:	dc.w VInt_00-VInt_Index
+ptr_VInt_02:	dc.w VInt_02-VInt_Index
+ptr_VInt_04:	dc.w VInt_04-VInt_Index
+ptr_VInt_06:	dc.w VInt_06-VInt_Index
+ptr_VInt_08:	dc.w VInt_08-VInt_Index
+ptr_VInt_0A:	dc.w VInt_0A-VInt_Index
+ptr_VInt_0C:	dc.w VInt_0C-VInt_Index
+ptr_VInt_0E:	dc.w VInt_0E-VInt_Index
+ptr_VInt_10:	dc.w VInt_10-VInt_Index
+ptr_VInt_12:	dc.w VInt_12-VInt_Index
 ; ---------------------------------------------------------------------------
 
-VBla_02:
-		bsr.w	sub_E78
+VInt_02:
+		bsr.w	VInt_Generic
 		tst.w	(v_generictimer).w
 		beq.w	.end
 		subq.w	#1,(v_generictimer).w
@@ -584,8 +584,8 @@ VBla_02:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_04:
-		bsr.w	sub_E78
+VInt_04:
+		bsr.w	VInt_Generic
 		bsr.w	LoadTilesAsYouMove_BGOnly
 		bsr.w	ProcessDPLC2
 		tst.w	(v_generictimer).w
@@ -596,22 +596,22 @@ VBla_04:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_06:
-		bsr.w	sub_E78
+VInt_06:
+		bsr.w	VInt_Generic
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_10:
+VInt_10:
 		cmpi.b	#id_Special,(v_gamemode).w
-		beq.w	VBla_0A
+		beq.w	VInt_0A
 
-VBla_08:
+VInt_08:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
 		writeCRAM	v_palette,0
 		writeVRAM	v_hscrolltablebuffer,vram_hscroll
-		move.w	#$8400+(vram_bg>>13),(a5)
+		move.w	#$8400+vram_bg>>13,(a5)	; write vram for background plane register
 		move.w	(v_hint_hreg).w,(a5)
 		move.w	(v_bg3scrposy_vdp).w,(v_bg3scrposy_vdp_dup).w
 		writeVRAM	v_spritetablebuffer,vram_sprites
@@ -643,7 +643,7 @@ VBla_08:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_0A:
+VInt_0A:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
@@ -666,7 +666,7 @@ VBla_0A:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_0C:
+VInt_0C:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
@@ -687,21 +687,21 @@ VBla_0C:
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_0E:
-		bsr.w	sub_E78
+VInt_0E:
+		bsr.w	VInt_Generic
 		bsr.w	ExecuteObjects
 		bsr.w	BuildSprites
 		addq.b	#1,(byte_FFF628).w
-		move.b	#$E,(v_vbla_routine).w
+		move.b	#id_VInt_0E,(v_vint_routine).w
 		rts
 ; ---------------------------------------------------------------------------
 
-VBla_12:
-		bsr.w	sub_E78
+VInt_12:
+		bsr.w	VInt_Generic
 		bra.w	ProcessDPLC2
 ; ---------------------------------------------------------------------------
 
-sub_E78:
+VInt_Generic:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
@@ -712,7 +712,7 @@ sub_E78:
 		rts
 ; ---------------------------------------------------------------------------
 
-H_Int:
+HInt:
 		tst.w	(f_hint).w
 		beq.s	.return
 		move.l	a5,-(sp)
@@ -724,7 +724,7 @@ H_Int:
 		rte
 ; ---------------------------------------------------------------------------
 
-H_Int2:
+HInt2:
 		tst.w	(f_hint).w
 		beq.s	.return
 		movem.l	d0/a0/a5,-(sp)
@@ -749,9 +749,9 @@ InitJoypads:
 		stopZ80
 		waitZ80
 		moveq	#$40,d0
-		move.b	d0,(z80_port_1_control+1).l
-		move.b	d0,(z80_port_2_control+1).l
-		move.b	d0,(z80_expansion_control+1).l
+		move.b	d0,(ctrl_port_1_ctrl_b).l
+		move.b	d0,(ctrl_port_2_ctrl_b).l
+		move.b	d0,(ctrl_expansion_ctrl_b).l
 		startZ80
 		rts
 ; ---------------------------------------------------------------------------
@@ -760,7 +760,7 @@ ReadJoypads:
 		stopZ80
 		waitZ80
 		lea	(v_jpadhold1).w,a0
-		lea	(z80_port_1_data+1).l,a1
+		lea	(ctrl_port_1_data_b).l,a1
 		bsr.s	Joypad_Read
 		addq.w	#2,a1
 		bsr.s	Joypad_Read
@@ -913,7 +913,7 @@ PlaySound_Unused:
 		move.b	d0,(v_snddriver_ram.v_soundqueue2).w
 		rts
 
-		include "include/PauseGame.asm"
+		include "_include/PauseGame.asm"
 ; ---------------------------------------------------------------------------
 
 TilemapToVRAM:
@@ -931,7 +931,7 @@ loc_1228:
 		dbf	d2,loc_1222
 		rts
 ; ---------------------------------------------------------------------------
-		include "include/Nemesis Decompression.asm"
+		include "_include/Nemesis Decompression.asm"
 ; ---------------------------------------------------------------------------
 
 AddPLC:
@@ -1142,9 +1142,9 @@ Qplc_Loop:
 		rts
 ; ---------------------------------------------------------------------------
 
-		include "include/Enigma Decompression.asm"
-		include "include/Kosinski Decompression.asm"
-		include "include/PaletteCycle.asm"
+		include "_include/Enigma Decompression.asm"
+		include "_include/Kosinski Decompression.asm"
+		include "_include/PaletteCycle.asm"
 
 Cyc_Title:	binclude "palette/Cycle - Title.bin"
 Cyc_GHZ:	binclude "palette/Cycle - GHZ.bin"
@@ -1172,8 +1172,8 @@ loc_1968:
 		move.w	#$15-1,d4
 
 loc_1972:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_12,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.s	sub_1988
 		bsr.w	RunPLC
 		dbf	d4,loc_1972
@@ -1232,8 +1232,8 @@ PaletteFadeOut:
 		move.w	#$15-1,d4
 
 loc_19DC:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_12,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.s	FadeOut_ToBlack
 		bsr.w	RunPLC
 		dbf	d4,loc_19DC
@@ -1335,7 +1335,7 @@ PalLoad2:
 		dbf	d7,.loop
 		rts
 
-		include "include/Palette Pointers.asm"
+		include "_include/Palette Pointers.asm"
 
 Pal_SegaBG:	binclude "palette/Sega Screen.bin"
 Pal_Title:	binclude "palette/Title Screen.bin"
@@ -1351,11 +1351,11 @@ Pal_CWZ:	binclude "palette/Clock Work Zone.bin"
 Pal_Special:	binclude "palette/Special Stage.bin"
 ; ---------------------------------------------------------------------------
 
-WaitForVBla:
+WaitForVInt:
 		enable_ints
 
 .wait:
-		tst.b	(v_vbla_routine).w
+		tst.b	(v_vint_routine).w
 		bne.s	.wait
 		rts
 ; ---------------------------------------------------------------------------
@@ -1518,8 +1518,8 @@ GM_Sega:
 		move.w	d0,(vdp_control_port).l
 
 loc_2528:
-		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_02,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	PalCycSega
 		tst.w	(v_generictimer).w
 		beq.s	loc_2544
@@ -1611,8 +1611,8 @@ loc_25D8:
 		bsr.w	PaletteWhiteIn
 
 loc_26AE:
-		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_04,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	ExecuteObjects
 		bsr.w	DeformLayers
 		bsr.w	BuildSprites
@@ -1650,8 +1650,8 @@ loc_2732:
 
 ;loc_273C:
 LevelSelect:
-		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_04,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	sub_28A6
 		bsr.w	RunPLC
 		tst.l	(v_plc_buffer).w
@@ -1731,8 +1731,8 @@ loc_27F8:
 		move.w	#30,(v_generictimer).w
 
 loc_27FE:
-		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_04,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
@@ -2023,8 +2023,8 @@ loc_2C0A:
 		move.b	#id_TitleCard,(v_objslot2).w	; load title card object
 
 loc_2C92:
-		move.b	#$C,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_0C,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	ExecuteObjects
 		bsr.w	BuildSprites
 		bsr.w	RunPLC
@@ -2105,8 +2105,8 @@ loc_2D54:
 		move.b	1(a1),(v_btnpushtime2).w
 		subq.b	#1,(v_btnpushtime2).w
 		move.w	#1800,(v_generictimer).w
-		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_08,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		move.w	#$202F,(v_pfade_start).w
 		bsr.w	PaletteWhiteIn_Sub
 		addq.b	#2,(v_objslot2+obRoutine).w
@@ -2116,8 +2116,8 @@ loc_2D54:
 
 GM_LevelLoop:
 		bsr.w	PauseGame
-		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_08,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		addq.w	#1,(v_framecount).w
 		bsr.w	LZWaterFeatures
 		bsr.w	DemoPlayback
@@ -2169,8 +2169,8 @@ loc_2E92:
 		move.w	#$3F,(v_pfade_start).w
 
 loc_2E9E:
-		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_08,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	DemoPlayback
 		bsr.w	ExecuteObjects
 		bsr.w	BuildSprites
@@ -2214,7 +2214,7 @@ loc_3034:
 		addq.w	#2,(f_water).w
 		rts
 
-		include "include/LZWaterFeatures.asm"
+		include "_include/LZWaterFeatures.asm"
 ; ---------------------------------------------------------------------------
 
 DemoPlayback:
@@ -2398,7 +2398,7 @@ DebugPosLoadArt:
 ; ---------------------------------------------------------------------------
 .1bpp:	dc.b 0, 6, $60, $66
 
-		include "include/Oscillatory Routines.asm"
+		include "_include/Oscillatory Routines.asm"
 ; ---------------------------------------------------------------------------
 
 UpdateTimers:
@@ -2515,8 +2515,8 @@ GM_Special:
 
 loc_3620:
 		bsr.w	PauseGame
-		move.b	#$A,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_0A,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		bsr.w	DemoPlayback
 		move.w	(v_jpadhold1).w,(v_jpadhold2).w
 		bsr.w	ExecuteObjects
@@ -2843,9 +2843,9 @@ byte_3A9A:	dc.b 8, 2, 4, $FF, 2, 3, 8, $FF, 4, 2, 2, 3, 8, $FD, 4
 		dc.b 2, 2, 3, 2, $FF
 		even
 ; ---------------------------------------------------------------------------
-		include "include/LevelSizeLoad & BgScrollSpeed.asm"
-		include "include/DeformLayers.asm"
-		include	"include/Level Drawing.asm"
+		include "_include/LevelSizeLoad & BgScrollSpeed.asm"
+		include "_include/DeformLayers.asm"
+		include	"_include/Level Drawing.asm"
 ; ---------------------------------------------------------------------------
 
 LoadLevelData:
@@ -2969,7 +2969,7 @@ loc_4904:
 		dbf	d2,loc_4900
 		rts
 ; ---------------------------------------------------------------------------
-		include "include/DynamicLevelEvents.asm"
+		include "_include/DynamicLevelEvents.asm"
 
 		include "obj/02.asm"
 Map_02:	include "_maps/02.asm"
@@ -3563,7 +3563,7 @@ loc_8576:
 		rts
 ; ---------------------------------------------------------------------------
 Obj_Index:
-		include "include/Object Pointers.asm"
+		include "_include/Object Pointers.asm"
 		include "obj/sub ObjectFall.asm"
 		include "obj/sub SpeedToPos.asm"
 		include "obj/sub DisplaySprite.asm"
@@ -4302,7 +4302,7 @@ Map_Smash:	include "_maps/Smashable Walls.asm"
 		include "obj/3D Boss - Green Hill (part 1).asm"
 
 sub_B146:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
 		bne.s	locret_B186
 		bsr.w	FindFreeObj
@@ -5308,7 +5308,7 @@ loc_10BC8:
 		rts
 ; ---------------------------------------------------------------------------
 
-SS_MapIndex:	include "include/Special Stage Mappings & VRAM Pointers.asm"
+SS_MapIndex:	include "_include/Special Stage Mappings & VRAM Pointers.asm"
 SS_MapIndex_End
 
 Map_SS_Up:
@@ -5336,7 +5336,7 @@ loc_10CA8:
 		include "obj/09 Sonic in Special Stage.asm"
 		include "obj/10 Sonic Animation Test.asm"
 
-		include "include/AnimateLevelGfx.asm"
+		include "_include/AnimateLevelGfx.asm"
 
 		include "obj/21 HUD.asm"
 Map_HUD:	include "_maps/HUD.asm"
@@ -5363,15 +5363,15 @@ locret_11678:
 		rts
 ; ---------------------------------------------------------------------------
 
-		include	"include/HUD_Update.asm"
+		include	"_include/HUD_Update.asm"
 
 byte_11A26:	binclude "artunc/HUD Numbers.bin"
 byte_11D26:	binclude "artunc/Lives Counter Numbers.bin"
 
 		include "obj/DebugMode.asm"
-		include "include/DebugList.asm"
-		include "include/LevelHeaders.asm"
-		include "include/Pattern Load Cues.asm"
+		include "_include/DebugList.asm"
+		include "_include/LevelHeaders.asm"
+		include "_include/Pattern Load Cues.asm"
 
 		align	$8000
 ; ===========================================================================

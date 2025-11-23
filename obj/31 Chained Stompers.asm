@@ -176,7 +176,7 @@ loc_988A:
 loc_98A8:
 		tst.w	objoff_32(a0)
 		beq.s	loc_98D6
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	loc_98C8
 		tst.b	obRender(a0)
@@ -228,7 +228,7 @@ loc_9926:
 ; ---------------------------------------------------------------------------
 
 loc_9938:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vint_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	loc_9952
 		tst.b	obRender(a0)

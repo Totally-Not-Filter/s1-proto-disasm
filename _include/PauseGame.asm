@@ -13,8 +13,8 @@ loc_11CC:
 		move.w	#-1,(f_pause).w
 
 loc_11D2:
-		move.b	#$10,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		move.b	#id_VInt_10,(v_vint_routine).w
+		bsr.w	WaitForVInt
 		btst	#bitA,(v_jpadpress1).w
 		beq.s	loc_11EE
 		move.b	#id_Title,(v_gamemode).w

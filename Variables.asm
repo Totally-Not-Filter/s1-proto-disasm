@@ -5,28 +5,28 @@
 	phase $FFFF0000
 v_start:
 v_256x256:		ds.b $52*$200	; 256x256 tile mappings ($A400 bytes)
-v_256x256_end:
+v_256x256_end
 
 layoutsize:		= $40
 
 v_lvllayout:	ds.b layoutsize*$10	; level layout buffer ($400 bytes)
 v_lvllayoutbg:	= v_lvllayout+layoutsize
-v_lvllayout_end:
+v_lvllayout_end
 
 v_bgscroll_buffer:	ds.b $200
 v_ngfx_buffer:	ds.b $200
-v_ngfx_buffer_end:
+v_ngfx_buffer_end
 v_spritequeue:	ds.b $400
 v_16x16:		ds.w 4*$300	; 16x16 tile mappings ($1800 bytes)
-v_16x16_end:
-v_sgfx_buffer:	ds.b $2E0	; sonic graphics ram buffer ($2E0 bytes)
-v_sgfx_buffer_end:
+v_16x16_end
+v_sgfx_buffer:	ds.b 23*tile_size	; sonic graphics ram buffer ($2E0 bytes)
+v_sgfx_buffer_end
 			ds.b $20	; unused
 v_tracksonic:	ds.b $100	; sonic position table ($100 bytes)
 v_hscrolltablebuffer:	ds.b $380
-v_hscrolltablebuffer_end:
+v_hscrolltablebuffer_end
 			ds.b $80
-v_hscrolltablebuffer_end_padded:
+v_hscrolltablebuffer_end_padded
 v_objspace:				; RAM for object space ($600 bytes)
 v_objslot0:		ds.b obj.Size
 v_objslot1:		ds.b obj.Size
@@ -68,12 +68,12 @@ v_lvlobjspace:
 	rept 96
 			ds.b obj.Size
 	endm
-v_lvlobjend:
+v_lvlobjend
 v_objspace_end:
 ; $FFFFF000
 v_snddriver_ram:	SMPS_RAM	; start of RAM for the sound driver data ($600 bytes)
+v_snddriver_ram_end
 			ds.b $40	; unused
-v_snddriver_ram_end:
 v_gamemode:		ds.b 1
 			ds.b 1		; unused
 v_jpadhold2:	ds.b 1
@@ -97,7 +97,7 @@ v_pfade_start:	ds.b 1		; palette fading - start position in bytes
 v_pfade_size:	ds.b 1		; palette fading - number of colouds
 byte_FFF628:	ds.b 1
 byte_FFF629:	ds.b 1
-v_vbla_routine:	ds.w 1
+v_vint_routine:	ds.w 1
 v_spritecount:	ds.b 1
 			ds.b 5		; unused
 v_pcyc_num:		ds.w 1		; palette cycling - current reference number (2 bytes)
@@ -117,7 +117,7 @@ v_levselitem:	ds.w 1		; level select - item selected (2 bytes)
 v_levselsound:	ds.w 1		; level select - sound selected (2 bytes)
 			ds.b $14	; unused
 v_plc_buffer:	ds.b 6*16	; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
-v_plc_buffer_only_end:
+v_plc_buffer_only_end
 v_plc_buffer_reg0:	ds.l 1		; pattern load cues buffer (4 bytes)
 v_plc_buffer_reg4:	ds.l 1		; pattern load cues buffer (4 bytes)
 v_plc_buffer_reg8:	ds.l 1		; pattern load cues buffer (4 bytes)
@@ -127,7 +127,7 @@ v_plc_buffer_reg14:	ds.l 1		; pattern load cues buffer (4 bytes)
 f_plc_execute:	ds.w 1		; flag set for pattern load cue execution (2 bytes)
 v_plc_buffer_reg1A:	ds.w 1
 			ds.l 1		; unused
-v_plc_buffer_end:
+v_plc_buffer_end
 v_misc_variables:
 v_scrposx:	ds.l 1
 v_scrposy:	ds.l 1
@@ -151,8 +151,8 @@ v_limitleft3:	ds.w 1
 v_scrshiftx:	ds.w 1
 v_scrshifty:	ds.w 1
 v_lookshift:	ds.w 1
-f_res_hscroll:	ds.b 1
-f_res_vscroll:	ds.b 1
+f_rst_hscroll:	ds.b 1
+f_rst_vscroll:	ds.b 1
 v_dle_routine:	ds.w 1
 f_nobgscroll:	ds.w 1
 unk_FFF746:		ds.w 1
@@ -212,9 +212,9 @@ v_lani3_frame:	ds.b 1		; level graphics animation 3 - current frame
 			ds.b $29	; unused
 f_switch:		ds.w 1
 			ds.b $E		; unused
-v_scroll_block_1_size:	ds.w 1
+v_scroll_block_size:	ds.w 1
 			ds.b $E		; unused
-v_misc_variables_end:
+v_misc_variables_end
 v_spritetablebuffer:	ds.b $280
 v_spritetablebuffer_end
 			ds.b $80	; unused
@@ -223,7 +223,7 @@ v_palette_end:
 v_palette_fading:	ds.b $80
 v_palette_fading_end:
 v_objstate:		ds.b $C0	; object state list
-v_objstate_end:
+v_objstate_end
 			ds.b $140	; stack
 v_systemstack:
 v_crossresetram:
@@ -235,9 +235,9 @@ v_debugitem:	ds.w 1
 v_debuguse:		ds.w 1
 v_debugxspeed:	ds.b 1
 v_debugyspeed:	ds.b 1
-v_vbla_count:	ds.w 1
-v_vbla_word:	ds.b 1		; low word for vertical interrupt counter (2 bytes)
-v_vbla_byte:	ds.b 1		; low byte for vertical interrupt counter
+v_vint_count:	ds.w 1
+v_vint_word:	ds.b 1		; low word for vertical interrupt counter (2 bytes)
+v_vint_byte:	ds.b 1		; low byte for vertical interrupt counter
 v_zone:			ds.b 1
 v_act:			ds.b 1
 v_lives:		ds.b 1
@@ -279,7 +279,7 @@ v_ani3_time:	ds.b 1		; synchronised sprite animation 3 - time until next frame
 v_ani3_frame:	ds.b 1		; synchronised sprite animation 3 - current frame
 v_ani3_buf:		ds.w 1		; synchronised sprite animation 3 - info buffer (2 bytes)
 			ds.b $36	; unused
-v_timingandscreenvariables_end:
+v_timingandscreenvariables_end
 			ds.b $E0	; unused
 word_FFFFE0:	ds.w 1		; value that's set to 1 during initation, unused otherwise (2 bytes)
 			ds.b 6		; unused
@@ -293,7 +293,7 @@ v_megadrive:	ds.b 1
 f_debugmode:	ds.b 1
 			ds.b 1		; unused
 v_init:			ds.l 1		; 'init' text string (4 bytes)
-v_end:
+v_end
 	dephase
 
 ; Special Stage Variables
