@@ -2560,7 +2560,7 @@ loc_3662:
 SS_BGLoad:
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg1).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Fish,2,0),d0
+		move.w	#make_art_tile(ArtTile_SS_Background_Fish,2,FALSE),d0
 		bsr.w	EniDec
 		move.l	#$50000001,d3
 		lea	(v_start&$FFFFFF+$80).l,a2
@@ -2609,7 +2609,7 @@ loc_36EA:
 		dbf	d7,loc_368C
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg2).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Clouds,2,0),d0
+		move.w	#make_art_tile(ArtTile_SS_Background_Clouds,2,FALSE),d0
 		bsr.w	EniDec
 		copyTilemap	v_start&$FFFFFF,vram_fg,64,32
 		copyTilemap	v_start&$FFFFFF,vram_fg+$1000,64,64
