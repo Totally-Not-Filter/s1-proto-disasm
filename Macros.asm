@@ -115,7 +115,7 @@ copyTilemap:	macro source,destination,width,height
 		endm
 
 copyUncTilemap:	macro destination,width,height
-		move.l	#$40000000+(((destination)&$3FFF)<<16)+(((destination)&$C000)>>14),d0
+		locVRAM	destination,d0
 		moveq	#(width)-1,d1
 		moveq	#(height)-1,d2
 		bsr.w	TilemapToVRAM
