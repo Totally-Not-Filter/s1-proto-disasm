@@ -3588,7 +3588,8 @@ Obj_Index:
 		include "obj/sub DeleteObject.asm"
 ; ---------------------------------------------------------------------------
 
-off_8796:	dc.l 0
+BldSpr_ScrPos:
+		dc.l 0
 		dc.l v_scrposx&$FFFFFF
 		dc.l v_bgscrposx&$FFFFFF
 		dc.l v_bg3scrposx&$FFFFFF
@@ -3600,113 +3601,113 @@ BuildSprites:
 		lea	(v_spritequeue).w,a4
 		moveq	#7,d7
 
-loc_87B2:
+.priorityloop:
 		tst.w	(a4)
-		beq.w	loc_8876
+		beq.w	.nextpriority
 		moveq	#2,d6
 
-loc_87BA:
+.objloop:
 		movea.w	(a4,d6.w),a0
 		tst.b	obID(a0)
-		beq.w	loc_886E
+		beq.w	.skipobj
 		bclr	#7,obRender(a0)
 		move.b	obRender(a0),d0
 		move.b	d0,d4
 		andi.w	#$C,d0
-		beq.s	loc_8826
-		movea.l	off_8796(pc,d0.w),a1
+		beq.s	.scrcoords
+		movea.l	BldSpr_ScrPos(pc,d0.w),a1
 		moveq	#0,d0
 		move.b	obActWid(a0),d0
 		move.w	obX(a0),d3
 		sub.w	(a1),d3
 		move.w	d3,d1
 		add.w	d0,d1
-		bmi.w	loc_886E
+		bmi.w	.skipobj
 		move.w	d3,d1
 		sub.w	d0,d1
 		cmpi.w	#320,d1
-		bge.s	loc_886E
+		bge.s	.skipobj
 		addi.w	#128,d3
 		btst	#4,d4
-		beq.s	loc_8830
+		beq.s	.assumeheight
 		moveq	#0,d0
 		move.b	obHeight(a0),d0
 		move.w	obY(a0),d2
 		sub.w	obMap(a1),d2
 		move.w	d2,d1
 		add.w	d0,d1
-		bmi.s	loc_886E
+		bmi.s	.skipobj
 		move.w	d2,d1
 		sub.w	d0,d1
 		cmpi.w	#224,d1
-		bge.s	loc_886E
+		bge.s	.skipobj
 		addi.w	#128,d2
-		bra.s	loc_8848
+		bra.s	.drawobj
 ; ---------------------------------------------------------------------------
 
-loc_8826:
+.scrcoords:
 		move.w	obScreenY(a0),d2
 		move.w	obX(a0),d3
-		bra.s	loc_8848
+		bra.s	.drawobj
 ; ---------------------------------------------------------------------------
 
-loc_8830:
+.assumeheight:
 		move.w	obY(a0),d2
-		sub.w	obMap(a1),d2
+		sub.w	4(a1),d2
 		addi.w	#128,d2
 		cmpi.w	#320/2-64,d2
-		blo.s	loc_886E
+		blo.s	.skipobj
 		cmpi.w	#320+64,d2
-		bhs.s	loc_886E
+		bhs.s	.skipobj
 
-loc_8848:
+.drawobj:
 		movea.l	obMap(a0),a1
 		moveq	#0,d1
 		btst	#5,d4
-		bne.s	loc_8864
+		bne.s	.drawframe
 		move.b	obFrame(a0),d1
 		add.b	d1,d1
 		adda.w	(a1,d1.w),a1
 		move.b	(a1)+,d1
 		subq.b	#1,d1
-		bmi.s	loc_8868
+		bmi.s	.setvisible
 
-loc_8864:
-		bsr.w	sub_8898
+.drawframe:
+		bsr.w	BuildSpr_Draw
 
-loc_8868:
+.setvisible:
 		bset	#7,obRender(a0)
 
-loc_886E:
+.skipobj:
 		addq.w	#2,d6
 		subq.w	#2,(a4)
-		bne.w	loc_87BA
+		bne.w	.objloop
 
-loc_8876:
+.nextpriority:
 		lea	$80(a4),a4
-		dbf	d7,loc_87B2
+		dbf	d7,.priorityloop
 		move.b	d5,(v_spritecount).w
 		cmpi.b	#80,d5
-		beq.s	loc_8890
+		beq.s	.spritelimit
 		move.l	#0,(a2)
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_8890:
+.spritelimit:
 		move.b	#0,-5(a2)
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_8898:
+BuildSpr_Draw:
 		movea.w	obGfx(a0),a3
 		btst	#0,d4
-		bne.s	loc_88DE
+		bne.s	BuildSpr_FlipX
 		btst	#1,d4
-		bne.w	loc_892C
+		bne.w	BuildSpr_FlipY
 
-sub_88AA:
+BuildSpr_Normal:
 		cmpi.b	#80,d5
-		beq.s	locret_88DC
+		beq.s	.return
 		move.b	(a1)+,d0
 		ext.w	d0
 		add.w	d2,d0
@@ -3723,24 +3724,24 @@ sub_88AA:
 		ext.w	d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_88D6
+		bne.s	.writeX
 		addq.w	#1,d0
 
-loc_88D6:
+.writeX:
 		move.w	d0,(a2)+
-		dbf	d1,sub_88AA
+		dbf	d1,BuildSpr_Normal
 
-locret_88DC:
+.return:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_88DE:
+BuildSpr_FlipX:
 		btst	#1,d4
-		bne.w	loc_8972
+		bne.w	BuildSpr_FlipXY
 
-loc_88E6:
+.loop:
 		cmpi.b	#80,d5
-		beq.s	locret_892A
+		beq.s	.return
 		move.b	(a1)+,d0
 		ext.w	d0
 		add.w	d2,d0
@@ -3764,20 +3765,20 @@ loc_88E6:
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_8924
+		bne.s	.writeX
 		addq.w	#1,d0
 
-loc_8924:
+.writeX:
 		move.w	d0,(a2)+
-		dbf	d1,loc_88E6
+		dbf	d1,.loop
 
-locret_892A:
+.return:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_892C:
+BuildSpr_FlipY:
 		cmpi.b	#80,d5
-		beq.s	locret_8970
+		beq.s	.return
 		move.b	(a1)+,d0
 		move.b	(a1),d4
 		ext.w	d0
@@ -3801,20 +3802,20 @@ loc_892C:
 		ext.w	d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_896A
+		bne.s	.writeX
 		addq.w	#1,d0
 
-loc_896A:
+.writeX:
 		move.w	d0,(a2)+
-		dbf	d1,loc_892C
+		dbf	d1,BuildSpr_FlipY
 
-locret_8970:
+.return:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_8972:
+BuildSpr_FlipXY:
 		cmpi.b	#80,d5
-		beq.s	locret_89C4
+		beq.s	.return
 		move.b	(a1)+,d0
 		move.b	(a1),d4
 		ext.w	d0
@@ -3844,14 +3845,14 @@ loc_8972:
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_89BE
+		bne.s	.writeX
 		addq.w	#1,d0
 
-loc_89BE:
+.writeX:
 		move.w	d0,(a2)+
-		dbf	d1,loc_8972
+		dbf	d1,BuildSpr_FlipXY
 
-locret_89C4:
+.return:
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -5074,7 +5075,7 @@ loc_10934:
 		move.b	(a1)+,d1
 		subq.b	#1,d1
 		bmi.s	loc_10986
-		jsr	(sub_88AA).l
+		jsr	(BuildSpr_Normal).l
 
 loc_10986:
 		addq.w	#4,a4
