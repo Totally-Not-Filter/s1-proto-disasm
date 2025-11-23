@@ -315,11 +315,11 @@ GameInit:
 		bsr.w	InitJoypads
 		move.b	#id_Sega,(v_gamemode).w
 
-MainGameLoop:
+GameModeLoop:
 		move.b	(v_gamemode).w,d0 ; load Game Mode
 		andi.w	#$1C,d0	; limit Game Mode value to $1C max (change to a maximum of 7C to add more game modes)
 		jsr	GameModeArray(pc,d0.w) ; jump to apt location in ROM
-		bra.s	MainGameLoop	; loop indefinitely
+		bra.s	GameModeLoop	; loop indefinitely
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Main game mode array
