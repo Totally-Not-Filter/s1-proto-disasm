@@ -93,7 +93,7 @@ loc_E8E8:
 		move.b	(v_zone).w,d0
 		lea	(MusicList2).l,a1
 		move.b	(a1,d0.w),d0
-		jsr	(PlaySound).l
+		jsr	(QueueSound1).l
 
 loc_E916:
 		move.b	#0,(v_invinc).w
@@ -110,7 +110,7 @@ loc_E91C:
 		move.w	#$40,(v_sonspeeddec).w
 		move.b	#0,(v_shoes).w
 		move.w	#bgm_Slowdown,d0
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
 locret_E950:
@@ -397,7 +397,7 @@ loc_EBCC:
 		move.b	#id_Stop,obAnim(a0)
 		bclr	#0,obStatus(a0)
 		move.w	#sfx_Skid,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 locret_EBFA:
 		rts
@@ -445,7 +445,7 @@ loc_EC32:
 		move.b	#id_Stop,obAnim(a0)
 		bset	#0,obStatus(a0)
 		move.w	#sfx_Skid,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 locret_EC60:
 		rts
@@ -695,7 +695,7 @@ Sonic_DoRoll:
 		move.b	#id_Roll,obAnim(a0)
 		addq.w	#5,obY(a0)
 		move.w	#sfx_Roll,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		tst.w	obInertia(a0)
 		bne.s	locret_EEAA
 		move.w	#$200,obInertia(a0)
@@ -729,7 +729,7 @@ Sonic_Jump:
 		addq.l	#4,sp
 		move.b	#1,jumpflag(a0)
 		move.w	#sfx_Jump,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		move.b	#$13,obHeight(a0)
 		move.b	#9,obWidth(a0)
 		tst.b	(f_victory).w			; has the victory animation flag been set?
@@ -854,7 +854,7 @@ loc_F018:
 		cmpi.w	#$280,d0
 		bcc.s	locret_F02A
 		bset	#status_in_air,obStatus(a0)	; set in air status
-		move.w	#$1E,ctrllock(a0)
+		move.w	#30,ctrllock(a0)
 
 locret_F02A:
 		rts

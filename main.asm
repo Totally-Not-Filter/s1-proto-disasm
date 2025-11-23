@@ -899,17 +899,17 @@ DACDriverLoad:
 		dc.b 0
 ; ---------------------------------------------------------------------------
 
-PlaySound:
+QueueSound1:
 		move.b	d0,(v_snddriver_ram.v_soundqueue0).w
 		rts
 ; ---------------------------------------------------------------------------
 
-PlaySound_Special:
+QueueSound2:
 		move.b	d0,(v_snddriver_ram.v_soundqueue1).w
 		rts
 ; ---------------------------------------------------------------------------
 
-PlaySound_Unused:
+QueueSound3:
 		move.b	d0,(v_snddriver_ram.v_soundqueue2).w
 		rts
 ; ---------------------------------------------------------------------------
@@ -1496,13 +1496,13 @@ AngleTable:	binclude "misc/angles.bin"
 
 GM_Sega:
 		move.b	#bgm_Fade,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
 		move.w	#$8000+%0100,(a6)
-		move.w	#$8200+(vram_fg>>10),(a6)
-		move.w	#$8400+(vram_bg>>13),(a6)
+		move.w	#$8200+vram_fg>>10,(a6)
+		move.w	#$8400+vram_bg>>13,(a6)
 		move.w	#$8700,(a6)
 		move.w	#$8B00,(a6)
 		move.w	(v_vdp_buffer1).w,d0
@@ -1514,7 +1514,7 @@ GM_Sega:
 		bsr.w	NemDec
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SegaLogo).l,a0
-		move.w	#make_art_tile(0,0,0),d0
+		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
 		bsr.w	EniDec
 
 		copyTilemap	v_start&$FFFFFF,vram_fg+$61C,12,4
@@ -1548,8 +1548,8 @@ GM_Title:
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
 		move.w	#$8000+%0100,(a6)
-		move.w	#$8200+(vram_fg>>10),(a6)
-		move.w	#$8400+(vram_bg>>13),(a6)
+		move.w	#$8200+vram_fg>>10,(a6)
+		move.w	#$8400+vram_bg>>13,(a6)
 		move.w	#$9000+%0001,(a6)
 		move.w	#$9200,(a6)
 		move.w	#$8B00+%0011,(a6)
@@ -1608,7 +1608,7 @@ loc_25D8:
 		moveq	#palid_Title,d0
 		bsr.w	PalLoad1
 		move.b	#bgm_Title,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		move.b	#0,(f_debugmode).w
 		move.w	#376,(v_generictimer).w	; run title screen for 376 frames
 		move.b	#id_TitleSonic,(v_objslot1).w	; load big sonic object
@@ -1644,8 +1644,8 @@ loc_26E4:
 		beq.w	loc_27F8
 		andi.b	#btnStart,(v_jpadpress1).w
 		beq.w	loc_26AE
-		btst	#bitA,(v_jpadhold1).w
-		beq.w	loc_27AA
+		btst	#bitA,(v_jpadhold1).w	; is A held?
+		beq.w	PlayLevel	; if so, start level
 		moveq	#palid_LevelSel,d0
 		bsr.w	PalLoad2
 		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end
@@ -1660,7 +1660,6 @@ loc_2732:
 		dbf	d1,loc_2732
 		bsr.w	LevSelTextLoad
 
-;loc_273C:
 LevelSelect:
 		move.b	#id_VInt_04,(v_vint_routine).w
 		bsr.w	WaitForVInt
@@ -1671,40 +1670,47 @@ LevelSelect:
 		andi.b	#btnABC+btnStart,(v_jpadpress1).w
 		beq.s	LevelSelect
 		move.w	(v_levselitem).w,d0
-		cmpi.w	#$13,d0
-		bne.s	loc_2780
+		cmpi.w	#$13,d0	; are we on the sound select?
+		bne.s	LevSel_Level	; if not, branch
 		move.w	(v_levselsound).w,d0
 		addi.w	#$80,d0
-		cmpi.w	#bgm__Last+2,d0	; There's no pointer for music $92 or $93
-		blo.s	loc_277A	; So the game crashes when played
-		cmpi.w	#sfx__First,d0
-		blo.s	LevelSelect
+		; What follows below are workarounds for bugs within the Sound Driver, these can be removed if FixBugs is enabled.
+	if FixBugs
+		cmpi.w	#bgm__Last,d0	; compare the last BGM with the level select sound
+		bls.s	.notBGM	; if lower than or same, branch
+	else
+		; Bug: There's no pointers for BGM ids $92 or $93, so the game crashes when it tries to play them
+		cmpi.w	#bgm__Last+2,d0	; compare the last BGM+2 with the level select sound
+		blo.s	.notBGM	; if lower than $93, branch
+	endif
+		cmpi.w	#sfx__First,d0	; compare the first SFX with the level select sound
+		blo.s	LevelSelect	; if lower than SFX, branch
 
-loc_277A:
-		bsr.w	PlaySound_Special
+.notBGM:
+		bsr.w	QueueSound2
 		bra.s	LevelSelect
 ; ---------------------------------------------------------------------------
 
-loc_2780:
+LevSel_Level:
 		add.w	d0,d0
 		move.w	LevSelOrder(pc,d0.w),d0
 		bmi.s	LevelSelect
-		cmpi.w	#id_SS<<8,d0
-		bne.s	loc_2796
+		cmpi.w	#id_SS<<8,d0	; are we on the Special Stage?
+		bne.s	.notSS	; if not, branch
 		move.b	#id_Special,(v_gamemode).w
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_2796:
+.notSS:
 		andi.w	#$3FFF,d0
-		btst	#bitB,(v_jpadhold1).w		; Is B pressed?
-		beq.s	loc_27A6			; If not, ignore below
-		move.w	#id_GHZ<<8+3,d0			; Set the zone to Green Hill Act 4
+		btst	#bitB,(v_jpadhold1).w	; is B held?
+		beq.s	.notB			; if not, ignore below
+		move.w	#id_GHZ<<8+3,d0	; Set the zone to Green Hill Act 4
 
-loc_27A6:
+.notB:
 		move.w	d0,(v_zone).w
 
-loc_27AA:
+PlayLevel:
 		move.b	#id_Level,(v_gamemode).w
 		move.b	#3,(v_lives).w
 		moveq	#0,d0
@@ -1712,7 +1718,7 @@ loc_27AA:
 		move.l	d0,(v_time).w
 		move.l	d0,(v_score).w
 		move.b	#bgm_Fade,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		rts
 ; ---------------------------------------------------------------------------
 LevSelOrder:
@@ -1761,7 +1767,7 @@ loc_282C:
 		tst.w	(v_generictimer).w
 		bne.w	loc_27FE
 		move.b	#bgm_Fade,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		move.w	(v_demonum).w,d0
 		andi.w	#7,d0
 		add.w	d0,d0
@@ -1991,7 +1997,7 @@ MusicList:
 
 GM_Level:
 		move.b	#bgm_Fade,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		locVRAM ArtTile_Title_Card*tile_size
 		lea	(Nem_TitleCard).l,a0
 		bsr.w	NemDec
@@ -2031,7 +2037,7 @@ loc_2C0A:
 		move.b	(v_zone).w,d0
 		lea	(MusicList).l,a1
 		move.b	(a1,d0.w),d0
-		bsr.w	PlaySound
+		bsr.w	QueueSound1
 		move.b	#id_TitleCard,(v_objslot2).w	; load title card object
 
 loc_2C92:
@@ -2510,7 +2516,7 @@ GM_Special:
 		clr.w	(v_ssangle).w
 		move.w	#$40,(v_ssrotate).w
 		move.w	#bgm_SS,d0
-		bsr.w	PlaySound_Special
+		bsr.w	QueueSound2
 		move.w	#0,(v_btnpushtime1).w
 		lea	(DemoDataPtr).l,a1
 		moveq	#0,d0
@@ -3225,7 +3231,7 @@ loc_61A4:
 loc_61A8:
 		bsr.w	DisplaySprite
 		move.w	#sfx_Collapse,d0
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
 CFlo_Data1:	dc.b $1C, $18, $14, $10, $1A, $16, $12, $E, $A, 6, $18

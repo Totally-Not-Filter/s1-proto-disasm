@@ -32,7 +32,7 @@ loc_C752:
 		cmpi.w	#$20,d0
 		bcc.s	locret_C77A
 		move.w	#sfx_Signpost,d0
-		jsr	(PlaySound).l
+		jsr	(QueueSound1).l
 		clr.b	(f_timecount).w
 		move.w	(v_limitright2).w,(v_limitleft2).w
 		addq.b	#2,obRoutine(a0)
@@ -124,7 +124,7 @@ loc_C862:
 		mulu.w	#10,d0
 		move.w	d0,(v_ringbonus).w
 		move.w	#bgm_GotThrough,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 locret_C880:
 		rts

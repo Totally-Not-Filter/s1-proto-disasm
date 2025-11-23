@@ -55,7 +55,7 @@ Sonic_GameOver:
 		move.b	#id_GameOverCard,(v_objslot3).w
 		move.b	#1,(v_objslot3+obFrame).w
 		move.w	#bgm_GameOver,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		moveq	#plcid_GameOver,d0
 		jmp	(AddPLC).l
 ; ---------------------------------------------------------------------------

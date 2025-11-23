@@ -18,7 +18,7 @@ ObjWaterfallSnd_Act:
 		andi.b	#$3F,d0
 		bne.s	.nosound
 		move.w	#sfx_Waterfall,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 .nosound:
 		out_of_range.w	DeleteObject

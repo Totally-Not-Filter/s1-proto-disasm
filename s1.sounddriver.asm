@@ -579,7 +579,7 @@ loc_7457E:
 		move.b	SMPS_Track.PanTable(a5),d0
 		subq.w	#1,d0
 		lsl.w	#2,d0
-		movea.l	FM_Pan_Table(pc,d0.w),a0
+		movea.l	FMPan_Table(pc,d0.w),a0
 		moveq	#0,d0
 		move.b	SMPS_Track.PanStart(a5),d0
 		subq.w	#1,d0
@@ -594,15 +594,15 @@ loc_7457E:
 locret_745AE:
 		rts
 ; ---------------------------------------------------------------------------
-FM_Pan_Table:
-		dc.l pan_1_data
-		dc.l pan_2_data
-		dc.l pan_3_data
-pan_1_data:
+FMPan_Table:
+		dc.l FMPan_1_Data
+		dc.l FMPan_2_Data
+		dc.l FMPan_3_Data
+FMPan_1_Data:
 		dc.b $40, $80
-pan_2_data:
+FMPan_2_Data:
 		dc.b $40, $C0, $80
-pan_3_data:
+FMPan_3_Data:
 		dc.b $C0, $80, $C0, $40
 		even
 ; ---------------------------------------------------------------------------
@@ -716,11 +716,12 @@ PlaySoundID:
 		move.b	#$80,SMPS_RAM.v_sound_id(a6)
 		cmpi.b	#$80,d7	; is sound id negative?
 		beq.s	.nosound	; if equal to negative, branch
-		bcs.w	StopAllSound
+		bcs.w	StopAllSound	; if lower than negative, stop all sound
 	if FixBugs
 		cmpi.b	#bgm__Last,d7	; is this music?
 	else
 		; Bug: Should not include +$E, all entries after $91 up to $9F will try to be played even though the slots aren't occupied by any music
+		; Luckily, there is a workaround for this bug in LevelSelect, but even there it's bugged.
 		cmpi.b	#bgm__Last+$E,d7	; is this music?
 	endif
 		bls.w	PlaySnd_Music	; if so, branch
@@ -791,10 +792,10 @@ PlaySnd_Music:
 		lea	SMPS_RAM.v_sfx_track_ram(a6),a5
 		moveq	#SMPS_SFX_TRACK_COUNT-1,d0 ; 3 FM + 3 PSG tracks (SFX)
 
-.loop0:
+.loop:
 		bclr	#7,SMPS_Track.PlaybackControl(a5)
 		adda.w	#SMPS_Track.len,a5
-		dbf	d0,.loop0
+		dbf	d0,.loop
 
 		movea.l	a6,a0
 		lea	SMPS_RAM.v_1up_ram_copy(a6),a1

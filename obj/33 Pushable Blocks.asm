@@ -309,7 +309,7 @@ loc_A24C:
 		move.w	#0,obVelX(a1)
 		move.w	d0,-(sp)
 		move.w	#sfx_Push,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		move.w	(sp)+,d0
 		tst.b	obSubtype(a0)
 		bmi.s	locret_A29A

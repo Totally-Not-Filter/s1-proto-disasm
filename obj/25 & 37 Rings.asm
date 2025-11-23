@@ -139,7 +139,7 @@ loc_7D5E:
 		move.w	#bgm_ExtraLife,d0
 
 loc_7D6A:
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
 ObjRingLoss:
@@ -215,7 +215,7 @@ loc_7E2C:
 		move.b	#$80,(f_ringcount).w
 		move.b	#0,(v_lifecount).w
 		move.w	#sfx_RingLoss,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_7E48:
 		move.b	(v_ani3_frame).w,obFrame(a0)

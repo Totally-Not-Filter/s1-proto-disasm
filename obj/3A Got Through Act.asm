@@ -98,7 +98,7 @@ loc_A7C0:
 		tst.w	d0
 		bne.s	loc_A7DA
 		move.w	#sfx_Cash,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		addq.b	#2,obRoutine(a0)
 		move.w	#180,obTimeFrame(a0)
 
@@ -112,7 +112,7 @@ loc_A7DA:
 		andi.b	#3,d0
 		bne.s	locret_A7D8
 		move.w	#sfx_Switch,d0
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
 loc_A7F2:

@@ -76,7 +76,7 @@ loc_BB4A:
 		bclr	#3,obStatus(a0)
 		clr.b	obSolid(a0)
 		move.w	#sfx_Spring,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_BB84:
 		lea	(Ani_Spring).l,a1
@@ -126,7 +126,7 @@ loc_BC06:
 		bclr	#5,obStatus(a0)
 		bclr	#5,obStatus(a1)
 		move.w	#sfx_Spring,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_BC1C:
 		lea	(Ani_Spring).l,a1
@@ -170,7 +170,7 @@ loc_BC60:
 		bclr	#3,obStatus(a0)
 		clr.b	obSolid(a0)
 		move.w	#sfx_Spring,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_BC98:
 		lea	(Ani_Spring).l,a1

@@ -38,7 +38,7 @@ ObjEntryRingBeta_RmvSonic:
 		beq.s	ObjEntryRingBeta_Display
 		move.b	#0,(v_player).w
 		move.w	#sfx_SSGoal,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 ObjEntryRingBeta_Display:
 		bra.w	DisplaySprite

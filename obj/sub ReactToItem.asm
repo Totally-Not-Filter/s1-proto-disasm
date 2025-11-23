@@ -237,7 +237,7 @@ loc_FD48:
 		move.w	#sfx_HitSpikes,d0
 
 loc_FD68:
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		moveq	#-1,d0
 		rts
 ; ---------------------------------------------------------------------------
@@ -263,7 +263,7 @@ loc_FD78:
 		move.w	#sfx_HitSpikes,d0
 
 loc_FDBA:
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_FDC0:
 		moveq	#-1,d0

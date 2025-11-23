@@ -21,7 +21,7 @@ ObjCannonballExplode_Init:
 		move.b	#9,obTimeFrame(a0)
 		move.b	#0,obFrame(a0)
 		move.w	#sfx_A5,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 ObjCannonballExplode_Act:
 		subq.b	#1,obTimeFrame(a0)
@@ -64,7 +64,7 @@ ObjExplode_Init:
 		move.b	#7,obTimeFrame(a0)
 		move.b	#0,obFrame(a0)
 		move.w	#sfx_BreakItem,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 ObjExplode_Act:
 		subq.b	#1,obTimeFrame(a0)
@@ -99,4 +99,4 @@ ObjBomb_Init:
 		move.b	#7,obTimeFrame(a0)
 		move.b	#0,obFrame(a0)
 		move.w	#sfx_Bomb,d0
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l

@@ -57,17 +57,17 @@ Obj09_Display:
 		bsr.w	sub_110DE
 		jsr	(SpeedToPos).l
 		bsr.w	SS_FixCamera
-		btst	#bitA,(v_jpadhold1).w	; is button A held?
+		btst	#bitA,(v_jpadhold1).w	; is A held?
 		beq.s	loc_10D66	; if not, branch
 		subq.w	#2,(v_ssrotate).w	; reverse rotation of the special stage
 
 loc_10D66:
-		btst	#bitB,(v_jpadhold1).w	; is button B held?
+		btst	#bitB,(v_jpadhold1).w	; is B held?
 		beq.s	loc_10D72	; if not, branch
 		addq.w	#2,(v_ssrotate).w	; increase rotation of the special stage
 
 loc_10D72:
-		btst	#bitStart,(v_jpadpress1).w	; is Start Button pressed?
+		btst	#bitStart,(v_jpadpress1).w	; is Start pressed?
 		beq.s	loc_10D80	; if not, branch
 		move.w	#0,(v_ssrotate).w	; stop rotation of the special stage
 
@@ -210,7 +210,7 @@ Obj09_Jump:
 		move.w	d0,obVelY(a0)
 		bset	#1,obStatus(a0)
 		move.w	#sfx_Jump,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 locret_10ECC:
 		rts
@@ -261,8 +261,8 @@ Obj09_Exit2:
 		bne.s	loc_10F66	; if zero hasn't been reached yet, skip the code below
 		clr.w	(v_ssangle).w	; clear special stage angle
 		move.w	#$40,(v_ssrotate).w	; set default rotation speed
-		move.w	#$458,(v_objspace+obX).w	; set sonic's x position
-		move.w	#$4A0,(v_objspace+obY).w	; set sonic's y position
+		move.w	#$458,(v_player+obX).w	; set sonic's x position
+		move.w	#$4A0,(v_player+obY).w	; set sonic's y position
 		clr.b	obRoutine(a0)	; reset sonic's routine back to the starting routine (Obj09_Main)
 		move.l	a0,-(sp)
 		jsr	(SS_Load).l
@@ -418,7 +418,7 @@ loc_110AE:
 
 loc_110C2:
 		move.w	#sfx_Ring,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 		moveq	#0,d4
 		rts
 ; ---------------------------------------------------------------------------
@@ -484,7 +484,7 @@ loc_110FE:
 
 loc_1116C:
 		move.w	#sfx_Bumper,d0
-		jmp	(PlaySound_Special).l
+		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
 loc_11176:

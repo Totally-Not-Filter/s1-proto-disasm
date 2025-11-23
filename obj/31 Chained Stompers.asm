@@ -182,7 +182,7 @@ loc_98A8:
 		tst.b	obRender(a0)
 		bpl.s	loc_98C8
 		move.w	#sfx_ChainRise,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_98C8:
 		subi.w	#$80,objoff_32(a0)
@@ -208,7 +208,7 @@ loc_98DE:
 		tst.b	obRender(a0)
 		bpl.s	loc_9916
 		move.w	#sfx_ChainStomp,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_9916:
 		moveq	#0,d0
@@ -234,7 +234,7 @@ loc_9938:
 		tst.b	obRender(a0)
 		bpl.s	loc_9952
 		move.w	#sfx_ChainRise,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_9952:
 		subi.w	#$80,objoff_32(a0)
@@ -261,7 +261,7 @@ loc_996E:
 		tst.b	obRender(a0)
 		bpl.s	loc_99B2
 		move.w	#sfx_ChainStomp,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_99B2:
 		bra.w	loc_9916

@@ -128,7 +128,7 @@ loc_4A3E:
 
 loc_4A5E:
 		move.w	#bgm_Boss,d0
-		bsr.w	PlaySound
+		bsr.w	QueueSound1
 		move.b	#1,(f_lockscreen).w
 		addq.b	#2,(v_dle_routine).w
 		moveq	#plcid_Boss,d0

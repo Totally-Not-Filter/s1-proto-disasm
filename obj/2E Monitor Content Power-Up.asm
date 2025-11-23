@@ -54,7 +54,7 @@ loc_82B8:
 		addq.b	#1,(v_lives).w
 		addq.b	#1,(f_lifecount).w
 		move.w	#bgm_ExtraLife,d0
-		jmp	(PlaySound).l
+		jmp	(QueueSound1).l
 ; ---------------------------------------------------------------------------
 
 loc_82CA:
@@ -66,7 +66,7 @@ loc_82CA:
 		move.w	#$18,(v_sonspeedacc).w
 		move.w	#$80,(v_sonspeeddec).w
 		move.w	#bgm_Speedup,d0
-		jmp	(PlaySound).l
+		jmp	(QueueSound1).l
 ; ---------------------------------------------------------------------------
 
 loc_82F8:
@@ -75,7 +75,7 @@ loc_82F8:
 		move.b	#1,(v_shield).w
 		move.b	#id_ShieldItem,(v_objslot6).w
 		move.w	#sfx_Shield,d0
-		jmp	(PlaySound).l
+		jmp	(QueueSound1).l
 ; ---------------------------------------------------------------------------
 
 loc_8314:
@@ -92,7 +92,7 @@ loc_8314:
 		move.b	#id_ShieldItem,(v_objslotB).w
 		move.b	#4,(v_objslotB+obAnim).w
 		move.w	#bgm_Invincible,d0
-		jmp	(PlaySound).l
+		jmp	(QueueSound1).l
 ; ---------------------------------------------------------------------------
 
 loc_8360:
@@ -111,7 +111,7 @@ loc_8360:
 
 loc_8396:
 		move.w	#sfx_Ring,d0
-		jmp	(PlaySound).l
+		jmp	(QueueSound1).l
 ; ---------------------------------------------------------------------------
 
 loc_83A0:

@@ -90,7 +90,7 @@ loc_B0D2:
 		bne.s	loc_B11A
 		move.b	#$20,objoff_3E(a0)
 		move.w	#sfx_HitBoss,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_B11A:
 		lea	(v_palette+$22).w,a1

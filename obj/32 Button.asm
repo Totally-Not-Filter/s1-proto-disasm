@@ -59,7 +59,7 @@ loc_9DFE:
 		tst.b	(a3)
 		bne.s	loc_9E0C
 		move.w	#sfx_Switch,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_9E0C:
 		bset	#0,obFrame(a0)

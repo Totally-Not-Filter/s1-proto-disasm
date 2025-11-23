@@ -40,7 +40,7 @@ loc_C62C:
 		clr.b	objoff_3C(a1)
 		move.b	#1,obAnim(a0)
 		move.w	#sfx_Bumper,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_C684:
 		lea	(Ani_Bump).l,a1

@@ -37,7 +37,7 @@ loc_C254:
 
 loc_C2BE:
 		move.w	#sfx_Fireball,d0
-		jsr	(PlaySound_Special).l
+		jsr	(QueueSound2).l
 
 loc_C2C8:
 		moveq	#0,d0
