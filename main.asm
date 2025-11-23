@@ -451,8 +451,8 @@ ErrorPrint:
 		dbf	d1,.loadart
 		moveq	#0,d0
 		move.b	(v_errortype).w,d0
-		move.w	Error_Text(pc,d0.w),d0
-		lea	Error_Text(pc,d0.w),a0
+		move.w	ErrorText(pc,d0.w),d0
+		lea	ErrorText(pc,d0.w),a0
 		locVRAM vram_fg+$604
 		moveq	#19-1,d1
 
@@ -465,18 +465,18 @@ ErrorPrint:
 		rts
 ; ---------------------------------------------------------------------------
 
-Error_Text:
-		dc.w .exception-Error_Text
-		dc.w .bus-Error_Text
-		dc.w .address-Error_Text
-		dc.w .illinstruct-Error_Text
-		dc.w .zerodivide-Error_Text
-		dc.w .chkinstruct-Error_Text
-		dc.w .trapv-Error_Text
-		dc.w .privilege-Error_Text
-		dc.w .trace-Error_Text
-		dc.w .line1010-Error_Text
-		dc.w .line1111-Error_Text
+ErrorText:
+		dc.w .exception-ErrorText
+		dc.w .bus-ErrorText
+		dc.w .address-ErrorText
+		dc.w .illinstruct-ErrorText
+		dc.w .zerodivide-ErrorText
+		dc.w .chkinstruct-ErrorText
+		dc.w .trapv-ErrorText
+		dc.w .privilege-ErrorText
+		dc.w .trace-ErrorText
+		dc.w .line1010-ErrorText
+		dc.w .line1111-ErrorText
 .exception:	dc.b "ERROR EXCEPTION    "
 .bus:		dc.b "BUS ERROR          "
 .address:	dc.b "ADDRESS ERROR      "
