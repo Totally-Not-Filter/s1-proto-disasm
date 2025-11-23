@@ -87,8 +87,7 @@ Gfx:		ds.w 1		; palette line & VRAM setting (2 bytes)
 Map:		ds.l 1		; mappings address (4 bytes)
 X:			ds.w 1		; x-axis position (2-4 bytes)
 ScreenY:	ds.w 1		; y-axis position for screen-fixed items (2 bytes)
-Y:			ds.w 1		; y-axis position (2-4 bytes)
-ScreenX:	ds.w 1		; x-axis position for screen-fixed items (2 bytes)
+Y:			ds.l 1		; y-axis position (2-4 bytes)
 VelX:		ds.w 1		; x-axis velocity (2 bytes)
 VelY:		ds.w 1		; y-axis velocity (2 bytes)
 Inertia:	ds.w 1		; potential speed (2 bytes)
@@ -162,7 +161,6 @@ obMap:		equ obj.Map
 obX:		equ obj.X
 obScreenY:	equ obj.ScreenY
 obY:		equ obj.Y
-obScreenX:	equ obj.ScreenX
 obVelX:		equ obj.VelX
 obVelY:		equ obj.VelY
 obInertia:	equ obj.Inertia

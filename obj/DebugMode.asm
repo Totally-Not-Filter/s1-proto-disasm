@@ -130,8 +130,8 @@ loc_11FA4:
 		move.l	#Map_Sonic,(v_player+obMap).w
 		move.w	#make_art_tile(ArtTile_Sonic,0,0),(v_player+obGfx).w
 		move.b	d0,(v_player+obAnim).w
-		move.w	d0,obScreenY(a0)
-		move.w	d0,obScreenX(a0)
+		move.w	d0,obX+2(a0)
+		move.w	d0,obY+2(a0)
 
 locret_11FCC:
 		rts
