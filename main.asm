@@ -818,10 +818,10 @@ loc_103E:
 VDPSetupArray:
 		dc.w $8000+%0100
 		dc.w $8100+%00110100
-		dc.w $8200+(vram_fg>>10)
-		dc.w $8300+(window_plane>>10)
-		dc.w $8400+(vram_bg>>13)
-		dc.w $8500+(vram_sprites>>9)
+		dc.w $8200+vram_fg>>10
+		dc.w $8300+window_plane>>10
+		dc.w $8400+vram_bg>>13
+		dc.w $8500+vram_sprites>>9
 		dc.w $8600
 		dc.w $8700
 		dc.w $8800
@@ -829,7 +829,7 @@ VDPSetupArray:
 		dc.w $8A00
 		dc.w $8B00
 		dc.w $8C00+%10000001
-		dc.w $8D00+(vram_hscroll>>10)
+		dc.w $8D00+vram_hscroll>>10
 		dc.w $8E00
 		dc.w $8F00+%0010
 		dc.w $9000+%0001
@@ -912,7 +912,7 @@ PlaySound_Special:
 PlaySound_Unused:
 		move.b	d0,(v_snddriver_ram.v_soundqueue2).w
 		rts
-
+; ---------------------------------------------------------------------------
 		include "_include/PauseGame.asm"
 ; ---------------------------------------------------------------------------
 
@@ -1014,12 +1014,11 @@ ClearPLC:
 		dbf	d0,.clearRAM
 		rts
 ; End of function ClearPLC
-; ---------------------------------------------------------------------------
 
 RunPLC:
 		tst.l	(v_plc_buffer).w
 		beq.s	locret_1436
-		tst.w	(f_plc_execute).w
+		tst.w	(v_plc_patternsleft).w
 		bne.s	locret_1436
 		movea.l	(v_plc_buffer).w,a0
 		lea	(NemPCD_WriteRowToVDP).l,a3
@@ -1031,7 +1030,7 @@ RunPLC:
 loc_1404:
 		andi.w	#$7FFF,d2
 	if ~~FixBugs
-		move.w	d2,(f_plc_execute).w
+		move.w	d2,(v_plc_patternsleft).w
 	endif
 		bsr.w	NemDec_BuildCodeTable
 		move.b	(a0)+,d5
@@ -1040,25 +1039,24 @@ loc_1404:
 		moveq	#$10,d6
 		moveq	#0,d0
 		move.l	a0,(v_plc_buffer).w
-		move.l	a3,(v_plc_buffer_reg0).w
-		move.l	d0,(v_plc_buffer_reg4).w
-		move.l	d0,(v_plc_buffer_reg8).w
-		move.l	d0,(v_plc_buffer_regC).w
-		move.l	d5,(v_plc_buffer_reg10).w
-		move.l	d6,(v_plc_buffer_reg14).w
+		move.l	a3,(v_plc_ptrnemcode).w
+		move.l	d0,(v_plc_repeatcount).w
+		move.l	d0,(v_plc_paletteindex).w
+		move.l	d0,(v_plc_previousrow).w
+		move.l	d5,(v_plc_dataword).w
+		move.l	d6,(v_plc_shiftvalue).w
 	if FixBugs
-		move.w	d2,(f_plc_execute).w
+		move.w	d2,(v_plc_patternsleft).w
 	endif
 
 locret_1436:
 		rts
 ; ---------------------------------------------------------------------------
 
-; sub_1438:
 ProcessDPLC2:
-		tst.w	(f_plc_execute).w
+		tst.w	(v_plc_patternsleft).w
 		beq.w	locret_14D0
-		move.w	#9,(v_plc_buffer_reg1A).w
+		move.w	#9,(v_plc_framepatternsleft).w
 		moveq	#0,d0
 		move.w	(v_plc_buffer+4).w,d0
 		addi.w	#$120,(v_plc_buffer+4).w
@@ -1066,9 +1064,9 @@ ProcessDPLC2:
 ; ---------------------------------------------------------------------------
 
 loc_1454:
-		tst.w	(f_plc_execute).w
+		tst.w	(v_plc_patternsleft).w
 		beq.s	locret_14D0
-		move.w	#3,(v_plc_buffer_reg1A).w
+		move.w	#3,(v_plc_framepatternsleft).w
 		moveq	#0,d0
 		move.w	(v_plc_buffer+4).w,d0
 		addi.w	#$60,(v_plc_buffer+4).w
@@ -1082,30 +1080,28 @@ loc_146C:
 		move.l	d0,(a4)
 		subq.w	#4,a4
 		movea.l	(v_plc_buffer).w,a0
-		movea.l	(v_plc_buffer_reg0).w,a3
-		move.l	(v_plc_buffer_reg4).w,d0
-		move.l	(v_plc_buffer_reg8).w,d1
-		move.l	(v_plc_buffer_regC).w,d2
-		move.l	(v_plc_buffer_reg10).w,d5
-		move.l	(v_plc_buffer_reg14).w,d6
+		movea.l	(v_plc_ptrnemcode).w,a3
+		move.l	(v_plc_repeatcount).w,d0
+		move.l	(v_plc_paletteindex).w,d1
+		move.l	(v_plc_previousrow).w,d2
+		move.l	(v_plc_dataword).w,d5
+		move.l	(v_plc_shiftvalue).w,d6
 		lea	(v_ngfx_buffer).w,a1
 
 loc_14A0:
 		movea.w	#8,a5
 		bsr.w	NemPCD_NewRow
-		subq.w	#1,(f_plc_execute).w
+		subq.w	#1,(v_plc_patternsleft).w
 		beq.s	ShiftPLC
-		subq.w	#1,(v_plc_buffer_reg1A).w
+		subq.w	#1,(v_plc_framepatternsleft).w
 		bne.s	loc_14A0
 		move.l	a0,(v_plc_buffer).w
-
-loc_14B8:
-		move.l	a3,(v_plc_buffer_reg0).w
-		move.l	d0,(v_plc_buffer_reg4).w
-		move.l	d1,(v_plc_buffer_reg8).w
-		move.l	d2,(v_plc_buffer_regC).w
-		move.l	d5,(v_plc_buffer_reg10).w
-		move.l	d6,(v_plc_buffer_reg14).w
+		move.l	a3,(v_plc_ptrnemcode).w
+		move.l	d0,(v_plc_repeatcount).w
+		move.l	d1,(v_plc_paletteindex).w
+		move.l	d2,(v_plc_previousrow).w
+		move.l	d5,(v_plc_dataword).w
+		move.l	d6,(v_plc_shiftvalue).w
 
 locret_14D0:
 		rts
@@ -1118,6 +1114,22 @@ ShiftPLC:
 loc_14D8:
 		move.l	6(a0),(a0)+
 		dbf	d0,loc_14D8
+
+	if FixBugs
+		; The above code does not properly 'pop' the 16th PLC entry.
+		; Because of this, occupying the 16th slot will cause it to
+		; be repeatedly decompressed infinitely.
+		; Granted, this could be conisdered more of an optimisation
+		; than a bug: treating the 16th entry as a dummy that
+		; should never be occupied makes this code unnecessary.
+		; Still, the overhead of this code is minimal.
+	if (v_plc_buffer_only_end-v_plc_buffer-6)&2
+		move.w	6(a0),(a0)
+	endif
+
+		clr.l	(v_plc_buffer_only_end-6).w
+	endif
+
 		rts
 ; ---------------------------------------------------------------------------
 

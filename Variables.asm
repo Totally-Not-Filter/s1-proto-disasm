@@ -118,14 +118,14 @@ v_levselsound:	ds.w 1		; level select - sound selected (2 bytes)
 			ds.b $14	; unused
 v_plc_buffer:	ds.b 6*16	; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
 v_plc_buffer_only_end
-v_plc_buffer_reg0:	ds.l 1		; pattern load cues buffer (4 bytes)
-v_plc_buffer_reg4:	ds.l 1		; pattern load cues buffer (4 bytes)
-v_plc_buffer_reg8:	ds.l 1		; pattern load cues buffer (4 bytes)
-v_plc_buffer_regC:	ds.l 1		; pattern load cues buffer (4 bytes)
-v_plc_buffer_reg10:	ds.l 1		; pattern load cues buffer (4 bytes)
-v_plc_buffer_reg14:	ds.l 1		; pattern load cues buffer (4 bytes)
-f_plc_execute:	ds.w 1		; flag set for pattern load cue execution (2 bytes)
-v_plc_buffer_reg1A:	ds.w 1
+v_plc_ptrnemcode:	ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_repeatcount:	ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_paletteindex:	ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_previousrow:	ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_dataword:		ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_shiftvalue:	ds.l 1		; pattern load cues buffer (4 bytes)
+v_plc_patternsleft:	ds.w 1		; flag set for pattern load cue execution (2 bytes)
+v_plc_framepatternsleft:	ds.w 1
 			ds.l 1		; unused
 v_plc_buffer_end
 v_misc_variables:
