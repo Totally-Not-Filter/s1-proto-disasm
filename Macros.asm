@@ -70,6 +70,8 @@ bytesToWcnt function n,n>>1-1
 ; calculates initial loop counter value for a dbf loop
 ; that writes n bytes total at x bytes per iteration
 bytesToXcnt function n,x,n/x-1
+
+little_endian function x,(x)<<8&$FF00|(x)>>8&$FF
 		
 ; ---------------------------------------------------------------------------
 ; Fill portion of RAM with 0

@@ -886,13 +886,13 @@ SoundDriverLoad:
 		startZ80
 		rts
 ; ---------------------------------------------------------------------------
-; This could potentially be leftover Z80 variables for the above, unused
+; Unused bytes.
+; My thought is that these are external variables for a Z80 Sound Driver (which doesn't exist here).
 ; ---------------------------------------------------------------------------
 ;unk_119C:
 		dc.b 3
 		dc.b 0
-		dc.b 0
-		dc.b $14
+		dc.w little_endian($1400)
 		dc.b 0
 		dc.b 0
 		dc.b 0
