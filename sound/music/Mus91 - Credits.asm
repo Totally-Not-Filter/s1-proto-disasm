@@ -868,7 +868,6 @@ Mus91_Credits_Call06:
 	dc.b	nB4, nA4, nB4, nC5, nD5
 	smpsReturn
 
-
 ; Unreachable
 	dc.b	nRst, $0C, nG6, nB6, nD7, nFs7, $0C, nRst, $06, nFs7, $0C, nG7
 	dc.b	$06, nFs7, $0C, nE7, $60, nRst, $0C, nG6, nB6, nD7, nFs7, $0C

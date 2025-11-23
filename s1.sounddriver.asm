@@ -32,15 +32,15 @@ PSGIndex:
 		dc.l PSG1, PSG2, PSG3
 		dc.l PSG4, PSG6, PSG5
 		dc.l PSG7, PSG8, PSG9
-PSG1:	binclude "sound/psg/psg1.bin"
-PSG2:	binclude "sound/psg/psg2.bin"
-PSG3:	binclude "sound/psg/psg3.bin"
-PSG4:	binclude "sound/psg/psg4.bin"
-PSG5:	binclude "sound/psg/psg5.bin"
-PSG6:	binclude "sound/psg/psg6.bin"
-PSG7:	binclude "sound/psg/psg7.bin"
-PSG8:	binclude "sound/psg/psg8.bin"
-PSG9:	binclude "sound/psg/psg9.bin"
+PSG1:	dc.b 0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,$83
+PSG2:	dc.b 0,2,4,6,8,$10,$83
+PSG3:	dc.b 0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,$83
+PSG4:	dc.b 0,0,2,3,4,4,5,5,5,6,$83
+PSG5:	dc.b 3,3,3,2,2,2,2,1,1,1,0,0,0,0,$83
+PSG6:	dc.b 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,$83
+PSG7:	dc.b 0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,4,5,5,5,6,7,$83
+PSG8:	dc.b 0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,6,6,6,6,6,7,7,7,$83
+PSG9:	dc.b 0,1,2,3,4,5,6,7,8,9,$A,$B,$C,$D,$E,$F,$83
 
 ModulationIndex:
 		dc.b $D, 1, 7, 4	; 1
