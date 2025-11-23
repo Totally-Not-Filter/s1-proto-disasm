@@ -20,7 +20,7 @@ Go_SpecSoundIndex:	dc.l SpecSoundIndex
 Go_MusicIndex:		dc.l MusicIndex
 Go_SoundIndex:		dc.l SoundIndex
 Go_Modulation:		dc.l ModulationIndex
-Go_PSGIndex:		dc.l PSG_Index
+Go_PSGIndex:		dc.l PSGIndex
 		dc.l $A0
 		dc.l UpdateMusic
 Go_SpeedUpIndex:	dc.l SpeedUpIndex
@@ -28,7 +28,7 @@ Go_SpeedUpIndex:	dc.l SpeedUpIndex
 ; ---------------------------------------------------------------------------
 ; PSG instruments used in music
 ; ---------------------------------------------------------------------------
-PSG_Index:
+PSGIndex:
 		dc.l PSG1, PSG2, PSG3
 		dc.l PSG4, PSG6, PSG5
 		dc.l PSG7, PSG8, PSG9
