@@ -627,14 +627,14 @@ VInt_08:
 		jsr	(UpdateHUD).l
 		bsr.w	loc_1454
 		moveq	#0,d0
-		move.b	(byte_FFF628).w,d0
-		move.b	(byte_FFF629).w,d1
+		move.b	(v_lvl_count).w,d0
+		move.b	(v_lvl_count2).w,d1
 		cmp.b	d0,d1
 		bhs.s	.higherorequal
-		move.b	d0,(byte_FFF629).w
+		move.b	d0,(v_lvl_count2).w
 
 .higherorequal:
-		move.b	#0,(byte_FFF628).w
+		move.b	#0,(v_lvl_count).w
 		tst.w	(v_generictimer).w
 		beq.w	.end
 		subq.w	#1,(v_generictimer).w
@@ -691,7 +691,7 @@ VInt_0E:
 		bsr.w	VInt_Generic
 		bsr.w	ExecuteObjects
 		bsr.w	BuildSprites
-		addq.b	#1,(byte_FFF628).w
+		addq.b	#1,(v_lvl_count).w
 		move.b	#id_VInt_0E,(v_vint_routine).w
 		rts
 ; ---------------------------------------------------------------------------

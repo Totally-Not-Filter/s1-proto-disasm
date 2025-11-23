@@ -95,8 +95,8 @@ v_hint_hreg:	ds.b 1		; VDP H.interrupt register buffer (8Axx)
 v_hint_line:	ds.b 1		; screen line where water starts and palette is changed by HBlank
 v_pfade_start:	ds.b 1		; palette fading - start position in bytes
 v_pfade_size:	ds.b 1		; palette fading - number of colouds
-byte_FFF628:	ds.b 1
-byte_FFF629:	ds.b 1
+v_lvl_count:	ds.b 1
+v_lvl_count2:	ds.b 1
 v_vint_routine:	ds.w 1
 v_spritecount:	ds.b 1
 			ds.b 5		; unused
