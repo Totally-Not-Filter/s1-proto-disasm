@@ -94,9 +94,14 @@ loc_7CC8:
 
 loc_7CD0:
 		move.b	(v_ani1_frame).w,obFrame(a0)
+	if FixBugs
+		out_of_range.s	loc_7D2C,objoff_32(a0)
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		out_of_range.s	loc_7D2C,objoff_32(a0)
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_7CF8:

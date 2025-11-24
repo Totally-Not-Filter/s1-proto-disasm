@@ -10,8 +10,8 @@ ObjCollapsePtfm:
 off_5EEE:	dc.w loc_5EFA-off_5EEE, loc_5F2A-off_5EEE, loc_5F4E-off_5EEE, loc_5F7E-off_5EEE, loc_5FDE-off_5EEE
 		dc.w sub_5F60-off_5EEE
 
-ledge_timedelay: equ obj.Off_38	; time between touching the ledge and it collapsing
-ledge_collapse_flag: equ obj.Off_3A	; collapse flag
+ledge_timedelay: equ objoff_38	; time between touching the ledge and it collapsing
+ledge_collapse_flag: equ objoff_3A	; collapse flag
 ; ---------------------------------------------------------------------------
 
 loc_5EFA:
@@ -85,10 +85,16 @@ locret_5FCC:
 
 loc_5FCE:
 		bsr.w	ObjectFall
+	if FixBugs
+		tst.b	obRender(a0)
+		bpl.s	loc_5FDE
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		tst.b	obRender(a0)
 		bpl.s	loc_5FDE
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_5FDE:

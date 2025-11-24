@@ -183,12 +183,20 @@ loc_77AE:
 		lea	(Ani_Crab).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	ObjectFall
+	if FixBugs
+		move.w	(v_limitbtm2).w,d0
+		addi.w	#224,d0
+		cmp.w	obY(a0),d0
+		bcs.s	loc_77D0
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
 		bcs.s	loc_77D0
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_77D0:

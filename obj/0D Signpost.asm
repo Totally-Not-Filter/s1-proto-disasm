@@ -7,9 +7,14 @@ Signpost:
 		jsr	off_C726(pc,d1.w)
 		lea	(Ani_Sign).l,a1
 		bsr.w	AnimateSprite
+	if FixBugs
+		out_of_range.w	DeleteObject
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 off_C726:	dc.w loc_C72E-off_C726
 		dc.w loc_C752-off_C726

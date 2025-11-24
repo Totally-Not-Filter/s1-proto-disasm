@@ -50,12 +50,20 @@ loc_7A6C:
 		bsr.w	SpeedToPos
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite
+	if FixBugs
+		move.w	(v_limitbtm2).w,d0
+		addi.w	#224,d0
+		cmp.w	obY(a0),d0
+		bcs.s	loc_7AB2
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
 		bcs.s	loc_7AB2
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_7AA2:

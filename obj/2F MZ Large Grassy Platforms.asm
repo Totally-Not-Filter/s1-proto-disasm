@@ -77,7 +77,9 @@ loc_8F96:
 		bsr.w	loc_A30C
 
 loc_8F9E:
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 		bra.w	loc_90C2
 ; ---------------------------------------------------------------------------
 
@@ -216,7 +218,11 @@ loc_90C2:
 
 loc_90CE:
 		out_of_range.w	DeleteObject,objoff_2A(a0)
+	if FixBugs
+		bra.w	DisplaySprite
+	else
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_90EE:
@@ -242,7 +248,11 @@ loc_90FC:
 		move.b	#0,objoff_34(a0)
 
 locret_911E:
+	if FixBugs
+		bra.w	DisplaySprite
+	else
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 ObjMZPlatforms_Slope1:dc.b $20, $20, $20, $20, $20
