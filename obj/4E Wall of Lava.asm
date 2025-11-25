@@ -76,6 +76,14 @@ loc_CCB2:
 		lea	(Ani_LWall).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
+	if FixBugs
+		tst.b	objoff_36(a0)
+		bne.s	locret_CCE6
+		out_of_range.s	loc_CCE8
+
+locret_CCE6:
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		tst.b	objoff_36(a0)
 		bne.s	locret_CCE6
@@ -83,6 +91,7 @@ loc_CCB2:
 
 locret_CCE6:
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_CCE8:

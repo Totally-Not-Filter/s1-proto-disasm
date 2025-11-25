@@ -29,9 +29,14 @@ loc_67F8:
 		move.w	d0,(f_switch).w
 
 loc_6812:
+	if FixBugs
+		out_of_range.w	loc_6836
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		out_of_range.w	loc_6836
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_6836:

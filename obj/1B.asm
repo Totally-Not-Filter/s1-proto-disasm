@@ -28,7 +28,9 @@ loc_6676:
 		move.w	#$20,d1
 		move.w	#-$14,d3
 		bsr.w	PtfmNormalHeight
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 		bra.w	loc_66A8
 ; ---------------------------------------------------------------------------
 
@@ -38,7 +40,9 @@ loc_668A:
 		move.w	obX(a0),d2
 		move.w	#-$14,d3
 		bsr.w	PtfmSurfaceHeight
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 		bra.w	loc_66A8
 ; ---------------------------------------------------------------------------
 		rts
@@ -46,7 +50,11 @@ loc_668A:
 
 loc_66A8:
 		out_of_range.w	loc_66C8
+	if FixBugs
+		bra.w	DisplaySprite
+	else
 		rts
+	endif
 ; ---------------------------------------------------------------------------
 
 loc_66C8:
@@ -55,7 +63,9 @@ loc_66C8:
 ; ---------------------------------------------------------------------------
 
 loc_66CE:
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 		bra.w	loc_66A8
 ; ---------------------------------------------------------------------------
 
