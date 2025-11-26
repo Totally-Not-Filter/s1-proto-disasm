@@ -18,7 +18,7 @@ loc_7ED6:
 		bclr	#7,(a2)
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_GRing,obMap(a0)
-		move.w	#make_art_tile($4EC,1,0),obGfx(a0)
+		move.w	#$4EC+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$52,obColType(a0)
@@ -33,7 +33,7 @@ loc_7F12:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_7F3C:

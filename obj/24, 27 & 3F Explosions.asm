@@ -13,7 +13,7 @@ off_7102:	dc.w ObjCannonballExplode_Init-off_7102, ObjCannonballExplode_Act-off_
 ObjCannonballExplode_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapCannonballExplode,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Missile_Disolve,0,0),obGfx(a0)
+		move.w	#ArtTile_Missile_Disolve,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#0,obColType(a0)
@@ -49,14 +49,14 @@ ObjExplode_Load:
 		addq.b	#2,obRoutine(a0)
 		bsr.w	FindFreeObj
 		bne.s	ObjExplode_Init
-		_move.b	#id_Animals,obID(a1)
+		move.b	#id_Animals,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
 ObjExplode_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_ExplodeItem,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Explosion,0,0),obGfx(a0)
+		move.w	#ArtTile_Explosion,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#0,obColType(a0)
@@ -91,7 +91,7 @@ off_7200:	dc.w ObjBomb_Init-off_7200, ObjExplode_Act-off_7200
 ObjBomb_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_ExplodeBomb,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Explosion,0,0),obGfx(a0)
+		move.w	#ArtTile_Explosion,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#0,obColType(a0)

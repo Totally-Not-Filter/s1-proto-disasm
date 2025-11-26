@@ -15,7 +15,7 @@ off_E222:	dc.w loc_E228-off_E222, loc_E258-off_E222, loc_E268-off_E222
 loc_E228:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Circ,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)

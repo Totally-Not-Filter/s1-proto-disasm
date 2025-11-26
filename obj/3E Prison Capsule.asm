@@ -12,7 +12,7 @@ ObjCapsule:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 off_B66C:	dc.w loc_B68C-off_B66C, loc_B6D6-off_B66C
@@ -29,7 +29,7 @@ byte_B67C:	;    routine, actwid, priority, frame
 
 loc_B68C:
 		move.l	#Map_Pri,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Prison_Capsule,0,0),obGfx(a0)
+		move.w	#ArtTile_Prison_Capsule,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.w	obY(a0),objoff_30(a0)
 		moveq	#0,d0
@@ -100,7 +100,7 @@ loc_B760:
 		bne.s	loc_B7A0
 		bsr.w	FindFreeObj
 		bne.s	loc_B7A0
-		_move.b	#id_ExplosionBomb,obID(a1)
+		move.b	#id_ExplosionBomb,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		jsr	(RandomNumber).l
@@ -133,7 +133,7 @@ loc_B7C6:
 		bne.s	loc_B7E8
 		bsr.w	FindFreeObj
 		bne.s	loc_B7E8
-		_move.b	#id_Animals,obID(a1)
+		move.b	#id_Animals,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
@@ -153,7 +153,7 @@ loc_B7FA:
 		bsr.w	sub_C81C
 	if FixBugs
 		addq.l	#4,sp	; do not return to caller
-	endif
+	endc
 		bra.w	DeleteObject
 ; ---------------------------------------------------------------------------
 

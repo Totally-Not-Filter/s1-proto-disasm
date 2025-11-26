@@ -10,14 +10,9 @@
 
 ; ---------------------------------------------------------------------------
 
-	cpu 68000
-
 FixBugs	= 0
 ;	| If 1, fixes a handful of bugs in the game
-zeroOffsetOptimization = 0
-;	| If 1, makes a handful of zero-offset instructions smaller
 
-		include "MacroSetup.asm"
 		include "Constants.asm"
 		include "Variables.asm"
 		include "Macros.asm"
@@ -164,13 +159,13 @@ loc_264:
 		dbf	d6,loc_264
 		move.l	#($8100+%0100)<<16|$8F00+%0010,(a4)
 		move.l	#$C0000000,(a4)
-		moveq	#bytesToLcnt(v_palette_end-v_palette),d3
+		moveq	#(v_palette_end-v_palette)/4-1,d3
 
 loc_278:
 		move.l	d0,(a3)
 		dbf	d3,loc_278
 		move.l	#$40000010,(a4)
-		moveq	#bytesToLcnt($50),d4
+		moveq	#($50)/4-1,d4
 
 loc_286:
 		move.l	d0,(a3)
@@ -186,7 +181,7 @@ loc_28E:
 		bra.s	loc_306
 ; ---------------------------------------------------------------------------
 SetupValues:	dc.l $8000			; VDP register start number
-		dc.l bytesToLcnt(v_end-v_start)		; size of RAM divided by 4
+		dc.l (v_end-v_start)/4-1	; size of RAM divided by 4
 		dc.l $100					; VDP register diff
 
 		dc.l z80_ram				; start of Z80 RAM
@@ -222,42 +217,38 @@ VDPInitValues_End:
 
 ; Z80 initalization
 Z80StartupCodeBegin:
-	save
-	cpu z80	; use Z80 cpu
-	phase	0
-	listing purecode	; add to listing file
 zStartupCodeStartLoc:
-	xor	a
-	ld	bc,(z80_ram_end-z80_ram)-(zStartupCodeEndLoc-zStartupCodeStartLoc)-1
-	ld	de,zStartupCodeEndLoc-zStartupCodeStartLoc+1
-	ld	hl,zStartupCodeEndLoc-zStartupCodeStartLoc
-	ld	sp,hl
-	ld	(hl),a
-	ldir
-	pop	ix
-	pop	iy
-	ld	i,a
-	ld	r,a
-	ex	af,af'
-	exx
-	pop	af
-	pop	bc
-	pop	de
-	pop	hl
-	ex	af,af'
-	exx
-	pop	af
-	pop	de
-	pop	hl
-	ld	sp,hl
-	di
-	im	1
-	ld	(hl),0E9h
-	jp	(hl)
+	dc.b $AF			;	xor	a
+	dc.b $01			;	ld	bc
+	dc.w $D71F			;	(z80_ram_end-z80_ram)-(zStartupCodeEndLoc-zStartupCodeStartLoc)-1
+	dc.b $11			;	ld	de
+	dc.w $2900			;	zStartupCodeEndLoc-zStartupCodeStartLoc+1
+	dc.b $21			;	ld	hl
+	dc.w $2800			;	zStartupCodeEndLoc-zStartupCodeStartLoc
+	dc.b $F9			;	ld	sp,hl
+	dc.b $77			;	ld	(hl),a
+	dc.b $ED,$B0		;	ldir
+	dc.b $DD,$E1		;	pop	ix
+	dc.b $FD,$E1		;	pop	iy
+	dc.b $ED,$47		;	ld	i,a
+	dc.b $ED,$4F		;	ld	r,a
+	dc.b $08			;	ex	af,af'
+	dc.b $D9			;	exx
+	dc.b $F1			;	pop	af
+	dc.b $C1			;	pop	bc
+	dc.b $D1			;	pop	de
+	dc.b $E1			;	pop	hl
+	dc.b $08			;	ex	af,af'
+	dc.b $D9			;	exx
+	dc.b $F1			;	pop	af
+	dc.b $D1			;	pop	de
+	dc.b $E1			;	pop	hl
+	dc.b $F9			;	ld	sp,hl
+	dc.b $F3			;	di
+	dc.b $ED,$56		;	im	1
+	dc.b $36,$E9		;	ld	(hl),0E9h
+	dc.b $E9			;	jp	(hl)
 zStartupCodeEndLoc:
-	dephase
-	restore
-	padding off
 Z80StartupCodeEnd:
 
 PSGInitValues:
@@ -288,10 +279,10 @@ CheckSumCheck:
 	else
 		nop	; removed the branch to the checksum error, so the checksum will not throw an error regardless of the value
 		nop
-	endif
+	endc
 		lea	(v_crossresetram).w,a6
 		moveq	#0,d7
-		move.w	#bytesToLcnt(v_end-v_crossresetram),d6
+		move.w	#(v_end-v_crossresetram)/4-1,d6
 
 .clearRAM:
 		move.l	d7,(a6)+
@@ -305,7 +296,7 @@ CheckSumCheck:
 GameInit:
 		lea	(v_start&$FFFFFF).l,a6
 		moveq	#0,d7
-		move.w	#bytesToLcnt(v_crossresetram-v_start),d6
+		move.w	#(v_crossresetram-v_start)/4-1,d6
 
 .clrRAM:
 		move.l	d7,(a6)+
@@ -344,7 +335,7 @@ ptr_GM_Special:	bra.w	GM_Special
 ChecksumError:
 		bsr.w	VDPSetupGame
 		move.l	#$C0000000,(vdp_control_port).l	; Set VDP to CRAM write
-		moveq	#bytesToWcnt(v_palette_end-v_palette),d7
+		moveq	#(v_palette_end-v_palette)/2-1,d7
 
 .palette:
 		move.w	#cRed,(vdp_data_port).l		; Write red to data
@@ -442,9 +433,9 @@ loc_472:
 
 ErrorPrint:
 		lea	(vdp_data_port).l,a6
-		locVRAM	ArtTile_Error_Handler_Font*tile_size
+		locVRAM	(ArtTile_Error_Handler_Font*tile_size)
 		lea	(Art_Text).l,a0
-		move.w	#bytesToWcnt(Art_Text_End-Art_Text-tile_size),d1
+		move.w	#(Art_Text_End-Art_Text-tile_size)/2-1,d1
 
 .loadart:
 		move.w	(a0)+,(a6)
@@ -453,7 +444,7 @@ ErrorPrint:
 		move.b	(v_errortype).w,d0
 		move.w	ErrorText(pc,d0.w),d0
 		lea	ErrorText(pc,d0.w),a0
-		locVRAM vram_fg+$604
+		locVRAM (vram_fg+$604)
 		moveq	#19-1,d1
 
 .loadtext:
@@ -522,7 +513,7 @@ ErrorWaitForC:
 		rts
 ; ---------------------------------------------------------------------------
 
-Art_Text:	binclude "artunc/menutext.bin"
+Art_Text:	incbin "artunc/menutext.bin"
 Art_Text_End
 
 ; ===========================================================================
@@ -609,15 +600,15 @@ VInt_08:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
-		writeCRAM	v_palette,0
-		writeVRAM	v_hscrolltablebuffer,vram_hscroll
+		writeCRAM	v_palette,v_palette_end,0
+		writeVRAM	v_hscrolltablebuffer,v_hscrolltablebuffer_end,vram_hscroll
 		move.w	#$8400+vram_bg>>13,(a5)	; write vram for background plane register
 		move.w	(v_hint_hreg).w,(a5)
 		move.w	(v_bg3scrposy_vdp).w,(v_bg3scrposy_vdp_dup).w
-		writeVRAM	v_spritetablebuffer,vram_sprites
+		writeVRAM	v_spritetablebuffer,v_spritetablebuffer_end,vram_sprites
 		tst.b	(f_sonframechg).w
 		beq.s	.nochg
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,v_sgfx_buffer_end,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -647,14 +638,14 @@ VInt_0A:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
-		writeCRAM	v_palette,0
-		writeVRAM	v_spritetablebuffer,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,vram_hscroll
+		writeCRAM	v_palette,v_palette_end,0
+		writeVRAM	v_spritetablebuffer,v_spritetablebuffer_end,vram_sprites
+		writeVRAM	v_hscrolltablebuffer,v_hscrolltablebuffer_end,vram_hscroll
 		startZ80
 		bsr.w	SS_PalCycle
 		tst.b	(f_sonframechg).w
 		beq.s	.nochg
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,v_sgfx_buffer_end,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -670,12 +661,12 @@ VInt_0C:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
-		writeCRAM	v_palette,0
-		writeVRAM	v_spritetablebuffer,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,vram_hscroll
+		writeCRAM	v_palette,v_palette_end,0
+		writeVRAM	v_spritetablebuffer,v_spritetablebuffer_end,vram_sprites
+		writeVRAM	v_hscrolltablebuffer,v_hscrolltablebuffer_end,vram_hscroll
 		tst.b	(f_sonframechg).w
 		beq.s	.nochg
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,v_sgfx_buffer_end,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -705,9 +696,9 @@ VInt_Generic:
 		bsr.w	ReadJoypads
 		stopZ80
 		waitZ80
-		writeCRAM	v_palette,0
-		writeVRAM	v_spritetablebuffer,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,vram_hscroll
+		writeCRAM	v_palette,v_palette_end,0
+		writeVRAM	v_spritetablebuffer,v_spritetablebuffer_end,vram_sprites
+		writeVRAM	v_hscrolltablebuffer,v_hscrolltablebuffer_end,vram_hscroll
 		startZ80
 		rts
 ; ---------------------------------------------------------------------------
@@ -716,7 +707,7 @@ HInt:
 		tst.w	(f_hint).w
 		beq.s	.return
 		move.l	a5,-(sp)
-		writeCRAM	v_palette_fading,0
+		writeCRAM	v_palette_fading,v_palette_fading_end,0
 		movem.l	(sp)+,a5
 		move.w	#0,(f_hint).w
 
@@ -734,7 +725,7 @@ HInt2:
 		locVRAM vram_sprites
 		lea	(v_spritetablebuffer).w,a0
 		lea	(vdp_data_port).l,a5
-		move.w	#bytesToLcnt(v_spritetablebuffer_end-v_spritetablebuffer),d0
+		move.w	#(v_spritetablebuffer_end-v_spritetablebuffer)/4-1,d0
 
 .spritetabletovdp:
 		move.l	(a0)+,(a5)
@@ -794,7 +785,7 @@ VDPSetupGame:
 		lea	(vdp_control_port).l,a0
 		lea	(vdp_data_port).l,a1
 		lea	(VDPSetupArray).l,a2
-		moveq	#bytesToWcnt(VDPSetupArray_End-VDPSetupArray),d7
+		moveq	#(VDPSetupArray_End-VDPSetupArray)/2-1,d7
 
 loc_101E:
 		move.w	(a2)+,(a0)
@@ -803,7 +794,7 @@ loc_101E:
 		move.w	d0,(v_vdp_buffer1).w
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l
-		move.w	#bytesToWcnt(v_palette_end-v_palette),d7
+		move.w	#(v_palette_end-v_palette)/2-1,d7
 
 loc_103E:
 		move.w	d0,(a1)
@@ -851,7 +842,7 @@ ClearScreen:
 	else
 		clearRAM v_spritetablebuffer,v_spritetablebuffer_end+4	; This clears too much RAM, but this won't effect much since water palettes don't exist.
 		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end_padded+4	; This clears too much RAM, leading to a slight bug (first bit of the Sonic object's RAM is cleared)
-	endif
+	endc
 
 		rts
 ; ---------------------------------------------------------------------------
@@ -862,7 +853,7 @@ DACDriverLoad:
 		resetZ80
 		lea	(DACDriver).l,a0
 		lea	(z80_ram).l,a1
-		move.w	#DACDriver_End-DACDriver-1,d0
+		move.w	#(DACDriver_End-DACDriver)-1,d0
 
 .loop:
 		move.b	(a0)+,(a1)+
@@ -892,7 +883,7 @@ DACDriverLoad:
 ;unk_119C:
 		dc.b 3
 		dc.b 0
-		dc.w little_endian($1400)
+		dc.w $1400>>8
 		dc.b 0
 		dc.b 0
 		dc.b 0
@@ -1007,7 +998,7 @@ NewPLC:
 
 ClearPLC:
 		lea	(v_plc_buffer).w,a2		; PLC buffer space in RAM
-		moveq	#bytesToLcnt(v_plc_buffer_end-v_plc_buffer),d0
+		moveq	#(v_plc_buffer_end-v_plc_buffer)/4-1,d0
 
 .clearRAM:
 		clr.l	(a2)+
@@ -1029,9 +1020,9 @@ RunPLC:
 
 loc_1404:
 		andi.w	#$7FFF,d2
-	if ~~FixBugs
+	if FixBugs=0
 		move.w	d2,(v_plc_patternsleft).w
-	endif
+	endc
 		bsr.w	NemDec_BuildCodeTable
 		move.b	(a0)+,d5
 		asl.w	#8,d5
@@ -1047,7 +1038,7 @@ loc_1404:
 		move.l	d6,(v_plc_shiftvalue).w
 	if FixBugs
 		move.w	d2,(v_plc_patternsleft).w
-	endif
+	endc
 
 locret_1436:
 		rts
@@ -1109,7 +1100,7 @@ locret_14D0:
 
 ShiftPLC:
 		lea	(v_plc_buffer).w,a0
-		moveq	#bytesToLcnt(v_plc_buffer_only_end-v_plc_buffer-6),d0
+		moveq	#(v_plc_buffer_only_end-v_plc_buffer-6)/4-1,d0
 
 loc_14D8:
 		move.l	6(a0),(a0)+
@@ -1125,10 +1116,10 @@ loc_14D8:
 		; Still, the overhead of this code is minimal.
 	if (v_plc_buffer_only_end-v_plc_buffer-6)&2
 		move.w	6(a0),(a0)
-	endif
+	endc
 
 		clr.l	(v_plc_buffer_only_end-6).w
-	endif
+	endc
 
 		rts
 ; ---------------------------------------------------------------------------
@@ -1158,13 +1149,13 @@ Qplc_Loop:
 		include "_include/Kosinski Decompression.asm"
 		include "_include/PaletteCycle.asm"
 
-Cyc_Title:	binclude "palette/Cycle - Title.bin"
-Cyc_GHZ:	binclude "palette/Cycle - GHZ.bin"
-Cyc_LZ:	binclude "palette/Cycle - LZ (Unused).bin"
-Cyc_MZ:	binclude "palette/Cycle - MZ (Unused).bin"
-Cyc_SLZ:	binclude "palette/Cycle - SLZ.bin"
-Cyc_SZ1:	binclude "palette/Cycle - SZ1.bin"
-Cyc_SZ2:	binclude "palette/Cycle - SZ2.bin"
+Cyc_Title:	incbin "palette/Cycle - Title.bin"
+Cyc_GHZ:	incbin "palette/Cycle - GHZ.bin"
+Cyc_LZ:	incbin "palette/Cycle - LZ (Unused).bin"
+Cyc_MZ:	incbin "palette/Cycle - MZ (Unused).bin"
+Cyc_SLZ:	incbin "palette/Cycle - SLZ.bin"
+Cyc_SZ1:	incbin "palette/Cycle - SZ1.bin"
+Cyc_SZ2:	incbin "palette/Cycle - SZ2.bin"
 ; ---------------------------------------------------------------------------
 
 PaletteWhiteIn:
@@ -1316,7 +1307,7 @@ PalCycSega:
 .return:
 		rts
 ; ---------------------------------------------------------------------------
-Cyc_Sega:	binclude "palette/Cycle - Sega.bin"
+Cyc_Sega:	incbin "palette/Cycle - Sega.bin"
 ; ---------------------------------------------------------------------------
 
 PalLoad1:
@@ -1349,18 +1340,18 @@ PalLoad2:
 
 		include "_include/Palette Pointers.asm"
 
-Pal_SegaBG:	binclude "palette/Sega Screen.bin"
-Pal_Title:	binclude "palette/Title Screen.bin"
-Pal_LevelSel:	binclude "palette/Level Select.bin"
-Pal_Sonic:	binclude "palette/Sonic.bin"
-Pal_GHZ:	binclude "palette/Green Hill Zone.bin"
-Pal_LZ:	binclude "palette/Labyrinth Zone.bin"
-Pal_Ending:	binclude "palette/Ending.bin"
-Pal_MZ:	binclude "palette/Marble Zone.bin"
-Pal_SLZ:	binclude "palette/Star Light Zone.bin"
-Pal_SZ:	binclude "palette/Sparkling Zone.bin"
-Pal_CWZ:	binclude "palette/Clock Work Zone.bin"
-Pal_Special:	binclude "palette/Special Stage.bin"
+Pal_SegaBG:	incbin "palette/Sega Screen.bin"
+Pal_Title:	incbin "palette/Title Screen.bin"
+Pal_LevelSel:	incbin "palette/Level Select.bin"
+Pal_Sonic:	incbin "palette/Sonic.bin"
+Pal_GHZ:	incbin "palette/Green Hill Zone.bin"
+Pal_LZ:	incbin "palette/Labyrinth Zone.bin"
+Pal_Ending:	incbin "palette/Ending.bin"
+Pal_MZ:	incbin "palette/Marble Zone.bin"
+Pal_SLZ:	incbin "palette/Star Light Zone.bin"
+Pal_SZ:	incbin "palette/Sparkling Zone.bin"
+Pal_CWZ:	incbin "palette/Clock Work Zone.bin"
+Pal_Special:	incbin "palette/Special Stage.bin"
 ; ---------------------------------------------------------------------------
 
 WaitForVInt:
@@ -1401,7 +1392,7 @@ CalcSine:
 		move.w	SineTable(pc,d0.w),d0
 		rts
 ; ---------------------------------------------------------------------------
-SineTable:	binclude "misc/sinewave.bin"
+SineTable:	incbin "misc/sinewave.bin"
 ; ---------------------------------------------------------------------------
 
 ;GetSqrt:						; Leftover in the final game (REV00 only)
@@ -1490,7 +1481,7 @@ loc_2378:
 		movem.l	(sp)+,d3-d4
 		rts
 ; ---------------------------------------------------------------------------
-AngleTable:	binclude "misc/angles.bin"
+AngleTable:	incbin "misc/angles.bin"
 		even
 ; ---------------------------------------------------------------------------
 
@@ -1509,15 +1500,15 @@ GM_Sega:
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
-		locVRAM ArtTile_Sega_Tiles*tile_size
+		locVRAM (ArtTile_Sega_Tiles*tile_size)
 		lea	(Nem_SegaLogo).l,a0
 		bsr.w	NemDec
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SegaLogo).l,a0
-		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
+		move.w	#ArtTile_Sega_Tiles,d0
 		bsr.w	EniDec
 
-		copyTilemap	v_start&$FFFFFF,vram_fg+$61C,12,4
+		copyTilemap	v_start&$FFFFFF,(vram_fg+$61C),12,4
 
 		moveq	#palid_SegaBG,d0
 		bsr.w	PalLoad2
@@ -1561,16 +1552,16 @@ GM_Title:
 
 		clearRAM v_objspace,v_objspace_end
 
-		locVRAM ArtTile_Title_Foreground*tile_size
+		locVRAM (ArtTile_Title_Foreground*tile_size)
 		lea	(Nem_TitleFg).l,a0
 		bsr.w	NemDec
-		locVRAM ArtTile_Title_Sonic*tile_size
+		locVRAM (ArtTile_Title_Sonic*tile_size)
 		lea	(Nem_TitleSonic).l,a0
 		bsr.w	NemDec
 		lea	(vdp_data_port).l,a6
-		locVRAM ArtTile_Level_Select_Font*tile_size,vdp_control_port-vdp_data_port(a6)
+		locVRAM (ArtTile_Level_Select_Font*tile_size),vdp_control_port-vdp_data_port(a6)
 		lea	(Art_Text).l,a5
-		move.w	#bytesToWcnt(Art_Text_End-Art_Text),d1
+		move.w	#(Art_Text_End-Art_Text)/2-1,d1
 
 loc_25D8:
 		move.w	(a5)+,(a6)
@@ -1578,19 +1569,19 @@ loc_25D8:
 
 		lea	(Unc_Title).l,a1
 
-		copyUncTilemap	vram_fg+$206,34,22
+		copyUncTilemap	(vram_fg+$206),34,22
 
 		move.w	#0,(v_debuguse).w
 		move.w	#0,(f_demo).w
 		move.w	#0,(v_zone).w
 		bsr.w	LoadLevelBounds
 		bsr.w	DeformLayers
-		locVRAM ArtTile_Level*tile_size
+		locVRAM (ArtTile_Level*tile_size)
 		lea	(Nem_GHZ_1st).l,a0
 		bsr.w	NemDec
 		lea	(Blk16_GHZ).l,a0
 		lea	(v_16x16).w,a4
-		move.w	#bytesToLcnt(v_16x16_end-v_16x16),d0
+		move.w	#(v_16x16_end-v_16x16)/4-1,d0
 
 .loadblocks:
 		move.l	(a0)+,(a4)+
@@ -1653,7 +1644,7 @@ loc_26E4:
 		disable_ints
 		lea	(vdp_data_port).l,a6
 		move.l	#$60000003,(vdp_control_port).l
-		move.w	#bytesToLcnt($1000),d1
+		move.w	#($1000)/4-1,d1
 
 loc_2732:
 		move.l	d0,(a6)
@@ -1682,7 +1673,7 @@ LevelSelect:
 		; Bug: There's no pointers for BGM ids $92 or $93, so the game crashes when it tries to play them
 		cmpi.w	#bgm__Last+2,d0	; compare the last BGM+2 with the level select sound
 		blo.s	.notBGM	; if lower than $93, branch
-	endif
+	endc
 		cmpi.w	#sfx__First,d0	; compare the first SFX with the level select sound
 		blo.s	LevelSelect	; if lower than SFX, branch
 
@@ -1909,7 +1900,7 @@ loc_2944:
 		move.w	#$C680,d3
 
 loc_2996:
-		locVRAM vram_bg+$BB0
+		locVRAM (vram_bg+$BB0)
 		move.w	(v_levselsound).w,d0
 		addi.w	#$80,d0
 		move.b	d0,d2
@@ -1952,38 +1943,87 @@ loc_29DE:
 ; ---------------------------------------------------------------------------
 
 LevelSelectText:
-		charset ' ', $FF
-		charset '0', "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09"
-		charset '$', $0A
-		charset '-', $0B
-		charset '=', $0C
-		charset '>', $0D
+;		charset ' ', $FF
+;		charset '0', "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09"
+;		charset '$', $0A
+;		charset '-', $0B
+;		charset '=', $0C
+;		charset '>', $0D
 		;charset '>', $0E ; there are two identical right arrows back-to-back in the menutext font, for some reason
-		charset 'Y', "\x0F\x10" ; Y and Z come before A-X
-		charset 'A', "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20\x21\x22\x23\x24\x25\x26\x27\x28"
+;		charset 'Y', "\x0F\x10" ; Y and Z come before A-X
+;		charset 'A', "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20\x21\x22\x23\x24\x25\x26\x27\x28"
 
-		dc.b "GREEN HILL ZONE STAGE 1 "
-		dc.b "                STAGE 2 "
-		dc.b "                STAGE 3 "
-		dc.b "LABYRINTH ZONE  STAGE 1 "
-		dc.b "                STAGE 2 "
-		dc.b "                STAGE 3 "
-		dc.b "MARBLE ZONE     STAGE 1 "
-		dc.b "                STAGE 2 "
-		dc.b "                STAGE 3 "
-		dc.b "STAR LIGHT ZONE STAGE 1X"
-		dc.b "                STAGE 2X"
-		dc.b "                STAGE 3X"
-		dc.b "SPARKLING ZONE  STAGE 1 "
-		dc.b "                STAGE 2 "
-		dc.b "                STAGE 3 "
-		dc.b "CLOCK WORK ZONE STAGE 1 "
-		dc.b "                STAGE 2 "
-		dc.b "                STAGE 3X"
-		dc.b "SPECIAL STAGE           "
-		dc.b "SOUND SELECT            "
+_A:	=	$11
+_B:	=	$12
+_C:	=	$13
+_D:	=	$14
+_E:	=	$15
+_F:	=	$16
+_G:	=	$17
+_H:	=	$18
+_I:	=	$19
+_J:	=	$1A
+_K:	=	$1B
+_L:	=	$1C
+_M:	=	$1D
+_N:	=	$1E
+_O:	=	$1F
+_P:	=	$20
+_Q:	=	$21
+_R:	=	$22
+_S:	=	$23
+_T:	=	$24
+_U:	=	$25
+_V:	=	$26
+_W:	=	$27
+_X:	=	$28
+_Y:	=	$F
+_Z:	=	$10
+__:	=	$FF
 
-		charset
+		dc.b _G,_R,_E,_E,_N,__,_H,_I,_L,_L,__,_Z,_O,_N,_E,__,_S,_T,_A,_G,_E,__,1,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,__
+		dc.b _L,_A,_B,_Y,_R,_I,_N,_T,_H,__,_Z,_O,_N,_E,__,__,_S,_T,_A,_G,_E,__,1,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,__
+		dc.b _M,_A,_R,_B,_L,_E,__,_Z,_O,_N,_E,__,__,__,__,__,_S,_T,_A,_G,_E,__,1,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,__
+		dc.b _S,_T,_A,_R,__,_L,_I,_G,_H,_T,__,_Z,_O,_N,_E,__,_S,_T,_A,_G,_E,__,1,_X
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,_X
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,_X
+		dc.b _S,_P,_A,_R,_K,_L,_I,_N,_G,__,_Z,_O,_N,_E,__,__,_S,_T,_A,_G,_E,__,1,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,__
+		dc.b _C,_L,_O,_C,_K,__,_W,_O,_R,_K,__,_Z,_O,_N,_E,__,_S,_T,_A,_G,_E,__,1,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,2,__
+		dc.b __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,_S,_T,_A,_G,_E,__,3,_X
+		dc.b _S,_P,_E,_C,_I,_A,_L,__,_S,_T,_A,_G,_E,__,__,__,__,__,__,__,__,__,__,__
+		dc.b _S,_O,_U,_N,_D,__,_S,_E,_L,_E,_C,_T,__,__,__,__,__,__,__,__,__,__,__,__
+
+;		dc.b "GREEN HILL ZONE STAGE 1 "
+;		dc.b "                STAGE 2 "
+;		dc.b "                STAGE 3 "
+;		dc.b "LABYRINTH ZONE  STAGE 1 "
+;		dc.b "                STAGE 2 "
+;		dc.b "                STAGE 3 "
+;		dc.b "MARBLE ZONE     STAGE 1 "
+;		dc.b "                STAGE 2 "
+;		dc.b "                STAGE 3 "
+;		dc.b "STAR LIGHT ZONE STAGE 1X"
+;		dc.b "                STAGE 2X"
+;		dc.b "                STAGE 3X"
+;		dc.b "SPARKLING ZONE  STAGE 1 "
+;		dc.b "                STAGE 2 "
+;		dc.b "                STAGE 3 "
+;		dc.b "CLOCK WORK ZONE STAGE 1 "
+;		dc.b "                STAGE 2 "
+;		dc.b "                STAGE 3X"
+;		dc.b "SPECIAL STAGE           "
+;		dc.b "SOUND SELECT            "
+
+;		charset
 
 MusicList:
 		dc.b bgm_GHZ
@@ -1998,7 +2038,7 @@ MusicList:
 GM_Level:
 		move.b	#bgm_Fade,d0
 		bsr.w	QueueSound2
-		locVRAM ArtTile_Title_Card*tile_size
+		locVRAM (ArtTile_Title_Card*tile_size)
 		lea	(Nem_TitleCard).l,a0
 		bsr.w	NemDec
 		bsr.w	ClearPLC
@@ -2214,7 +2254,7 @@ loc_2EC8:
 		lea	(v_ngfx_buffer).w,a0
 		move.w	(f_water).w,d2
 		move.w	#$9100,d3
-		move.w	#bytesToWcnt($200),d7
+		move.w	#($200)/2-1,d7
 
 loc_3028:
 		move.w	d2,d0
@@ -2282,7 +2322,7 @@ loc_30C4:
 		move.b	v_jpadhold2-v_jpadhold1(a0),d2
 	else
 		move.b	(a0),d2
-	endif
+	endc
 		eor.b	d2,d0
 		move.b	d1,(a0)+
 		and.b	d1,d0
@@ -2316,7 +2356,7 @@ DemoDataPtr:
 
 sub_3166:
 		lea	(Anim256Unk1).l,a0
-		move.w	#bytesToWcnt(Anim256Unk1_End-Anim256Unk1),d1
+		move.w	#(Anim256Unk1_End-Anim256Unk1)/2-1,d1
 
 .loadchunks:
 		move.w	(a0)+,(a1)+
@@ -2329,7 +2369,7 @@ locret_3176:
 sub_3178:
 		lea	(v_256x256&$FFFFFF).l,a1
 		lea	(Anim256Unk2).l,a0
-		move.w	#bytesToWcnt(Anim256Unk2_End-Anim256Unk2),d1
+		move.w	#(Anim256Unk2_End-Anim256Unk2)/2-1,d1
 
 .loadchunks2:
 		move.w	(a0)+,d0
@@ -2337,9 +2377,9 @@ sub_3178:
 		dbf	d1,.loadchunks2
 		rts
 ; ---------------------------------------------------------------------------
-Anim256Unk1:	binclude "level/map256/Anim Unknown 1.bin"
+Anim256Unk1:	incbin "level/map256/Anim Unknown 1.bin"
 Anim256Unk1_End
-Anim256Unk2:	binclude "level/map256/Anim Unknown 2.bin"
+Anim256Unk2:	incbin "level/map256/Anim Unknown 2.bin"
 Anim256Unk2_End
 ; ---------------------------------------------------------------------------
 
@@ -2354,7 +2394,7 @@ LoadAnimatedBlocks:
 .isslz:
 		lea	(v_16x16+$1790).w,a1	; load ROM address for animated blocks to load in the main block RAM into a1.
 		lea	(Anim16GHZ).l,a0	; load animated GHZ blocks into a0.
-		move.w	#bytesToWcnt(Anim16GHZ_End-Anim16GHZ),d1	; load approximate size of the blocks into d1.
+		move.w	#(Anim16GHZ_End-Anim16GHZ)/2-1,d1	; load approximate size of the blocks into d1.
 
 .loadghz:
 		move.w	(a0)+,(a1)+
@@ -2367,29 +2407,29 @@ LoadAnimatedBlocks:
 .ismz:
 		lea	(v_16x16+$17A0).w,a1	; load ROM address for animated blocks to load in the main block RAM into a1.
 		lea	(Anim16MZ).l,a0	; load animated MZ blocks into a0.
-		move.w	#bytesToWcnt(Anim16MZ_End-Anim16MZ),d1	; load approximate size of the blocks into d1.
+		move.w	#(Anim16MZ_End-Anim16MZ)/2-1,d1	; load approximate size of the blocks into d1.
 
 .loadmz:
 		move.w	(a0)+,(a1)+
 		dbf	d1,.loadmz
 		rts
 ; ---------------------------------------------------------------------------
-Anim16GHZ:	binclude "level/map16/Anim GHZ.bin"
+Anim16GHZ:	incbin "level/map16/Anim GHZ.bin"
 Anim16GHZ_End
-Anim16MZ:	binclude "level/map16/Anim MZ.bin"
+Anim16MZ:	incbin "level/map16/Anim MZ.bin"
 Anim16MZ_End
 ; ---------------------------------------------------------------------------
 
 DebugPosLoadArt:
 		rts
 ; ---------------------------------------------------------------------------
-		locVRAM $4F0*tile_size
+		locVRAM ($4F0*tile_size)
 		lea	(Art_Text).l,a0
-		move.w	#bytesToWcnt(Art_Text_End-Art_Text-tile_size*$1F),d1
+		move.w	#(Art_Text_End-Art_Text-tile_size*$1F)/2-1,d1
 		bsr.s	.loadtext
 		lea	(Art_Text).l,a0
 		adda.w	#$11*tile_size,a0
-		move.w	#bytesToWcnt(Art_Text_End-Art_Text-tile_size*$23),d1
+		move.w	#(Art_Text_End-Art_Text-tile_size*$23)/2-1,d1
 
 .loadtext:
 		move.w	(a0)+,(vdp_data_port).l
@@ -2560,7 +2600,7 @@ loc_3662:
 SS_BGLoad:
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg1).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Fish,2,FALSE),d0
+		move.w	#ArtTile_SS_Background_Fish+$4000,d0
 		bsr.w	EniDec
 		move.l	#$50000001,d3
 		lea	(v_start&$FFFFFF+$80).l,a2
@@ -2609,10 +2649,10 @@ loc_36EA:
 		dbf	d7,loc_368C
 		lea	(v_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg2).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Clouds,2,FALSE),d0
+		move.w	#ArtTile_SS_Background_Clouds+$4000,d0
 		bsr.w	EniDec
-		copyTilemap	v_start&$FFFFFF,vram_fg,64,32
-		copyTilemap	v_start&$FFFFFF,vram_fg+$1000,64,64
+		copyTilemap	v_start&$FFFFFF,(vram_fg),64,32
+		copyTilemap	v_start&$FFFFFF,(vram_fg+$1000),64,64
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -2703,48 +2743,48 @@ SSBGData:	macro time,anim,vram,index,flag1,flag2
 		dc.b	(index)|$80|(flag2)
 	else
 		dc.b	(index)*12
-	endif
+	endc
 		endm
 
 byte_380A:
 		; Time, anim, BG VRAM, palette cycle index & flags
-		SSBGData  3,  0, ArtTile_SS_Plane_6, 18, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6, 16, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6, 14, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6, 12, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6, 10, TRUE , TRUE
+		SSBGData  3,  0, ArtTile_SS_Plane_6, 18, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6, 16, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6, 14, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6, 12, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6, 10, 1, 1
 
-		SSBGData  3,  0, ArtTile_SS_Plane_6,  0, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6,  2, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6,  4, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6,  6, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_6,  8, TRUE , FALSE
+		SSBGData  3,  0, ArtTile_SS_Plane_6,  0, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6,  2, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6,  4, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6,  6, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_6,  8, 1, 0
 
 
-		SSBGData  7,  8, ArtTile_SS_Plane_6,  0, FALSE, FALSE
-		SSBGData  7, 10, ArtTile_SS_Plane_6,  1, FALSE, FALSE
-		SSBGData -1, 12, ArtTile_SS_Plane_6,  2, FALSE, FALSE
-		SSBGData -1, 12, ArtTile_SS_Plane_6,  2, FALSE, FALSE
-		SSBGData  7, 10, ArtTile_SS_Plane_6,  1, FALSE, FALSE
-		SSBGData  7,  8, ArtTile_SS_Plane_6,  0, FALSE, FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5,  8, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5,  6, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5,  4, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5,  2, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5,  0, TRUE , TRUE
+		SSBGData  7,  8, ArtTile_SS_Plane_6,  0, 0, 0
+		SSBGData  7, 10, ArtTile_SS_Plane_6,  1, 0, 0
+		SSBGData -1, 12, ArtTile_SS_Plane_6,  2, 0, 0
+		SSBGData -1, 12, ArtTile_SS_Plane_6,  2, 0, 0
+		SSBGData  7, 10, ArtTile_SS_Plane_6,  1, 0, 0
+		SSBGData  7,  8, ArtTile_SS_Plane_6,  0, 0, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5,  8, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5,  6, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5,  4, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5,  2, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5,  0, 1, 1
 
-		SSBGData  3,  0, ArtTile_SS_Plane_5, 10, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5, 12, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5, 14, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5, 16, TRUE , FALSE
-		SSBGData  3,  0, ArtTile_SS_Plane_5, 18, TRUE , FALSE
+		SSBGData  3,  0, ArtTile_SS_Plane_5, 10, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5, 12, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5, 14, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5, 16, 1, 0
+		SSBGData  3,  0, ArtTile_SS_Plane_5, 18, 1, 0
 
-		SSBGData  7,  2, ArtTile_SS_Plane_5,  3, FALSE, FALSE
-		SSBGData  7,  4, ArtTile_SS_Plane_5,  4, FALSE, FALSE
-		SSBGData -1,  6, ArtTile_SS_Plane_5,  5, FALSE, FALSE
-		SSBGData -1,  6, ArtTile_SS_Plane_5,  5, FALSE, FALSE
-		SSBGData  7,  4, ArtTile_SS_Plane_5,  4, FALSE, FALSE
-		SSBGData  7,  2, ArtTile_SS_Plane_5,  3, FALSE, FALSE
+		SSBGData  7,  2, ArtTile_SS_Plane_5,  3, 0, 0
+		SSBGData  7,  4, ArtTile_SS_Plane_5,  4, 0, 0
+		SSBGData -1,  6, ArtTile_SS_Plane_5,  5, 0, 0
+		SSBGData -1,  6, ArtTile_SS_Plane_5,  5, 0, 0
+		SSBGData  7,  4, ArtTile_SS_Plane_5,  4, 0, 0
+		SSBGData  7,  2, ArtTile_SS_Plane_5,  3, 0, 0
 		even
 
 SSFGData:	macro vram,y
@@ -2762,8 +2802,8 @@ byte_388A:
 		SSFGData ArtTile_SS_Plane_4, $100
 		even
 
-Pal_SSCyc1:	binclude "palette/Cycle - Special Stage 1.bin"
-Pal_SSCyc2:	binclude "palette/Cycle - Special Stage 2.bin"
+Pal_SSCyc1:	incbin "palette/Cycle - Special Stage 1.bin"
+Pal_SSCyc2:	incbin "palette/Cycle - Special Stage 2.bin"
 ; ---------------------------------------------------------------------------
 
 SS_AnimateBG:
@@ -2876,7 +2916,7 @@ LoadLevelData:
 		addq.l	#4,a2
 		movea.l	(a2)+,a0
 		lea	(v_16x16).w,a4
-		move.w	#bytesToLcnt(v_16x16_end-v_16x16),d0
+		move.w	#(v_16x16_end-v_16x16)/4-1,d0
 
 .loadblocks:
 		move.l	(a0)+,(a4)+
@@ -2912,10 +2952,10 @@ LoadLevelData:
 
 loc_4876:
 		lea	(vdp_data_port).l,a6
-		locVRAM window_plane+$CBE
+		locVRAM (window_plane+$CBE)
 		move.l	#($8500+(vram_sprite1>>9))<<16|$8500+(vram_sprite2>>9),d2
 		bsr.s	sub_489E
-		locVRAM window_plane+$D3E
+		locVRAM (window_plane+$D3E)
 		move.l	#($8500+(vram_sprite3>>9))<<16|$8500+(vram_sprite4>>9),d2
 
 sub_489E:
@@ -2944,11 +2984,11 @@ locret_48B8:
 LevelLayoutLoad:
 		lea	(v_lvllayout).w,a3
 	if FixBugs
-		move.w	#bytesToLcnt(v_lvllayout_end-v_lvllayout),d1
+		move.w	#(v_lvllayout_end-v_lvllayout)/4-1,d1
 	else
 		; Bug: This clears too much data!
-		move.w	#bytesToWcnt(v_lvllayout_end-v_lvllayout),d1
-	endif
+		move.w	#(v_lvllayout_end-v_lvllayout)/2-1,d1
+	endc
 		moveq	#0,d0
 
 loc_48C4:
@@ -3199,7 +3239,7 @@ loc_613C:
 		adda.w	(a3,d0.w),a3
 		addq.w	#1,a3
 		bset	#5,obRender(a0)
-		_move.b	obID(a0),d4
+		move.b	obID(a0),d4
 		move.b	obRender(a0),d5
 		movea.l	a0,a1
 		bra.s	loc_6168
@@ -3212,7 +3252,7 @@ loc_6160:
 
 loc_6168:
 		move.b	#6,obRoutine(a1)
-		_move.b	d4,obID(a1)
+		move.b	d4,obID(a1)
 		move.l	a3,obMap(a1)
 		move.b	d5,obRender(a1)
 		move.w	obX(a0),obX(a1)
@@ -3542,13 +3582,13 @@ Map_Monitor:	include "_maps/Monitor.asm"
 
 ExecuteObjects:
 		lea	(v_objspace).w,a0
-		moveq	#bytesToXcnt(v_objspace_end-v_objspace,object_size),d7
+		moveq	#(v_objspace_end-v_objspace)/object_size-1,d7
 		moveq	#0,d0
 		cmpi.b	#6,(v_player+obRoutine).w	; has sonic died?
 		bhs.s	loc_8560			; if so, branch
 
 sub_8546:
-		move.b	obID(a0),d0
+		move.b	(a0),d0
 		beq.s	loc_8556
 		add.w	d0,d0
 		add.w	d0,d0
@@ -3563,13 +3603,13 @@ loc_8556:
 ; ---------------------------------------------------------------------------
 
 loc_8560:
-		moveq	#bytesToXcnt(v_lvlobjspace-v_objspace,object_size),d7
+		moveq	#(v_lvlobjspace-v_objspace)/object_size-1,d7
 		bsr.s	sub_8546
-		moveq	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d7
+		moveq	#(v_lvlobjend-v_lvlobjspace)/object_size-1,d7
 
 loc_8566:
 		moveq	#0,d0
-		move.b	obID(a0),d0
+		move.b	(a0),d0
 		beq.s	loc_8576
 		tst.b	obRender(a0)
 		bpl.s	loc_8576
@@ -3608,7 +3648,7 @@ BuildSprites:
 
 .objloop:
 		movea.w	(a4,d6.w),a0
-		tst.b	obID(a0)
+		tst.b	(a0)
 		beq.w	.skipobj
 		bclr	#7,obRender(a0)
 		move.b	obRender(a0),d0
@@ -3902,12 +3942,12 @@ loc_8A00:
 		lea	(v_objstate).w,a2
 		move.w	#$101,(a2)+
 	if FixBugs
-		move.w	#bytesToLcnt(v_objstate_end-v_objstate-2),d0
+		move.w	#(v_objstate_end-v_objstate-2)/4-1,d0
 	else
 		; This clears longwords, but the loop counter is measured in words!
 		; This causes $17C bytes to be cleared instead of $BE.
-		move.w	#bytesToWcnt(v_objstate_end-v_objstate-2),d0
-	endif
+		move.w	#(v_objstate_end-v_objstate-2)/2-1,d0
+	endc
 
 loc_8A38:
 		clr.l	(a2)+
@@ -3916,8 +3956,8 @@ loc_8A38:
 		; Clear the last word, since the above loop only does longwords.
 	if (v_objstate_end-v_objstate-2)&2
 		clr.w	(a2)+
-	endif
-	endif
+	endc
+	endc
 		move.w	#-1,(v_opl_screen).w
 
 loc_8A44:
@@ -4063,7 +4103,7 @@ loc_8B36:
 		move.b	d2,obRespawnNo(a1)
 
 loc_8B66:
-		_move.b	d0,obID(a1)
+		move.b	d0,obID(a1)
 		move.b	(a0)+,obSubtype(a1)
 		moveq	#0,d0
 
@@ -4073,10 +4113,10 @@ locret_8B70:
 
 FindFreeObj:
 		lea	(v_lvlobjspace).w,a1
-		move.w	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d0
+		move.w	#(v_lvlobjend-v_lvlobjspace)/object_size-1,d0
 
 loc_8B7A:
-		tst.b	obID(a1)
+		tst.b	(a1)
 		beq.s	locret_8B86
 		lea	object_size(a1),a1
 		dbf	d0,loc_8B7A
@@ -4094,7 +4134,7 @@ FindNextFreeObj:
 		blo.s	locret_8BA2
 
 loc_8B96:
-		tst.b	obID(a1)
+		tst.b	(a1)
 		beq.s	locret_8BA2
 		lea	object_size(a1),a1
 		dbf	d0,loc_8B96
@@ -4330,7 +4370,7 @@ sub_B146:
 		bne.s	locret_B186
 		bsr.w	FindFreeObj
 		bne.s	locret_B186
-		_move.b	#id_ExplosionBomb,obID(a1)
+		move.b	#id_ExplosionBomb,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		jsr	(RandomNumber).l
@@ -4962,7 +5002,7 @@ ObjHitWallLeft:
 		; The cause is this: a missing instruction to flip collision on the found
 		; 16x16 block; this one:
 		eori.w	#$F,d3
-	endif
+	endc
 		lea	(v_anglebuffer).w,a4
 		move.b	#0,(a4)
 		movea.w	#-$10,a3
@@ -5106,7 +5146,7 @@ SS_AniWallsandRings:
 		move.b	(v_ssangle).w,d0
 		lsr.b	#2,d0
 		andi.w	#$F,d0
-		moveq	#bytesToWcnt($20),d1
+		moveq	#($20)/2-1,d1
 
 loc_109C2:
 		move.w	d0,(a1)
@@ -5168,43 +5208,43 @@ loc_10A26:
 		rts
 ; ---------------------------------------------------------------------------
 SS_WaRiVramSet:
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$4000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$2000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$6000
+		dc.w ArtTile_SS_Wall+$6000
 ; ---------------------------------------------------------------------------
 
 SS_RemoveCollectedItem:
 		lea	(v_ssitembuffer).l,a2
-		move.w	#bytesToXcnt(v_ssitembuffer_end-v_ssitembuffer,8),d0
+		move.w	#(v_ssitembuffer_end-v_ssitembuffer)/8-1,d0
 
 loc_10AD6:
 		tst.b	(a2)
@@ -5218,7 +5258,7 @@ locret_10AE0:
 
 SS_AniItems:
 		lea	(v_ssitembuffer).l,a0
-		move.w	#bytesToXcnt(v_ssitembuffer_end-v_ssitembuffer,8),d7
+		move.w	#(v_ssitembuffer_end-v_ssitembuffer)/8-1,d7
 
 loc_10AEC:
 		moveq	#0,d0
@@ -5289,7 +5329,7 @@ byte_10B6A:	dc.b $1B, $1C, $1B, $1C, 0, 0
 
 SS_Load:
 		lea	(v_ssbuffer1).l,a1
-		move.w	#bytesToLcnt(v_ssbuffer2-v_ssbuffer1),d0
+		move.w	#(v_ssbuffer2-v_ssbuffer1)/4-1,d0
 
 loc_10B7A:
 		clr.l	(a1)+
@@ -5300,7 +5340,7 @@ loc_10B7A:
 		moveq	#$24-1,d1
 
 loc_10B8E:
-		moveq	#bytesToLcnt($24),d2
+		moveq	#($24)/4-1,d2
 
 loc_10B90:
 		move.l	(a0)+,(a1)+
@@ -5311,7 +5351,7 @@ loc_10B90:
 
 		lea	(v_ssblocktypes+8).l,a1
 		lea	(SS_MapIndex).l,a0
-		moveq	#bytesToXcnt(SS_MapIndex_End-SS_MapIndex,6),d1
+		moveq	#(SS_MapIndex_End-SS_MapIndex)/6-1,d1
 
 loc_10BAC:
 		move.l	(a0)+,(a1)+
@@ -5321,7 +5361,7 @@ loc_10BAC:
 		dbf	d1,loc_10BAC
 
 		lea	(v_ssitembuffer).l,a1
-		move.w	#bytesToLcnt(v_ssitembuffer_end-v_ssitembuffer),d1
+		move.w	#(v_ssitembuffer_end-v_ssitembuffer)/4-1,d1
 
 loc_10BC8:
 
@@ -5347,7 +5387,7 @@ Map_SS_Goal_R:	include	"_maps/SS DOWN Block.asm"
 		moveq	#$40-1,d1
 
 loc_10CA6:
-		moveq	#bytesToLcnt($40),d2
+		moveq	#($40)/4-1,d2
 
 loc_10CA8:
 		move.l	(a0)+,(a1)+
@@ -5388,8 +5428,8 @@ locret_11678:
 
 		include	"_include/HUD_Update.asm"
 
-byte_11A26:	binclude "artunc/HUD Numbers.bin"
-byte_11D26:	binclude "artunc/Lives Counter Numbers.bin"
+byte_11A26:	incbin "artunc/HUD Numbers.bin"
+byte_11D26:	incbin "artunc/Lives Counter Numbers.bin"
 
 		include "obj/DebugMode.asm"
 		include "_include/DebugList.asm"
@@ -5401,19 +5441,19 @@ byte_11D26:	binclude "artunc/Lives Counter Numbers.bin"
 ; Unused 8x8 ASCII Art
 ; ===========================================================================
 ;byte_18000:
-		binclude "leftovers/artnem/8x8 ASCII.nem"
+		incbin "leftovers/artnem/8x8 ASCII.nem"
 		even
 ; ===========================================================================
 ; Sega Screen/Title Screen Art and Mappings
 ; ===========================================================================
-Nem_SegaLogo:	binclude "artnem/Sega Logo.nem"
+Nem_SegaLogo:	incbin "artnem/Sega Logo.nem"
 		even
-Eni_SegaLogo:	binclude "tilemaps/Sega Logo.eni"
+Eni_SegaLogo:	incbin "tilemaps/Sega Logo.eni"
 		even
-Unc_Title:	binclude "tilemaps/Title Screen.bin"
-Nem_TitleFg:	binclude "artnem/Title Screen Foreground.nem"
+Unc_Title:	incbin "tilemaps/Title Screen.bin"
+Nem_TitleFg:	incbin "artnem/Title Screen Foreground.nem"
 		even
-Nem_TitleSonic:	binclude "artnem/Title Screen Sonic.nem"
+Nem_TitleSonic:	incbin "artnem/Title Screen Sonic.nem"
 		even
 
 		align	$4000
@@ -5422,166 +5462,166 @@ SonicDynPLC:	include "_maps/Sonic - Dynamic Gfx Script.asm"
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
 ; ---------------------------------------------------------------------------
-Art_Sonic:	binclude "artunc/Sonic.bin"
+Art_Sonic:	incbin "artunc/Sonic.bin"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
-Nem_Smoke:	binclude "artnem/Smoke.nem"
+Nem_Smoke:	incbin "artnem/Smoke.nem"
 		even
-Nem_Shield:	binclude "artnem/Shield.nem"
+Nem_Shield:	incbin "artnem/Shield.nem"
 		even
-Nem_Stars:	binclude "artnem/Stars.nem"
+Nem_Stars:	incbin "artnem/Stars.nem"
 		even
-Nem_Flash:	binclude "artnem/Flash.nem"
+Nem_Flash:	incbin "artnem/Flash.nem"
 		even
 ;Nem_Goggles:
-		binclude "artnem/Unused - Goggles.nem"
+		incbin "artnem/Unused - Goggles.nem"
 		even
 
 		align	$400
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - GHZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Stalk:	binclude "artnem/GHZ Flower Stalk.nem"
+Nem_Stalk:	incbin "artnem/GHZ Flower Stalk.nem"
 		even
-Nem_Swing:	binclude "artnem/GHZ Swinging Platform.nem"
+Nem_Swing:	incbin "artnem/GHZ Swinging Platform.nem"
 		even
-Nem_Bridge:	binclude "artnem/GHZ Bridge.nem"
+Nem_Bridge:	incbin "artnem/GHZ Bridge.nem"
 		even
-Nem_Ball:	binclude "artnem/GHZ Giant Ball.nem"
+Nem_Ball:	incbin "artnem/GHZ Giant Ball.nem"
 		even
-Nem_Spikes:	binclude "artnem/Spikes.nem"
+Nem_Spikes:	incbin "artnem/Spikes.nem"
 		even
-Nem_SpikePole:	binclude "artnem/GHZ Spiked Log.nem"
+Nem_SpikePole:	incbin "artnem/GHZ Spiked Log.nem"
 		even
-Nem_PplRock:	binclude "artnem/GHZ Purple Rock.nem"
+Nem_PplRock:	incbin "artnem/GHZ Purple Rock.nem"
 		even
-Nem_GhzWall1:	binclude "artnem/GHZ Breakable Wall.nem"
+Nem_GhzWall1:	incbin "artnem/GHZ Breakable Wall.nem"
 		even
-Nem_GhzWall2:	binclude "artnem/GHZ Edge Wall.nem"
+Nem_GhzWall2:	incbin "artnem/GHZ Edge Wall.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
-Nem_MzMetal:	binclude "artnem/MZ Metal Blocks.nem"
+Nem_MzMetal:	incbin "artnem/MZ Metal Blocks.nem"
 		even
-Nem_MzSwitch:	binclude "artnem/MZ Switch.nem"
+Nem_MzSwitch:	incbin "artnem/MZ Switch.nem"
 		even
-Nem_MzGlass:	binclude "artnem/MZ Green Glass Block.nem"
+Nem_MzGlass:	incbin "artnem/MZ Green Glass Block.nem"
 		even
-		binclude "artnem/Unused - Grass.nem"
+		incbin "artnem/Unused - Grass.nem"
 		even
-Nem_MzFire:	binclude "artnem/Fireballs.nem"
+Nem_MzFire:	incbin "artnem/Fireballs.nem"
 		even
-Nem_Lava:	binclude "artnem/MZ Lava.nem"
+Nem_Lava:	incbin "artnem/MZ Lava.nem"
 		even
-Nem_MzBlock:	binclude "artnem/MZ Green Pushable Block.nem"
+Nem_MzBlock:	incbin "artnem/MZ Green Pushable Block.nem"
 		even
-		binclude "artnem/Unused - MZ Background.nem"
+		incbin "artnem/Unused - MZ Background.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Seesaw:	binclude "artnem/SLZ Seesaw.nem"
+Nem_Seesaw:	incbin "artnem/SLZ Seesaw.nem"
 		even
-Nem_Fan:	binclude "artnem/SLZ Fan.nem"
+Nem_Fan:	incbin "artnem/SLZ Fan.nem"
 		even
-byte_294DA:	binclude "artnem/SLZ Breakable Wall.nem"
+byte_294DA:	incbin "artnem/SLZ Breakable Wall.nem"
 		even
-Nem_Pylon:	binclude "artnem/SLZ Pylon.nem"
+Nem_Pylon:	incbin "artnem/SLZ Pylon.nem"
 		even
-Nem_SlzSwing:	binclude "artnem/SLZ Swinging Platform.nem"
+Nem_SlzSwing:	incbin "artnem/SLZ Swinging Platform.nem"
 		even
-Nem_SLZ_Platfm:	binclude "artnem/SLZ Platforms.nem"
+Nem_SLZ_Platfm:	incbin "artnem/SLZ Platforms.nem"
 		even
-Nem_SlzBlock:	binclude "artnem/SLZ 32x32 Block.nem"
+Nem_SlzBlock:	incbin "artnem/SLZ 32x32 Block.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Bumper:	binclude "artnem/SZ Bumper.nem"
+Nem_Bumper:	incbin "artnem/SZ Bumper.nem"
 		even
-Nem_SyzSpike2:	binclude "artnem/SZ Small Spikeball.nem"
+Nem_SyzSpike2:	incbin "artnem/SZ Small Spikeball.nem"
 		even
-Nem_Switch:	binclude "artnem/Switch.nem"
+Nem_Switch:	incbin "artnem/Switch.nem"
 		even
-Nem_SyzSpike1:	binclude "artnem/SZ Large Spikeball.nem"
+Nem_SyzSpike1:	incbin "artnem/SZ Large Spikeball.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies
 ; ---------------------------------------------------------------------------
 ;Nem_BallHog:
-		binclude "artnem/Unused - Enemy Ball Hog.nem"
+		incbin "artnem/Unused - Enemy Ball Hog.nem"
 		even
-Nem_Crabmeat:	binclude "artnem/Enemy Crabmeat.nem"
+Nem_Crabmeat:	incbin "artnem/Enemy Crabmeat.nem"
 		even
-Nem_Buzz:	binclude "artnem/Enemy Buzz Bomber.nem"
+Nem_Buzz:	incbin "artnem/Enemy Buzz Bomber.nem"
 		even
 ;Nem_Ball_Explosion:
-		binclude "artnem/Unused - Ball Hog's Bomb Explosion.nem"
+		incbin "artnem/Unused - Ball Hog's Bomb Explosion.nem"
 		even
-Nem_Burrobot:	binclude "artnem/Enemy Burrobot.nem"
+Nem_Burrobot:	incbin "artnem/Enemy Burrobot.nem"
 		even
-Nem_Chopper:	binclude "artnem/Enemy Chopper.nem"
+Nem_Chopper:	incbin "artnem/Enemy Chopper.nem"
 		even
-Nem_Jaws:	binclude "artnem/Enemy Jaws.nem"
+Nem_Jaws:	incbin "artnem/Enemy Jaws.nem"
 		even
 ;Nem_BallBomb:
-		binclude "artnem/Unused - Ball Hog's Bomb.nem"
+		incbin "artnem/Unused - Ball Hog's Bomb.nem"
 		even
-Nem_Roller:	binclude "artnem/Enemy Roller.nem"
+Nem_Roller:	incbin "artnem/Enemy Roller.nem"
 		even
-Nem_Motobug:	binclude "artnem/Enemy Motobug.nem"
+Nem_Motobug:	incbin "artnem/Enemy Motobug.nem"
 		even
-Nem_Newtron:	binclude "artnem/Enemy Newtron.nem"
+Nem_Newtron:	incbin "artnem/Enemy Newtron.nem"
 		even
-Nem_Yadrin:	binclude "artnem/Enemy Yadrin.nem"
+Nem_Yadrin:	incbin "artnem/Enemy Yadrin.nem"
 		even
-Nem_Basaran:	binclude "artnem/Enemy Basaran.nem"
+Nem_Basaran:	incbin "artnem/Enemy Basaran.nem"
 		even
-Nem_Splats:	binclude "artnem/Enemy Splats.nem"
+Nem_Splats:	incbin "artnem/Enemy Splats.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
-Nem_TitleCard:	binclude "artnem/Title Cards.nem"
+Nem_TitleCard:	incbin "artnem/Title Cards.nem"
 		even
-Nem_HUD:	binclude "artnem/HUD.nem"
+Nem_HUD:	incbin "artnem/HUD.nem"
 		even
-Nem_Lives:	binclude "artnem/HUD - Life Counter Icon.nem"
+Nem_Lives:	incbin "artnem/HUD - Life Counter Icon.nem"
 		even
-Nem_Ring:	binclude "artnem/Rings.nem"
+Nem_Ring:	incbin "artnem/Rings.nem"
 		even
-Nem_Monitors:	binclude "artnem/Monitors.nem"
+Nem_Monitors:	incbin "artnem/Monitors.nem"
 		even
-Nem_Explode:	binclude "artnem/Explosion.nem"
+Nem_Explode:	incbin "artnem/Explosion.nem"
 		even
-Nem_Points:	binclude "artnem/Points.nem"
+Nem_Points:	incbin "artnem/Points.nem"
 		even
-Nem_GameOver:	binclude "artnem/Game Over.nem"
+Nem_GameOver:	incbin "artnem/Game Over.nem"
 		even
-Nem_HSpring:	binclude "artnem/Spring Horizontal.nem"
+Nem_HSpring:	incbin "artnem/Spring Horizontal.nem"
 		even
-Nem_VSpring:	binclude "artnem/Spring Vertical.nem"
+Nem_VSpring:	incbin "artnem/Spring Vertical.nem"
 		even
-Nem_SignPost:	binclude "artnem/Signpost.nem"
+Nem_SignPost:	incbin "artnem/Signpost.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - animals
 ; ---------------------------------------------------------------------------
-Nem_Rabbit:	binclude "artnem/Animal Rabbit.nem"
+Nem_Rabbit:	incbin "artnem/Animal Rabbit.nem"
 		even
-Nem_Chicken:	binclude "artnem/Animal Chicken.nem"
+Nem_Chicken:	incbin "artnem/Animal Chicken.nem"
 		even
-Nem_Penguin:	binclude "artnem/Animal Blackbird.nem"
+Nem_Penguin:	incbin "artnem/Animal Blackbird.nem"
 		even
-Nem_Seal:	binclude "artnem/Animal Seal.nem"
+Nem_Seal:	incbin "artnem/Animal Seal.nem"
 		even
-Nem_Pig:	binclude "artnem/Animal Pig.nem"
+Nem_Pig:	incbin "artnem/Animal Pig.nem"
 		even
-Nem_Flicky:	binclude "artnem/Animal Flicky.nem"
+Nem_Flicky:	incbin "artnem/Animal Flicky.nem"
 		even
-Nem_Squirrel:	binclude "artnem/Animal Squirrel.nem"
+Nem_Squirrel:	incbin "artnem/Animal Squirrel.nem"
 		even
 
 		align	$1000
@@ -5589,46 +5629,46 @@ Nem_Squirrel:	binclude "artnem/Animal Squirrel.nem"
 ; Compressed graphics - primary patterns
 ; Blocks are Uncompressed
 ; ---------------------------------------------------------------------------
-Blk16_GHZ:	binclude "level/map16/GHZ.bin"
-Nem_GHZ_1st:	binclude "artnem/8x8 - GHZ1.nem"
+Blk16_GHZ:	incbin "level/map16/GHZ.bin"
+Nem_GHZ_1st:	incbin "artnem/8x8 - GHZ1.nem"
 		even
-Nem_GHZ_2nd:	binclude "artnem/8x8 - GHZ2.nem"
+Nem_GHZ_2nd:	incbin "artnem/8x8 - GHZ2.nem"
 		even
-Blk256_GHZ:	binclude "level/map256/GHZ.kos"
+Blk256_GHZ:	incbin "level/map256/GHZ.kos"
 		even
-Blk16_LZ:	binclude "level/map16/LZ.bin"
-Nem_LZ:	binclude "artnem/8x8 - LZ.nem"
+Blk16_LZ:	incbin "level/map16/LZ.bin"
+Nem_LZ:	incbin "artnem/8x8 - LZ.nem"
 		even
-Blk256_LZ:	binclude "level/map256/LZ.kos"
+Blk256_LZ:	incbin "level/map256/LZ.kos"
 		even
-Blk16_MZ:	binclude "level/map16/MZ.bin"
-Nem_MZ:	binclude "artnem/8x8 - MZ.nem"
+Blk16_MZ:	incbin "level/map16/MZ.bin"
+Nem_MZ:	incbin "artnem/8x8 - MZ.nem"
 		even
-Blk256_MZ:	binclude "level/map256/MZ.kos"
+Blk256_MZ:	incbin "level/map256/MZ.kos"
 		even
 ;0x3DA48
 ; end chunk data
 		dc.w $F0, 0, 0, 0, 0, 0, 0, 0
 ;0x3DA58
-		binclude "leftovers/level/map256/Chunk Data.kos"
+		incbin "leftovers/level/map256/Chunk Data.kos"
 		even
 ;0x3DB78
-		binclude "unknown/3DB78.dat"
+		incbin "unknown/3DB78.dat"
 		even
-Blk16_SLZ:	binclude "level/map16/SLZ.bin"
-Nem_SLZ:	binclude "artnem/8x8 - SLZ.nem"
+Blk16_SLZ:	incbin "level/map16/SLZ.bin"
+Nem_SLZ:	incbin "artnem/8x8 - SLZ.nem"
 		even
-Blk256_SLZ:	binclude "level/map256/SLZ.kos"
+Blk256_SLZ:	incbin "level/map256/SLZ.kos"
 		even
-Blk16_SZ:	binclude "level/map16/SZ.bin"
-Nem_SZ:	binclude "artnem/8x8 - SZ.nem"
+Blk16_SZ:	incbin "level/map16/SZ.bin"
+Nem_SZ:	incbin "artnem/8x8 - SZ.nem"
 		even
-Blk256_SZ:	binclude "level/map256/SZ.kos"
+Blk256_SZ:	incbin "level/map256/SZ.kos"
 		even
-Blk16_CWZ:	binclude "level/map16/CWZ.bin"
-Nem_CWZ:	binclude "artnem/8x8 - CWZ.nem"
+Blk16_CWZ:	incbin "level/map16/CWZ.bin"
+Nem_CWZ:	incbin "artnem/8x8 - CWZ.nem"
 		even
-Blk256_CWZ:	binclude "level/map256/CWZ.kos"
+Blk256_CWZ:	incbin "level/map256/CWZ.kos"
 		even
 ;0x570DC
 ; duplicate cut-off chunk data from CWZ
@@ -5639,23 +5679,23 @@ Blk256_CWZ:	binclude "level/map256/CWZ.kos"
 		dc.w $F89F, $F0, 0, 0, 0, 0, 0, 0
 
 ;0x5711C
-		binclude "unknown/5711C.dat"
+		incbin "unknown/5711C.dat"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
 ; ---------------------------------------------------------------------------
-Nem_Eggman:	binclude "artnem/Boss - Main.nem"
+Nem_Eggman:	incbin "artnem/Boss - Main.nem"
 		even
-Nem_Weapons:	binclude "artnem/Boss - Weapons.nem"
+Nem_Weapons:	incbin "artnem/Boss - Weapons.nem"
 		even
-Nem_Prison:	binclude "artnem/Prison Capsule.nem"
+Nem_Prison:	incbin "artnem/Prison Capsule.nem"
 		even
 ; ===========================================================================
 ; Demos
 ; ===========================================================================
 Demo_GHZ:	include "demodata/Intro - GHZ.asm"	; Green Hill's demo (act 2?)
 Demo_MZ:	include "demodata/Intro - MZ.asm"	; Marble's demo
-Demo_SZ:	binclude "demodata/Intro - SZ.bin"	; Sparkling's demo (?)
+Demo_SZ:	incbin "demodata/Intro - SZ.bin"	; Sparkling's demo (?)
 		even
 Demo_SS:	include "demodata/Intro - Special Stage.asm" ; Special stage demo
 
@@ -5665,75 +5705,75 @@ Demo_SS:	include "demodata/Intro - Special Stage.asm" ; Special stage demo
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
-Nem_SSWalls:	binclude "artnem/Special Walls.nem"
+Nem_SSWalls:	incbin "artnem/Special Walls.nem"
 		even
-Eni_SSBg1:	binclude "tilemaps/SS Background 1.eni"
+Eni_SSBg1:	incbin "tilemaps/SS Background 1.eni"
 		even
-Nem_SSBgFish:	binclude "artnem/Special Birds & Fish.nem"
+Nem_SSBgFish:	incbin "artnem/Special Birds & Fish.nem"
 		even
-Eni_SSBg2:	binclude "tilemaps/SS Background 2.eni"
+Eni_SSBg2:	incbin "tilemaps/SS Background 2.eni"
 		even
-Nem_SSBgCloud:	binclude "artnem/Special Clouds.nem"
+Nem_SSBgCloud:	incbin "artnem/Special Clouds.nem"
 		even
-Nem_SSGOAL:	binclude "artnem/Special GOAL.nem"
+Nem_SSGOAL:	incbin "artnem/Special GOAL.nem"
 		even
-Nem_SSRBlock:	binclude "artnem/Special R.nem"
+Nem_SSRBlock:	incbin "artnem/Special R.nem"
 		even
-Nem_SSSkull:	binclude "artnem/Special Skull.nem"
+Nem_SSSkull:	incbin "artnem/Special Skull.nem"
 		even
-Nem_SSUBlock:	binclude "artnem/Special U.nem"
+Nem_SSUBlock:	incbin "artnem/Special U.nem"
 		even
-Nem_SS1UpBlock:	binclude "artnem/Special 1UP.nem"
+Nem_SS1UpBlock:	incbin "artnem/Special 1UP.nem"
 		even
-Nem_SSEmStars:	binclude "artnem/Special Emerald Twinkle.nem"
+Nem_SSEmStars:	incbin "artnem/Special Emerald Twinkle.nem"
 		even
-Nem_SSRedWhite:	binclude "artnem/Special Red-White.nem"
+Nem_SSRedWhite:	incbin "artnem/Special Red-White.nem"
 		even
-Nem_SSZone1:	binclude "artnem/Special ZONE1.nem"
+Nem_SSZone1:	incbin "artnem/Special ZONE1.nem"
 		even
-Nem_SSZone2:	binclude "artnem/Special ZONE2.nem"
+Nem_SSZone2:	incbin "artnem/Special ZONE2.nem"
 		even
-Nem_SSZone3:	binclude "artnem/Special ZONE3.nem"
+Nem_SSZone3:	incbin "artnem/Special ZONE3.nem"
 		even
-Nem_SSZone4:	binclude "artnem/Special ZONE4.nem"
+Nem_SSZone4:	incbin "artnem/Special ZONE4.nem"
 		even
-Nem_SSZone5:	binclude "artnem/Special ZONE5.nem"
+Nem_SSZone5:	incbin "artnem/Special ZONE5.nem"
 		even
-Nem_SSZone6:	binclude "artnem/Special ZONE6.nem"
+Nem_SSZone6:	incbin "artnem/Special ZONE6.nem"
 		even
-Nem_SSUpDown:	binclude "artnem/Special UP-DOWN.nem"
+Nem_SSUpDown:	incbin "artnem/Special UP-DOWN.nem"
 		even
-Nem_SSEmerald:	binclude "artnem/Special Emeralds.nem"
+Nem_SSEmerald:	incbin "artnem/Special Emeralds.nem"
 		even
 
 		align	$4000
 ; ---------------------------------------------------------------------------
 ; Collision data
 ; ---------------------------------------------------------------------------
-AngleMap:	binclude "collide/Angle Map.bin"
-CollArray1:	binclude "collide/Collision Array (Normal).bin"
-CollArray2:	binclude "collide/Collision Array (Rotated).bin"
-Col_GHZ:	binclude "collide/GHZ.bin"
-Col_LZ:	binclude "collide/LZ.bin"
-Col_MZ:	binclude "collide/MZ.bin"
-Col_SLZ:	binclude "collide/SLZ.bin"
-Col_SZ:	binclude "collide/SZ.bin"
-Col_CWZ:	binclude "collide/CWZ.bin"
+AngleMap:	incbin "collide/Angle Map.bin"
+CollArray1:	incbin "collide/Collision Array (Normal).bin"
+CollArray2:	incbin "collide/Collision Array (Rotated).bin"
+Col_GHZ:	incbin "collide/GHZ.bin"
+Col_LZ:	incbin "collide/LZ.bin"
+Col_MZ:	incbin "collide/MZ.bin"
+Col_SLZ:	incbin "collide/SLZ.bin"
+Col_SZ:	incbin "collide/SZ.bin"
+Col_CWZ:	incbin "collide/CWZ.bin"
 ; ---------------------------------------------------------------------------
 ; Special Stage layout (uncompressed)
 ; ---------------------------------------------------------------------------
-SS_1:	binclude "sslayout/1.bin"
+SS_1:	incbin "sslayout/1.bin"
 SS_1_End:
 ; ---------------------------------------------------------------------------
 ; Animated uncompressed graphics
 ; ---------------------------------------------------------------------------
-Art_GhzWater:	binclude "artunc/GHZ Waterfall.bin"
-Art_GhzFlower1:	binclude "artunc/GHZ Flower Large.bin"
-Art_GhzFlower2:	binclude "artunc/GHZ Flower Small.bin"
-Art_MzLava1:	binclude "artunc/MZ Lava Surface.bin"
-Art_MzLava2:	binclude "artunc/MZ Lava.bin"
-Art_MzSaturns:	binclude "artunc/MZ Saturns.bin"
-Art_MzTorch:	binclude "artunc/MZ Background Torch.bin"
+Art_GhzWater:	incbin "artunc/GHZ Waterfall.bin"
+Art_GhzFlower1:	incbin "artunc/GHZ Flower Large.bin"
+Art_GhzFlower2:	incbin "artunc/GHZ Flower Small.bin"
+Art_MzLava1:	incbin "artunc/MZ Lava Surface.bin"
+Art_MzLava2:	incbin "artunc/MZ Lava.bin"
+Art_MzSaturns:	incbin "artunc/MZ Saturns.bin"
+Art_MzTorch:	incbin "artunc/MZ Background Torch.bin"
 ; ---------------------------------------------------------------------------
 ; Level	layout index
 ; ---------------------------------------------------------------------------
@@ -5773,52 +5813,52 @@ LayoutArray:	; GHZ
 		dc.w byte_6E3D2-LayoutArray, byte_6E3D2-LayoutArray, byte_6E3D2-LayoutArray
 		dc.w byte_6E3D6-LayoutArray, byte_6E3D6-LayoutArray, byte_6E3D6-LayoutArray
 
-LayoutGHZ1FG:	binclude "level/layout/ghz1.bin"
-LayoutGHZ1BG:	binclude "level/layout/ghzbg1.bin"
+LayoutGHZ1FG:	incbin "level/layout/ghz1.bin"
+LayoutGHZ1BG:	incbin "level/layout/ghzbg1.bin"
 byte_6CE54:	dc.l 0
-LayoutGHZ2FG:	binclude "level/layout/ghz2.bin"
-LayoutGHZ2BG:	binclude "level/layout/ghzbg2.bin"
+LayoutGHZ2FG:	incbin "level/layout/ghz2.bin"
+LayoutGHZ2BG:	incbin "level/layout/ghzbg2.bin"
 byte_6CF3C:	dc.l 0
-LayoutGHZ3FG:	binclude "level/layout/ghz3.bin"
-LayoutGHZ3BG:	binclude "level/layout/ghzbg3.bin"
+LayoutGHZ3FG:	incbin "level/layout/ghz3.bin"
+LayoutGHZ3BG:	incbin "level/layout/ghzbg3.bin"
 byte_6D084:	dc.l 0
 byte_6D088:	dc.l 0
-LayoutLZ1FG:	binclude "level/layout/lz1.bin"
-LayoutLZBG:	binclude "level/layout/lzbg.bin"
+LayoutLZ1FG:	incbin "level/layout/lz1.bin"
+LayoutLZBG:	incbin "level/layout/lzbg.bin"
 byte_6D190:	dc.l 0
-LayoutLZ2FG:	binclude "level/layout/lz2.bin"
+LayoutLZ2FG:	incbin "level/layout/lz2.bin"
 byte_6D216:	dc.l 0
-LayoutLZ3FG:	binclude "level/layout/lz3.bin"
+LayoutLZ3FG:	incbin "level/layout/lz3.bin"
 byte_6D31C:	dc.l 0
 byte_6D320:	dc.l 0
-LayoutMZ1FG:	binclude "level/layout/mz1.bin"
-LayoutMZ1BG:	binclude "level/layout/mzbg1.bin"
-LayoutMZ2FG:	binclude "level/layout/mz2.bin"
-LayoutMZ2BG:	binclude "level/layout/mzbg2.bin"
+LayoutMZ1FG:	incbin "level/layout/mz1.bin"
+LayoutMZ1BG:	incbin "level/layout/mzbg1.bin"
+LayoutMZ2FG:	incbin "level/layout/mz2.bin"
+LayoutMZ2BG:	incbin "level/layout/mzbg2.bin"
 byte_6D614:	dc.l 0
-LayoutMZ3FG:	binclude "level/layout/mz3.bin"
-LayoutMZ3BG:	binclude "level/layout/mzbg3.bin"
+LayoutMZ3FG:	incbin "level/layout/mz3.bin"
+LayoutMZ3BG:	incbin "level/layout/mzbg3.bin"
 byte_6D7DC:	dc.l 0
 byte_6D7E0:	dc.l 0
-LayoutSLZ1FG:	binclude "level/layout/slz1.bin"
-LayoutSLZBG:	binclude "level/layout/slzbg.bin"
-LayoutSLZ2FG:	binclude "level/layout/slz2.bin"
-LayoutSLZ3FG:	binclude "level/layout/slz3.bin"
+LayoutSLZ1FG:	incbin "level/layout/slz1.bin"
+LayoutSLZBG:	incbin "level/layout/slzbg.bin"
+LayoutSLZ2FG:	incbin "level/layout/slz2.bin"
+LayoutSLZ3FG:	incbin "level/layout/slz3.bin"
 byte_6DBE4:	dc.l 0
-LayoutSZ1FG:	binclude "level/layout/sz1.bin"
-LayoutSZBG:	binclude "level/layout/szbg.bin"
+LayoutSZ1FG:	incbin "level/layout/sz1.bin"
+LayoutSZBG:	incbin "level/layout/szbg.bin"
 byte_6DCD8:	dc.l 0
-LayoutSZ2FG:	binclude "level/layout/sz2.bin"
+LayoutSZ2FG:	incbin "level/layout/sz2.bin"
 byte_6DDDA:	dc.l 0
-LayoutSZ3FG:	binclude "level/layout/sz3.bin"
+LayoutSZ3FG:	incbin "level/layout/sz3.bin"
 byte_6DF30:	dc.l 0
 byte_6DF34:	dc.l 0
-LayoutCWZ1:	binclude "level/layout/cwz1.bin"
-LayoutCWZ2:	binclude "level/layout/cwz2.bin"
-byte_6E33C:	binclude "level/layout/cwz2bg.bin"
-LayoutCWZ3:	binclude "level/layout/cwz3.bin"
+LayoutCWZ1:	incbin "level/layout/cwz1.bin"
+LayoutCWZ2:	incbin "level/layout/cwz2.bin"
+byte_6E33C:	incbin "level/layout/cwz2bg.bin"
+LayoutCWZ3:	incbin "level/layout/cwz3.bin"
 byte_6E344:	dc.l 0
-LayoutTest:	binclude "leftovers/level/layout/test.bin"
+LayoutTest:	incbin "leftovers/level/layout/test.bin"
 byte_6E3CA:	dc.l 0
 byte_6E3CE:	dc.l 0
 byte_6E3D2:	dc.l 0
@@ -5860,32 +5900,32 @@ ObjPos_Index:	; GHZ
 		dc.w ObjPos_CWZ1-ObjPos_Index, ObjPos_Null-ObjPos_Index
 		dc.w $FFFF, 0, 0
 
-ObjPos_GHZ1:	binclude "level/objpos/ghz1.bin"
-ObjPos_GHZ2:	binclude "level/objpos/ghz2.bin"
-ObjPos_GHZ3:	binclude "level/objpos/ghz3.bin"
-ObjPos_LZ1:	binclude "level/objpos/lz1.bin"
-ObjPos_LZ2:	binclude "level/objpos/lz2.bin"
-ObjPos_LZ3:	binclude "level/objpos/lz3.bin"
-ObjPos_MZ1:	binclude "level/objpos/mz1.bin"
-ObjPos_MZ2:	binclude "level/objpos/mz2.bin"
-ObjPos_MZ3:	binclude "level/objpos/mz3.bin"
-ObjPos_SLZ1:	binclude "level/objpos/slz1.bin"
-ObjPos_SLZ2:	binclude "level/objpos/slz2.bin"
-ObjPos_SLZ3:	binclude "level/objpos/slz3.bin"
-ObjPos_SZ1:	binclude "level/objpos/sz1.bin"
-ObjPos_SZ2:	binclude "level/objpos/sz2.bin"
+ObjPos_GHZ1:	incbin "level/objpos/ghz1.bin"
+ObjPos_GHZ2:	incbin "level/objpos/ghz2.bin"
+ObjPos_GHZ3:	incbin "level/objpos/ghz3.bin"
+ObjPos_LZ1:	incbin "level/objpos/lz1.bin"
+ObjPos_LZ2:	incbin "level/objpos/lz2.bin"
+ObjPos_LZ3:	incbin "level/objpos/lz3.bin"
+ObjPos_MZ1:	incbin "level/objpos/mz1.bin"
+ObjPos_MZ2:	incbin "level/objpos/mz2.bin"
+ObjPos_MZ3:	incbin "level/objpos/mz3.bin"
+ObjPos_SLZ1:	incbin "level/objpos/slz1.bin"
+ObjPos_SLZ2:	incbin "level/objpos/slz2.bin"
+ObjPos_SLZ3:	incbin "level/objpos/slz3.bin"
+ObjPos_SZ1:	incbin "level/objpos/sz1.bin"
+ObjPos_SZ2:	incbin "level/objpos/sz2.bin"
 ;0x729CA
-		binclude "leftovers/level/objpos/sz1.bin"
-ObjPos_SZ3:	binclude "level/objpos/sz3.bin"
-ObjPos_CWZ1:	binclude "level/objpos/cwz1.bin"
-ObjPos_CWZ2:	binclude "level/objpos/cwz2.bin"
-ObjPos_CWZ3:	binclude "level/objpos/cwz3.bin"
+		incbin "leftovers/level/objpos/sz1.bin"
+ObjPos_SZ3:	incbin "level/objpos/sz3.bin"
+ObjPos_CWZ1:	incbin "level/objpos/cwz1.bin"
+ObjPos_CWZ2:	incbin "level/objpos/cwz2.bin"
+ObjPos_CWZ3:	incbin "level/objpos/cwz3.bin"
 ObjPos_Null:	dc.w $FFFF, 0, 0
 
 		align	$2000
 
 		include "s1.sounddriver.asm"
+		
+		align	$8000
 
-		cnop -1,2<<lastbit(*-1)
-		dc.b $FF
 EndOfROM:

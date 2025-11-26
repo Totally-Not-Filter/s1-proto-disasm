@@ -12,7 +12,7 @@ off_689E:	dc.w loc_68A4-off_689E, loc_68F0-off_689E, loc_6912-off_689E
 loc_68A4:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_2A,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,0,0),obGfx(a0)
+		move.w	#ArtTile_Level,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.w	obY(a0),d0
 		subi.w	#$20,d0
@@ -22,7 +22,7 @@ loc_68A4:
 		tst.b	obSubtype(a0)
 		beq.s	loc_68F0
 		move.b	#1,obFrame(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level+$4000,obGfx(a0)
 		move.b	#4,obPriority(a0)
 		addq.b	#2,obRoutine(a0)
 
@@ -47,4 +47,4 @@ loc_6912:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc

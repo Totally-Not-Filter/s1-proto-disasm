@@ -12,7 +12,7 @@ off_78A6:	dc.w loc_78AC-off_78A6, loc_78D6-off_78A6, loc_79E6-off_78A6
 loc_78AC:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Buzz,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Buzz_Bomber,0,0),obGfx(a0)
+		move.w	#ArtTile_Buzz_Bomber,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#8,obColType(a0)
@@ -52,7 +52,7 @@ locret_7926:
 loc_7928:
 		bsr.w	FindFreeObj
 		bne.s	locret_798A
-		_move.b	#id_Missile,obID(a1)
+		move.b	#id_Missile,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		addi.w	#$1C,obY(a1)
@@ -64,7 +64,7 @@ loc_7928:
 	else
 		; Bug: This doesn't match with Newtron's setting, resulting in the x position being off by 4 pixels.
 		move.w	#$18,d0
-	endif
+	endc
 		btst	#0,obStatus(a0)
 		bne.s	loc_7964
 		neg.w	d0

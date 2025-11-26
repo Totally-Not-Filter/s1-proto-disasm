@@ -37,14 +37,14 @@ ObjScenery_Delete:
 
 ObjScenery_Types:
 		dc.l Map_Scen
-		dc.w make_art_tile($398,0,0)
+		dc.w $398
 		dc.b 0, $10, 4, $82
 		dc.l Map_Scen
-		dc.w make_art_tile($398,0,0)
+		dc.w $398
 		dc.b 1, $14, 4, $83
 		dc.l Map_Scen
-		dc.w make_art_tile(ArtTile_Level,2,0)
+		dc.w ArtTile_Level+$4000
 		dc.b 0, $20, 1, 0
 		dc.l MapBridge
-		dc.w make_art_tile(ArtTile_GHZ_Bridge,2,0)
+		dc.w ArtTile_GHZ_Bridge+$4000
 		dc.b 1, $10, 1, 0

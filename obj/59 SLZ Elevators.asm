@@ -64,7 +64,7 @@ loc_DFE6:
 		; final game, but the issue never actually got fixed.
 		; Perhaps they were planning on different types of platforms? Who knows!
 		andi.w	#$1E,d0
-	endif
+	endc
 		lea	Elev_Var1(pc,d0.w),a2
 		move.b	(a2)+,obActWid(a0)
 		move.b	(a2)+,obFrame(a0)
@@ -76,14 +76,14 @@ loc_DFE6:
 	else
 		; This is also just as bugged as the previous AND.
 		andi.w	#$1E,d0
-	endif
+	endc
 		lea	Elev_Var2(pc,d0.w),a2
 		move.b	(a2)+,d0
 		lsl.w	#2,d0
 		move.w	d0,elev_dist(a0)
 		move.b	(a2)+,obSubtype(a0)
 		move.l	#Map_Elev,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.w	obX(a0),elev_origX(a0)
@@ -103,7 +103,7 @@ loc_E04A:
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_E06E
 		move.w	(sp)+,d2
-		_tst.b	obID(a0)
+		tst.b	obID(a0)
 		beq.s	locret_E06C
 		jmp	(ptfmSurfaceNormal).l
 ; ---------------------------------------------------------------------------
@@ -254,7 +254,7 @@ loc_E194:
 		move.w	objoff_3E(a0),elev_dist(a0)
 		bsr.w	FindFreeObj
 		bne.s	loc_E1BE
-		_move.b	#id_Elevator,obID(a1)
+		move.b	#id_Elevator,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	#$E,obSubtype(a1)

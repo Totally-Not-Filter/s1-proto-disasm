@@ -13,7 +13,7 @@ off_91F2:	dc.w loc_91F8-off_91F2, loc_9240-off_91F2, loc_92BA-off_91F2
 loc_91F8:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Fire,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Fireball,0,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Fireball,obGfx(a0)
 		move.w	obX(a0),objoff_2A(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
@@ -51,7 +51,7 @@ loc_9240:
 		bne.s	loc_92B8
 		bsr.w	FindNextFreeObj
 		bne.s	loc_92B8
-		_move.b	#id_GrassFire,obID(a1)
+		move.b	#id_GrassFire,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	d2,objoff_2C(a1)
 		move.w	objoff_3C(a0),objoff_3C(a1)

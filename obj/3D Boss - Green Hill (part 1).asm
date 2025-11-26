@@ -27,11 +27,11 @@ loc_B01C:
 
 loc_B022:
 		move.b	(a2)+,obRoutine(a1)
-		_move.b	#id_BossGreenHill,obID(a1)
+		move.b	#id_BossGreenHill,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.l	#Map_Eggman,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Eggman,0,0),obGfx(a1)
+		move.w	#ArtTile_Eggman,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#$20,obActWid(a1)
 		move.b	#3,obPriority(a1)

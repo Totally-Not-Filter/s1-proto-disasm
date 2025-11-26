@@ -13,10 +13,10 @@ off_9D72:	dc.w loc_9D76-off_9D72, loc_9DAC-off_9D72
 loc_9D76:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_But,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Button+4,2,0),obGfx(a0)
+		move.w	#ArtTile_Button+4+$4000,obGfx(a0)
 		cmpi.b	#id_MZ,(v_zone).w
 		beq.s	loc_9D96
-		move.w	#make_art_tile(ArtTile_Button+4,0,0),obGfx(a0)
+		move.w	#ArtTile_Button+4,obGfx(a0)
 
 loc_9D96:
 		move.b	#4,obRender(a0)
@@ -81,7 +81,7 @@ loc_9E2E:
 		bsr.w	DisplaySprite
 		out_of_range.w	.delete
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 .delete:
@@ -102,7 +102,7 @@ sub_9E58:
 loc_9E76:
 		tst.b	obRender(a1)
 		bpl.s	loc_9E82
-		cmpi.b	#id_PushBlock,obID(a1)
+		cmpi.b	#id_PushBlock,(a1)
 		beq.s	loc_9E90
 
 loc_9E82:

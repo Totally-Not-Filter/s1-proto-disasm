@@ -14,7 +14,7 @@ loc_6F46:
 		move.b	#$13,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Hog,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Ball_Hog,1,0),obGfx(a0)
+		move.w	#ArtTile_Ball_Hog+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#5,obColType(a0)
@@ -74,7 +74,7 @@ loc_6FF6:
 		move.b	#1,objoff_32(a0)
 		bsr.w	FindFreeObj
 		bne.s	locret_701A
-		_move.b	#id_Cannonball,obID(a1)
+		move.b	#id_Cannonball,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		addi.w	#$10,obY(a1)

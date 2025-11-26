@@ -21,7 +21,7 @@ loc_A4DE:
 		moveq	#3,d1
 
 loc_A4F8:
-		_move.b	#id_TitleCard,obID(a1)
+		move.b	#id_TitleCard,obID(a1)
 		move.w	(a3),obX(a1)
 		move.w	(a3)+,card_finalX(a1)
 		move.w	(a3)+,card_mainX(a1)
@@ -39,7 +39,7 @@ loc_A51A:
 loc_A524:
 		move.b	d0,obFrame(a1)
 		move.l	#Map_TitleCard,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Title_Card,0,1),obGfx(a1)
+		move.w	#ArtTile_Title_Card+$8000,obGfx(a1)
 		move.b	#$78,obActWid(a1)
 		move.b	#0,obRender(a1)
 		move.b	#0,obPriority(a1)

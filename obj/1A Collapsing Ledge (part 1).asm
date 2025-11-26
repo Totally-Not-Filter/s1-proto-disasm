@@ -17,7 +17,7 @@ ledge_collapse_flag: equ objoff_3A	; collapse flag
 loc_5EFA:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Ledge,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level+$4000,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#7,ledge_timedelay(a0)
@@ -94,7 +94,7 @@ loc_5FCE:
 		tst.b	obRender(a0)
 		bpl.s	loc_5FDE
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_5FDE:

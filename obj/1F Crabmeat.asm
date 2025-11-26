@@ -14,7 +14,7 @@ loc_75C2:
 		move.b	#$10,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Crab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Crabmeat,0,0),obGfx(a0)
+		move.w	#ArtTile_Crabmeat,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#6,obColType(a0)
@@ -73,7 +73,7 @@ loc_7672:
 		move.b	#6,obAnim(a0)
 		bsr.w	FindFreeObj
 		bne.s	loc_76A8
-		_move.b	#id_Crabmeat,obID(a1)
+		move.b	#id_Crabmeat,obID(a1)
 		move.b	#6,obRoutine(a1)
 		move.w	obX(a0),obX(a1)
 		subi.w	#$10,obX(a1)
@@ -83,7 +83,7 @@ loc_7672:
 loc_76A8:
 		bsr.w	FindFreeObj
 		bne.s	locret_76D2
-		_move.b	#id_Crabmeat,obID(a1)
+		move.b	#id_Crabmeat,obID(a1)
 		move.b	#6,obRoutine(a1)
 		move.w	obX(a0),obX(a1)
 		addi.w	#$10,obX(a1)
@@ -171,7 +171,7 @@ loc_7772:
 loc_7778:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Crab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Crabmeat,0,0),obGfx(a0)
+		move.w	#ArtTile_Crabmeat,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$87,obColType(a0)
@@ -196,7 +196,7 @@ loc_77AE:
 		cmp.w	obY(a0),d0
 		bcs.s	loc_77D0
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_77D0:

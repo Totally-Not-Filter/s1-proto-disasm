@@ -23,7 +23,7 @@ loc_A702:
 		moveq	#6,d1
 
 loc_A70C:
-		_move.b	#id_GotThroughCard,obID(a1)
+		move.b	#id_GotThroughCard,obID(a1)
 		move.w	(a2)+,obX(a1)
 		move.w	(a2)+,card_mainX(a1)
 		move.w	(a2)+,obScreenY(a1)
@@ -36,7 +36,7 @@ loc_A70C:
 loc_A72E:
 		move.b	d0,obFrame(a1)
 		move.l	#Map_Got,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Title_Card,0,1),obGfx(a1)
+		move.w	#ArtTile_Title_Card+$8000,obGfx(a1)
 		move.b	#0,obRender(a1)
 		lea	object_size(a1),a1
 		dbf	d1,loc_A70C

@@ -20,7 +20,7 @@ byte_AB0E:	dc.b 0, $14
 loc_AB1A:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapSpikes,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Spikes,0,0),obGfx(a0)
+		move.w	#ArtTile_Spikes,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	obSubtype(a0),d0
@@ -90,7 +90,7 @@ loc_ABDE:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject,objoff_30(a0)
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 sub_AC02:

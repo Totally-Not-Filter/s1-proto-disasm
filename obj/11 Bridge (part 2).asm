@@ -2,9 +2,9 @@
 
 loc_50B2:
 		bsr.s	Bridge_ChkExit
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	Bridge_ChkDelete
 ; ---------------------------------------------------------------------------
 

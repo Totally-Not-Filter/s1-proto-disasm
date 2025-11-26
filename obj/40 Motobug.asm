@@ -12,7 +12,7 @@ off_B890:	dc.w loc_B898-off_B890, loc_B8FA-off_B890, loc_B9D8-off_B890, loc_B9E6
 
 loc_B898:
 		move.l	#Map_Moto,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Moto_Bug,0,0),obGfx(a0)
+		move.w	#ArtTile_Moto_Bug,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$14,obActWid(a0)
@@ -47,7 +47,7 @@ loc_B8FA:
 		lea	(Ani_Moto).l,a1
 		bsr.w	AnimateSprite
 
-		include "sub RememberState.asm"
+		include "obj/sub RememberState.asm"
 ; ---------------------------------------------------------------------------
 
 off_B94E:	dc.w loc_B952-off_B94E, loc_B976-off_B94E
@@ -80,7 +80,7 @@ loc_B976:
 		move.b	#$F,objoff_33(a0)
 		bsr.w	FindFreeObj
 		bne.s	locret_B9BE
-		_move.b	#id_MotoBug,obID(a1)
+		move.b	#id_MotoBug,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obStatus(a0),obStatus(a1)

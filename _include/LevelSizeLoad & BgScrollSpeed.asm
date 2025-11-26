@@ -115,7 +115,7 @@ loc_3CB2:
 		move.l	SpecialChunkArray(pc,d0.w),(v_256loop1).w
 		bra.w	LoadLevelUnk
 ; ---------------------------------------------------------------------------
-StartPosArray:	include "Start Location Array - Levels.asm"
+StartPosArray:	include "_include/Start Location Array - Levels.asm"
 
 SpecialChunkArray:
 		dc.b $B5, $7F, $1F, $20

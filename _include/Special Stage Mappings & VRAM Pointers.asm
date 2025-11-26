@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 specialStageData: macro frame,mappings,palette,vram
 		dc.l	mappings|(frame<<24)
-		dc.w	make_art_tile(vram,palette,0)
+		dc.w	vram+palette*$2000
 		endm
 
 		specialStageData	0, Map_SSWalls,   0, ArtTile_SS_Wall

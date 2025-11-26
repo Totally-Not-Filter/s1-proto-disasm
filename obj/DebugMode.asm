@@ -118,7 +118,7 @@ loc_11F80:
 		bne.s	loc_11FA4
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
-		_move.b	obMap(a0),obID(a1)
+		move.b	obMap(a0),obID(a1)
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ loc_11FA4:
 		moveq	#0,d0
 		move.w	d0,(v_debuguse).w
 		move.l	#Map_Sonic,(v_player+obMap).w
-		move.w	#make_art_tile(ArtTile_Sonic,0,0),(v_player+obGfx).w
+		move.w	#ArtTile_Sonic,(v_player+obGfx).w
 		move.b	d0,(v_player+obAnim).w
 		move.w	d0,obX+2(a0)
 		move.w	d0,obY+2(a0)

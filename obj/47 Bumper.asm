@@ -13,7 +13,7 @@ off_C5FE:	dc.w loc_C602-off_C5FE, loc_C62C-off_C5FE
 loc_C602:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Bump,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SZ_Bumper,0,0),obGfx(a0)
+		move.w	#ArtTile_SZ_Bumper,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#1,obPriority(a0)
@@ -52,4 +52,4 @@ loc_C684:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc

@@ -14,7 +14,7 @@ off_D4D4:	dc.w loc_D4DA-off_D4D4, loc_D504-off_D4D4, loc_D580-off_D4D4
 loc_D4DA:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Smab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Block,2,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Block+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -56,7 +56,7 @@ loc_D528:
 loc_D580:
 	if FixBugs
 		addq.l	#4,sp	; do not return to caller
-	endif
+	endc
 		bsr.w	SpeedToPos
 		addi.w	#$38,obVelY(a0)
 	if FixBugs
@@ -68,4 +68,4 @@ loc_D580:
 		tst.b	obRender(a0)
 		bpl.w	DeleteObject
 		rts
-	endif
+	endc

@@ -1,25 +1,19 @@
-		save
-		!org	0	; set Z80 location to 0
-		cpu z80	; use Z80 cpu
-		listing purecode	; add to listing file
+z80_stack:	= 1FF4h
+zDAC_Update:	= 1FF6h
+zVoiceFlag:	= 1FF7h
+zVoiceTblAdr:	= 1FF8h
+zBankStore:	= 1FFAh
+zLoopDataStr:	= 1FFCh
+zDAC_Status:	= 1FFDh					; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
+zRepeatFlag:	= 1FFEh
+zDAC_Sample:	= 1FFFh					; Sample to play, the 68k will move into this locatiton whatever sample that's supposed to be played.
 
-; function to decide whether an offset's full range won't fit in one byte
-offsetover1byte function from,maxsize, ((from&0FFh)>(100h-maxsize))
-
-; macro to make sure that ($ & 0FF00h) == (($+maxsize) & 0FF00h)
-ensure1byteoffset macro maxsize
-	if offsetover1byte($,maxsize)
-startpad := $
-		align 100h
-		if MOMPASS=1
-endpad := $
-		if endpad-startpad>=1h
-							; warn because otherwise you'd have no clue why you're running out of space so fast
-			message "had to insert \{endpad-startpad}h   bytes of padding before improperly located data at 0\{startpad}h in Z80 code"
-		endif
-		endif
-	endif
-	endm
+zYM2612_A0:	= 4000h
+zYM2612_D0:	= 4001h
+zYM2612_A1:	= 4002h
+zYM2612_D1:	= 4003h
+zBankRegister:	= 6000h
+zROMWindow:	= 8000h
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -45,7 +39,6 @@ loc_16:
 ; ===========================================================================
 ; JMan2050's DAC decode lookup table
 ; ===========================================================================
-	ensure1byteoffset 10h
 zDACDecodeTbl:
 	db	   0,	 1,   2,   4,   8,  10h,  20h,  40h
 	db	 80h,	-1,  -2,  -4,  -8, -10h, -20h, -40h
@@ -241,10 +234,8 @@ loc_153:
 zPCMMetadata macro label,sampleRate
 	dw	label	; Start
 	dw	label_End-label	; Length
-	rept	7
-	db	0	; Padding
-	endm
-	db	dpcmLoopCounter(sampleRate)	; Pitch
+	.7	db	0	; Padding
+	db	1+(53693175/15/(sampleRate)-(420/2)+(13/2))/13	; Pitch
 	endm
 
 ; DPCM metadata
@@ -256,25 +247,13 @@ zTimpani_Pitch = $+0Bh
 
 ; DPCM data
 zDAC_Kick:
-	binclude "dac/kick.dpcm"
+	incbin "sound/dac/kick.dpcm"
 zDAC_Kick_End:
 
 zDAC_Snare:
-	binclude "dac/snare.dpcm"
+	incbin "sound/dac/snare.dpcm"
 zDAC_Snare_End:
 
 zDAC_Timpani:
-	binclude "dac/timpani.dpcm"
+	incbin "sound/dac/timpani.dpcm"
 zDAC_Timpani_End:
-
-	if MOMPASS==2
-		if $ > 2000h
-			fatal "The driver is too big	; the maximum size it can take is 2000h. It currently takes \{$}h bytes. You won't be able to use this thing."
-		else
-			message "Driver size: \{$}h bytes."
-		endif
-	endif
-
-		restore
-		padding off
-		!org (DACDriver+Size_of_DAC_driver_guess)

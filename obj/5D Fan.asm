@@ -13,7 +13,7 @@ off_E56C:	dc.w loc_E570-off_E56C, loc_E594-off_E56C
 loc_E570:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Fan,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Fan,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Fan+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -96,4 +96,4 @@ loc_E64E:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc

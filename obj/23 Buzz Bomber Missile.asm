@@ -15,7 +15,7 @@ loc_7A04:
 		bpl.s	sub_7A5E
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Missile,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Buzz_Bomber,1,0),obGfx(a0)
+		move.w	#ArtTile_Buzz_Bomber+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#8,obActWid(a0)
@@ -37,7 +37,7 @@ loc_7A4E:
 
 sub_7A5E:
 		movea.l	objoff_3C(a0),a1
-		_cmpi.b	#id_ExplosionItem,obID(a1)
+		cmpi.b	#id_ExplosionItem,obID(a1)
 		beq.s	loc_7AB2
 		rts
 ; ---------------------------------------------------------------------------
@@ -63,11 +63,11 @@ loc_7A6C:
 		cmp.w	obY(a0),d0
 		bcs.s	loc_7AB2
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_7AA2:
-		_move.b	#id_MissileDissolve,obID(a0)
+		move.b	#id_MissileDissolve,obID(a0)
 		move.b	#0,obRoutine(a0)
 		bra.w	ObjCannonballExplode
 ; ---------------------------------------------------------------------------

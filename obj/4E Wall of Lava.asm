@@ -22,9 +22,9 @@ loc_CC10:
 		bne.s	loc_CC58
 
 loc_CC16:
-		_move.b	#id_LavaWall,obID(a1)
+		move.b	#id_LavaWall,obID(a1)
 		move.l	#Map_LWall,obMap(a1)
-		move.w	#make_art_tile(ArtTile_MZ_Lava,3,0),obGfx(a1)
+		move.w	#ArtTile_MZ_Lava+$6000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#$50,obActWid(a1)
 		move.w	obX(a0),obX(a1)
@@ -91,7 +91,7 @@ locret_CCE6:
 
 locret_CCE6:
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_CCE8:

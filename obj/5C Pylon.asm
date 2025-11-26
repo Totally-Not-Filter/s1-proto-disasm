@@ -13,7 +13,7 @@ off_E4EA:	dc.w loc_E4EE-off_E4EA, loc_E506-off_E4EA
 loc_E4EE:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Pylon,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Pylon,0,1),obGfx(a0)
+		move.w	#ArtTile_SLZ_Pylon+$8000,obGfx(a0)
 		move.b	#$10,obActWid(a0)
 
 loc_E506:

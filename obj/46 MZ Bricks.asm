@@ -17,7 +17,7 @@ loc_C400:
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
 		move.l	#Map_Brick,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$10,obActWid(a0)
@@ -47,7 +47,7 @@ loc_C46A:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 off_C48E:
 		dc.w locret_C498-off_C48E

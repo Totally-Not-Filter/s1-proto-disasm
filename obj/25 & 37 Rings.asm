@@ -67,13 +67,13 @@ loc_7C64:
 		bne.s	loc_7CC8
 
 loc_7C74:
-		_move.b	#id_Rings,obID(a1)
+		move.b	#id_Rings,obID(a1)
 		addq.b	#2,obRoutine(a1)
 		move.w	d2,obX(a1)
 		move.w	obX(a0),objoff_32(a1)
 		move.w	d3,obY(a1)
 		move.l	#Map_Ring,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
+		move.w	#ArtTile_Ring+$2000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#$47,obColType(a1)
@@ -101,7 +101,7 @@ loc_7CD0:
 		bsr.w	DisplaySprite
 		out_of_range.s	loc_7D2C,objoff_32(a0)
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_7CF8:
@@ -179,14 +179,14 @@ loc_7DA0:
 		bne.w	loc_7E2C
 
 loc_7DA8:
-		_move.b	#id_RingLoss,obID(a1)
+		move.b	#id_RingLoss,obID(a1)
 		addq.b	#2,obRoutine(a1)
 		move.b	#8,obHeight(a1)
 		move.b	#8,obWidth(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.l	#Map_Ring,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
+		move.w	#ArtTile_Ring+$2000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#$47,obColType(a1)

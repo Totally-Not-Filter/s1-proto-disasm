@@ -407,7 +407,7 @@ loc_418C:
 loc_4192:
 		cmpi.w	#$60,(v_lookshift).w
 		bne.s	loc_41AC
-	if ~~FixBugs
+	if FixBugs=0
 		; Bug: The camera delays when rolling down or up a slope very quickly
 		; Uncomment the lines below to apply the final's fix
 	else
@@ -468,7 +468,7 @@ loc_41E8:
 loc_41F4:
 		cmp.w	(v_limittop2).w,d1
 		bgt.s	loc_4214
-	if ~~FixBugs
+	if FixBugs=0
 		; Bug: If the player is going too fast vertically, they can die due to the camera's slowness.
 	else
 		cmpi.w	#-$100,d1
@@ -494,7 +494,7 @@ loc_4200:
 loc_420A:
 		cmp.w	(v_limitbtm2).w,d1
 		blt.s	loc_4214
-	if ~~FixBugs
+	if FixBugs=0
 		; Bug: If the player is going too fast vertically, they can die due to the camera's slowness.
 	else
 		subi.w	#$800,d1

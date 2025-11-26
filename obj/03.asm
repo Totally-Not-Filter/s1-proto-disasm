@@ -19,7 +19,7 @@ Obj03_Main:
 		move.w	#$100,obX(a0)
 		move.w	#$40,obY(a0)
 		move.l	#Map_02,obMap(a0)
-		move.w	#make_art_tile($4F0,3,0),obGfx(a0)
+		move.w	#$4F0+$6000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obColProp(a0)
 		move.b	#3,obFrame(a0)

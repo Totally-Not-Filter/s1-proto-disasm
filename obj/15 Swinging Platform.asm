@@ -14,7 +14,7 @@ off_548A:	dc.w ObjSwingPtfm_Init-off_548A, loc_55C8-off_548A, loc_55E4-off_548A,
 ObjSwingPtfm_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Swing_GHZ,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_MZ_Swing,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_MZ_Swing+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -30,7 +30,7 @@ ObjSwingPtfm_Init:
 		move.b	#$99,obColType(a0)
 
 ObjSwingPtfm_NotSLZ:
-		_move.b	obID(a0),d4
+		move.b	obID(a0),d4
 		moveq	#0,d1
 		lea	obSubtype(a0),a2
 		move.b	(a2),d1
@@ -52,7 +52,7 @@ ObjSwingPtfm_LoadLinks:
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
-	endif
+	endc
 		bne.s	loc_5586
 		addq.b	#1,obSubtype(a0)
 		move.w	a1,d5
@@ -61,7 +61,7 @@ ObjSwingPtfm_LoadLinks:
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 		move.b	#$A,obRoutine(a1)
-		_move.b	d4,obID(a1)
+		move.b	d4,obID(a1)
 		move.l	obMap(a0),obMap(a1)
 		move.w	obGfx(a0),obGfx(a1)
 		bclr	#6,obGfx(a1)
@@ -90,7 +90,7 @@ loc_5586:
 		btst	#4,d1
 		beq.s	loc_55C8
 		move.l	#Map_GBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Giant_Ball,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball+$4000,obGfx(a0)
 		move.b	#1,obFrame(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$81,obColType(a0)
@@ -102,9 +102,9 @@ loc_55C8:
 		move.b	obHeight(a0),d3
 		bsr.w	PtfmNormalHeight
 		bsr.w	sub_563C
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	ObjSwingPtfm_ChkDelete
 ; ---------------------------------------------------------------------------
 
@@ -119,9 +119,9 @@ loc_55E4:
 		move.b	obHeight(a0),d3
 		addq.b	#1,d3
 		bsr.w	PtfmSurfaceHeight
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	ObjSwingPtfm_ChkDelete
 ; ---------------------------------------------------------------------------
 		rts
@@ -221,7 +221,7 @@ ObjSwingPtfm_ChkDelete:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 ObjSwingPtfm_DeleteAll:

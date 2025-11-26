@@ -18,7 +18,7 @@ Obj04_Main:
 		addq.b	#2,obRoutine(a0)
 		move.w	#$40,obY(a0)
 		move.l	#Map_02,obMap(a0)
-		move.w	#make_art_tile($680,1,0),obGfx(a0)
+		move.w	#$680+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obColProp(a0)
 		move.b	#2,obFrame(a0)

@@ -34,9 +34,9 @@ loc_E37C:
 		move.b	#4,obRoutine(a1)
 
 loc_E38A:
-		_move.b	#id_Staircase,obID(a1)
+		move.b	#id_Staircase,obID(a1)
 		move.l	#Map_Stair,obMap(a1)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a1)
+		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#$10,obActWid(a1)

@@ -16,7 +16,7 @@ loc_6AEE:
 		move.w	#$D0,obX(a0)
 		move.w	#$130,obScreenY(a0)
 		move.l	#Map_TitleText,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Title_Foreground,0,0),obGfx(a0)
+		move.w	#ArtTile_Title_Foreground,obGfx(a0)
 		cmpi.b	#2,obFrame(a0)
 		bne.s	loc_6B1A
 		addq.b	#2,obRoutine(a0)

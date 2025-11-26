@@ -13,7 +13,7 @@ off_7070:	dc.w ObjCannonball_Init-off_7070, ObjCannonball_Act-off_7070, ObjCanno
 ObjCannonball_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapCannonball,obMap(a0)
-		move.w	#make_art_tile($418,1,0),obGfx(a0)
+		move.w	#$418+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$87,obColType(a0)
@@ -31,7 +31,7 @@ ObjCannonball_Act:
 		add.w	d1,obY(a0)
 
 loc_70C2:
-		_move.b	#id_MissileDissolve,obID(a0)
+		move.b	#id_MissileDissolve,obID(a0)
 		move.b	#0,obRoutine(a0)
 		bra.w	ObjCannonballExplode
 ; ---------------------------------------------------------------------------
@@ -41,9 +41,9 @@ loc_70D2:
 
 loc_70D6:
 		bsr.w	ObjectFall
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
@@ -52,7 +52,7 @@ loc_70D6:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 ObjCannonball_Delete:

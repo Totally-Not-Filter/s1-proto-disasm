@@ -20,7 +20,7 @@ loc_805E:
 		move.b	#$E,obHeight(a0)
 		move.b	#$E,obWidth(a0)
 		move.l	#Map_Monitor,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Monitor,0,0),obGfx(a0)
+		move.w	#ArtTile_Monitor,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$F,obActWid(a0)
@@ -138,7 +138,7 @@ loc_81AE:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 sub_81D2:
@@ -146,7 +146,7 @@ sub_81D2:
 		move.b	#0,obColType(a0)
 		bsr.w	FindFreeObj
 		bne.s	loc_81FA
-		_move.b	#id_PowerUp,obID(a1)
+		move.b	#id_PowerUp,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obAnim(a0),obAnim(a1)
@@ -154,7 +154,7 @@ sub_81D2:
 loc_81FA:
 		bsr.w	FindFreeObj
 		bne.s	loc_8216
-		_move.b	#id_ExplosionItem,obID(a1)
+		move.b	#id_ExplosionItem,obID(a1)
 		addq.b	#2,obRoutine(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)

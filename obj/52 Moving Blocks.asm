@@ -18,7 +18,7 @@ byte_D602:	dc.b $10, 0
 loc_D606:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_MBlock,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Block,2,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Block+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0

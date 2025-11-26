@@ -14,7 +14,7 @@ off_E6B0:	dc.w loc_E6B6-off_E6B0, loc_E6DA-off_E6B0, loc_E706-off_E6B0
 loc_E6B6:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Seesaw,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Seesaw,0,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Seesaw,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$30,obActWid(a0)

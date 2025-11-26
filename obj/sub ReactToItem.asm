@@ -168,7 +168,7 @@ loc_FCA2:
 		bset	#7,obStatus(a1)
 		moveq	#10,d0
 		bsr.w	ScoreAdd
-		_move.b	#id_ExplosionItem,obID(a1)
+		move.b	#id_ExplosionItem,obID(a1)
 		move.b	#0,obRoutine(a1)
 		tst.w	obVelY(a0)
 		bmi.s	loc_FCD0
@@ -211,7 +211,7 @@ loc_FCF4:
 		beq.s	loc_FD72
 		bsr.w	FindFreeObj
 		bne.s	loc_FD18
-		_move.b	#id_RingLoss,obID(a1)
+		move.b	#id_RingLoss,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
@@ -232,7 +232,7 @@ loc_FD48:
 		move.b	#id_Hurt,obAnim(a0)
 		move.w	#600,objoff_30(a0)
 		move.w	#sfx_Death,d0
-		cmpi.b	#id_Spikes,obID(a2)
+		cmpi.b	#id_Spikes,(a2)
 		bne.s	loc_FD68
 		move.w	#sfx_HitSpikes,d0
 
@@ -258,7 +258,7 @@ loc_FD78:
 		move.w	obY(a0),objoff_38(a0)
 		move.b	#id_Death,obAnim(a0)
 		move.w	#sfx_Death,d0
-		cmpi.b	#id_Spikes,obID(a2)
+		cmpi.b	#id_Spikes,(a2)
 		bne.s	loc_FDBA
 		move.w	#sfx_HitSpikes,d0
 

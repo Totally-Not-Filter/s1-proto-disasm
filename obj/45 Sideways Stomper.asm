@@ -34,14 +34,14 @@ loc_9A12:
 
 loc_9A18:
 		move.b	(a2)+,obRoutine(a1)
-		_move.b	#id_SideStomp,obID(a1)
+		move.b	#id_SideStomp,obID(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
 		add.w	obX(a0),d0
 		move.w	d0,obX(a1)
 		move.l	#Map_SStom,obMap(a1)
-		move.w	#make_art_tile(ArtTile_MZ_Spike_Stomper,0,0),obGfx(a1)
+		move.w	#ArtTile_MZ_Spike_Stomper,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.w	obX(a1),objoff_30(a1)
 		move.w	obX(a0),objoff_3A(a1)

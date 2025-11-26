@@ -17,7 +17,7 @@ loc_9F1A:
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
 		move.l	#Map_Push,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Block,2,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Block+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		moveq	#0,d0
@@ -29,7 +29,7 @@ loc_9F1A:
 		move.b	(a2)+,obFrame(a0)
 		tst.b	obSubtype(a0)
 		beq.s	loc_9F68
-		move.w	#make_art_tile(ArtTile_MZ_Block,2,1),obGfx(a0)
+		move.w	#ArtTile_MZ_Block+$4000+$8000,obGfx(a0)
 
 loc_9F68:
 		lea	(v_regbuffer).w,a2
@@ -70,7 +70,7 @@ loc_9FD4:
 		bsr.w	DisplaySprite
 		out_of_range.s	loc_9FF6
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_9FF6:
@@ -199,7 +199,7 @@ locret_A124:
 loc_A126:
 		bsr.w	FindFreeObj
 		bne.s	locret_A14C
-		_move.b	#id_GeyserMaker,obID(a1)
+		move.b	#id_GeyserMaker,obID(a1)
 		move.w	obX(a0),obX(a1)
 		add.w	d2,obX(a1)
 		move.w	obY(a0),obY(a1)

@@ -30,7 +30,7 @@ loc_C1FA:
 		bne.s	locret_C22A
 		bsr.w	FindFreeObj
 		bne.s	locret_C22A
-		_move.b	#id_LavaBall,obID(a1)
+		move.b	#id_LavaBall,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obSubtype(a0),obSubtype(a1)

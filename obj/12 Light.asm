@@ -13,7 +13,7 @@ off_C538:	dc.w loc_C53C-off_C538, loc_C560-off_C538
 loc_C53C:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Light,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,0,0),obGfx(a0)
+		move.w	#ArtTile_Level,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#6,obPriority(a0)
@@ -35,4 +35,4 @@ loc_C57E:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc

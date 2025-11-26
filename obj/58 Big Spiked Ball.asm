@@ -13,7 +13,7 @@ ObjGiantBalls_Index:dc.w ObjGiantBalls_Init-ObjGiantBalls_Index, ObjGiantBalls_M
 ObjGiantBalls_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_BBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SZ_Big_Spikeball,0,0),obGfx(a0)
+		move.w	#ArtTile_SZ_Big_Spikeball,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)

@@ -1,8 +1,10 @@
+sound/z80.bin
+sound/z80.prev.bin
+sound/z80.lst
 s1built.bin
 s1built.prev.bin
 main.lst
 main.log
-main.p
 SonLVL INI Files/dllcache/*
 SonLVL INI Files/SonLVL.log
 

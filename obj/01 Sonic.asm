@@ -21,7 +21,7 @@ loc_E830:
 		move.b	#$13,obHeight(a0)
 		move.b	#9,obWidth(a0)
 		move.l	#Map_Sonic,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Sonic,0,0),obGfx(a0)
+		move.w	#ArtTile_Sonic,obGfx(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$18,obActWid(a0)
 		move.b	#4,obRender(a0)
@@ -390,7 +390,7 @@ loc_EBCC:
 		move.b	obAngle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
-	endif
+	endc
 		bne.s	locret_EBFA
 		cmpi.w	#$400,d0
 		blt.s	locret_EBFA
@@ -438,7 +438,7 @@ loc_EC32:
 		move.b	obAngle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
-	endif
+	endc
 		bne.s	locret_EC60
 		cmpi.w	#-$400,d0
 		bgt.s	locret_EC60

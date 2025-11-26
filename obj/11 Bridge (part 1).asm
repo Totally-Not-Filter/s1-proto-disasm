@@ -14,13 +14,13 @@ off_4E64:	dc.w Bridge_Init-off_4E64, loc_4F32-off_4E64, loc_50B2-off_4E64, Bridg
 Bridge_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapBridge,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Bridge,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Bridge+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$80,obActWid(a0)
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
-		_move.b	obID(a0),d4
+		move.b	obID(a0),d4
 		lea	obSubtype(a0),a2
 		moveq	#0,d1
 		move.b	(a2),d1
@@ -37,7 +37,7 @@ Bridge_MakeLog:
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
-	endif
+	endc
 		bne.s	loc_4F32
 		addq.b	#1,obSubtype(a0)
 		cmp.w	obX(a0),d3
@@ -59,12 +59,12 @@ loc_4EE6:
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 		move.b	#$A,obRoutine(a1)
-		_move.b	d4,obID(a1)
+		move.b	d4,obID(a1)
 		move.w	d2,obY(a1)
 		move.w	d2,objoff_3C(a1)
 		move.w	d3,obX(a1)
 		move.l	#MapBridge,obMap(a1)
-		move.w	#make_art_tile(ArtTile_GHZ_Bridge,2,0),obGfx(a1)
+		move.w	#ArtTile_GHZ_Bridge+$4000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#8,obActWid(a1)
@@ -79,7 +79,7 @@ loc_4F32:
 		bsr.w	Bridge_UpdateBend
 
 loc_4F42:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	Bridge_ChkDelete

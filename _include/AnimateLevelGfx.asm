@@ -43,7 +43,7 @@ AniArt_GHZ_Waterfall:
 		lea	$100(a1),a1
 
 .isframe0:
-		locVRAM ArtTile_GHZ_Waterfall*tile_size
+		locVRAM (ArtTile_GHZ_Waterfall*tile_size)
 		move.w	#8-1,d1
 		bra.w	LoadTiles
 ; ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ AniArt_GHZ_Bigflower:
 		lea	$200(a1),a1
 
 .isframe0:
-		locVRAM ArtTile_GHZ_Big_Flower_1*tile_size
+		locVRAM (ArtTile_GHZ_Big_Flower_1*tile_size)
 		move.w	#16-1,d1
 		bra.w	LoadTiles
 ; ---------------------------------------------------------------------------
@@ -84,7 +84,7 @@ AniArt_GHZ_Smallflower:
 		move.w	d0,d1
 		add.w	d0,d0
 		add.w	d1,d0
-		locVRAM ArtTile_GHZ_Small_Flower*tile_size
+		locVRAM (ArtTile_GHZ_Small_Flower*tile_size)
 		lea	(Art_GhzFlower2).l,a1
 		lea	(a1,d0.w),a1
 		move.w	#12-1,d1
@@ -117,7 +117,7 @@ AniArt_MZ_Lava:
 		move.b	d0,(v_lani0_frame).w
 		mulu.w	#$100,d0
 		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Animated_Lava*tile_size
+		locVRAM (ArtTile_MZ_Animated_Lava*tile_size)
 		move.w	#8-1,d1
 		bsr.w	LoadTiles
 
@@ -131,7 +131,7 @@ AniArt_MZ_Magma:
 		lea	(Art_MzLava2).l,a4
 		ror.w	#7,d0
 		adda.w	d0,a4
-		locVRAM ArtTile_MZ_Animated_Magma*tile_size
+		locVRAM (ArtTile_MZ_Animated_Magma*tile_size)
 		moveq	#0,d3
 		move.b	(v_lani1_frame).w,d3
 		addq.b	#1,(v_lani1_frame).w
@@ -166,7 +166,7 @@ AniArt_MZ_Saturns:
 	else
 		; Bug: This misses the last frame of animation
 		cmpi.b	#5,d0				; are we on frame 5?
-	endif
+	endc
 		bne.s	.notframe5			; if not, then set back to frame 0
 		moveq	#0,d0
 
@@ -174,7 +174,7 @@ AniArt_MZ_Saturns:
 		move.b	d0,(v_lani2_frame).w
 		mulu.w	#$100,d0
 		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Saturns*tile_size
+		locVRAM (ArtTile_MZ_Saturns*tile_size)
 		move.w	#8-1,d1
 		bsr.w	LoadTiles
 		
@@ -186,7 +186,7 @@ AniArt_MZ_Saturns:
 		andi.b	#3,(v_lani3_frame).w
 		mulu.w	#$C0,d0
 		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Torch*tile_size
+		locVRAM (ArtTile_MZ_Torch*tile_size)
 		move.w	#6-1,d1
 		bra.w	LoadTiles
 ; ---------------------------------------------------------------------------
@@ -349,7 +349,7 @@ loc_11590:
 loc_1159E:
 		move.l	$C(a1),d0
 		rol.l	#8,d0
-		_move.b	0(a1),d0
+		move.b	0(a1),d0
 		move.l	d0,(a6)
 		lea	$10(a1),a1
 		dbf	d1,loc_1159E
@@ -358,14 +358,14 @@ loc_1159E:
 
 loc_115B4:
 		move.w	$E(a1),(a6)
-		_move.w	0(a1),(a6)
+		move.w	0(a1),(a6)
 		lea	$10(a1),a1
 		dbf	d1,loc_115B4
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_115C6:
-		_move.l	0(a1),d0
+		move.l	0(a1),d0
 		move.b	$F(a1),d0
 		ror.l	#8,d0
 		move.l	d0,(a6)

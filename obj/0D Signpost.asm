@@ -25,7 +25,7 @@ off_C726:	dc.w loc_C72E-off_C726
 loc_C72E:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Sign,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Signpost,0,0),obGfx(a0)
+		move.w	#ArtTile_Signpost,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$18,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -66,7 +66,7 @@ loc_C798:
 		lea	byte_C804(pc,d0.w),a2
 		bsr.w	FindFreeObj
 		bne.s	locret_C802
-		_move.b	#id_Rings,obID(a1)
+		move.b	#id_Rings,obID(a1)
 		move.b	#6,obRoutine(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
@@ -77,7 +77,7 @@ loc_C798:
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
 		move.l	#MapRing,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
+		move.w	#ArtTile_Ring+$2000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#8,obActWid(a1)

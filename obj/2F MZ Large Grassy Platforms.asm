@@ -20,7 +20,7 @@ off_8ED2:	dc.w ObjMZPlatforms_Slope1-off_8ED2
 loc_8EDE:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_LGrass,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,1),obGfx(a0)
+		move.w	#ArtTile_Level+$4000+$8000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#5,obPriority(a0)
 		move.w	obY(a0),objoff_2C(a0)
@@ -77,9 +77,9 @@ loc_8F96:
 		bsr.w	loc_A30C
 
 loc_8F9E:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_90C2
 ; ---------------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ loc_9024:
 		move.b	#1,objoff_35(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	loc_9082
-		_move.b	#id_GrassFire,obID(a1)
+		move.b	#id_GrassFire,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	objoff_2C(a0),objoff_2C(a1)
 		addq.w	#8,objoff_2C(a1)
@@ -222,7 +222,7 @@ loc_90CE:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_90EE:
@@ -252,7 +252,7 @@ locret_911E:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 ObjMZPlatforms_Slope1:dc.b $20, $20, $20, $20, $20

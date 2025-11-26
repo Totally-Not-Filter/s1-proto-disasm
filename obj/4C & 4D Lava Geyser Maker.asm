@@ -15,7 +15,7 @@ off_C926:	dc.w loc_C932-off_C926, loc_C95C-off_C926, loc_C9CE-off_C926, loc_C982
 loc_C932:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Geyser,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Lava,3,1),obGfx(a0)
+		move.w	#ArtTile_MZ_Lava+$6000+$8000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#$38,obActWid(a0)
@@ -42,7 +42,7 @@ loc_C982:
 		addq.b	#2,obRoutine(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	loc_C9A8
-		_move.b	#id_LavaGeyser,obID(a1)
+		move.b	#id_LavaGeyser,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obSubtype(a0),obSubtype(a1)
@@ -123,9 +123,9 @@ sub_CA4A:
 ; ---------------------------------------------------------------------------
 
 sub_CA50:
-		_move.b	#id_LavaGeyser,obID(a1)
+		move.b	#id_LavaGeyser,obID(a1)
 		move.l	#Map_Geyser,obMap(a1)
-		move.w	#make_art_tile(ArtTile_MZ_Lava,3,0),obGfx(a1)
+		move.w	#ArtTile_MZ_Lava+$6000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#$20,obActWid(a1)
 		move.w	obX(a0),obX(a1)

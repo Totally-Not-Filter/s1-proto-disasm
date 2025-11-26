@@ -11,7 +11,7 @@ UpdateHUD:
 		beq.s	loc_1169A
 
 		clr.b	(f_scorecount).w
-		locVRAM (ArtTile_HUD+$1A)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$1A)*tile_size),d0
 		move.l	(v_score).w,d1
 		bsr.w	Hud_Score
 
@@ -23,7 +23,7 @@ loc_1169A:
 
 loc_116A6:
 		clr.b	(f_ringcount).w
-		locVRAM (ArtTile_HUD+$30)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$30)*tile_size),d0
 		moveq	#0,d1
 		move.w	(v_rings).w,d1
 		bsr.w	Hud_Rings
@@ -49,11 +49,11 @@ loc_116BA:
 		move.b	#9,(a1)
 
 loc_116EE:
-		locVRAM (ArtTile_HUD+$28)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$28)*tile_size),d0
 		moveq	#0,d1
 		move.b	(v_timemin).w,d1
 		bsr.w	Hud_Mins
-		locVRAM (ArtTile_HUD+$2C)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$2C)*tile_size),d0
 		moveq	#0,d1
 		move.b	(v_timesec).w,d1
 		bsr.w	Hud_Secs
@@ -68,7 +68,7 @@ loc_1171C:
 		tst.b	(f_endactbonus).w
 		beq.s	locret_11744
 		clr.b	(f_endactbonus).w
-		locVRAM ArtTile_Bonuses*tile_size
+		locVRAM (ArtTile_Bonuses*tile_size)
 		moveq	#0,d1
 		move.w	(v_timebonus).w,d1
 		bsr.w	Hud_TimeRingBonus
@@ -89,13 +89,13 @@ HudDebug:
 
 loc_11756:
 		clr.b	(f_ringcount).w
-		locVRAM (ArtTile_HUD+$30)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$30)*tile_size),d0
 		moveq	#0,d1
 		move.w	(v_rings).w,d1
 		bsr.w	Hud_Rings
 
 loc_1176A:
-		locVRAM (ArtTile_HUD+$2C)*tile_size,d0
+		locVRAM ((ArtTile_HUD+$2C)*tile_size),d0
 		moveq	#0,d1
 		move.b	(v_spritecount).w,d1
 		bsr.w	Hud_Secs
@@ -108,7 +108,7 @@ loc_11788:
 		tst.b	(f_endactbonus).w
 		beq.s	locret_117B0
 		clr.b	(f_endactbonus).w
-		locVRAM ArtTile_Bonuses*tile_size
+		locVRAM (ArtTile_Bonuses*tile_size)
 		moveq	#0,d1
 		move.w	(v_timebonus).w,d1
 		bsr.w	Hud_TimeRingBonus
@@ -121,7 +121,7 @@ locret_117B0:
 ; ---------------------------------------------------------------------------
 
 Hud_LoadZero:
-		locVRAM (ArtTile_HUD+$30)*tile_size
+		locVRAM ((ArtTile_HUD+$30)*tile_size)
 		lea	Hud_TilesRings(pc),a2
 		move.w	#Hud_TilesBase_End-Hud_TilesRings-1,d2
 		bra.s	loc_117E2
@@ -130,7 +130,7 @@ Hud_LoadZero:
 Hud_Base:
 		lea	(vdp_data_port).l,a6
 		bsr.w	Hud_Lives
-		locVRAM (ArtTile_HUD+$18)*tile_size
+		locVRAM ((ArtTile_HUD+$18)*tile_size)
 		lea	Hud_TilesBase(pc),a2
 		move.w	#Hud_TilesBase_End-Hud_TilesBase-1,d2
 
@@ -159,35 +159,35 @@ loc_11802:
 		dbf	d1,loc_11802
 		bra.s	loc_117FC
 ; ---------------------------------------------------------------------------
-		charset	' ',$FF
-		charset	'0',0
-		charset	'1',2
-		charset	'2',4
-		charset	'3',6
-		charset	'4',8
-		charset	'5',$A
-		charset	'6',$C
-		charset	'7',$E
-		charset	'8',$10
-		charset	'9',$12
-		charset	':',$14
-		charset	'E',$16
+;		charset	' ',$FF
+;		charset	'0',0
+;		charset	'1',2
+;		charset	'2',4
+;		charset	'3',6
+;		charset	'4',8
+;		charset	'5',$A
+;		charset	'6',$C
+;		charset	'7',$E
+;		charset	'8',$10
+;		charset	'9',$12
+;		charset	':',$14
+;		charset	'E',$16
 
 ;byte_1180E:
 Hud_TilesBase:
-		dc.b "E      0"
-		dc.b "0:00"
+		dc.b $16,$FF,$FF,$FF,$FF,$FF,$FF,0
+		dc.b 0,$14,0,0
 ;byte_1181A:
 Hud_TilesRings:
-		dc.b "  0"
+		dc.b $FF,$FF,0
 Hud_TilesBase_End
 		even
 
-		charset
+;		charset
 ; ---------------------------------------------------------------------------
 
 HudDb_XY:
-		locVRAM (ArtTile_HUD+$18)*tile_size
+		locVRAM ((ArtTile_HUD+$18)*tile_size)
 		move.w	(v_scrposx).w,d1
 		swap	d1
 		move.w	(v_player+obX).w,d1
@@ -407,7 +407,7 @@ loc_119AE:
 ; ---------------------------------------------------------------------------
 
 Hud_Lives:
-		locVRAM (ArtTile_Lives_Counter+9)*tile_size,d0
+		locVRAM ((ArtTile_Lives_Counter+9)*tile_size),d0
 		moveq	#0,d1
 		move.b	(v_lives).w,d1
 		lea	(Hud_10).l,a2

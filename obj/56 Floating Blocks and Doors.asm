@@ -20,10 +20,10 @@ ObjMovingBlocks_Variables:dc.b $10, $10
 ObjMovingBlocks_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_FBlock,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level+$4000,obGfx(a0)
 		cmpi.b	#id_SLZ,(v_zone).w
 		bne.s	loc_D912
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
 
 loc_D912:
 		move.b	#4,obRender(a0)
@@ -99,7 +99,7 @@ ObjMovingBlocks_ChkDelete:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject,objoff_34(a0)
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 ObjMovingBlocks_TypeIndex:dc.w ObjMovingBlocks_Type00-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type01-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type02-ObjMovingBlocks_TypeIndex

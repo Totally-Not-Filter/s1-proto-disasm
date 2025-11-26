@@ -5,7 +5,7 @@ DeleteObject:
 
 ObjectDeleteA1:
 		moveq	#0,d1
-		moveq	#bytesToLcnt(object_size),d0
+		moveq	#(object_size)/4-1,d0
 
 .clear:
 		move.l	d1,(a1)+

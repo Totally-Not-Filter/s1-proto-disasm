@@ -13,7 +13,7 @@ off_BD26:	dc.w loc_BD2C-off_BD26, loc_BD5C-off_BD26, loc_BEC6-off_BD26
 loc_BD2C:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Newt,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Newtron,1,0),obGfx(a0)
+		move.w	#ArtTile_Newtron+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$14,obActWid(a0)
@@ -48,7 +48,7 @@ loc_BD9A:
 		move.b	#1,obAnim(a0)
 		tst.b	obSubtype(a0)
 		beq.s	locret_BDC2
-		move.w	#make_art_tile(ArtTile_Newtron,0,0),obGfx(a0)
+		move.w	#ArtTile_Newtron,obGfx(a0)
 		move.b	#8,ob2ndRout(a0)
 		move.b	#4,obAnim(a0)
 
@@ -134,7 +134,7 @@ loc_BE6C:
 		move.b	#1,objoff_32(a0)
 		bsr.w	FindFreeObj
 		bne.s	locret_BEC4
-		_move.b	#id_Missile,obID(a1)
+		move.b	#id_Missile,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		subq.w	#8,obY(a1)

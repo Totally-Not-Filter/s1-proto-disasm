@@ -12,7 +12,7 @@ ObjSpring:
 		bsr.w	DisplaySprite
 		out_of_range.w	DeleteObject
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 off_BAA0:	dc.w loc_BAB8-off_BAA0, sub_BB2E-off_BAA0, loc_BB84-off_BAA0, sub_BB8E-off_BAA0, sub_BB9A-off_BAA0
@@ -24,7 +24,7 @@ word_BAB4:	dc.w -$1000, -$A00
 loc_BAB8:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Spring,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Spring_Horizontal,0,0),obGfx(a0)
+		move.w	#ArtTile_Spring_Horizontal,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -34,7 +34,7 @@ loc_BAB8:
 		move.b	#8,obRoutine(a0)
 		move.b	#1,obAnim(a0)
 		move.b	#3,obFrame(a0)
-		move.w	#make_art_tile(ArtTile_Spring_Vertical,0,0),obGfx(a0)
+		move.w	#ArtTile_Spring_Vertical,obGfx(a0)
 		move.b	#8,obActWid(a0)
 
 loc_BB04:

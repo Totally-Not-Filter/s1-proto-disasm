@@ -13,14 +13,14 @@ off_5788:	dc.w loc_5792-off_5788, loc_5854-off_5788, loc_5854-off_5788, loc_58C2
 loc_5792:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Hel,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Spike_Pole,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Spike_Pole+$4000,obGfx(a0)
 		move.b	#7,obStatus(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#8,obActWid(a0)
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
-		_move.b	obID(a0),d4
+		move.b	obID(a0),d4
 		lea	obSubtype(a0),a2
 		moveq	#0,d1
 		move.b	(a2),d1
@@ -38,7 +38,7 @@ loc_57E2:
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
-	endif
+	endc
 		bne.s	loc_5854
 		addq.b	#1,obSubtype(a0)
 		move.w	a1,d5
@@ -49,11 +49,11 @@ loc_57E2:
 
 loc_57FA:
 		move.b	#8,obRoutine(a1)
-		_move.b	d4,obID(a1)
+		move.b	d4,obID(a1)
 		move.w	d2,obY(a1)
 		move.w	d3,obX(a1)
 		move.l	obMap(a0),obMap(a1)
-		move.w	#make_art_tile(ArtTile_GHZ_Spike_Pole,2,0),obGfx(a1)
+		move.w	#ArtTile_GHZ_Spike_Pole+$4000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#8,obActWid(a1)
@@ -74,9 +74,9 @@ loc_5850:
 
 loc_5854:
 		bsr.w	sub_5860
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5880
 ; ---------------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ loc_5880:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_58A0:

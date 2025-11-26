@@ -12,7 +12,7 @@ ObjGlassBlock:
 		bsr.w	DisplaySprite
 		out_of_range.w	.delete
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 .delete:
@@ -51,14 +51,14 @@ loc_9416:
 
 loc_941C:
 		move.b	(a2)+,obRoutine(a1)
-		_move.b	#id_GlassBlock,obID(a1)
+		move.b	#id_GlassBlock,obID(a1)
 		move.w	obX(a0),obX(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
 		move.l	#Map_Glass,obMap(a1)
-		move.w	#make_art_tile(ArtTile_MZ_Glass_Pillar,2,1),obGfx(a1)
+		move.w	#ArtTile_MZ_Glass_Pillar+$4000+$8000,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.w	obY(a1),objoff_30(a1)
 		move.b	obSubtype(a0),obSubtype(a1)

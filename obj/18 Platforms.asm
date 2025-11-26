@@ -12,7 +12,7 @@ off_5918:	dc.w loc_5922-off_5918, loc_59AE-off_5918, loc_59D2-off_5918, loc_5BCE
 
 loc_5922:
 		addq.b	#2,obRoutine(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level+$4000,obGfx(a0)
 		move.l	#Map_Plat_GHZ,obMap(a0)
 		move.b	#$20,obActWid(a0)
 		cmpi.b	#id_SZ,(v_zone).w
@@ -25,7 +25,7 @@ loc_5950:
 		bne.s	loc_5972
 		move.l	#Map_Plat_SLZ,obMap(a0)
 		move.b	#$20,obActWid(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
 		move.b	#3,obSubtype(a0)
 
 loc_5972:
@@ -58,9 +58,9 @@ loc_59B8:
 loc_59C2:
 		bsr.w	sub_5A1E
 		bsr.w	sub_5A04
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5BB0
 ; ---------------------------------------------------------------------------
 
@@ -78,9 +78,9 @@ loc_59DE:
 		bsr.w	sub_5A04
 		move.w	(sp)+,d2
 		bsr.w	ptfmSurfaceNormal
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5BB0
 ; ---------------------------------------------------------------------------
 		rts
@@ -278,7 +278,7 @@ loc_5BB0:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_5BCE:

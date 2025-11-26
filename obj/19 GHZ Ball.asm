@@ -25,7 +25,7 @@ loc_5C98:
 		move.w	#0,obVelY(a0)
 		move.b	#8,obRoutine(a0)
 		move.l	#Map_GBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Giant_Ball,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball+$4000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -54,9 +54,9 @@ loc_5D14:
 
 loc_5D20:
 		bsr.w	sub_5DC8
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5E2A
 ; ---------------------------------------------------------------------------
 
@@ -83,9 +83,9 @@ loc_5D70:
 		move.w	#-$400,obVelY(a0)
 
 loc_5D7E:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5E2A
 ; ---------------------------------------------------------------------------
 
@@ -110,9 +110,9 @@ loc_5DBE:
 		nop
 
 loc_5DC0:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
-	endif
+	endc
 		bra.w	loc_5E2A
 ; ---------------------------------------------------------------------------
 
@@ -175,7 +175,7 @@ loc_5E2A:
 		bra.w	DisplaySprite
 	else
 		rts
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 loc_5E4A:

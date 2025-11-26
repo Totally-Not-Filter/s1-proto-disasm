@@ -18,7 +18,7 @@ loc_C254:
 		move.b	#8,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Fire,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Fireball,0,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Fireball,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$8B,obColType(a0)

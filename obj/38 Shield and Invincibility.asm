@@ -18,13 +18,13 @@ ObjShield_Init:
 		move.b	#$10,obActWid(a0)
 		tst.b	obAnim(a0)
 		bne.s	loc_F786
-		move.w	#make_art_tile(ArtTile_Shield,0,0),obGfx(a0)
+		move.w	#ArtTile_Shield,obGfx(a0)
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_F786:
 		addq.b	#2,obRoutine(a0)
-		move.w	#make_art_tile(ArtTile_Invincibility,0,0),obGfx(a0)
+		move.w	#ArtTile_Invincibility,obGfx(a0)
 		rts
 ; ---------------------------------------------------------------------------
 

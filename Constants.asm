@@ -80,64 +80,63 @@ bitDn:		equ 1
 bitUp:		equ 0
 
 ; Object variables
-obj STRUCT DOTS
-ID:			ds.b 1		; id of object (this is put here for readability, this actually makes routines slower by 4 cycles)
-Render:		ds.b 1		; bitfield for x/y flip, display mode
-Gfx:		ds.w 1		; palette line & VRAM setting (2 bytes)
-Map:		ds.l 1		; mappings address (4 bytes)
-X:			ds.w 1		; x-axis position (2-4 bytes)
-ScreenY:	ds.w 1		; y-axis position for screen-fixed items (2 bytes)
-Y:			ds.l 1		; y-axis position (2-4 bytes)
-VelX:		ds.w 1		; x-axis velocity (2 bytes)
-VelY:		ds.w 1		; y-axis velocity (2 bytes)
-Inertia:	ds.w 1		; potential speed (2 bytes)
-Height:		ds.b 1		; height/2
-Width:		ds.b 1		; width/2
-ActWid:		ds.b 1		; action width
-Priority:	ds.b 1		; sprite stack priority -- 0 is front
-Frame:		ds.b 1		; current frame displayed
-AniFrame:	ds.b 1		; current frame in animation script
-Anim:		ds.b 1		; current animation
-NextAni:	ds.b 1		; next animation
-TimeFrame:	ds.b 1		; time to next frame
-DelayAni:	ds.b 1		; time to delay animation
-ColType:	ds.b 1		; collision response type
-ColProp:	ds.b 1		; collision extra property
-Status:		ds.b 1		; orientation or mode
-RespawnNo:	ds.b 1		; respawn list index number
-Routine:	ds.b 1		; routine number
-2ndRout:				; secondary routine number
-Solid:		ds.b 1		; solid status flag
-Angle:		ds.w 1		; angle
-Subtype:	ds.b 1		; object subtype
-Off_29		ds.b 1
-Off_2A		ds.b 1
-Off_2B		ds.b 1
-Off_2C		ds.b 1
-Off_2D		ds.b 1
-Off_2E		ds.b 1
-Off_2F		ds.b 1
-BossX
-Off_30		ds.b 1
-Off_31		ds.b 1
-Off_32		ds.b 1
-Off_33		ds.b 1
-Off_34		ds.b 1
-Off_35		ds.b 1
-Off_36		ds.b 1
-Off_37		ds.b 1
-BossY
-Off_38		ds.b 1
-Off_39		ds.b 1
-Off_3A		ds.b 1
-Off_3B		ds.b 1
-Off_3C		ds.b 1
-Off_3D		ds.b 1
-Off_3E		ds.b 1
-Off_3F		ds.b 1
-Size		ds.b 1					; size for each object
-obj ENDSTRUCT
-	!org 0
+	rsset	0
+obj.ID:			rs.b 1		; id of object (this is put here for readability, this actually makes routines slower by 4 cycles)
+obj.Render:		rs.b 1		; bitfield for x/y flip, display mode
+obj.Gfx:		rs.w 1		; palette line & VRAM setting (2 bytes)
+obj.Map:		rs.l 1		; mappings address (4 bytes)
+obj.X:			rs.w 1		; x-axis position (2-4 bytes)
+obj.ScreenY:	rs.w 1		; y-axis position for screen-fixed items (2 bytes)
+obj.Y:			rs.l 1		; y-axis position (2-4 bytes)
+obj.VelX:		rs.w 1		; x-axis velocity (2 bytes)
+obj.VelY:		rs.w 1		; y-axis velocity (2 bytes)
+obj.Inertia:	rs.w 1		; potential speed (2 bytes)
+obj.Height:		rs.b 1		; height/2
+obj.Width:		rs.b 1		; width/2
+obj.ActWid:		rs.b 1		; action width
+obj.Priority:	rs.b 1		; sprite stack priority -- 0 is front
+obj.Frame:		rs.b 1		; current frame displayed
+obj.AniFrame:	rs.b 1		; current frame in animation script
+obj.Anim:		rs.b 1		; current animation
+obj.NextAni:	rs.b 1		; next animation
+obj.TimeFrame:	rs.b 1		; time to next frame
+obj.DelayAni:	rs.b 1		; time to delay animation
+obj.ColType:	rs.b 1		; collision response type
+obj.ColProp:	rs.b 1		; collision extra property
+obj.Status:		rs.b 1		; orientation or mode
+obj.RespawnNo:	rs.b 1		; respawn list index number
+obj.Routine:	rs.b 1		; routine number
+obj.2ndRout:	rs.b 0		; secondary routine number
+obj.Solid:		rs.b 1		; solid status flag
+obj.Angle:		rs.w 1		; angle
+obj.Subtype:	rs.b 1		; object subtype
+obj.Off_29:		rs.b 1
+obj.Off_2A:		rs.b 1
+obj.Off_2B:		rs.b 1
+obj.Off_2C:		rs.b 1
+obj.Off_2D:		rs.b 1
+obj.Off_2E:		rs.b 1
+obj.Off_2F:		rs.b 1
+obj.BossX:		rs.b 0
+obj.Off_30:		rs.b 1
+obj.Off_31:		rs.b 1
+obj.Off_32:		rs.b 1
+obj.Off_33:		rs.b 1
+obj.Off_34:		rs.b 1
+obj.Off_35:		rs.b 1
+obj.Off_36:		rs.b 1
+obj.Off_37:		rs.b 1
+obj.BossY:		rs.b 0
+obj.Off_38:		rs.b 1
+obj.Off_39:		rs.b 1
+obj.Off_3A:		rs.b 1
+obj.Off_3B:		rs.b 1
+obj.Off_3C:		rs.b 1
+obj.Off_3D:		rs.b 1
+obj.Off_3E:		rs.b 1
+obj.Off_3F:		rs.b 1
+obj.Size:		rs.b 1					; size for each object
+	rsreset
 
 ; Object variables used by Sonic
 flashtime:	equ obj.Off_30				; time between flashes after getting hit
@@ -228,18 +227,17 @@ vdp_counter:		equ $C00008
 
 psg_input:		equ $C00011
 
-	phase	$1FF4
-z80_stack:	ds.w 1
-zDAC_Update:	ds.b 1
-zVoiceFlag:	ds.b 1
-zVoiceTblAdr:	ds.w 1
-zBankStore:	ds.w 1
-zLoopDataStr:	ds.b 1
-zDAC_Status:	ds.b 1					; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
-zRepeatFlag:	ds.b 1
-zDAC_Sample:	ds.b 1					; Sample to play, the 68k will move into this locatiton whatever sample that's supposed to be played.
-	dephase
-	!org 0
+	rsset	$1FF4
+z80_stack:	rs.w 1
+zDAC_Update:	rs.b 1
+zVoiceFlag:	rs.b 1
+zVoiceTblAdr:	rs.w 1
+zBankStore:	rs.w 1
+zLoopDataStr:	rs.b 1
+zDAC_Status:	rs.b 1					; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
+zRepeatFlag:	rs.b 1
+zDAC_Sample:	rs.b 1					; Sample to play, the 68k will move into this locatiton whatever sample that's supposed to be played.
+	rsreset
 
 zYM2612_A0:	equ $4000
 zYM2612_D0:	equ $4001
@@ -247,6 +245,8 @@ zYM2612_A1:	equ $4002
 zYM2612_D1:	equ $4003
 zBankRegister:	equ $6000
 zROMWindow:	equ $8000
+
+zTimpani_Pitch:	equ $183
 
 ; Z80 addresses
 z80_ram:		equ $A00000			; start of Z80 RAM

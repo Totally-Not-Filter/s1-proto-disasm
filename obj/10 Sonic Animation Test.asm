@@ -19,7 +19,7 @@ Obj10_Init:
 		move.b	#$12,obHeight(a0)	; The height defined here is 1 pixel shorter than what the Sonic object actually uses.
 		move.b	#9,obWidth(a0)
 		move.l	#Map_Sonic,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Sonic,0,0),obGfx(a0)
+		move.w	#ArtTile_Sonic,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 
@@ -78,7 +78,7 @@ Obj10_Main:
 		; This also does not account for the last animation ID, which is id_Hurt, so once it reaches the shrinking animation, it gets set back to the first animation
 		cmpi.b	#id_Shrink,obAnim(a0)	; is animation ID the shrinking animation?
 		blo.s	.notreset	; if lower than, do not reset to the first animation ID
-	endif
+	endc
 		move.b	#id_Walk,obAnim(a0)	; set back to the first animation ID
 
 .notreset:

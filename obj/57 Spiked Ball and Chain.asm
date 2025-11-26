@@ -13,7 +13,7 @@ ObjSpikedBalls_Index:dc.w ObjSpikedBalls_Init-ObjSpikedBalls_Index, ObjSpikedBal
 ObjSpikedBalls_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_SBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SZ_Spikeball_Chain,0,0),obGfx(a0)
+		move.w	#ArtTile_SZ_Spikeball_Chain,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#8,obActWid(a0)
@@ -48,7 +48,7 @@ ObjSpikedBalls_MakeChain:
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
-	endif
+	endc
 		bne.s	loc_DD5E
 		addq.b	#1,objoff_29(a0)
 		move.w	a1,d5
@@ -57,7 +57,7 @@ ObjSpikedBalls_MakeChain:
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 		move.b	#4,obRoutine(a1)
-		_move.b	obID(a0),obID(a1)
+		move.b	obID(a0),obID(a1)
 		move.l	obMap(a0),obMap(a1)
 		move.w	obGfx(a0),obGfx(a1)
 		move.b	obRender(a0),obRender(a1)
