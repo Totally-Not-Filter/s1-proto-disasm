@@ -9,7 +9,7 @@ DebugLists:
 dbug:	macro map,object,subtype,frame,vram,palette,priority
 	dc.l map+(object<<24)
 	dc.b subtype,frame
-	dc.w vram+palette*$2000+priority*$8000
+	dc.w vram+(palette<<13)+(priority<<15)
 	endm
 
 .GHZ:
