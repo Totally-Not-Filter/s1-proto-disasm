@@ -417,6 +417,7 @@ ArtTile_Burrobot:		equ $39C
 ArtTile_Ball_Hog:		equ $400
 ArtTile_Bomb:			equ $400
 ArtTile_Crabmeat:		equ $400
+ArtTile_Cannon_Ball:	equ $418
 ArtTile_Missile_Disolve:	equ $41C ; Unused
 ArtTile_Buzz_Bomber:	equ $444
 ArtTile_Chopper:		equ $47B
@@ -455,10 +456,9 @@ ArtTile_Eggman_Trap_Floor:	equ $518
 ArtTile_Eggman_Exhaust:	equ ArtTile_Eggman+$12A
 
 ; End of Level
-ArtTile_Giant_Ring:		equ $400
-ArtTile_Giant_Ring_Flash:	equ $462
 ArtTile_Prison_Capsule:	equ $49D
 ArtTile_Hidden_Points:	equ $4B6
+ArtTile_Giant_Ring:		equ $4EC
 ArtTile_Warp:			equ $541
 ArtTile_Mini_Sonic:		equ $551
 ArtTile_Bonuses:		equ $570

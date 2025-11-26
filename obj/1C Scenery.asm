@@ -37,10 +37,10 @@ ObjScenery_Delete:
 
 ObjScenery_Types:
 		dc.l Map_Scen
-		dc.w $398
+		dc.w ArtTile_GHZ_Spike_Pole
 		dc.b 0, $10, 4, $82
 		dc.l Map_Scen
-		dc.w $398
+		dc.w ArtTile_GHZ_Spike_Pole
 		dc.b 1, $14, 4, $83
 		dc.l Map_Scen
 		dc.w ArtTile_Level+$4000

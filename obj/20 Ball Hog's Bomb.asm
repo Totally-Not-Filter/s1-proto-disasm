@@ -13,7 +13,7 @@ off_7070:	dc.w ObjCannonball_Init-off_7070, ObjCannonball_Act-off_7070, ObjCanno
 ObjCannonball_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapCannonball,obMap(a0)
-		move.w	#$418+$2000,obGfx(a0)
+		move.w	#ArtTile_Cannon_Ball+$2000,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$87,obColType(a0)
