@@ -24,7 +24,7 @@ ObjSwingPtfm_Init:
 		cmpi.b	#id_SLZ,(v_zone).w		; are we on Star Light Zone?
 		bne.s	ObjSwingPtfm_NotSLZ		; if not, branch
 		move.l	#Map_Swing_SLZ,obMap(a0)
-		move.w	#$43DC,obGfx(a0)
+		move.w	#make_art_tile(ArtTile_SLZ_Swing,2,0),obGfx(a0)
 		move.b	#$20,obActWid(a0)
 		move.b	#$10,obHeight(a0)
 		move.b	#$99,obColType(a0)

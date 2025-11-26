@@ -37,10 +37,10 @@ ObjScenery_Delete:
 
 ObjScenery_Types:
 		dc.l Map_Scen
-		dc.w make_art_tile($398,0,0)
+		dc.w make_art_tile(ArtTile_GHZ_Spike_Pole,0,0)
 		dc.b 0, $10, 4, $82
 		dc.l Map_Scen
-		dc.w make_art_tile($398,0,0)
+		dc.w make_art_tile(ArtTile_GHZ_Spike_Pole,0,0)
 		dc.b 1, $14, 4, $83
 		dc.l Map_Scen
 		dc.w make_art_tile(ArtTile_Level,2,0)

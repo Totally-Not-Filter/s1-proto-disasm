@@ -269,7 +269,6 @@ PLC_CWZAnimals:	dc.w ((PLC_CWZAnimalsend-PLC_CWZAnimals-2)/6)-1
 		plcm    Nem_Flicky, ArtTile_Animal_2
 PLC_CWZAnimalsend:
 		even
-                
 ; ---------------------------------------------------------------------------
 ; Pattern load cue IDs
 ; ---------------------------------------------------------------------------
