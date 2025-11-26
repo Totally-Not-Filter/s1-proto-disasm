@@ -39,7 +39,7 @@ loc_A51A:
 loc_A524:
 		move.b	d0,obFrame(a1)
 		move.l	#Map_TitleCard,obMap(a1)
-		move.w	#ArtTile_Title_Card+$8000,obGfx(a1)
+		move.w	#ArtTile_Title_Card+1<<15,obGfx(a1)
 		move.b	#$78,obActWid(a1)
 		move.b	#0,obRender(a1)
 		move.b	#0,obPriority(a1)

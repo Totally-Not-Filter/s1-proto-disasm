@@ -14,7 +14,7 @@ off_548A:	dc.w ObjSwingPtfm_Init-off_548A, loc_55C8-off_548A, loc_55E4-off_548A,
 ObjSwingPtfm_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Swing_GHZ,obMap(a0)
-		move.w	#ArtTile_GHZ_MZ_Swing+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_MZ_Swing+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -24,7 +24,7 @@ ObjSwingPtfm_Init:
 		cmpi.b	#id_SLZ,(v_zone).w		; are we on Star Light Zone?
 		bne.s	ObjSwingPtfm_NotSLZ		; if not, branch
 		move.l	#Map_Swing_SLZ,obMap(a0)
-		move.w	#ArtTile_SLZ_Swing+$4000,obGfx(a0)
+		move.w	#ArtTile_SLZ_Swing+2<<13,obGfx(a0)
 		move.b	#$20,obActWid(a0)
 		move.b	#$10,obHeight(a0)
 		move.b	#$99,obColType(a0)
@@ -90,7 +90,7 @@ loc_5586:
 		btst	#4,d1
 		beq.s	loc_55C8
 		move.l	#Map_GBall,obMap(a0)
-		move.w	#ArtTile_GHZ_Giant_Ball+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball+2<<13,obGfx(a0)
 		move.b	#1,obFrame(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$81,obColType(a0)

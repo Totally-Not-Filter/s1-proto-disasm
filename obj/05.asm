@@ -17,7 +17,7 @@ Obj05_Index:
 Obj05_Main:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_05,obMap(a0)
-		move.w	#$4F0+$8000,obGfx(a0)
+		move.w	#$4F0+1<<15,obGfx(a0)
 		move.b	#0,obRender(a0)
 		move.b	#7,obPriority(a0)
 

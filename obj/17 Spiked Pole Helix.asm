@@ -13,7 +13,7 @@ off_5788:	dc.w loc_5792-off_5788, loc_5854-off_5788, loc_5854-off_5788, loc_58C2
 loc_5792:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Hel,obMap(a0)
-		move.w	#ArtTile_GHZ_Spike_Pole+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Spike_Pole+2<<13,obGfx(a0)
 		move.b	#7,obStatus(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
@@ -53,7 +53,7 @@ loc_57FA:
 		move.w	d2,obY(a1)
 		move.w	d3,obX(a1)
 		move.l	obMap(a0),obMap(a1)
-		move.w	#ArtTile_GHZ_Spike_Pole+$4000,obGfx(a1)
+		move.w	#ArtTile_GHZ_Spike_Pole+2<<13,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#8,obActWid(a1)

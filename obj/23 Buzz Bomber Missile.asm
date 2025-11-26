@@ -15,7 +15,7 @@ loc_7A04:
 		bpl.s	sub_7A5E
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Missile,obMap(a0)
-		move.w	#ArtTile_Buzz_Bomber+$2000,obGfx(a0)
+		move.w	#ArtTile_Buzz_Bomber+1<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#8,obActWid(a0)

@@ -13,7 +13,7 @@ off_6634:	dc.w loc_663E-off_6634, loc_6676-off_6634, loc_668A-off_6634, loc_66CE
 loc_663E:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_1B,obMap(a0)
-		move.w	#ArtTile_Level+$4000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$20,obActWid(a0)
 		move.b	#5,obPriority(a0)

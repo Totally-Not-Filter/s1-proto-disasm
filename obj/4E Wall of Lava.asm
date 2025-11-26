@@ -24,7 +24,7 @@ loc_CC10:
 loc_CC16:
 		move.b	#id_LavaWall,obID(a1)
 		move.l	#Map_LWall,obMap(a1)
-		move.w	#ArtTile_MZ_Lava+$6000,obGfx(a1)
+		move.w	#ArtTile_MZ_Lava+3<<13,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#$50,obActWid(a1)
 		move.w	obX(a0),obX(a1)

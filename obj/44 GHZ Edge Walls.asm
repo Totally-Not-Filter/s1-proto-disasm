@@ -13,7 +13,7 @@ off_C10A:	dc.w loc_C110-off_C10A, loc_C148-off_C10A, loc_C154-off_C10A
 loc_C110:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Edge,obMap(a0)
-		move.w	#ArtTile_GHZ_Edge_Wall+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Edge_Wall+2<<13,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#8,obActWid(a0)
 		move.b	#6,obPriority(a0)

@@ -18,7 +18,7 @@ loc_7ED6:
 		bclr	#7,(a2)
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_GRing,obMap(a0)
-		move.w	#ArtTile_Giant_Ring+$2000,obGfx(a0)
+		move.w	#ArtTile_Giant_Ring+1<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$52,obColType(a0)

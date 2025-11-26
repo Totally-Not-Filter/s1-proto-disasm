@@ -13,7 +13,7 @@ off_67C8:	dc.w loc_67CE-off_67C8, loc_67F8-off_67C8, loc_6836-off_67C8
 loc_67CE:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_UnkSwitch,obMap(a0)
-		move.w	#ArtTile_Level+$4000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.w	obY(a0),objoff_30(a0)
 		move.b	#$10,obActWid(a0)

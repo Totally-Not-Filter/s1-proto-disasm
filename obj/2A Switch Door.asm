@@ -22,7 +22,7 @@ loc_68A4:
 		tst.b	obSubtype(a0)
 		beq.s	loc_68F0
 		move.b	#1,obFrame(a0)
-		move.w	#ArtTile_Level+$4000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13,obGfx(a0)
 		move.b	#4,obPriority(a0)
 		addq.b	#2,obRoutine(a0)
 

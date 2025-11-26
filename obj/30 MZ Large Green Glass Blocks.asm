@@ -58,7 +58,7 @@ loc_941C:
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
 		move.l	#Map_Glass,obMap(a1)
-		move.w	#ArtTile_MZ_Glass_Pillar+$4000+$8000,obGfx(a1)
+		move.w	#ArtTile_MZ_Glass_Pillar+2<<13+1<<15,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.w	obY(a1),objoff_30(a1)
 		move.b	obSubtype(a0),obSubtype(a1)

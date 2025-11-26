@@ -14,10 +14,10 @@ off_5FF2:	dc.w loc_5FFE-off_5FF2, loc_603A-off_5FF2, loc_607C-off_5FF2, loc_60A2
 loc_5FFE:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_CFlo,obMap(a0)
-		move.w	#ArtTile_MZ_Block+$4000,obGfx(a0)
+		move.w	#ArtTile_MZ_Block+2<<13,obGfx(a0)
 		cmpi.b	#id_SLZ,(v_zone).w
 		bne.s	loc_6022
-		move.w	#ArtTile_SLZ_Smashable_Wall+$4000,obGfx(a0)
+		move.w	#ArtTile_SLZ_Smashable_Wall+2<<13,obGfx(a0)
 		addq.b	#2,obFrame(a0)
 
 loc_6022:

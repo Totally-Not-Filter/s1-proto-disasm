@@ -25,7 +25,7 @@ loc_5C98:
 		move.w	#0,obVelY(a0)
 		move.b	#8,obRoutine(a0)
 		move.l	#Map_GBall,obMap(a0)
-		move.w	#ArtTile_GHZ_Giant_Ball+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)

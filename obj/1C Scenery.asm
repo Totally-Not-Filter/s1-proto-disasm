@@ -43,8 +43,8 @@ ObjScenery_Types:
 		dc.w ArtTile_GHZ_Spike_Pole
 		dc.b 1, $14, 4, $83
 		dc.l Map_Scen
-		dc.w ArtTile_Level+$4000
+		dc.w ArtTile_Level+2<<13
 		dc.b 0, $20, 1, 0
 		dc.l MapBridge
-		dc.w ArtTile_GHZ_Bridge+$4000
+		dc.w ArtTile_GHZ_Bridge+2<<13
 		dc.b 1, $10, 1, 0

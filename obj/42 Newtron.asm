@@ -13,7 +13,7 @@ off_BD26:	dc.w loc_BD2C-off_BD26, loc_BD5C-off_BD26, loc_BEC6-off_BD26
 loc_BD2C:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Newt,obMap(a0)
-		move.w	#ArtTile_Newtron+$2000,obGfx(a0)
+		move.w	#ArtTile_Newtron+1<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$14,obActWid(a0)

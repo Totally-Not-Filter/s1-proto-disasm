@@ -18,7 +18,7 @@ loc_CD36:
 		move.b	obSubtype(a0),d0
 		move.b	byte_CD32(pc,d0.w),obColType(a0)
 		move.l	#Map_LTag,obMap(a0)
-		move.w	#ArtTile_Monitor+$8000,obGfx(a0)
+		move.w	#ArtTile_Monitor+1<<15,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$80,obActWid(a0)
 		move.b	#4,obPriority(a0)

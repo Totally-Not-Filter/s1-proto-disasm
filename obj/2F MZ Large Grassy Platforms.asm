@@ -20,7 +20,7 @@ off_8ED2:	dc.w ObjMZPlatforms_Slope1-off_8ED2
 loc_8EDE:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_LGrass,obMap(a0)
-		move.w	#ArtTile_Level+$4000+$8000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13+1<<15,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#5,obPriority(a0)
 		move.w	obY(a0),objoff_2C(a0)

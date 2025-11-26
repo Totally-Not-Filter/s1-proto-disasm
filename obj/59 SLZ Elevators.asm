@@ -83,7 +83,7 @@ loc_DFE6:
 		move.w	d0,elev_dist(a0)
 		move.b	(a2)+,obSubtype(a0)
 		move.l	#Map_Elev,obMap(a0)
-		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.w	obX(a0),elev_origX(a0)

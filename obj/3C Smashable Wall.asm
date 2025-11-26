@@ -14,7 +14,7 @@ off_ADEA:	dc.w loc_ADF0-off_ADEA, loc_AE1A-off_ADEA, loc_AE92-off_ADEA
 loc_ADF0:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Smash,obMap(a0)
-		move.w	#ArtTile_GHZ_SLZ_Smashable_Wall+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_SLZ_Smashable_Wall+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)

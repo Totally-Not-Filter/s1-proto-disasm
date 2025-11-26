@@ -17,7 +17,7 @@ Obj06_Main:
 		addq.b	#2,obRoutine(a0)
 		move.w	#$A0,obScreenY(a0)
 		move.l	#Map_05,obMap(a0)
-		move.w	#$470+$8000,obGfx(a0)
+		move.w	#$470+1<<15,obGfx(a0)
 		move.b	#0,obRender(a0)
 		move.b	#7,obPriority(a0)
 

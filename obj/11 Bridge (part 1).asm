@@ -14,7 +14,7 @@ off_4E64:	dc.w Bridge_Init-off_4E64, loc_4F32-off_4E64, loc_50B2-off_4E64, Bridg
 Bridge_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#MapBridge,obMap(a0)
-		move.w	#ArtTile_GHZ_Bridge+$4000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Bridge+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$80,obActWid(a0)
@@ -64,7 +64,7 @@ loc_4EE6:
 		move.w	d2,objoff_3C(a1)
 		move.w	d3,obX(a1)
 		move.l	#MapBridge,obMap(a1)
-		move.w	#ArtTile_GHZ_Bridge+$4000,obGfx(a1)
+		move.w	#ArtTile_GHZ_Bridge+2<<13,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#8,obActWid(a1)

@@ -14,7 +14,7 @@ loc_8D02:
 		move.b	#$13,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Burro,obMap(a0)
-		move.w	#ArtTile_Burrobot+$2000,obGfx(a0)
+		move.w	#ArtTile_Burrobot+1<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#5,obColType(a0)

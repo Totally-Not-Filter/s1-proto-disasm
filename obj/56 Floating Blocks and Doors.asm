@@ -20,10 +20,10 @@ ObjMovingBlocks_Variables:dc.b $10, $10
 ObjMovingBlocks_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_FBlock,obMap(a0)
-		move.w	#ArtTile_Level+$4000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13,obGfx(a0)
 		cmpi.b	#id_SLZ,(v_zone).w
 		bne.s	loc_D912
-		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform+2<<13,obGfx(a0)
 
 loc_D912:
 		move.b	#4,obRender(a0)

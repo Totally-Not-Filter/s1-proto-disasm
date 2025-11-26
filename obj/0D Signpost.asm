@@ -77,7 +77,7 @@ loc_C798:
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
 		move.l	#MapRing,obMap(a1)
-		move.w	#ArtTile_Ring+$2000,obGfx(a1)
+		move.w	#ArtTile_Ring+1<<13,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#8,obActWid(a1)

@@ -26,7 +26,7 @@ loc_A660:
 loc_A676:
 		move.w	#$F0,obScreenY(a0)
 		move.l	#Map_Over,obMap(a0)
-		move.w	#ArtTile_Game_Over+$8000,obGfx(a0)
+		move.w	#ArtTile_Game_Over+1<<15,obGfx(a0)
 		move.b	#0,obRender(a0)
 		move.b	#0,obPriority(a0)
 

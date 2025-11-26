@@ -17,7 +17,7 @@ loc_9F1A:
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
 		move.l	#Map_Push,obMap(a0)
-		move.w	#ArtTile_MZ_Block+$4000,obGfx(a0)
+		move.w	#ArtTile_MZ_Block+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		moveq	#0,d0
@@ -29,7 +29,7 @@ loc_9F1A:
 		move.b	(a2)+,obFrame(a0)
 		tst.b	obSubtype(a0)
 		beq.s	loc_9F68
-		move.w	#ArtTile_MZ_Block+$4000+$8000,obGfx(a0)
+		move.w	#ArtTile_MZ_Block+2<<13+1<<15,obGfx(a0)
 
 loc_9F68:
 		lea	(v_regbuffer).w,a2

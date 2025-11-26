@@ -17,7 +17,7 @@ loc_C400:
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
 		move.l	#Map_Brick,obMap(a0)
-		move.w	#ArtTile_Level+$4000,obGfx(a0)
+		move.w	#ArtTile_Level+2<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$10,obActWid(a0)

@@ -13,7 +13,7 @@ ObjBasaran_Index:dc.w ObjBasaran_Init-ObjBasaran_Index, ObjBasaran_Action-ObjBas
 ObjBasaran_Init:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Bas,obMap(a0)
-		move.w	#ArtTile_Basaran+$8000,obGfx(a0)
+		move.w	#ArtTile_Basaran+1<<15,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$C,obHeight(a0)
 		move.b	#2,obPriority(a0)

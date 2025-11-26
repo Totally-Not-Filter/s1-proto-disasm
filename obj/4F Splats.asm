@@ -13,7 +13,7 @@ off_D202:	dc.w loc_D20A-off_D202, loc_D246-off_D202, loc_D274-off_D202, loc_D2C8
 loc_D20A:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Splats,obMap(a0)
-		move.w	#ArtTile_Splats+$2000,obGfx(a0)
+		move.w	#ArtTile_Splats+1<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$C,obActWid(a0)

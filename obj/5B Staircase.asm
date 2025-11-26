@@ -36,7 +36,7 @@ loc_E37C:
 loc_E38A:
 		move.b	#id_Staircase,obID(a1)
 		move.l	#Map_Stair,obMap(a1)
-		move.w	#ArtTile_SLZ_Platform+$4000,obGfx(a1)
+		move.w	#ArtTile_SLZ_Platform+2<<13,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#$10,obActWid(a1)

@@ -13,7 +13,7 @@ off_AD1A:	dc.w loc_AD1E-off_AD1A, loc_AD42-off_AD1A
 loc_AD1E:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_PRock,obMap(a0)
-		move.w	#ArtTile_GHZ_Purple_Rock+$6000,obGfx(a0)
+		move.w	#ArtTile_GHZ_Purple_Rock+3<<13,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$13,obActWid(a0)
 		move.b	#4,obPriority(a0)

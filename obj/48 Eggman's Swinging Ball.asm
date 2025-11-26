@@ -50,7 +50,7 @@ loc_B3AC:
 loc_B3D6:
 		move.b	#8,obRoutine(a1)
 		move.l	#Map_GBall,obMap(a1)
-		move.w	#ArtTile_GHZ_Giant_Ball+$4000,obGfx(a1)
+		move.w	#ArtTile_GHZ_Giant_Ball+2<<13,obGfx(a1)
 		move.b	#1,obFrame(a1)
 		move.b	#5,obPriority(a1)
 		move.b	#$81,obColType(a1)
