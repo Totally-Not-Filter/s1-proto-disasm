@@ -120,7 +120,7 @@ ErrorTrap:
 EntryPoint:
 		tst.l	(ctrl_port_1_ctrl).l
 loc_20C:
-		bne.w	loc_306
+		bne.w	SkipSetup
 		tst.w	(ctrl_expansion_ctrl).l
 		bne.s	loc_20C
 		lea	SetupValues(pc),a5
@@ -183,7 +183,7 @@ loc_28E:
 		move.w	d0,(a2)
 		movem.l	(a6),d0-a6
 		disable_ints
-		bra.s	loc_306
+		bra.s	SkipSetup
 ; ---------------------------------------------------------------------------
 SetupValues:	dc.l $8000			; VDP register start number
 		dc.l bytesToLcnt(v_end-v_start)		; size of RAM divided by 4
@@ -264,8 +264,7 @@ PSGInitValues:
 		dc.b $9F,$BF,$DF,$FF		; values for PSG channel volumes
 PSGInitValues_End:
 ; ---------------------------------------------------------------------------
-
-loc_306:
+SkipSetup:
 		btst	#6,(ctrl_expansion_ctrl_b).l
 		beq.s	CheckSumCheck
 		cmpi.l	#"init",(v_init).w ; has checksum routine already run?
@@ -346,9 +345,9 @@ ChecksumError:
 		move.l	#$C0000000,(vdp_control_port).l	; Set VDP to CRAM write
 		moveq	#bytesToWcnt(v_palette_end-v_palette),d7
 
-.palette:
+.palwrite:
 		move.w	#cRed,(vdp_data_port).l		; Write red to data
-		dbf	d7,.palette
+		dbf	d7,.palwrite
 
 .endlessloop:
 		bra.s	.endlessloop
@@ -1009,9 +1008,9 @@ ClearPLC:
 		lea	(v_plc_buffer).w,a2		; PLC buffer space in RAM
 		moveq	#bytesToLcnt(v_plc_buffer_end-v_plc_buffer),d0
 
-.clearRAM:
+.clrRAM:
 		clr.l	(a2)+
-		dbf	d0,.clearRAM
+		dbf	d0,.clrRAM
 		rts
 ; End of function ClearPLC
 
@@ -1505,9 +1504,7 @@ GM_Sega:
 		move.w	#$8400+vram_bg>>13,(a6)
 		move.w	#$8700,(a6)
 		move.w	#$8B00,(a6)
-		move.w	(v_vdp_buffer1).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 		locVRAM ArtTile_Sega_Tiles*tile_size
 		lea	(Nem_SegaLogo).l,a0
@@ -1525,9 +1522,7 @@ GM_Sega:
 		move.w	#0,(v_pal_buffer+$12).w
 		move.w	#0,(v_pal_buffer+$10).w
 		move.w	#180,(v_generictimer).w
-		move.w	(v_vdp_buffer1).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 
 loc_2528:
 		move.b	#id_VInt_02,(v_vint_routine).w
@@ -1554,9 +1549,7 @@ GM_Title:
 		move.w	#$9200,(a6)
 		move.w	#$8B00+%0011,(a6)
 		move.w	#$8700+%00100000,(a6)
-		move.w	(v_vdp_buffer1).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 
 		clearRAM v_objspace,v_objspace_end
@@ -1617,9 +1610,7 @@ loc_25D8:
 		move.b	#2,(v_objslot3+obFrame).w
 		moveq	#plcid_Main,d0
 		bsr.w	NewPLC
-		move.w	(v_vdp_buffer1).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 		bsr.w	PaletteWhiteIn
 
 loc_26AE:
@@ -1904,8 +1895,8 @@ loc_2944:
 		move.l	d4,4(a6)
 		bsr.w	sub_29CC
 		move.w	#$E680,d3
-		cmpi.w	#$13,(v_levselitem).w		; are we on Sound Select?
-		bne.s	loc_2996			; if not, branch
+		cmpi.w	#$13,(v_levselitem).w	; are we on Sound Select?
+		bne.s	loc_2996	; if not, branch
 		move.w	#$C680,d3
 
 loc_2996:
@@ -2061,7 +2052,7 @@ loc_2C92:
 		bsr.w	LoadAnimatedBlocks
 		bsr.w	LoadTilesFromStart
 		jsr	(ConvertCollisionArray).l
-		move.l	#Col_GHZ,(v_collindex).w		; Load Green Hill's collision - what follows are some C style conditional statements, really unnecessary and replaced with a table in the final game
+		move.l	#Col_GHZ,(v_collindex).w	; Load Green Hill's collision - what follows are some C style conditional statements, really unnecessary and replaced with a table in the final game
 		cmpi.b	#id_LZ,(v_zone).w		; Is the current zone Labyrinth?
 		bne.s	loc_2CFA			; If not, go to the next condition
 		move.l	#Col_LZ,(v_collindex).w		; Load Labyrinth's collision
@@ -2074,7 +2065,7 @@ loc_2CFA:
 loc_2D0A:
 		cmpi.b	#id_SLZ,(v_zone).w		; Is the current zone Star Light?
 		bne.s	loc_2D1A			; If not, go to the next condition
-		move.l	#Col_SLZ,(v_collindex).w		; Load Star Light's collision
+		move.l	#Col_SLZ,(v_collindex).w	; Load Star Light's collision
 
 loc_2D1A:
 		cmpi.b	#id_SZ,(v_zone).w		; Is the current zone Sparkling?
@@ -2084,7 +2075,7 @@ loc_2D1A:
 loc_2D2A:
 		cmpi.b	#id_CWZ,(v_zone).w		; Is the current zone Clock Work?
 		bne.s	loc_2D3A			; If not, then just skip loading collision
-		move.l	#Col_CWZ,(v_collindex).w		; Load Clock Work's collision
+		move.l	#Col_CWZ,(v_collindex).w	; Load Clock Work's collision
 
 loc_2D3A:
 		move.b	#id_SonicPlayer,(v_player).w
@@ -2487,9 +2478,7 @@ locret_34FA:
 
 GM_Special:
 		bsr.w	PaletteFadeOut
-		move.w	(v_vdp_buffer1).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 		fillVRAM	0, ArtTile_SS_Plane_1*tile_size+plane_size_64x32, ArtTile_SS_Plane_5*tile_size
 		moveq	#plcid_SpecialStage,d0
@@ -2526,9 +2515,7 @@ GM_Special:
 		move.b	1(a1),(v_btnpushtime2).w
 		subq.b	#1,(v_btnpushtime2).w
 		move.w	#1800,(v_generictimer).w
-		move.w	(v_vdp_buffer1).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 		bsr.w	PaletteWhiteIn
 
 loc_3620:
@@ -2899,46 +2886,7 @@ LoadLevelData:
 .skipPLC:
 		rts
 ; ---------------------------------------------------------------------------
-;sub_485C:
-		moveq	#0,d0
-		move.b	(v_lives).w,d1
-		cmpi.b	#2,d1
-		blo.s	loc_4876
-		move.b	d1,d0
-		subq.b	#1,d0
-		cmpi.b	#5,d0
-		blo.s	loc_4876
-		move.b	#4,d0
-
-loc_4876:
-		lea	(vdp_data_port).l,a6
-		locVRAM window_plane+$CBE
-		move.l	#($8500+(vram_sprite1>>9))<<16|$8500+(vram_sprite2>>9),d2
-		bsr.s	sub_489E
-		locVRAM window_plane+$D3E
-		move.l	#($8500+(vram_sprite3>>9))<<16|$8500+(vram_sprite4>>9),d2
-
-sub_489E:
-		moveq	#0,d3
-		moveq	#4-1,d1
-		sub.w	d0,d1
-		blo.s	loc_48AC
-
-loc_48A6:
-		move.l	d3,(a6)
-		dbf	d1,loc_48A6
-
-loc_48AC:
-		move.w	d0,d1
-		subq.w	#1,d1
-		blo.s	locret_48B8
-
-loc_48B2:
-		move.l	d2,(a6)
-		dbf	d1,loc_48B2
-
-locret_48B8:
-		rts
+		include	"leftovers/routines/Lives Window Plane.asm"
 ; ---------------------------------------------------------------------------
 
 LevelLayoutLoad:
@@ -3183,7 +3131,7 @@ Map_GBall:	include "_maps/GHZ Ball.asm"
 		include "obj/53 Collapsing Floors.asm"
 ; ---------------------------------------------------------------------------
 
-loc_612A:
+Ledge_Fragment:
 		move.b	#0,ledge_collapse_flag(a0)
 
 loc_6130:
@@ -3244,7 +3192,7 @@ CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E, $A, 2
 		even
 ; ---------------------------------------------------------------------------
 
-sub_61E0:
+SlopeObject2:
 		lea	(v_player).w,a1
 		btst	#3,obStatus(a1)
 		beq.s	locret_6224
@@ -3296,7 +3244,7 @@ Map_UnkSwitch:	include "_maps/Unknown Switch.asm"
 		include "obj/2A Switch Door.asm"
 ; ---------------------------------------------------------------------------
 
-sub_6936:
+Obj44_SolidWall:
 		tst.w	(v_debuguse).w
 		bne.w	locret_69A6
 		cmpi.b	#6,(v_player+obRoutine).w
@@ -3358,7 +3306,7 @@ locret_69BE:
 loc_69C0:
 		move.l	a0,-(sp)
 		movea.l	a1,a0
-		jsr	(loc_FD78).l
+		jsr	(KillSonic).l
 		movea.l	(sp)+,a0
 		rts
 ; ---------------------------------------------------------------------------

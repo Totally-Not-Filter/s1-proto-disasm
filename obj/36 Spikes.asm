@@ -9,7 +9,10 @@ ObjSpikes:
 
 off_AB0A:	dc.w loc_AB1A-off_AB0A, loc_AB64-off_AB0A
 
-byte_AB0E:	dc.b 0, $14
+spik_origX = objoff_30		; start X position
+spik_origY = objoff_32		; start Y position
+
+Spik_Var:	dc.b 0, $14		; frame number, object width
 		dc.b 1, $10
 		dc.b 2, 4
 		dc.b 3, $1C
@@ -26,13 +29,13 @@ loc_AB1A:
 		move.b	obSubtype(a0),d0
 		andi.b	#$F,obSubtype(a0)
 		andi.w	#$F0,d0
-		lea	(byte_AB0E).l,a1
+		lea	(Spik_Var).l,a1
 		lsr.w	#3,d0
 		adda.w	d0,a1
 		move.b	(a1)+,obFrame(a0)
 		move.b	(a1)+,obActWid(a0)
-		move.w	obX(a0),objoff_30(a0)
-		move.w	obY(a0),objoff_32(a0)
+		move.w	obX(a0),spik_origX(a0)
+		move.w	obY(a0),spik_origY(a0)
 
 loc_AB64:
 		bsr.w	sub_AC02
@@ -61,7 +64,7 @@ loc_AB9E:
 		move.b	obActWid(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
-		bsr.w	sub_6936
+		bsr.w	Obj44_SolidWall
 		tst.w	d4
 		bpl.s	loc_ABDE
 		tst.w	obVelY(a1)
@@ -79,16 +82,16 @@ loc_ABBE:
 		asl.l	#8,d0
 		sub.l	d0,d3
 		move.l	d3,obY(a0)
-		bsr.w	loc_FCF4
+		bsr.w	HurtSonic
 		movea.l	(sp)+,a0
 
 loc_ABDE:
 	if FixBugs
-		out_of_range.w	DeleteObject,objoff_30(a0)
+		out_of_range.w	DeleteObject,spik_origX(a0)
 		bra.w	DisplaySprite
 	else
 		bsr.w	DisplaySprite
-		out_of_range.w	DeleteObject,objoff_30(a0)
+		out_of_range.w	DeleteObject,spik_origX(a0)
 		rts
 	endif
 ; ---------------------------------------------------------------------------
@@ -113,7 +116,7 @@ loc_AC1A:
 		bsr.w	sub_AC42
 		moveq	#0,d0
 		move.b	objoff_34(a0),d0
-		add.w	objoff_32(a0),d0
+		add.w	spik_origY(a0),d0
 		move.w	d0,obY(a0)
 		rts
 ; ---------------------------------------------------------------------------
@@ -122,7 +125,7 @@ loc_AC2E:
 		bsr.w	sub_AC42
 		moveq	#0,d0
 		move.b	objoff_34(a0),d0
-		add.w	objoff_30(a0),d0
+		add.w	spik_origX(a0),d0
 		move.w	d0,obX(a0)
 		rts
 ; ---------------------------------------------------------------------------

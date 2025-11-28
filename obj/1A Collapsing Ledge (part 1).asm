@@ -28,7 +28,7 @@ loc_5F2A:
 		tst.b	ledge_collapse_flag(a0)
 		beq.s	loc_5F3C
 		tst.b	ledge_timedelay(a0)
-		beq.w	loc_612A
+		beq.w	Ledge_Fragment
 		subq.b	#1,ledge_timedelay(a0)
 
 loc_5F3C:
@@ -50,7 +50,7 @@ sub_5F60:
 		move.w	#$30,d1
 		lea	(ObjCollapsePtfm_Slope).l,a2
 		move.w	obX(a0),d2
-		bsr.w	sub_61E0
+		bsr.w	SlopeObject2
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 

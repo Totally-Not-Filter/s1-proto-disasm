@@ -118,7 +118,7 @@ loc_97D0:
 		bcc.s	loc_9810
 		movea.l	a0,a2
 		lea	(v_player).w,a0
-		bsr.w	loc_FD78
+		bsr.w	KillSonic
 		movea.l	a2,a0
 
 loc_9810:

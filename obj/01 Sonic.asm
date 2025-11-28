@@ -652,7 +652,7 @@ Sonic_LevelBound:
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
-		bcs.w	loc_FD78
+		bcs.w	KillSonic
 		rts
 ; ---------------------------------------------------------------------------
 

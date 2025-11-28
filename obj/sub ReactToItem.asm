@@ -17,7 +17,7 @@ TouchObjects:
 		move.w	#$10,d4
 		add.w	d5,d5
 		lea	(v_lvlobjspace).w,a1
-		move.w	#(v_lvlobjend-v_lvlobjspace)/object_size-1,d6
+		move.w	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d6
 
 .loop:
 		tst.b	obRender(a1)
@@ -204,7 +204,7 @@ loc_FCEA:
 		bne.s	loc_FCE6
 		movea.l	a1,a2
 
-loc_FCF4:
+HurtSonic:
 		tst.b	(v_shield).w
 		bne.s	loc_FD18
 		tst.w	(v_rings).w
@@ -246,7 +246,7 @@ loc_FD72:
 		tst.w	(f_debugmode).w
 		bne.s	loc_FD18
 
-loc_FD78:
+KillSonic:
 		tst.w	(v_debuguse).w
 		bne.s	loc_FDC0
 		move.b	#6,obRoutine(a0)
