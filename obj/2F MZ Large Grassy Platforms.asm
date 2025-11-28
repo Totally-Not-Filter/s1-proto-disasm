@@ -59,7 +59,7 @@ loc_8F64:
 		addi.w	#$B,d1
 		movea.l	objoff_30(a0),a2
 		move.w	obX(a0),d2
-		bsr.w	sub_61E0
+		bsr.w	SlopeObject2
 		bra.s	loc_8F9E
 ; ---------------------------------------------------------------------------
 

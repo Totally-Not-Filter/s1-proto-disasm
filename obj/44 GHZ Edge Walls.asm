@@ -27,7 +27,7 @@ loc_C110:
 loc_C148:
 		move.w	#$13,d1
 		move.w	#$28,d2
-		bsr.w	sub_6936
+		bsr.w	Obj44_SolidWall
 
 loc_C154:
 	if FixBugs

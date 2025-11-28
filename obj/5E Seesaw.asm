@@ -49,7 +49,7 @@ loc_E71E:
 		jsr	(PtfmCheckExit).l
 		move.w	#$30,d1
 		move.w	obX(a0),d2
-		jsr	(sub_61E0).l
+		jsr	(SlopeObject2).l
 		rts
 ; ---------------------------------------------------------------------------
 

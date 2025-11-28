@@ -200,7 +200,7 @@ loc_A472:
 		bne.s	loc_A46E
 		move.l	a0,-(sp)
 		movea.l	a1,a0
-		bsr.w	loc_FD78
+		bsr.w	KillSonic
 		movea.l	(sp)+,a0
 		moveq	#-1,d4
 		rts

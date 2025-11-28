@@ -204,7 +204,7 @@ loc_FCEA:
 		bne.s	loc_FCE6
 		movea.l	a1,a2
 
-loc_FCF4:
+HurtSonic:
 		tst.b	(v_shield).w
 		bne.s	loc_FD18
 		tst.w	(v_rings).w
@@ -246,7 +246,7 @@ loc_FD72:
 		tst.w	(f_debugmode).w
 		bne.s	loc_FD18
 
-loc_FD78:
+KillSonic:
 		tst.w	(v_debuguse).w
 		bne.s	loc_FDC0
 		move.b	#6,obRoutine(a0)
