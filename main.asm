@@ -5603,8 +5603,7 @@ Nem_Prison:	binclude "artnem/Prison Capsule.nem"
 ; ===========================================================================
 Demo_GHZ:	include "demodata/Intro - GHZ.asm"	; Green Hill's demo (act 2?)
 Demo_MZ:	include "demodata/Intro - MZ.asm"	; Marble's demo
-Demo_SZ:	binclude "demodata/Intro - SZ.bin"	; Sparkling's demo (?)
-		even
+Demo_SZ:	include "demodata/Intro - SZ.asm"	; Sparkling's demo (?)
 Demo_SS:	include "demodata/Intro - Special Stage.asm" ; Special stage demo
 
 		align	$3000
