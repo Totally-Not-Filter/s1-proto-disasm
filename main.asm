@@ -728,8 +728,8 @@ HInt2:
 		beq.s	.return
 		movem.l	d0/a0/a5,-(sp)
 		move.w	#0,(f_hint).w
-		move.w	#$8400+(window_plane>>13),(vdp_control_port).l
-		move.w	#$8500+(vram_sprites>>9),(vdp_control_port).l
+		move.w	#$8400+window_plane>>13,(vdp_control_port).l
+		move.w	#$8500+vram_sprites>>9,(vdp_control_port).l
 		locVRAM vram_sprites
 		lea	(v_spritetablebuffer).w,a0
 		lea	(vdp_data_port).l,a5
@@ -2010,9 +2010,9 @@ loc_2C0A:
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B00+%0011,(a6)
-		move.w	#$8200+(vram_fg>>10),(a6)
-		move.w	#$8400+(vram_bg>>13),(a6)
-		move.w	#$8500+(vram_sprites>>9),(a6)
+		move.w	#$8200+vram_fg>>10,(a6)
+		move.w	#$8400+vram_bg>>13,(a6)
+		move.w	#$8500+vram_sprites>>9,(a6)
 		move.w	#0,(word_FFFFE8).w
 		move.w	#$8A00+175,(v_hint_hreg).w
 		move.w	#$8000+%0100,(a6)
