@@ -720,8 +720,8 @@ HInt2:
 		beq.s	.return
 		movem.l	d0/a0/a5,-(sp)
 		move.w	#0,(f_hint).w
-		move.w	#$8400+(window_plane>>13),(vdp_control_port).l
-		move.w	#$8500+(vram_sprites>>9),(vdp_control_port).l
+		move.w	#$8400+window_plane>>13,(vdp_control_port).l
+		move.w	#$8500+vram_sprites>>9,(vdp_control_port).l
 		locVRAM vram_sprites
 		lea	(v_spritetablebuffer).w,a0
 		lea	(vdp_data_port).l,a5
@@ -1935,16 +1935,6 @@ loc_29DE:
 ; ---------------------------------------------------------------------------
 
 LevelSelectText:
-;		charset ' ', $FF
-;		charset '0', "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09"
-;		charset '$', $0A
-;		charset '-', $0B
-;		charset '=', $0C
-;		charset '>', $0D
-		;charset '>', $0E ; there are two identical right arrows back-to-back in the menutext font, for some reason
-;		charset 'Y', "\x0F\x10" ; Y and Z come before A-X
-;		charset 'A', "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x20\x21\x22\x23\x24\x25\x26\x27\x28"
-
 _A:	=	$11
 _B:	=	$12
 _C:	=	$13
@@ -1994,29 +1984,6 @@ __:	=	$FF
 		dc.b _S,_P,_E,_C,_I,_A,_L,__,_S,_T,_A,_G,_E,__,__,__,__,__,__,__,__,__,__,__
 		dc.b _S,_O,_U,_N,_D,__,_S,_E,_L,_E,_C,_T,__,__,__,__,__,__,__,__,__,__,__,__
 
-;		dc.b "GREEN HILL ZONE STAGE 1 "
-;		dc.b "                STAGE 2 "
-;		dc.b "                STAGE 3 "
-;		dc.b "LABYRINTH ZONE  STAGE 1 "
-;		dc.b "                STAGE 2 "
-;		dc.b "                STAGE 3 "
-;		dc.b "MARBLE ZONE     STAGE 1 "
-;		dc.b "                STAGE 2 "
-;		dc.b "                STAGE 3 "
-;		dc.b "STAR LIGHT ZONE STAGE 1X"
-;		dc.b "                STAGE 2X"
-;		dc.b "                STAGE 3X"
-;		dc.b "SPARKLING ZONE  STAGE 1 "
-;		dc.b "                STAGE 2 "
-;		dc.b "                STAGE 3 "
-;		dc.b "CLOCK WORK ZONE STAGE 1 "
-;		dc.b "                STAGE 2 "
-;		dc.b "                STAGE 3X"
-;		dc.b "SPECIAL STAGE           "
-;		dc.b "SOUND SELECT            "
-
-;		charset
-
 MusicList:
 		dc.b bgm_GHZ
 		dc.b bgm_LZ
@@ -2051,9 +2018,9 @@ loc_2C0A:
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B00+%0011,(a6)
-		move.w	#$8200+(vram_fg>>10),(a6)
-		move.w	#$8400+(vram_bg>>13),(a6)
-		move.w	#$8500+(vram_sprites>>9),(a6)
+		move.w	#$8200+vram_fg>>10,(a6)
+		move.w	#$8400+vram_bg>>13,(a6)
+		move.w	#$8500+vram_sprites>>9,(a6)
 		move.w	#0,(word_FFFFE8).w
 		move.w	#$8A00+175,(v_hint_hreg).w
 		move.w	#$8000+%0100,(a6)
