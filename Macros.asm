@@ -83,11 +83,11 @@ clearRAM:	macro startAddress,endAddress
 
 	if (endAddress-startAddress)&2
 		move.w	d0,(a1)+
-	endif
+	endc
 
 	if (endAddress-startAddress)&1
 		move.b	d0,(a1)+
-	endif
+	endc
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -185,7 +185,7 @@ out_of_range:	macro exit,pos
 		move.w	pos,d0				; get object position (if specified as not obX)
 		else
 		move.w	obX(a0),d0			; get object position
-		endif
+		endc
 		andi.w	#-$80,d0			; round down to nearest $80
 		move.w	(v_scrposx).w,d1		; get screen position
 		subi.w	#128,d1
@@ -205,7 +205,7 @@ out_of_range_rememberstate:	macro exit,pos
 		move.w	pos,d0				; get object position (if specified as not obX)
 		else
 		move.w	obX(a0),d0			; get object position
-		endif
+		endc
 		andi.w	#-$80,d0			; round down to nearest $80
 		move.w	(v_scrposx).w,d1		; get screen position
 		subi.w	#128,d1
