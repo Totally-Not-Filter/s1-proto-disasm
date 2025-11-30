@@ -15,10 +15,6 @@ plane_size_64x32:	equ 64*32*2
 vram_sprites_prev:	equ $D800	; sprite table
 vram_hscroll_prev:	equ $DC00	; horizontal scroll table
 window_plane_prev:	equ $F000	; window plane
-window_plane_lives1:	equ $F200
-window_plane_lives2:	equ $F400
-window_plane_lives3:	equ $F600
-window_plane_lives4:	equ $F800
 
 ; Game modes
 id_Sega:	equ ptr_GM_Sega-GameModeArray		; $00
@@ -494,3 +490,6 @@ ArtTile_SS_Plane_6:		equ $700
 
 ; Error Handler
 ArtTile_Error_Handler_Font:	equ $7C0
+
+; Early VRAM locations
+ArtTile_Early_Lives_Icon:	equ	$579

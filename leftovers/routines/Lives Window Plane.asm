@@ -12,10 +12,10 @@
 loc_4876:
 		lea	(vdp_data_port).l,a6
 		locVRAM window_plane+$CBE
-		move.l	#($8500+(window_plane_lives1>>9))<<16|$8500+(window_plane_lives2>>9),d2
+		move.l	#(ArtTile_Early_Lives_Icon+8<<12)<<16|(ArtTile_Early_Lives_Icon+1)+8<<12,d2
 		bsr.s	sub_489E
 		locVRAM window_plane+$D3E
-		move.l	#($8500+(window_plane_lives3>>9))<<16|$8500+(window_plane_lives4>>9),d2
+		move.l	#((ArtTile_Early_Lives_Icon+2)+8<<12)<<16|(ArtTile_Early_Lives_Icon+3)+8<<12,d2
 
 sub_489E:
 		moveq	#0,d3
