@@ -3,13 +3,12 @@
 ; input: length to align to, value to use as padding
 ; ---------------------------------------------------------------------------
 
-align:	macro
+align:	macros
 	dcb.b (\1-(*%\1))%\1,-1
-	endm
 
 ; ---------------------------------------------------------------------------
 ; Set a VRAM address via the VDP control port.
-; input: 16-bit VRAM address, control port (default is ($C00004).l)
+; input: 16-bit VRAM address, control port (default is (vdp_control_port).l)
 ; ---------------------------------------------------------------------------
 
 locVRAM:	macro loc,controlport
@@ -114,16 +113,14 @@ copyUncTilemap:	macro destination,width,height
 ; ---------------------------------------------------------------------------
 ; start the Z80
 ; ---------------------------------------------------------------------------
-startZ80:	macro
+startZ80:	macros
 		move.w	#0,(z80_bus_request).l
-		endm
 
 ; ---------------------------------------------------------------------------
 ; stop the Z80
 ; ---------------------------------------------------------------------------
-stopZ80:	macro
+stopZ80:	macros
 		move.w	#$100,(z80_bus_request).l
-		endm
 
 ; ---------------------------------------------------------------------------
 ; wait for Z80 to stop
@@ -138,29 +135,25 @@ waitZ80:	macro
 ; reset the Z80
 ; ---------------------------------------------------------------------------
 
-resetZ80:	macro
+resetZ80:	macros
 		move.w	#$100,(z80_reset).l
-		endm
 
-resetZ80a:	macro
+resetZ80a:	macros
 		move.w	#0,(z80_reset).l
-		endm
 
 ; ---------------------------------------------------------------------------
 ; disable interrupts
 ; ---------------------------------------------------------------------------
 
-disable_ints:	macro
+disable_ints:	macros
 		move	#$2700,sr
-		endm
 
 ; ---------------------------------------------------------------------------
 ; enable interrupts
 ; ---------------------------------------------------------------------------
 
-enable_ints:	macro
+enable_ints:	macros
 		move	#$2300,sr
-		endm
 
 ; ---------------------------------------------------------------------------
 ; disable display
