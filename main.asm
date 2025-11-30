@@ -220,11 +220,11 @@ Z80StartupCodeBegin:
 zStartupCodeStartLoc:
 	dc.b $AF			;	xor	a
 	dc.b $01			;	ld	bc
-	dc.w $D71F			;	(z80_ram_end-z80_ram)-(zStartupCodeEndLoc-zStartupCodeStartLoc)-1
+	little_endian ((z80_ram_end-z80_ram)-(zStartupCodeEndLoc-zStartupCodeStartLoc)-1)	;	(z80_ram_end-z80_ram)-(zStartupCodeEndLoc-zStartupCodeStartLoc)-1
 	dc.b $11			;	ld	de
-	dc.w $2900			;	zStartupCodeEndLoc-zStartupCodeStartLoc+1
+	little_endian (zStartupCodeEndLoc-zStartupCodeStartLoc+1)	;	zStartupCodeEndLoc-zStartupCodeStartLoc+1
 	dc.b $21			;	ld	hl
-	dc.w $2800			;	zStartupCodeEndLoc-zStartupCodeStartLoc
+	little_endian (zStartupCodeEndLoc-zStartupCodeStartLoc)	;	zStartupCodeEndLoc-zStartupCodeStartLoc
 	dc.b $F9			;	ld	sp,hl
 	dc.b $77			;	ld	(hl),a
 	dc.b $ED,$B0		;	ldir
@@ -883,7 +883,7 @@ DACDriverLoad:
 ;unk_119C:
 		dc.b 3
 		dc.b 0
-		dc.w $1400>>8
+		little_endian $1400
 		dc.b 0
 		dc.b 0
 		dc.b 0

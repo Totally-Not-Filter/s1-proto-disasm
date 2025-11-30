@@ -1,5 +1,3 @@
-Size_of_DAC_driver_guess:	equ $1C5C
-
 ; VRAM data
 window_plane:	equ $A000	; window plane
 vram_fg:	equ $C000	; plane A (foreground namespace)

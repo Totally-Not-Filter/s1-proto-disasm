@@ -222,3 +222,6 @@ out_of_range_rememberstate:	macro exit,pos
 		cmpi.w	#128+320+192,d0
 		bhi.\0	exit
 		endm
+
+little_endian macros
+		dc.w	((\1<<8)&$FF00)|((\1>>8)&$FF)

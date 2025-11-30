@@ -407,11 +407,6 @@ cFM6				EQU $06	; Only in S3/S&K/S3D, overrides DAC
 ; ---------------------------------------------------------------------------
 ; Conversion macros and functions
 
-	if ~def(little_endian)
-little_endian macros
-		dc.w	((\1<<8)&$FF00)|((\1>>8)&$FF)
-	endif
-
 	if ~def(z80_ptr)
 z80_ptr macros
 		dc.w	((\1<<8)&$FF00)|((\1>>8)&$7F)|$80
