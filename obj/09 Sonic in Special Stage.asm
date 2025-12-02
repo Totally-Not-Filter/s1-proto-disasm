@@ -8,7 +8,8 @@ SonicSpecial:
 		move.w	Obj09_Index(pc,d0.w),d1
 		jmp	Obj09_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-Obj09_Index:	dc.w Obj09_Main-Obj09_Index
+Obj09_Index:
+		dc.w Obj09_Main-Obj09_Index
 		dc.w Obj09_Load-Obj09_Index
 		dc.w Obj09_ExitStage-Obj09_Index
 		dc.w Obj09_Exit2-Obj09_Index
@@ -37,24 +38,24 @@ Obj09_Load:
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
 Obj09_Modes:
-		dc.w loc_10D32-Obj09_Modes
-		dc.w loc_10D40-Obj09_Modes
+		dc.w Obj09_OnWall-Obj09_Modes
+		dc.w Obj09_InAir-Obj09_Modes
 ; ---------------------------------------------------------------------------
 
-loc_10D32:
+Obj09_OnWall:
 		bsr.w	Obj09_Jump
 		bsr.w	Obj09_Move
 		bsr.w	Obj09_Fall
 		bra.s	Obj09_Display
 ; ---------------------------------------------------------------------------
 
-loc_10D40:
+Obj09_InAir:
 		bsr.w	Obj09_Move
 		bsr.w	Obj09_Fall
 
 Obj09_Display:
-		bsr.w	sub_1107C
-		bsr.w	sub_110DE
+		bsr.w	Obj09_ChkItems
+		bsr.w	Obj09_ChkItems2
 		jsr	(SpeedToPos).l
 		bsr.w	SS_FixCamera
 		btst	#bitA,(v_jpadhold1).w	; is A held?
@@ -389,7 +390,7 @@ loc_11078:
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_1107C:
+Obj09_ChkItems:
 		lea	(v_ssbuffer1&$FFFFFF).l,a1
 		moveq	#0,d4
 		move.w	obY(a0),d4
@@ -403,20 +404,20 @@ sub_1107C:
 		divu.w	#$18,d4
 		adda.w	d4,a1
 		move.b	(a1),d4
-		bne.s	loc_110AE
+		bne.s	Obj09_ChkRing
 		moveq	#0,d4
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_110AE:
+Obj09_ChkRing:
 		cmpi.b	#$11,d4
 		bne.s	loc_110D0
 		bsr.w	SS_RemoveCollectedItem
-		bne.s	loc_110C2
+		bne.s	Obj09_GetRing
 		move.b	#1,(a2)
 		move.l	a1,4(a2)
 
-loc_110C2:
+Obj09_GetRing:
 		move.w	#sfx_Ring,d0
 		jsr	(QueueSound2).l
 		moveq	#0,d4
@@ -435,9 +436,9 @@ loc_110DA:
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_110DE:
+Obj09_ChkItems2:
 		move.b	objoff_30(a0),d0
-		bne.s	loc_110FE
+		bne.s	Obj09_ChkBumper
 		subq.b	#1,objoff_36(a0)
 		bpl.s	loc_110F0
 		move.b	#0,objoff_36(a0)
@@ -451,9 +452,9 @@ locret_110FC:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_110FE:
+Obj09_ChkBumper:
 		cmpi.b	#$12,d0
-		bne.s	loc_11176
+		bne.s	Obj09_GOAL
 		move.l	objoff_32(a0),d1
 		subi.l	#$FF0001,d1
 		move.w	d1,d2
@@ -476,29 +477,29 @@ loc_110FE:
 		move.w	d0,obVelY(a0)
 		bset	#1,obStatus(a0)
 		bsr.w	SS_RemoveCollectedItem
-		bne.s	loc_1116C
+		bne.s	Obj09_BumpSnd
 		move.b	#2,(a2)
 		move.l	objoff_32(a0),d0
 		subq.l	#1,d0
 		move.l	d0,4(a2)
 
-loc_1116C:
+Obj09_BumpSnd:
 		move.w	#sfx_Bumper,d0
 		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
-loc_11176:
+Obj09_GOAL:
 		cmpi.b	#$14,d0
-		bne.s	loc_11182
+		bne.s	Obj09_UPblock
 		addq.b	#2,obRoutine(a0)
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_11182:
+Obj09_UPblock:
 		cmpi.b	#$15,d0
-		bne.s	loc_111A8
+		bne.s	Obj09_DOWNblock
 		tst.b	objoff_36(a0)
-		bne.s	locret_111C0
+		bne.s	Obj09_Return
 		move.b	#30,objoff_36(a0)
 		btst	#6,(v_ssrotate+1).w
 		beq.s	loc_111A2
@@ -511,15 +512,16 @@ loc_111A2:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_111A8:
+; This has the same function as Obj09_Rblock, despite it using the DOWN block art.
+Obj09_DOWNblock:
 		cmpi.b	#$16,d0
-		bne.s	locret_111C0
+		bne.s	Obj09_Return
 		tst.b	objoff_37(a0)
-		bne.s	locret_111C0
+		bne.s	Obj09_Return
 		move.b	#30,objoff_37(a0)
 		neg.w	(v_ssrotate).w
 		rts
 ; ---------------------------------------------------------------------------
 
-locret_111C0:
+Obj09_Return:
 		rts
