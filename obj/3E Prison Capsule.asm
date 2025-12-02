@@ -150,7 +150,7 @@ locret_B7F8:
 loc_B7FA:
 		subq.w	#1,obTimeFrame(a0)
 		bne.s	locret_B808
-		bsr.w	sub_C81C
+		bsr.w	GotThroughAct
 	if FixBugs
 		addq.l	#4,sp	; do not return to caller
 	endif

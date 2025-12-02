@@ -3,8 +3,8 @@
 Signpost:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C726(pc,d0.w),d1
-		jsr	off_C726(pc,d1.w)
+		move.w	Sign_Index(pc,d0.w),d1
+		jsr	Sign_Index(pc,d1.w)
 		lea	(Ani_Sign).l,a1
 		bsr.w	AnimateSprite
 	if FixBugs
@@ -16,13 +16,17 @@ Signpost:
 		rts
 	endif
 ; ---------------------------------------------------------------------------
-off_C726:	dc.w loc_C72E-off_C726
-		dc.w loc_C752-off_C726
-		dc.w loc_C77C-off_C726
-		dc.w loc_C814-off_C726
+Sign_Index:	dc.w Sign_Main-Sign_Index
+		dc.w Sign_Touch-Sign_Index
+		dc.w Sign_Spin-Sign_Index
+		dc.w Sign_GotThrough-Sign_Index
+
+spintime = objoff_30		; time for signpost to spin
+sparkletime = objoff_32		; time between sparkles
+sparkle_id = objoff_34		; counter to keep track of sparkles
 ; ---------------------------------------------------------------------------
 
-loc_C72E:
+Sign_Main:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Sign,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Signpost,0,0),obGfx(a0)
@@ -30,42 +34,42 @@ loc_C72E:
 		move.b	#$18,obActWid(a0)
 		move.b	#4,obPriority(a0)
 
-loc_C752:
+Sign_Touch:
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
-		bcs.s	locret_C77A
+		bcs.s	.notouch
 		cmpi.w	#$20,d0
-		bcc.s	locret_C77A
+		bcc.s	.notouch
 		move.w	#sfx_Signpost,d0
 		jsr	(QueueSound1).l
 		clr.b	(f_timecount).w
 		move.w	(v_limitright2).w,(v_limitleft2).w
 		addq.b	#2,obRoutine(a0)
 
-locret_C77A:
+.notouch:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_C77C:
-		subq.w	#1,objoff_30(a0)
-		bpl.s	loc_C798
-		move.w	#60,objoff_30(a0)
+Sign_Spin:
+		subq.w	#1,spintime(a0)
+		bpl.s	.chksparkle
+		move.w	#60,spintime(a0)
 		addq.b	#1,obAnim(a0)
 		cmpi.b	#3,obAnim(a0)
-		bne.s	loc_C798
+		bne.s	.chksparkle
 		addq.b	#2,obRoutine(a0)
 
-loc_C798:
-		subq.w	#1,objoff_32(a0)
-		bpl.s	locret_C802
-		move.w	#12-1,objoff_32(a0)
+.chksparkle:
+		subq.w	#1,sparkletime(a0)
+		bpl.s	.fail
+		move.w	#12-1,sparkletime(a0)
 		moveq	#0,d0
-		move.b	objoff_34(a0),d0
-		addq.b	#2,objoff_34(a0)
-		andi.b	#$E,objoff_34(a0)
-		lea	byte_C804(pc,d0.w),a2
+		move.b	sparkle_id(a0),d0
+		addq.b	#2,sparkle_id(a0)
+		andi.b	#$E,sparkle_id(a0)
+		lea	Sign_SparkPos(pc,d0.w),a2
 		bsr.w	FindFreeObj
-		bne.s	locret_C802
+		bne.s	.fail
 		_move.b	#id_Rings,obID(a1)
 		move.b	#6,obRoutine(a1)
 		move.b	(a2)+,d0
@@ -82,11 +86,10 @@ loc_C798:
 		move.b	#2,obPriority(a1)
 		move.b	#8,obActWid(a1)
 
-locret_C802:
+.fail:
 		rts
 ; ---------------------------------------------------------------------------
-
-byte_C804:	dc.b -$18, -$10
+Sign_SparkPos:	dc.b -$18, -$10
 		dc.b 8, 8
 		dc.b -$10, 0
 		dc.b $18, -8
@@ -96,11 +99,11 @@ byte_C804:	dc.b -$18, -$10
 		dc.b $18, $10
 ; ---------------------------------------------------------------------------
 
-loc_C814:
+Sign_GotThrough:
 		tst.w	(v_debuguse).w
 		bne.w	locret_C880
 
-sub_C81C:
+GotThroughAct:
 		tst.b	(f_victory).w
 		bne.s	locret_C880
 		move.w	(v_limitright2).w,(v_limitleft2).w
@@ -119,10 +122,10 @@ sub_C81C:
 		divu.w	#15,d0
 		moveq	#$14,d1
 		cmp.w	d1,d0
-		bcs.s	loc_C862
+		bcs.s	.hastimebonus
 		move.w	d1,d0
 
-loc_C862:
+.hastimebonus:
 		add.w	d0,d0
 		move.w	TimeBonuses(pc,d0.w),(v_timebonus).w
 		move.w	(v_rings).w,d0
