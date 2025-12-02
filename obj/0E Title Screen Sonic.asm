@@ -6,7 +6,6 @@ TitleSonic:
 		move.w	TSon_Index(pc,d0.w),d1
 		jmp	TSon_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 TSon_Index:	dc.w TSon_Main-TSon_Index
 		dc.w TSon_Delay-TSon_Index
 		dc.w TSon_Move-TSon_Index
