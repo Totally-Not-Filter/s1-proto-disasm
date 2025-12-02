@@ -3,14 +3,17 @@
 TitleSonic:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_6A64(pc,d0.w),d1
-		jmp	off_6A64(pc,d1.w)
+		move.w	TSon_Index(pc,d0.w),d1
+		jmp	TSon_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_6A64:	dc.w loc_6A6C-off_6A64, loc_6AA0-off_6A64, loc_6AB0-off_6A64, loc_6AC6-off_6A64
+TSon_Index:	dc.w TSon_Main-TSon_Index
+		dc.w TSon_Delay-TSon_Index
+		dc.w TSon_Move-TSon_Index
+		dc.w TSon_Animate-TSon_Index
 ; ---------------------------------------------------------------------------
 
-loc_6A6C:
+TSon_Main:
 		addq.b	#2,obRoutine(a0)
 		move.w	#$F0,obX(a0)
 		move.w	#$DE,obScreenY(a0)
@@ -21,32 +24,31 @@ loc_6A6C:
 		lea	(Ani_TSon).l,a1
 		bsr.w	AnimateSprite
 
-loc_6AA0:
+TSon_Delay:
 		subq.b	#1,obDelayAni(a0)
-		bpl.s	locret_6AAE
+		bpl.s	.wait
 		addq.b	#2,obRoutine(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
 
-locret_6AAE:
+.wait:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_6AB0:
+TSon_Move:
 		subq.w	#8,obScreenY(a0)
 		cmpi.w	#150,obScreenY(a0)
-		bne.s	loc_6AC0
+		bne.s	.display
 		addq.b	#2,obRoutine(a0)
 
-loc_6AC0:
+.display:
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_6AC6:
+TSon_Animate:
 		lea	(Ani_TSon).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+
 		rts
