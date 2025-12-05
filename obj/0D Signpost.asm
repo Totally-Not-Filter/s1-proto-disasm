@@ -80,7 +80,7 @@ Sign_Spin:
 		ext.w	d0
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
-		move.l	#MapRing,obMap(a1)
+		move.l	#Map_Ring,obMap(a1)
 		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)

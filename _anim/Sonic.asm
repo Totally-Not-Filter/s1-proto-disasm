@@ -61,7 +61,7 @@ byte_F6AA:	dc.b 7, $3C, $3F, afEnd
 		even
 byte_F6AE:	dc.b 7, $3C, $3D, $53, $3E, $54, afEnd
 		even
-byte_F6B6:	dc.b $2F, $40, $FD
+byte_F6B6:	dc.b $2F, $40, afChange
 		even
 byte_F6BA:	dc.b 4, $41, $42, afEnd
 		even

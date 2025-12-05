@@ -4361,7 +4361,7 @@ Map_Light:	include "_maps/Light.asm"
 Map_Bump:	include "_maps/Bumper.asm"
 
 		include "obj/0D Signpost.asm"
-Ani_Sign:	include "_anim/Signpost.asm"
+		include "_anim/Signpost.asm"
 Map_Sign:	include "_maps/Signpost.asm"
 
 		include "obj/4C & 4D Lava Geyser Maker.asm"
@@ -5245,7 +5245,7 @@ loc_10B7A:
 
 		lea	(v_sslayout).l,a1
 		lea	(SS_1).l,a0
-		moveq	#$24-1,d1
+		moveq	#bytesToXcnt(SS_1_End-SS_1,$24),d1
 
 loc_10B8E:
 		moveq	#bytesToLcnt($24),d2
@@ -5292,7 +5292,7 @@ Map_SS_Goal_R:	include	"_maps/SS DOWN Block.asm"
 ;sub_10C98:
 		lea	(v_ssblockbuffer).l,a1
 		lea	(SS_1).l,a0
-		moveq	#$40-1,d1
+		moveq	#bytesToXcnt($1000,$40),d1
 
 loc_10CA6:
 		moveq	#bytesToLcnt($40),d2
@@ -5336,8 +5336,8 @@ locret_11678:
 
 		include	"_include/HUD_Update.asm"
 
-byte_11A26:	binclude "artunc/HUD Numbers.bin"
-byte_11D26:	binclude "artunc/Lives Counter Numbers.bin"
+Art_Hud:	binclude "artunc/HUD Numbers.bin"
+Art_LivesNums:	binclude "artunc/Lives Counter Numbers.bin"
 
 		include "obj/DebugMode.asm"
 		include "_include/DebugList.asm"
@@ -5466,7 +5466,7 @@ Nem_Crabmeat:	binclude "artnem/Enemy Crabmeat.nem"
 Nem_Buzz:	binclude "artnem/Enemy Buzz Bomber.nem"
 		even
 ;Nem_Ball_Explosion:
-		binclude "artnem/Unused - Ball Hog's Bomb Explosion.nem"
+		binclude "artnem/Unused - Ball Hog's Ball Explosion.nem"
 		even
 Nem_Burrobot:	binclude "artnem/Enemy Burrobot.nem"
 		even
@@ -5474,8 +5474,8 @@ Nem_Chopper:	binclude "artnem/Enemy Chopper.nem"
 		even
 Nem_Jaws:	binclude "artnem/Enemy Jaws.nem"
 		even
-;Nem_BallBomb:
-		binclude "artnem/Unused - Ball Hog's Bomb.nem"
+;Nem_BallHog_Ball:
+		binclude "artnem/Unused - Ball Hog's Ball.nem"
 		even
 Nem_Roller:	binclude "artnem/Enemy Roller.nem"
 		even
