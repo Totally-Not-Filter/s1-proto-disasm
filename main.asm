@@ -4455,7 +4455,7 @@ Map_Seesaw:	include "_maps/Seesaw.asm"
 		include "obj/4A Giant Ring.asm"
 
 		include "_anim/Shield.asm"
-		include "_maps/Shield.asm"
+Map_Shield:	include "_maps/Shield.asm"
 
 		include "_anim/Special Stage Entry (Unused).asm"
 Map_Vanish:	include "_maps/Special Stage Entry (Unused).asm"

@@ -12,7 +12,7 @@ ObjShield_Index:dc.w ObjShield_Init-ObjShield_Index, ObjShield_Shield-ObjShield_
 
 ObjShield_Init:
 		addq.b	#2,obRoutine(a0)
-		move.l	#MapShield,obMap(a0)
+		move.l	#Map_Shield,obMap(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#$10,obActWid(a0)
