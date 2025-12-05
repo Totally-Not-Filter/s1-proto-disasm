@@ -45,7 +45,7 @@ loc_E892:
 		move.w	off_E8C8(pc,d0.w),d1
 		jsr	off_E8C8(pc,d1.w)
 		bsr.s	sub_E8D6
-		bsr.w	sub_E952
+		bsr.w	Sonic_RecordPosition
 		move.b	(v_anglebuffer).w,objoff_36(a0)
 		move.b	(v_anglebuffer2).w,objoff_37(a0)
 		bsr.w	Sonic_Animate
@@ -117,7 +117,7 @@ locret_E950:
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_E952:
+Sonic_RecordPosition:
 		move.w	(v_trackpos).w,d0
 		lea	(v_tracksonic).w,a1
 		lea	(a1,d0.w),a1

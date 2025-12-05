@@ -5,7 +5,7 @@ Sonic_Hurt:
 		bsr.w	SpeedToPos
 		addi.w	#$30,obVelY(a0)
 		bsr.w	Sonic_LevelBound
-		bsr.w	sub_E952
+		bsr.w	Sonic_RecordPosition
 		bsr.w	Sonic_Animate
 		bsr.w	Sonic_LoadGfx
 		bra.w	DisplaySprite
@@ -34,7 +34,7 @@ locret_F318:
 Sonic_Death:
 		bsr.w	Sonic_GameOver
 		bsr.w	ObjectFall
-		bsr.w	sub_E952
+		bsr.w	Sonic_RecordPosition
 		bsr.w	Sonic_Animate
 		bsr.w	Sonic_LoadGfx
 		bra.w	DisplaySprite
