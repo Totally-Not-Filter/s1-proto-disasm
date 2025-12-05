@@ -1,5 +1,5 @@
-AniShield:	dc.w byte_F8DC-AniShield, byte_F8E4-AniShield, byte_F8EA-AniShield
-		dc.w byte_F904-AniShield, byte_F91E-AniShield
+Ani_Shield:	dc.w byte_F8DC-Ani_Shield, byte_F8E4-Ani_Shield, byte_F8EA-Ani_Shield
+		dc.w byte_F904-Ani_Shield, byte_F91E-Ani_Shield
 byte_F8DC:	dc.b 1, 1, 0, 2, 0, 3, 0, afEnd
 		even
 byte_F8E4:	dc.b 5, 4, 5, 6, 7, afEnd

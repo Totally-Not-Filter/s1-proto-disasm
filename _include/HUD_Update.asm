@@ -135,7 +135,7 @@ Hud_Base:
 		move.w	#Hud_TilesBase_End-Hud_TilesBase-1,d2
 
 loc_117E2:
-		lea	byte_11A26(pc),a1
+		lea	Art_Hud(pc),a1
 
 loc_117E6:
 		move.w	#16-1,d1
@@ -236,7 +236,7 @@ Hud_Score:
 
 loc_11886:
 		moveq	#0,d4
-		lea	byte_11A26(pc),a1
+		lea	Art_Hud(pc),a1
 
 loc_1188C:
 		moveq	#0,d2
@@ -303,7 +303,7 @@ Hud_Secs:
 
 loc_11906:
 		moveq	#0,d4
-		lea	byte_11A26(pc),a1
+		lea	Art_Hud(pc),a1
 
 loc_1190C:
 		moveq	#0,d2
@@ -351,7 +351,7 @@ Hud_TimeRingBonus:
 		lea	(Hud_1000).l,a2
 		moveq	#4-1,d6
 		moveq	#0,d4
-		lea	byte_11A26(pc),a1
+		lea	Art_Hud(pc),a1
 
 loc_11966:
 		moveq	#0,d2
@@ -413,7 +413,7 @@ Hud_Lives:
 		lea	(Hud_10).l,a2
 		moveq	#2-1,d6
 		moveq	#0,d4
-		lea	byte_11D26(pc),a1
+		lea	Art_LivesNums(pc),a1
 
 loc_119D4:
 		move.l	d0,4(a6)

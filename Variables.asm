@@ -317,7 +317,7 @@ v_end:		rs.b 0
 v_ssbuffer1		= v_start&$FFFFFF
 v_ssblockbuffer	= v_ssbuffer1+$1020 ; ($2000 bytes)
 v_ssblockbuffer_end	= v_ssblockbuffer+$80*$40
-v_sslayout		= v_start&$FFFFFF+$172E
+v_sslayout		= v_start&$FFFFFF+$172E	; ($510 bytes)
 v_ssbuffer2		= v_start&$FFFFFF+$4000
 v_ssblocktypes	= v_ssbuffer2
 v_ssitembuffer	= v_ssbuffer2+$400 ; ($100 bytes)

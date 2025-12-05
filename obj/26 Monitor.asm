@@ -127,7 +127,7 @@ loc_8198:
 		bclr	#5,obStatus(a1)
 
 loc_81A4:
-		lea	(AniMonitor).l,a1
+		lea	(Ani_Monitor).l,a1
 		bsr.w	AnimateSprite
 
 loc_81AE:

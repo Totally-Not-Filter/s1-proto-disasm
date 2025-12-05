@@ -36,7 +36,7 @@ ObjShield_Shield:
 		move.w	(v_player+obX).w,obX(a0)
 		move.w	(v_player+obY).w,obY(a0)
 		move.b	(v_player+obStatus).w,obStatus(a0)
-		lea	(AniShield).l,a1
+		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		bsr.w	DisplaySprite
 
@@ -90,7 +90,7 @@ ObjShield_StarTrail2a:
 		move.w	(a1)+,obX(a0)
 		move.w	(a1)+,obY(a0)
 		move.b	(v_player+obStatus).w,obStatus(a0)
-		lea	(AniShield).l,a1
+		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------

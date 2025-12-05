@@ -19,7 +19,7 @@ Ani_Eggman:	dc.w .ship-Ani_Eggman
 		even
 .facenormal3:	dc.b 1,	1, 2, afEnd
 		even
-.facelaugh:	dc.b 3, 3, 4, 3, 4, 3, 4, 3, 4, $FD, 1
+.facelaugh:	dc.b 3, 3, 4, 3, 4, 3, 4, 3, 4, afChange, 1
 		even
 .facehit:	dc.b $1F, 5, 1,	afEnd
 		even
