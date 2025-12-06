@@ -4272,7 +4272,7 @@ Map_Smash:	include "_maps/Smashable Walls.asm"
 
 		include "obj/3D Boss - Green Hill (part 1).asm"
 
-sub_B146:
+BossDefeated:
 		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
 		bne.s	locret_B186

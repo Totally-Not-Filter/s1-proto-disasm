@@ -143,7 +143,7 @@ loc_B4C2:
 		tst.b	obStatus(a1)
 		bpl.w	DisplaySprite
 		move.b	#0,obColType(a0)
-		bsr.w	sub_B146
+		bsr.w	BossDefeated
 		subq.b	#1,objoff_3C(a0)
 		bpl.s	loc_B4EE
 		_move.b	#id_ExplosionBomb,obID(a0)
