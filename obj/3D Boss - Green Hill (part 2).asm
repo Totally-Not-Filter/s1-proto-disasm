@@ -63,7 +63,7 @@ loc_B258:
 loc_B25C:
 		subq.w	#1,objoff_3C(a0)
 		bmi.s	loc_B266
-		bra.w	sub_B146
+		bra.w	BossDefeated
 ; ---------------------------------------------------------------------------
 
 loc_B266:
