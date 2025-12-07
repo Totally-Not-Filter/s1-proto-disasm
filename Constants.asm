@@ -358,6 +358,16 @@ bgm_Slowdown:	equ ((ptr_flgE3-Sound_ExIndex)/4)+flg__First
 bgm_StopSpec:	equ ((ptr_flgE4-Sound_ExIndex)/4)+flg__First
 flg__Last:	equ ((ptr_flgend-Sound_ExIndex-4)/4)+flg__First
 
+;=======================================;
+; PSG envelope commands
+;=======================================;
+TBREPT:	equ	$80		; table repeat sign
+TBSTAY:	equ	$81		; table staying sign
+TBEND:	equ	$83		; table end sign
+TBADD:	equ	$84		; after this command
+				; data=([table data]-0)*[add data]
+TBBAK:	equ	$85		; table pointer set next data
+
 ; Tile VRAM Locations
 
 ; Shared

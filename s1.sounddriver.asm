@@ -32,15 +32,15 @@ PSGIndex:
 		dc.l PSG1, PSG2, PSG3
 		dc.l PSG4, PSG6, PSG5
 		dc.l PSG7, PSG8, PSG9
-PSG1:	dc.b 0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,$83
-PSG2:	dc.b 0,2,4,6,8,$10,$83
-PSG3:	dc.b 0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,$83
-PSG4:	dc.b 0,0,2,3,4,4,5,5,5,6,$83
-PSG5:	dc.b 3,3,3,2,2,2,2,1,1,1,0,0,0,0,$83
-PSG6:	dc.b 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,$83
-PSG7:	dc.b 0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,4,5,5,5,6,7,$83
-PSG8:	dc.b 0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,6,6,6,6,6,7,7,7,$83
-PSG9:	dc.b 0,1,2,3,4,5,6,7,8,9,$A,$B,$C,$D,$E,$F,$83
+PSG1:	dc.b 0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,TBEND
+PSG2:	dc.b 0,2,4,6,8,$10,TBEND
+PSG3:	dc.b 0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,TBEND
+PSG4:	dc.b 0,0,2,3,4,4,5,5,5,6,TBEND
+PSG5:	dc.b 3,3,3,2,2,2,2,1,1,1,0,0,0,0,TBEND
+PSG6:	dc.b 0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,4,TBEND
+PSG7:	dc.b 0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,4,4,4,5,5,5,6,7,TBEND
+PSG8:	dc.b 0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,6,6,6,6,6,7,7,7,TBEND
+PSG9:	dc.b 0,1,2,3,4,5,6,7,8,9,$A,$B,$C,$D,$E,$F,TBEND
 
 ModulationIndex:
 		dc.b $D, 1, 7, 4	; 1
@@ -1830,12 +1830,12 @@ PSGDoVolFX:
 		addq.b	#1,SMPS_Track.VolEnvIndex(a5)
 		btst	#7,d0
 		beq.s	.volume
-		cmpi.b	#$83,d0
-		beq.s	VolEnvCmd_Hold
-		cmpi.b	#$85,d0
-		beq.s	VolEnvCmd_Loop
-		cmpi.b	#$80,d0
-		beq.s	VolEnvCmd_Reset
+		cmpi.b	#TBEND,d0
+		beq.s	VolEnvCmd_End
+		cmpi.b	#TBBAK,d0
+		beq.s	VolEnvCmd_Back
+		cmpi.b	#TBREPT,d0
+		beq.s	VolEnvCmd_Rept
 
 .volume:
 		add.w	d0,d6
@@ -1868,17 +1868,17 @@ SetPSGVolume_ChkGate:
 		rts
 ; ---------------------------------------------------------------------------
 
-VolEnvCmd_Hold:
+VolEnvCmd_End:
 		subq.b	#1,SMPS_Track.VolEnvIndex(a5)
 		rts
 ; ---------------------------------------------------------------------------
 
-VolEnvCmd_Loop:
+VolEnvCmd_Back:
 		move.b	SMPS_Track.VoiceControl(a0,d0.w),SMPS_Track.VolEnvIndex(a5)
 		bra.w	PSGDoVolFX
 ; ---------------------------------------------------------------------------
 
-VolEnvCmd_Reset:
+VolEnvCmd_Rept:
 		clr.b	SMPS_Track.VolEnvIndex(a5)
 		bra.w	PSGDoVolFX
 ; ---------------------------------------------------------------------------
