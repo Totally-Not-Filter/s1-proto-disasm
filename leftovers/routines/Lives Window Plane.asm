@@ -13,10 +13,10 @@ Lives_Window_Plane:
 .lower:
 		lea	(vdp_data_port).l,a6
 		locVRAM window_plane+$CBE
-		move.l	#(ArtTile_Early_Lives_Icon+8<<12)<<16|(ArtTile_Early_Lives_Icon+1)+8<<12,d2
+		move.l	#make_art_tile(ArtTile_Early_Lives_Icon,0,1)<<16|make_art_tile(ArtTile_Early_Lives_Icon+1,0,1),d2
 		bsr.s	.drawplane
 		locVRAM window_plane+$D3E
-		move.l	#((ArtTile_Early_Lives_Icon+2)+8<<12)<<16|(ArtTile_Early_Lives_Icon+3)+8<<12,d2
+		move.l	#make_art_tile(ArtTile_Early_Lives_Icon+2,0,1)<<16|make_art_tile(ArtTile_Early_Lives_Icon+3,0,1),d2
 
 .drawplane:
 		moveq	#0,d3
