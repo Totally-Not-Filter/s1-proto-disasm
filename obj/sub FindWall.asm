@@ -6,11 +6,11 @@ FindWall:
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	loc_14B1E
+		beq.s	loc_1030E
 		btst	d5,d4
-		bne.s	loc_14B2C
+		bne.s	loc_1031C
 
-loc_14B1E:
+loc_1030E:
 		add.w	a3,d3
 		bsr.w	FindWall2
 		sub.w	a3,d3
@@ -18,28 +18,28 @@ loc_14B1E:
 		rts
 ; ===========================================================================
 
-loc_14B2C:
+loc_1031C:
 		movea.l	(v_collindex).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
-		beq.s	loc_14B1E
+		beq.s	loc_1030E
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d2,d1
 		btst	#$C,d4
-		beq.s	loc_14B5A
+		beq.s	loc_1034A
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-loc_14B5A:
+loc_1034A:
 		btst	#$B,d4
-		beq.s	loc_14B62
+		beq.s	loc_10352
 		neg.b	(a4)
 
-loc_14B62:
+loc_10352:
 		andi.w	#$F,d1
 		add.w	d0,d1
 		lea	(CollArray2).l,a2
@@ -47,15 +47,15 @@ loc_14B62:
 		ext.w	d0
 		eor.w	d6,d4
 		btst	#$B,d4
-		beq.s	loc_14B7E
+		beq.s	loc_1036E
 		neg.w	d0
 
-loc_14B7E:
+loc_1036E:
 		tst.w	d0
-		beq.s	loc_14B1E
-		bmi.s	loc_14B9A
+		beq.s	loc_1030E
+		bmi.s	loc_1038A
 		cmpi.b	#$10,d0
-		beq.s	loc_14BA6
+		beq.s	loc_10396
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
@@ -64,13 +64,13 @@ loc_14B7E:
 		rts
 ; ===========================================================================
 
-loc_14B9A:
+loc_1038A:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	loc_14B1E
+		bpl.w	loc_1030E
 
-loc_14BA6:
+loc_10396:
 		sub.w	a3,d3
 		bsr.w	FindWall2
 		add.w	a3,d3
@@ -87,11 +87,11 @@ FindWall2:
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	loc_14BC6
+		beq.s	loc_103B6
 		btst	d5,d4
-		bne.s	loc_14BD4
+		bne.s	loc_103C4
 
-loc_14BC6:
+loc_103B6:
 		move.w	#$F,d1
 		move.w	d3,d0
 		andi.w	#$F,d0
@@ -99,28 +99,28 @@ loc_14BC6:
 		rts
 ; ===========================================================================
 
-loc_14BD4:
+loc_103C4:
 		movea.l	(v_collindex).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
-		beq.s	loc_14BC6
+		beq.s	loc_103B6
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d2,d1
 		btst	#$C,d4
-		beq.s	loc_14C02
+		beq.s	loc_103F2
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-loc_14C02:
+loc_103F2:
 		btst	#$B,d4
-		beq.s	loc_14C0A
+		beq.s	loc_103FA
 		neg.b	(a4)
 
-loc_14C0A:
+loc_103FA:
 		andi.w	#$F,d1
 		add.w	d0,d1
 		lea	(CollArray2).l,a2
@@ -128,13 +128,13 @@ loc_14C0A:
 		ext.w	d0
 		eor.w	d6,d4
 		btst	#$B,d4
-		beq.s	loc_14C26
+		beq.s	loc_10416
 		neg.w	d0
 
-loc_14C26:
+loc_10416:
 		tst.w	d0
-		beq.s	loc_14BC6
-		bmi.s	loc_14C3C
+		beq.s	loc_103B6
+		bmi.s	loc_1042C
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
@@ -143,11 +143,11 @@ loc_14C26:
 		rts
 ; ===========================================================================
 
-loc_14C3C:
+loc_1042C:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	loc_14BC6
+		bpl.w	loc_103B6
 		not.w	d1
 		rts
 ; End of function FindWall2
