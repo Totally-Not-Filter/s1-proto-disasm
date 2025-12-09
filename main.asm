@@ -1691,7 +1691,7 @@ loc_2732:
 LevelSelect:
 		move.b	#id_VInt_04,(v_vint_routine).w
 		bsr.w	WaitForVInt
-		bsr.w	sub_28A6
+		bsr.w	LevSelControls
 		bsr.w	RunPLC
 		tst.l	(v_plc_buffer).w
 		bne.s	LevelSelect
@@ -1836,66 +1836,70 @@ DemoLevels:
 		dc.b	id_SZ,0
 		dc.b	(id_SS-1),0
 ; ---------------------------------------------------------------------------
+; Subroutine to change what you're selecting in the level select
+; ---------------------------------------------------------------------------
 
-sub_28A6:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+LevSelControls:
 		move.b	(v_jpadpress1).w,d1
 		andi.b	#btnUp+btnDn,d1
-		bne.s	loc_28B6
+		bne.s	LevSel_UpDown
 		subq.w	#1,(v_levseldelay).w
-		bpl.s	loc_28F0
+		bpl.s	LevSel_SndTest
 
-loc_28B6:
+LevSel_UpDown:
 		move.w	#12-1,(v_levseldelay).w
 		move.b	(v_jpadhold1).w,d1
 		andi.b	#btnUp+btnDn,d1
-		beq.s	loc_28F0
+		beq.s	LevSel_SndTest
 		move.w	(v_levselitem).w,d0
 		btst	#bitUp,d1
-		beq.s	loc_28D6
+		beq.s	LevSel_Down
 		subq.w	#1,d0
-		bhs.s	loc_28D6
+		bhs.s	LevSel_Down
 		moveq	#$13,d0
 
-loc_28D6:
+LevSel_Down:
 		btst	#bitDn,d1
-		beq.s	loc_28E6
+		beq.s	LevSel_Refresh
 		addq.w	#1,d0
 		cmpi.w	#$14,d0
-		blo.s	loc_28E6
+		blo.s	LevSel_Refresh
 		moveq	#0,d0
 
-loc_28E6:
+LevSel_Refresh:
 		move.w	d0,(v_levselitem).w
 		bsr.w	LevSelTextLoad
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_28F0:
+LevSel_SndTest:
 		cmpi.w	#$13,(v_levselitem).w
-		bne.s	locret_292A
+		bne.s	LevSel_NoMove
 		move.b	(v_jpadpress1).w,d1
 		andi.b	#btnL+btnR,d1
-		beq.s	locret_292A
+		beq.s	LevSel_NoMove
 		move.w	(v_levselsound).w,d0
 		btst	#bitL,d1
-		beq.s	loc_2912
+		beq.s	LevSel_Right
 		subq.w	#1,d0
-		bhs.s	loc_2912
+		bhs.s	LevSel_Right
 		moveq	#sfx__Last-$80,d0
 
-loc_2912:
+LevSel_Right:
 		btst	#bitR,d1
-		beq.s	loc_2922
+		beq.s	LevSel_Refresh2
 		addq.w	#1,d0
 		cmpi.w	#spec__First-$80,d0
-		blo.s	loc_2922
+		blo.s	LevSel_Refresh2
 		moveq	#0,d0
 
-loc_2922:
+LevSel_Refresh2:
 		move.w	d0,(v_levselsound).w
 		bsr.w	LevSelTextLoad
 
-locret_292A:
+LevSel_NoMove:
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -1910,11 +1914,12 @@ textpos:	= ($40000000+(($E210&$3FFF)<<16)+(($E210&$C000)>>14))
 		move.w	#$E680,d3
 		moveq	#20-1,d1	; Only load 20 lines.
 
-loc_2944:
+LevSel_DrawAll:
 		move.l	d4,4(a6)
-		bsr.w	sub_29CC
+		bsr.w	LevSel_ChgLine
 		addi.l	#$800000,d4
-		dbf	d1,loc_2944
+		dbf	d1,LevSel_DrawAll
+
 		moveq	#0,d0
 		move.w	(v_levselitem).w,d0
 		move.w	d0,d1
@@ -1930,52 +1935,52 @@ loc_2944:
 		adda.w	d1,a1
 		move.w	#$C680,d3
 		move.l	d4,4(a6)
-		bsr.w	sub_29CC
+		bsr.w	LevSel_ChgLine
 		move.w	#$E680,d3
 		cmpi.w	#$13,(v_levselitem).w	; are we on Sound Select?
-		bne.s	loc_2996	; if not, branch
+		bne.s	LevSel_DrawSnd	; if not, branch
 		move.w	#$C680,d3
 
-loc_2996:
+LevSel_DrawSnd:
 		locVRAM vram_bg+$BB0
 		move.w	(v_levselsound).w,d0
 		addi.w	#$80,d0
 		move.b	d0,d2
 		lsr.b	#4,d0
-		bsr.w	sub_29B8
+		bsr.w	LevSel_ChgSnd
 		move.b	d2,d0
-		bsr.w	sub_29B8
+		bsr.w	LevSel_ChgSnd
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_29B8:
+LevSel_ChgSnd:
 		andi.w	#$F,d0
 		cmpi.b	#$A,d0
-		blo.s	loc_29C6
+		blo.s	LevSel_Numb
 		addi.b	#7,d0
 
-loc_29C6:
+LevSel_Numb:
 		add.w	d3,d0
 		move.w	d0,(a6)
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_29CC:
+LevSel_ChgLine:
 		moveq	#24-1,d2
 
-loc_29CE:
+LevSel_LineLoop:
 		moveq	#0,d0
 		move.b	(a1)+,d0
-		bpl.s	loc_29DE
+		bpl.s	LevSel_CharOk
 		move.w	#0,(a6)
-		dbf	d2,loc_29CE
+		dbf	d2,LevSel_LineLoop
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_29DE:
+LevSel_CharOk:
 		add.w	d3,d0
 		move.w	d0,(a6)
-		dbf	d2,loc_29CE
+		dbf	d2,LevSel_LineLoop
 		rts
 ; ---------------------------------------------------------------------------
 
