@@ -128,7 +128,7 @@ ObjSpikedBalls_DeleteLoop:
 		lsl.w	#object_size_bits,d0
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a1
-		bsr.w	ObjectDeleteA1
+		bsr.w	DeleteChild
 		dbf	d2,ObjSpikedBalls_DeleteLoop
 		rts
 ; ---------------------------------------------------------------------------
