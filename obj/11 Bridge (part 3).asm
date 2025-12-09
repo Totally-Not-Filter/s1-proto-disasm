@@ -153,7 +153,7 @@ loc_5432:
 		movea.l	d0,a1
 		cmp.w	a0,d0
 		beq.s	loc_5448
-		bsr.w	ObjectDeleteA1
+		bsr.w	DeleteChild
 
 loc_5448:
 		dbf	d2,loc_5432

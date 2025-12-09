@@ -242,7 +242,7 @@ loc_90FC:
 		lsl.w	#object_size_bits,d0
 		addi.w	#v_objspace,d0
 		movea.w	d0,a1
-		bsr.w	ObjectDeleteA1
+		bsr.w	DeleteChild
 		dbf	d2,loc_90FC
 		move.b	#0,objoff_35(a0)
 		move.b	#0,objoff_34(a0)
