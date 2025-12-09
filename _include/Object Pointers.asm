@@ -58,7 +58,7 @@ ptr_Spikes:	dc.l ObjSpikes	; 36
 ptr_RingLoss:	dc.l ObjRingLoss	; 37
 ptr_ShieldItem:	dc.l ObjShield	; 38
 ptr_GameOverCard:	dc.l ObjGameOver	; 39
-ptr_GotThroughCard:	dc.l ObjLevelResults	; 3A
+ptr_GotThroughCard:	dc.l GotThroughCard	; 3A
 ptr_PurpleRock:	dc.l ObjPurpleRock	; 3B
 ptr_SmashWall:	dc.l ObjSmashWall	; 3C
 ptr_BossGreenHill:	dc.l ObjGHZBoss	; 3D

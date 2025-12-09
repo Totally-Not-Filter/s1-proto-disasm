@@ -1,31 +1,39 @@
 ; ---------------------------------------------------------------------------
+; Object 3A - "SONIC GOT THROUGH" title card
+; ---------------------------------------------------------------------------
 
-ObjLevelResults:
+GotThroughCard:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_A6EE(pc,d0.w),d1
-		jmp	off_A6EE(pc,d1.w)
+		move.w	Got_Index(pc,d0.w),d1
+		jmp	Got_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_A6EE:	dc.w loc_A6FA-off_A6EE, loc_A74E-off_A6EE, loc_A786-off_A6EE, loc_A794-off_A6EE, loc_A786-off_A6EE
-		dc.w loc_A7F2-off_A6EE
+Got_Index:	dc.w Got_ChkPLC-Got_Index
+		dc.w Got_Move-Got_Index
+		dc.w Got_Wait-Got_Index
+		dc.w Got_TimeBonus-Got_Index
+		dc.w Got_Wait-Got_Index
+		dc.w Got_NextLevel-Got_Index
+
+got_mainX = objoff_30		; position for card to display on
 ; ---------------------------------------------------------------------------
 
-loc_A6FA:
+Got_ChkPLC:
 		tst.l	(v_plc_buffer).w
-		beq.s	loc_A702
+		beq.s	Got_Main
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_A702:
+Got_Main:
 		movea.l	a0,a1
-		lea	(word_A856).l,a2
+		lea	(Got_Config).l,a2
 		moveq	#6,d1
 
-loc_A70C:
+Got_Loop:
 		_move.b	#id_GotThroughCard,obID(a1)
 		move.w	(a2)+,obX(a1)
-		move.w	(a2)+,card_mainX(a1)
+		move.w	(a2)+,got_mainX(a1)
 		move.w	(a2)+,obScreenY(a1)
 		move.b	(a2)+,obRoutine(a1)
 		move.b	(a2)+,d0
@@ -39,17 +47,17 @@ loc_A72E:
 		move.w	#make_art_tile(ArtTile_Title_Card,0,1),obGfx(a1)
 		move.b	#0,obRender(a1)
 		lea	object_size(a1),a1
-		dbf	d1,loc_A70C
+		dbf	d1,Got_Loop
 
-loc_A74E:
+Got_Move:
 		moveq	#$10,d1
-		move.w	card_mainX(a0),d0
+		move.w	got_mainX(a0),d0
 		cmp.w	obX(a0),d0
 		beq.s	loc_A774
-		bge.s	loc_A75E
+		bge.s	Got_ChgPos
 		neg.w	d1
 
-loc_A75E:
+Got_ChgPos:
 		add.w	d1,obX(a0)
 
 loc_A762:
@@ -70,33 +78,33 @@ loc_A774:
 		addq.b	#2,obRoutine(a0)
 		move.w	#180,obTimeFrame(a0)
 
-loc_A786:
+Got_Wait:
 		subq.w	#1,obTimeFrame(a0)
-		bne.s	loc_A790
+		bne.s	Got_Display
 		addq.b	#2,obRoutine(a0)
 
-loc_A790:
+Got_Display:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-loc_A794:
+Got_TimeBonus:
 		bsr.w	DisplaySprite
 		move.b	#1,(f_endactbonus).w
 		moveq	#0,d0
 		tst.w	(v_timebonus).w
-		beq.s	loc_A7B0
+		beq.s	Got_RingBonus
 		addi.w	#10,d0
 		subi.w	#10,(v_timebonus).w
 
-loc_A7B0:
+Got_RingBonus:
 		tst.w	(v_ringbonus).w
-		beq.s	loc_A7C0
+		beq.s	Got_ChkBonus
 		addi.w	#10,d0
 		subi.w	#10,(v_ringbonus).w
 
-loc_A7C0:
+Got_ChkBonus:
 		tst.w	d0
-		bne.s	loc_A7DA
+		bne.s	Got_AddBonus
 		move.w	#sfx_Cash,d0
 		jsr	(QueueSound2).l
 		addq.b	#2,obRoutine(a0)
@@ -106,7 +114,7 @@ locret_A7D8:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_A7DA:
+Got_AddBonus:
 		bsr.w	ScoreAdd
 		move.b	(v_vint_byte).w,d0
 		andi.b	#3,d0
@@ -115,7 +123,7 @@ loc_A7DA:
 		jmp	(QueueSound2).l
 ; ---------------------------------------------------------------------------
 
-loc_A7F2:
+Got_NextLevel:
 		move.b	(v_zone).w,d0
 		andi.w	#7,d0
 		lsl.w	#3,d0
@@ -123,59 +131,68 @@ loc_A7F2:
 		andi.w	#3,d1
 		add.w	d1,d1
 		add.w	d1,d0
-		move.w	word_A826(pc,d0.w),d0
+		move.w	LevelOrder(pc,d0.w),d0
 		move.w	d0,(v_zone).w
 		tst.w	d0
 		bne.s	loc_A81C
 		move.b	#id_Sega,(v_gamemode).w
-		bra.s	loc_A822
+		bra.s	Got_Display2
 ; ---------------------------------------------------------------------------
 
 loc_A81C:
 		move.w	#1,(f_restart).w
 
-loc_A822:
+Got_Display2:
 		bra.w	DisplaySprite
 ; ===========================================================================
-; Level Order
+; Level order array
 ; ===========================================================================
-word_A826:
-		dc.w id_GHZ<<8+1	; GHZ2
-		dc.w id_GHZ<<8+2	; GHZ3
-		dc.w id_MZ<<8+0	; MZ1
-		dc.w id_Sega	; Sega Screen
-		dc.w id_LZ<<8+1	; LZ2
-		dc.w id_LZ<<8+2	; LZ3
-		dc.w id_MZ<<8+0	; MZ1
-		dc.w id_Sega	; Sega Screen
-		dc.w id_MZ<<8+1	; MZ2
-		dc.w id_MZ<<8+2	; MZ3
-		dc.w id_SZ<<8+0	; SZ1
-		dc.w id_Sega	; Sega Screen
-		dc.w id_Sega	; Sega Screen
-		dc.w id_SLZ<<8+2	; SLZ3
-		dc.w id_MZ<<8+0	; MZ1
-		dc.w id_Sega	; Sega Screen
-		dc.w id_SLZ<<8+0	; SLZ1
-		dc.w id_SZ<<8+2	; SZ3
-		dc.w id_CWZ<<8+0	; CWZ1
-		dc.w id_Sega	; Sega Screen
-		dc.w id_CWZ<<8+1	; CWZ2
-		dc.w id_CWZ<<8+2	; CWZ3
-		dc.w id_Sega	; Sega Screen
-		dc.w id_Sega	; Sega Screen
+LevelOrder:
+		dc.b id_GHZ,1	; GHZ1
+		dc.b id_GHZ,2	; GHZ2
+		dc.b id_MZ,0	; GHZ3
+		dc.b 0,0
+		dc.b id_LZ,1	; LZ1
+		dc.b id_LZ,2	; LZ2
+		dc.b id_MZ,0	; LZ3
+		dc.b 0,0
+		dc.b id_MZ,1	; MZ1
+		dc.b id_MZ,2	; MZ2
+		dc.b id_SZ,0	; MZ3
+		dc.b 0,0
+		dc.b 0,0
+		dc.b id_SLZ,2	; SLZ2
+		dc.b id_MZ,0	; SLZ3
+		dc.b 0,0
+		dc.b id_SLZ,0	; SZ1
+		dc.b id_SZ,2	; SZ2
+		dc.b id_CWZ,0	; SZ3
+		dc.b 0,0
+		dc.b id_CWZ,1	; CWZ1
+		dc.b id_CWZ,2	; CWZ2
+		dc.b 0,0
+		dc.b 0,0
+; ===========================================================================
+		;    x-start, x-main, y-main,
+		;    routine, frame number
 
-word_A856:	dc.w 4, $124, $BC
-		dc.b 2, 0
-		dc.w $FEE0, $120, $D0
-		dc.b 2, 1
-		dc.w $40C, $14C, $D6
-		dc.b 2, 6
-		dc.w $520, $120, $EC
-		dc.b 2, 2
-		dc.w $540, $120, $FC
-		dc.b 2, 3
-		dc.w $560, $120, $10C
-		dc.b 2, 4
-		dc.w $20C, $14C, $CC
-		dc.b 2, 5
+Got_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
+		dc.b 				2,	0
+
+		dc.w -$120,	$120,	$D0			; "PASSED"
+		dc.b 				2,	1
+
+		dc.w $40C,	$14C,	$D6			; "ACT" 1/2/3
+		dc.b 				2,	6
+
+		dc.w $520,	$120,	$EC			; score
+		dc.b 				2,	2
+
+		dc.w $540,	$120,	$FC			; time bonus
+		dc.b 				2,	3
+
+		dc.w $560,	$120,	$10C			; ring bonus
+		dc.b 				2,	4
+
+		dc.w $20C,	$14C,	$CC			; oval
+		dc.b 				2,	5
