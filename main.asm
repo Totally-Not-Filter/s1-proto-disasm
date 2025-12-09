@@ -292,9 +292,9 @@ CheckSumCheck:
 		moveq	#0,d7
 		move.w	#bytesToLcnt(v_end-v_crossresetram),d6
 
-.clearRAM:
+.clrRAM:
 		move.l	d7,(a6)+
-		dbf	d6,.clearRAM
+		dbf	d6,.clrRAM
 		move.b	(region_ver).l,d0
 		andi.b	#%11000000,d0		; AND the value so it only gets the japanese bit and clock speed bit
 		move.b	d0,(v_megadrive).w	; move the region values into 68K memory for later use
