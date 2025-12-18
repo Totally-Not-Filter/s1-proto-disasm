@@ -21,7 +21,7 @@ Go_MusicIndex:		dc.l MusicIndex
 Go_SoundIndex:		dc.l SoundIndex
 Go_Modulation:		dc.l ModulationIndex
 Go_PSGIndex:		dc.l PSGIndex
-		dc.l $A0
+		dc.l sfx__First
 		dc.l UpdateMusic
 Go_SpeedUpIndex:	dc.l SpeedUpIndex
 
