@@ -7,7 +7,11 @@ ObjPlatform:
 		jmp	off_5918(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_5918:	dc.w loc_5922-off_5918, loc_59AE-off_5918, loc_59D2-off_5918, loc_5BCE-off_5918, loc_59C2-off_5918
+off_5918:	dc.w loc_5922-off_5918
+		dc.w loc_59AE-off_5918
+		dc.w loc_59D2-off_5918
+		dc.w loc_5BCE-off_5918
+		dc.w loc_59C2-off_5918
 ; ---------------------------------------------------------------------------
 
 loc_5922:
@@ -106,9 +110,19 @@ sub_5A1E:
 		jmp	off_5A32(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_5A32:	dc.w locret_5A4C-off_5A32, loc_5A5E-off_5A32, loc_5AA4-off_5A32, loc_5ABC-off_5A32, loc_5AE4-off_5A32
-		dc.w loc_5A4E-off_5A32, loc_5A94-off_5A32, loc_5B4E-off_5A32, loc_5B7A-off_5A32, locret_5A4C-off_5A32
-		dc.w loc_5B92-off_5A32, loc_5A86-off_5A32, loc_5A76-off_5A32
+off_5A32:	dc.w locret_5A4C-off_5A32
+		dc.w loc_5A5E-off_5A32
+		dc.w loc_5AA4-off_5A32
+		dc.w loc_5ABC-off_5A32
+		dc.w loc_5AE4-off_5A32
+		dc.w loc_5A4E-off_5A32
+		dc.w loc_5A94-off_5A32
+		dc.w loc_5B4E-off_5A32
+		dc.w loc_5B7A-off_5A32
+		dc.w locret_5A4C-off_5A32
+		dc.w loc_5B92-off_5A32
+		dc.w loc_5A86-off_5A32
+		dc.w loc_5A76-off_5A32
 ; ---------------------------------------------------------------------------
 
 locret_5A4C:

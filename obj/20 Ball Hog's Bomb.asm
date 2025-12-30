@@ -7,7 +7,9 @@ ObjCannonball:
 		jmp	off_7070(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7070:	dc.w ObjCannonball_Init-off_7070, ObjCannonball_Act-off_7070, ObjCannonball_Delete-off_7070
+off_7070:	dc.w ObjCannonball_Init-off_7070
+		dc.w ObjCannonball_Act-off_7070
+		dc.w ObjCannonball_Delete-off_7070
 ; ---------------------------------------------------------------------------
 
 ObjCannonball_Init:

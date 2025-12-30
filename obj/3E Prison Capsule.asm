@@ -14,6 +14,7 @@ ObjCapsule:
 		rts
 	endif
 ; ---------------------------------------------------------------------------
+
 off_B66C:	dc.w loc_B68C-off_B66C
 		dc.w loc_B6D6-off_B66C
 		dc.w loc_B710-off_B66C
