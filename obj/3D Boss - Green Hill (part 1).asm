@@ -7,7 +7,10 @@ ObjGHZBoss:
 		jmp	off_B002(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_B002:	dc.w loc_B010-off_B002, loc_B07C-off_B002, loc_B2AE-off_B002, loc_B2D6-off_B002
+off_B002:	dc.w loc_B010-off_B002
+		dc.w loc_B07C-off_B002
+		dc.w loc_B2AE-off_B002
+		dc.w loc_B2D6-off_B002
 
 byte_B00A:	dc.b 2, 0
 		dc.b 4, 1
@@ -59,9 +62,12 @@ loc_B07C:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_B0AA:	dc.w loc_B0B6-off_B0AA, loc_B1AE-off_B0AA
-		dc.w loc_B1FC-off_B0AA, loc_B236-off_B0AA
-		dc.w loc_B25C-off_B0AA, loc_B290-off_B0AA
+off_B0AA:	dc.w loc_B0B6-off_B0AA
+		dc.w loc_B1AE-off_B0AA
+		dc.w loc_B1FC-off_B0AA
+		dc.w loc_B236-off_B0AA
+		dc.w loc_B25C-off_B0AA
+		dc.w loc_B290-off_B0AA
 ; ---------------------------------------------------------------------------
 
 loc_B0B6:

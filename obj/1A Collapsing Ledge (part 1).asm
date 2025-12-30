@@ -7,11 +7,15 @@ ObjCollapsePtfm:
 		jmp	off_5EEE(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_5EEE:	dc.w loc_5EFA-off_5EEE, loc_5F2A-off_5EEE, loc_5F4E-off_5EEE, loc_5F7E-off_5EEE, loc_5FDE-off_5EEE
+off_5EEE:	dc.w loc_5EFA-off_5EEE
+		dc.w loc_5F2A-off_5EEE
+		dc.w loc_5F4E-off_5EEE
+		dc.w loc_5F7E-off_5EEE
+		dc.w loc_5FDE-off_5EEE
 		dc.w sub_5F60-off_5EEE
 
-ledge_timedelay: equ objoff_38	; time between touching the ledge and it collapsing
-ledge_collapse_flag: equ objoff_3A	; collapse flag
+ledge_timedelay: = objoff_38	; time between touching the ledge and it collapsing
+ledge_collapse_flag: = objoff_3A	; collapse flag
 ; ---------------------------------------------------------------------------
 
 loc_5EFA:

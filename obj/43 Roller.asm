@@ -7,7 +7,9 @@ ObjRoller:
 		jmp	off_BFB8(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_BFB8:	dc.w loc_BFBE-off_BFB8, loc_C00C-off_BFB8, loc_C0B0-off_BFB8
+off_BFB8:	dc.w loc_BFBE-off_BFB8
+		dc.w loc_C00C-off_BFB8
+		dc.w loc_C0B0-off_BFB8
 ; ---------------------------------------------------------------------------
 
 loc_BFBE:
@@ -41,7 +43,10 @@ loc_C00C:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_C028:	dc.w loc_C030-off_C028, loc_C052-off_C028, loc_C060-off_C028, loc_C08E-off_C028
+off_C028:	dc.w loc_C030-off_C028
+		dc.w loc_C052-off_C028
+		dc.w loc_C060-off_C028
+		dc.w loc_C08E-off_C028
 ; ---------------------------------------------------------------------------
 
 loc_C030:

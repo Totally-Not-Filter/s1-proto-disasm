@@ -7,7 +7,9 @@ ObjSpikedBalls:
 		jmp	ObjSpikedBalls_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-ObjSpikedBalls_Index:dc.w ObjSpikedBalls_Init-ObjSpikedBalls_Index, ObjSpikedBalls_Move-ObjSpikedBalls_Index, ObjSpikedBalls_Display-ObjSpikedBalls_Index
+ObjSpikedBalls_Index:dc.w ObjSpikedBalls_Init-ObjSpikedBalls_Index
+		dc.w ObjSpikedBalls_Move-ObjSpikedBalls_Index
+		dc.w ObjSpikedBalls_Display-ObjSpikedBalls_Index
 ; ---------------------------------------------------------------------------
 
 ObjSpikedBalls_Init:

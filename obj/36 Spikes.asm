@@ -7,7 +7,8 @@ ObjSpikes:
 		jmp	off_AB0A(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_AB0A:	dc.w loc_AB1A-off_AB0A, loc_AB64-off_AB0A
+off_AB0A:	dc.w loc_AB1A-off_AB0A
+		dc.w loc_AB64-off_AB0A
 
 spik_origX = objoff_30		; start X position
 spik_origY = objoff_32		; start Y position
@@ -104,7 +105,8 @@ sub_AC02:
 		jmp	off_AC12(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_AC12:	dc.w locret_AC18-off_AC12, loc_AC1A-off_AC12
+off_AC12:	dc.w locret_AC18-off_AC12
+		dc.w loc_AC1A-off_AC12
 		dc.w loc_AC2E-off_AC12
 ; ---------------------------------------------------------------------------
 

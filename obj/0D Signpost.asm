@@ -16,6 +16,7 @@ Signpost:
 		rts
 	endif
 ; ---------------------------------------------------------------------------
+
 Sign_Index:	dc.w Sign_Main-Sign_Index
 		dc.w Sign_Touch-Sign_Index
 		dc.w Sign_Spin-Sign_Index
@@ -89,6 +90,7 @@ Sign_Spin:
 .fail:
 		rts
 ; ---------------------------------------------------------------------------
+
 Sign_SparkPos:	dc.b -$18, -$10
 		dc.b 8, 8
 		dc.b -$10, 0

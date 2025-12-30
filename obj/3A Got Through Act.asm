@@ -115,7 +115,7 @@ locret_A7D8:
 ; ---------------------------------------------------------------------------
 
 Got_AddBonus:
-		bsr.w	ScoreAdd
+		bsr.w	AddPoints
 		move.b	(v_vint_byte).w,d0
 		andi.b	#3,d0
 		bne.s	locret_A7D8

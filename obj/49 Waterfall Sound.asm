@@ -6,7 +6,8 @@ ObjWaterfallSnd:
 		move.w	.act(pc,d0.w),d1
 		jmp	.act(pc,d1.w)
 ; ---------------------------------------------------------------------------
-.act:		dc.w ObjWaterfallSnd_Init-.act, ObjWaterfallSnd_Act-.act
+.act:		dc.w ObjWaterfallSnd_Init-.act
+		dc.w ObjWaterfallSnd_Act-.act
 ; ---------------------------------------------------------------------------
 
 ObjWaterfallSnd_Init:

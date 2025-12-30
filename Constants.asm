@@ -16,6 +16,9 @@ vram_sprites_prev:	equ $D800	; sprite table
 vram_hscroll_prev:	equ $DC00	; horizontal scroll table
 window_plane_prev:	equ $F000	; window plane
 
+; CRAM equates
+palette_size:	equ $80
+
 ; Game modes
 id_Sega:	equ ptr_GM_Sega-GameModeArray		; $00
 id_Title:	equ ptr_GM_Title-GameModeArray		; $04

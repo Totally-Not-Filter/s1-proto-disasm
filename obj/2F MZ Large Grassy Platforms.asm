@@ -7,7 +7,8 @@ ObjMZPlatforms:
 		jmp	off_8ECE(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_8ECE:	dc.w loc_8EDE-off_8ECE, loc_8F3C-off_8ECE
+off_8ECE:	dc.w loc_8EDE-off_8ECE
+		dc.w loc_8F3C-off_8ECE
 
 off_8ED2:	dc.w ObjMZPlatforms_Slope1-off_8ED2
 		dc.b 0, $40
@@ -92,7 +93,11 @@ sub_8FA6:
 		jmp	off_8FBA(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_8FBA:	dc.w locret_8FC6-off_8FBA, loc_8FC8-off_8FBA, loc_8FD2-off_8FBA, loc_8FDC-off_8FBA, loc_8FE6-off_8FBA
+off_8FBA:	dc.w locret_8FC6-off_8FBA
+		dc.w loc_8FC8-off_8FBA
+		dc.w loc_8FD2-off_8FBA
+		dc.w loc_8FDC-off_8FBA
+		dc.w loc_8FE6-off_8FBA
 		dc.w loc_9006-off_8FBA
 ; ---------------------------------------------------------------------------
 

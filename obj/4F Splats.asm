@@ -7,7 +7,10 @@ Obj4F:
 		jmp	off_D202(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_D202:	dc.w loc_D20A-off_D202, loc_D246-off_D202, loc_D274-off_D202, loc_D2C8-off_D202
+off_D202:	dc.w loc_D20A-off_D202
+		dc.w loc_D246-off_D202
+		dc.w loc_D274-off_D202
+		dc.w loc_D2C8-off_D202
 ; ---------------------------------------------------------------------------
 
 loc_D20A:
@@ -66,7 +69,7 @@ loc_D2A4:
 		move.w	#-$400,obVelY(a0)
 
 loc_D2AE:
-		bsr.w	sub_D2DA
+		bsr.w	Enemy_ChkWall
 		beq.s	loc_D2C4
 		neg.w	obVelX(a0)
 		bchg	#0,obRender(a0)
@@ -90,7 +93,7 @@ loc_D2C8:
 	endif
 ; ---------------------------------------------------------------------------
 
-sub_D2DA:
+Enemy_ChkWall:
 		move.w	(v_framecount).w,d0
 		add.w	d7,d0
 		andi.w	#3,d0

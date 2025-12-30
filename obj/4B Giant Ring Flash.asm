@@ -7,7 +7,10 @@ Obj4B:
 		jmp	off_7ECE(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7ECE:	dc.w loc_7ED6-off_7ECE, loc_7F12-off_7ECE, loc_7F3C-off_7ECE, loc_7F4C-off_7ECE
+off_7ECE:	dc.w loc_7ED6-off_7ECE
+		dc.w loc_7F12-off_7ECE
+		dc.w loc_7F3C-off_7ECE
+		dc.w loc_7F4C-off_7ECE
 ; ---------------------------------------------------------------------------
 
 loc_7ED6:

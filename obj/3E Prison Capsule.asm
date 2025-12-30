@@ -14,11 +14,14 @@ ObjCapsule:
 		rts
 	endif
 ; ---------------------------------------------------------------------------
-
-off_B66C:	dc.w loc_B68C-off_B66C, loc_B6D6-off_B66C
-		dc.w loc_B710-off_B66C, loc_B760-off_B66C
-		dc.w loc_B760-off_B66C, loc_B760-off_B66C
-		dc.w loc_B7C6-off_B66C, loc_B7FA-off_B66C
+off_B66C:	dc.w loc_B68C-off_B66C
+		dc.w loc_B6D6-off_B66C
+		dc.w loc_B710-off_B66C
+		dc.w loc_B760-off_B66C
+		dc.w loc_B760-off_B66C
+		dc.w loc_B760-off_B66C
+		dc.w loc_B7C6-off_B66C
+		dc.w loc_B7FA-off_B66C
 
 byte_B67C:	;    routine, actwid, priority, frame
 		dc.b 2, $20, 4, 0

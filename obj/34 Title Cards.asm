@@ -7,7 +7,10 @@ ObjTitleCard:
 		jmp	off_A4D6(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_A4D6:	dc.w loc_A4DE-off_A4D6, loc_A556-off_A4D6, loc_A57C-off_A4D6, loc_A57C-off_A4D6
+off_A4D6:	dc.w loc_A4DE-off_A4D6
+		dc.w loc_A556-off_A4D6
+		dc.w loc_A57C-off_A4D6
+		dc.w loc_A57C-off_A4D6
 ; ---------------------------------------------------------------------------
 
 loc_A4DE:

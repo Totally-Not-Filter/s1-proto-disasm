@@ -7,7 +7,9 @@ ObjShield:
 		jmp	ObjShield_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-ObjShield_Index:dc.w ObjShield_Init-ObjShield_Index, ObjShield_Shield-ObjShield_Index, ObjShield_Stars-ObjShield_Index
+ObjShield_Index:dc.w ObjShield_Init-ObjShield_Index
+		dc.w ObjShield_Shield-ObjShield_Index
+		dc.w ObjShield_Stars-ObjShield_Index
 ; ---------------------------------------------------------------------------
 
 ObjShield_Init:

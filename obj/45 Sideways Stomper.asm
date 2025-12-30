@@ -7,7 +7,11 @@ Obj45:
 		jmp	off_99DE(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_99DE:	dc.w loc_99FA-off_99DE, loc_9A8E-off_99DE, loc_9AC4-off_99DE, loc_9AD8-off_99DE, loc_9AB0-off_99DE
+off_99DE:	dc.w loc_99FA-off_99DE
+		dc.w loc_9A8E-off_99DE
+		dc.w loc_9AC4-off_99DE
+		dc.w loc_9AD8-off_99DE
+		dc.w loc_9AB0-off_99DE
 
 byte_99E8:	dc.b 2, 4, 0
 		dc.b 4, $E4, 1
@@ -106,7 +110,8 @@ sub_9AFC:
 		jmp	off_9B0C(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_9B0C:	dc.w loc_9B10-off_9B0C, loc_9B10-off_9B0C
+off_9B0C:	dc.w loc_9B10-off_9B0C
+		dc.w loc_9B10-off_9B0C
 ; ---------------------------------------------------------------------------
 
 loc_9B10:

@@ -7,10 +7,10 @@ v_start:
 v_256x256:		ds.b $52*$200	; 256x256 tile mappings ($A400 bytes)
 v_256x256_end
 
-layoutsize:		= $40
+layout_size:	= $40
 
-v_lvllayout:	ds.b layoutsize*$10	; level layout buffer ($400 bytes)
-v_lvllayoutbg:	= v_lvllayout+layoutsize
+v_lvllayout:	ds.b layout_size*$10	; level layout buffer ($400 bytes)
+v_lvllayoutbg:	= v_lvllayout+layout_size
 v_lvllayout_end
 
 v_bgscroll_buffer:	ds.b $200
@@ -218,10 +218,10 @@ v_misc_variables_end
 v_spritetablebuffer:	ds.b $280
 v_spritetablebuffer_end
 			ds.b $80	; unused
-v_palette:		ds.b $80
-v_palette_end:
-v_palette_fading:	ds.b $80
-v_palette_fading_end:
+v_palette:		ds.b palette_size
+v_palette_end
+v_palette_fading:	ds.b palette_size
+v_palette_fading_end
 v_objstate:		ds.b $C0	; object state list
 v_objstate_end
 			ds.b $140	; stack

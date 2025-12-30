@@ -6,7 +6,9 @@ ObjPushBlock:
 		move.w	off_9F10(pc,d0.w),d1
 		jmp	off_9F10(pc,d1.w)
 ; ---------------------------------------------------------------------------
-off_9F10:	dc.w loc_9F1A-off_9F10, loc_9F84-off_9F10, loc_A00C-off_9F10
+off_9F10:	dc.w loc_9F1A-off_9F10
+		dc.w loc_9F84-off_9F10
+		dc.w loc_A00C-off_9F10
 
 byte_9F16:	dc.b $10, 0
 		dc.b $40, 1

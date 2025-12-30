@@ -6,8 +6,8 @@ ObjYadrin:
 		move.w	off_D334(pc,d0.w),d1
 		jmp	off_D334(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
-off_D334:	dc.w loc_D338-off_D334, loc_D38C-off_D334
+off_D334:	dc.w loc_D338-off_D334
+		dc.w loc_D38C-off_D334
 ; ---------------------------------------------------------------------------
 
 loc_D338:
@@ -41,8 +41,8 @@ loc_D38C:
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
-
-off_D3A8:	dc.w loc_D3AC-off_D3A8, loc_D3D0-off_D3A8
+off_D3A8:	dc.w loc_D3AC-off_D3A8
+		dc.w loc_D3D0-off_D3A8
 ; ---------------------------------------------------------------------------
 
 loc_D3AC:
@@ -67,7 +67,7 @@ loc_D3D0:
 		cmpi.w	#$C,d1
 		bge.s	loc_D3F0
 		add.w	d1,obY(a0)
-		bsr.w	sub_D2DA
+		bsr.w	Enemy_ChkWall
 		bne.s	loc_D3F0
 		rts
 ; ---------------------------------------------------------------------------

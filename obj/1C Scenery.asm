@@ -7,7 +7,10 @@ ObjScenery:
 		jmp	off_6718(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_6718:	dc.w ObjScenery_Init-off_6718, ObjScenery_Normal-off_6718, ObjScenery_Delete-off_6718, ObjScenery_Delete-off_6718
+off_6718:	dc.w ObjScenery_Init-off_6718
+		dc.w ObjScenery_Normal-off_6718
+		dc.w ObjScenery_Delete-off_6718
+		dc.w ObjScenery_Delete-off_6718
 ; ---------------------------------------------------------------------------
 
 ObjScenery_Init:

@@ -8,7 +8,9 @@ ObjSmashWall:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_ADEA:	dc.w loc_ADF0-off_ADEA, loc_AE1A-off_ADEA, loc_AE92-off_ADEA
+off_ADEA:	dc.w loc_ADF0-off_ADEA
+		dc.w loc_AE1A-off_ADEA
+		dc.w loc_AE92-off_ADEA
 ; ---------------------------------------------------------------------------
 
 loc_ADF0:

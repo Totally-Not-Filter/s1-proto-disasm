@@ -7,7 +7,8 @@ ObjMovingBlocks:
 		jmp	ObjMovingBlocks_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-ObjMovingBlocks_Index:dc.w ObjMovingBlocks_Init-ObjMovingBlocks_Index, ObjMovingBlocks_Action-ObjMovingBlocks_Index
+ObjMovingBlocks_Index:dc.w ObjMovingBlocks_Init-ObjMovingBlocks_Index
+		dc.w ObjMovingBlocks_Action-ObjMovingBlocks_Index
 
 ObjMovingBlocks_Variables:dc.b $10, $10
 		dc.b $20, $20
@@ -102,10 +103,18 @@ ObjMovingBlocks_ChkDelete:
 	endif
 ; ---------------------------------------------------------------------------
 
-ObjMovingBlocks_TypeIndex:dc.w ObjMovingBlocks_Type00-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type01-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type02-ObjMovingBlocks_TypeIndex
-		dc.w ObjMovingBlocks_Type03-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type04-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type05-ObjMovingBlocks_TypeIndex
-		dc.w ObjMovingBlocks_Type06-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type07-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type08-ObjMovingBlocks_TypeIndex
-		dc.w ObjMovingBlocks_Type09-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type0A-ObjMovingBlocks_TypeIndex, ObjMovingBlocks_Type0B-ObjMovingBlocks_TypeIndex
+ObjMovingBlocks_TypeIndex:dc.w ObjMovingBlocks_Type00-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type01-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type02-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type03-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type04-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type05-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type06-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type07-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type08-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type09-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type0A-ObjMovingBlocks_TypeIndex
+		dc.w ObjMovingBlocks_Type0B-ObjMovingBlocks_TypeIndex
 ; ---------------------------------------------------------------------------
 
 ObjMovingBlocks_Type00:

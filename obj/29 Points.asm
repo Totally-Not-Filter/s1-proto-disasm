@@ -12,7 +12,8 @@ ObjPoints:
 	endif
 ; ---------------------------------------------------------------------------
 
-off_7500:	dc.w ObjPoints_Init-off_7500, ObjPoints_Act-off_7500
+off_7500:	dc.w ObjPoints_Init-off_7500
+		dc.w ObjPoints_Act-off_7500
 ; ---------------------------------------------------------------------------
 
 ObjPoints_Init:

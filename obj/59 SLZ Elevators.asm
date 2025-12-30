@@ -2,9 +2,9 @@
 ; Object 59 - platforms	that move when you stand on them (SLZ)
 ; ---------------------------------------------------------------------------
 
-elev_origX:	equ obj.Off_32				; original x-axis position
-elev_origY:	equ obj.Off_30				; original y-axis position
-elev_dist:	equ obj.Off_3C				; distance to move (2 bytes)
+elev_origX:	= objoff_32				; original x-axis position
+elev_origY:	= objoff_30				; original y-axis position
+elev_dist:	= objoff_3C				; distance to move (2 bytes)
 
 ObjSLZMovingPtfm:
 		moveq	#0,d0
@@ -15,7 +15,10 @@ ObjSLZMovingPtfm:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_DF9A:	dc.w loc_DFC2-off_DF9A, loc_E03A-off_DF9A, loc_E04A-off_DF9A, loc_E194-off_DF9A
+off_DF9A:	dc.w loc_DFC2-off_DF9A
+		dc.w loc_E03A-off_DF9A
+		dc.w loc_E04A-off_DF9A
+		dc.w loc_E194-off_DF9A
 
 Elev_Var1:	dc.b $28, 0 ; act width, frame
 

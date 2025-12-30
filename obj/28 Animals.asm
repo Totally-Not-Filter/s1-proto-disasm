@@ -7,8 +7,15 @@ ObjAnimals:
 		jmp	off_732C(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_732C:	dc.w loc_7382-off_732C, loc_7418-off_732C, loc_7472-off_732C, loc_74A8-off_732C, loc_7472-off_732C
-		dc.w loc_7472-off_732C, loc_7472-off_732C, loc_74A8-off_732C, loc_7472-off_732C
+off_732C:	dc.w loc_7382-off_732C
+		dc.w loc_7418-off_732C
+		dc.w loc_7472-off_732C
+		dc.w loc_74A8-off_732C
+		dc.w loc_7472-off_732C
+		dc.w loc_7472-off_732C
+		dc.w loc_7472-off_732C
+		dc.w loc_74A8-off_732C
+		dc.w loc_7472-off_732C
 
 byte_733E:	dc.b 0, 1, 2, 3, 4, 5, 6, 3, 4, 1, 0, 5
 

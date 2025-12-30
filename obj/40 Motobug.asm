@@ -7,7 +7,10 @@ ObjMotobug:
 		jmp	off_B890(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_B890:	dc.w loc_B898-off_B890, loc_B8FA-off_B890, loc_B9D8-off_B890, loc_B9E6-off_B890
+off_B890:	dc.w loc_B898-off_B890
+		dc.w loc_B8FA-off_B890
+		dc.w loc_B9D8-off_B890
+		dc.w loc_B9E6-off_B890
 ; ---------------------------------------------------------------------------
 
 loc_B898:
@@ -50,7 +53,8 @@ loc_B8FA:
 		include "sub RememberState.asm"
 ; ---------------------------------------------------------------------------
 
-off_B94E:	dc.w loc_B952-off_B94E, loc_B976-off_B94E
+off_B94E:	dc.w loc_B952-off_B94E
+		dc.w loc_B976-off_B94E
 ; ---------------------------------------------------------------------------
 
 loc_B952:

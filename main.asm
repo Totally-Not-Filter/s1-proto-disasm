@@ -164,7 +164,7 @@ loc_264:
 		dbf	d6,loc_264
 		move.l	#($8100+%0100)<<16|$8F00+%0010,(a4)
 		move.l	#$C0000000,(a4)
-		moveq	#bytesToLcnt(v_palette_end-v_palette),d3
+		moveq	#bytesToLcnt(palette_size),d3
 
 loc_278:
 		move.l	d0,(a3)
@@ -343,7 +343,7 @@ ptr_GM_Special:	bra.w	GM_Special
 ChecksumError:
 		bsr.w	VDPSetupGame
 		move.l	#$C0000000,(vdp_control_port).l	; Set VDP to CRAM write
-		moveq	#bytesToWcnt(v_palette_end-v_palette),d7
+		moveq	#bytesToWcnt(palette_size),d7
 
 .palwrite:
 		move.w	#cRed,(vdp_data_port).l		; Write red to data
@@ -802,7 +802,7 @@ VDPSetupGame:
 		move.w	d0,(v_vdp_buffer1).w
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l
-		move.w	#bytesToWcnt(v_palette_end-v_palette),d7
+		move.w	#bytesToWcnt(palette_size),d7
 
 .clrCRAM:
 		move.w	d0,(a1)
@@ -2973,7 +2973,7 @@ loc_4900:
 loc_4904:
 		move.b	(a1)+,(a0)+
 		dbf	d0,loc_4904
-		lea	layoutsize*2(a3),a3
+		lea	layout_size*2(a3),a3
 		dbf	d2,loc_4900
 		rts
 ; ---------------------------------------------------------------------------
@@ -5354,8 +5354,13 @@ loc_10CA8:
 		include "obj/21 HUD.asm"
 Map_HUD:	include "_maps/HUD.asm"
 ; ---------------------------------------------------------------------------
+; Add points subroutine
+; ---------------------------------------------------------------------------
 
-ScoreAdd:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+
+AddPoints:
 		move.b	#1,(f_scorecount).w
 		lea	(v_scorecopy).w,a2
 		lea	(v_score).w,a3

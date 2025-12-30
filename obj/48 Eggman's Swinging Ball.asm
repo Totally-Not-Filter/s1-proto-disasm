@@ -7,7 +7,11 @@ ObjGHZBossBall:
 		jmp	off_B340(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_B340:	dc.w loc_B34A-off_B340, loc_B404-off_B340, loc_B462-off_B340, loc_B49E-off_B340, loc_B4B8-off_B340
+off_B340:	dc.w loc_B34A-off_B340
+		dc.w loc_B404-off_B340
+		dc.w loc_B462-off_B340
+		dc.w loc_B49E-off_B340
+		dc.w loc_B4B8-off_B340
 ; ---------------------------------------------------------------------------
 
 loc_B34A:

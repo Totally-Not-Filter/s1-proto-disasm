@@ -167,7 +167,7 @@ locret_FCA0:
 loc_FCA2:
 		bset	#7,obStatus(a1)
 		moveq	#10,d0
-		bsr.w	ScoreAdd
+		bsr.w	AddPoints
 		_move.b	#id_ExplosionItem,obID(a1)
 		move.b	#0,obRoutine(a1)
 		tst.w	obVelY(a0)

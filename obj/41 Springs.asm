@@ -15,8 +15,16 @@ ObjSpring:
 	endif
 ; ---------------------------------------------------------------------------
 
-off_BAA0:	dc.w loc_BAB8-off_BAA0, sub_BB2E-off_BAA0, loc_BB84-off_BAA0, sub_BB8E-off_BAA0, sub_BB9A-off_BAA0
-		dc.w loc_BC1C-off_BAA0, sub_BC26-off_BAA0, loc_BC32-off_BAA0, loc_BC98-off_BAA0, loc_BCA2-off_BAA0
+off_BAA0:	dc.w loc_BAB8-off_BAA0
+		dc.w sub_BB2E-off_BAA0
+		dc.w loc_BB84-off_BAA0
+		dc.w sub_BB8E-off_BAA0
+		dc.w sub_BB9A-off_BAA0
+		dc.w loc_BC1C-off_BAA0
+		dc.w sub_BC26-off_BAA0
+		dc.w loc_BC32-off_BAA0
+		dc.w loc_BC98-off_BAA0
+		dc.w loc_BCA2-off_BAA0
 
 word_BAB4:	dc.w -$1000, -$A00
 ; ---------------------------------------------------------------------------
