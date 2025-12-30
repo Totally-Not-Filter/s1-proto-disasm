@@ -7,7 +7,8 @@ ObjCannonballExplode:
 		jmp	off_7102(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7102:	dc.w ObjCannonballExplode_Init-off_7102, ObjCannonballExplode_Act-off_7102
+off_7102:	dc.w ObjCannonballExplode_Init-off_7102
+		dc.w ObjCannonballExplode_Act-off_7102
 ; ---------------------------------------------------------------------------
 
 ObjCannonballExplode_Init:
@@ -42,7 +43,9 @@ ObjExplode:
 		jmp	off_7172(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7172:	dc.w ObjExplode_Load-off_7172, ObjExplode_Init-off_7172, ObjExplode_Act-off_7172
+off_7172:	dc.w ObjExplode_Load-off_7172
+		dc.w ObjExplode_Init-off_7172
+		dc.w ObjExplode_Act-off_7172
 ; ---------------------------------------------------------------------------
 
 ObjExplode_Load:
@@ -85,7 +88,8 @@ ObjBombExplode:
 		jmp	off_7200(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7200:	dc.w ObjBomb_Init-off_7200, ObjExplode_Act-off_7200
+off_7200:	dc.w ObjBomb_Init-off_7200
+		dc.w ObjExplode_Act-off_7200
 ; ---------------------------------------------------------------------------
 
 ObjBomb_Init:

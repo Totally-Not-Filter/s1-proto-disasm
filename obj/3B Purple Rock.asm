@@ -7,7 +7,8 @@ ObjPurpleRock:
 		jmp	off_AD1A(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_AD1A:	dc.w loc_AD1E-off_AD1A, loc_AD42-off_AD1A
+off_AD1A:	dc.w loc_AD1E-off_AD1A
+		dc.w loc_AD42-off_AD1A
 ; ---------------------------------------------------------------------------
 
 loc_AD1E:

@@ -7,7 +7,11 @@ ObjBuzzMissile:
 		jmp	off_79FA(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_79FA:	dc.w loc_7A04-off_79FA, loc_7A4E-off_79FA, loc_7A6C-off_79FA, loc_7AB2-off_79FA, loc_7AB8-off_79FA
+off_79FA:	dc.w loc_7A04-off_79FA
+		dc.w loc_7A4E-off_79FA
+		dc.w loc_7A6C-off_79FA
+		dc.w loc_7AB2-off_79FA
+		dc.w loc_7AB8-off_79FA
 ; ---------------------------------------------------------------------------
 
 loc_7A04:

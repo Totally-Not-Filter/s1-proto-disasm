@@ -6,6 +6,7 @@ ObjMZBlocks:
 		move.w	off_C3FC(pc,d0.w),d1
 		jmp	off_C3FC(pc,d1.w)
 ; ---------------------------------------------------------------------------
+
 off_C3FC:	dc.w loc_C400-off_C3FC
 			dc.w loc_C43C-off_C3FC
 
@@ -49,6 +50,7 @@ loc_C46A:
 		rts
 	endc
 ; ---------------------------------------------------------------------------
+
 off_C48E:
 		dc.w locret_C498-off_C48E
 		dc.w loc_C4B2-off_C48E

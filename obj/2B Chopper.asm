@@ -8,7 +8,8 @@ ObjChopper:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_8BB6:	dc.w loc_8BBA-off_8BB6, loc_8BF0-off_8BB6
+off_8BB6:	dc.w loc_8BBA-off_8BB6
+		dc.w loc_8BF0-off_8BB6
 ; ---------------------------------------------------------------------------
 
 loc_8BBA:

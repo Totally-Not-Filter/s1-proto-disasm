@@ -8,7 +8,9 @@ ObjLavaball:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_C23E:	dc.w loc_C254-off_C23E, loc_C2C8-off_C23E, j_DeleteObject-off_C23E
+off_C23E:	dc.w loc_C254-off_C23E
+		dc.w loc_C2C8-off_C23E
+		dc.w j_DeleteObject-off_C23E
 
 word_C244:	dc.w -$400, -$500, -$600, -$700, -$200, $200, -$200, $200
 ; ---------------------------------------------------------------------------
@@ -54,8 +56,15 @@ loc_C2E6:
 		rts
 ; ---------------------------------------------------------------------------
 
-off_C306:	dc.w loc_C318-off_C306, loc_C318-off_C306, loc_C318-off_C306, loc_C318-off_C306, loc_C340-off_C306
-		dc.w loc_C362-off_C306, loc_C384-off_C306, loc_C3A8-off_C306, locret_C3CC-off_C306
+off_C306:	dc.w loc_C318-off_C306
+		dc.w loc_C318-off_C306
+		dc.w loc_C318-off_C306
+		dc.w loc_C318-off_C306
+		dc.w loc_C340-off_C306
+		dc.w loc_C362-off_C306
+		dc.w loc_C384-off_C306
+		dc.w loc_C3A8-off_C306
+		dc.w locret_C3CC-off_C306
 ; ---------------------------------------------------------------------------
 
 loc_C318:

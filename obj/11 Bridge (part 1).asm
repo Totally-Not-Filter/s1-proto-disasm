@@ -7,7 +7,11 @@ Bridge:
 		jmp	off_4E64(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_4E64:	dc.w Bridge_Init-off_4E64, loc_4F32-off_4E64, loc_50B2-off_4E64, Bridge_Delete-off_4E64, Bridge_Delete-off_4E64
+off_4E64:	dc.w Bridge_Init-off_4E64
+		dc.w loc_4F32-off_4E64
+		dc.w loc_50B2-off_4E64
+		dc.w Bridge_Delete-off_4E64
+		dc.w Bridge_Delete-off_4E64
 		dc.w Bridge_Display-off_4E64
 ; ---------------------------------------------------------------------------
 

@@ -5,11 +5,13 @@ ObjMovingPtfm:
 		move.b	obRoutine(a0),d0
 		move.w	off_D5FC(pc,d0.w),d1
 		jsr	off_D5FC(pc,d1.w)
-		out_of_range.w	DeleteObject,$32(a0)
+		out_of_range.w	DeleteObject,objoff_32(a0)
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_D5FC:	dc.w loc_D606-off_D5FC, loc_D648-off_D5FC, loc_D658-off_D5FC
+off_D5FC:	dc.w loc_D606-off_D5FC
+		dc.w loc_D648-off_D5FC
+		dc.w loc_D658-off_D5FC
 
 byte_D602:	dc.b $10, 0
 		dc.b $20, 1
@@ -57,7 +59,10 @@ sub_D674:
 		jmp	off_D688(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_D688:	dc.w locret_D690-off_D688, loc_D692-off_D688, loc_D6B2-off_D688, loc_D6C0-off_D688
+off_D688:	dc.w locret_D690-off_D688
+		dc.w loc_D692-off_D688
+		dc.w loc_D6B2-off_D688
+		dc.w loc_D6C0-off_D688
 ; ---------------------------------------------------------------------------
 
 locret_D690:

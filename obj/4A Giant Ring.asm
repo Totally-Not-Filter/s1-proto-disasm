@@ -7,7 +7,8 @@ ObjEntryRingBeta:
 		jmp	ObjEntryRingBeta_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-ObjEntryRingBeta_Index:dc.w ObjEntryRingBeta_Init-ObjEntryRingBeta_Index, ObjEntryRingBeta_RmvSonic-ObjEntryRingBeta_Index
+ObjEntryRingBeta_Index:dc.w ObjEntryRingBeta_Init-ObjEntryRingBeta_Index
+		dc.w ObjEntryRingBeta_RmvSonic-ObjEntryRingBeta_Index
 		dc.w ObjEntryRingBeta_LoadSonic-ObjEntryRingBeta_Index
 ; ---------------------------------------------------------------------------
 

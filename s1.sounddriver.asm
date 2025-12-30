@@ -19,7 +19,7 @@ Go_SoundPriorities:	dc.l SoundPriorities
 Go_SpecSoundIndex:	dc.l SpecSoundIndex
 Go_MusicIndex:		dc.l MusicIndex
 Go_SoundIndex:		dc.l SoundIndex
-Go_Modulation:		dc.l ModulationIndex
+Go_ModulationIndex:	dc.l ModulationIndex
 Go_PSGIndex:		dc.l PSGIndex
 		dc.l sfx__First
 		dc.l UpdateMusic
@@ -47,6 +47,8 @@ ModulationIndex:
 		dc.b 1, 1, 1, 4	; 2
 		dc.b 2, 1, 2, 4	; 3
 		dc.b 8, 1, 6, 4	; 4
+		; Warning: If the set value for the global modulation is beyond 4, it will use the speed up index as part of the index!
+
 ; ---------------------------------------------------------------------------
 ; New tempos for songs during speed shoes
 ; ---------------------------------------------------------------------------
@@ -272,7 +274,7 @@ DACUpdateTrack:
 		dc.b 1+(53693175/15/(7600)-(420/2)+(13/2))/13
 		dc.b 1+(53693175/15/(6400)-(420/2)+(13/2))/13
 		dc.b 1+(53693175/15/(6250)-(420/2)+(13/2))/13
-		; the values below are invalid and will play at a very slow rate
+		; the values below are invalid
 		dc.b $FF, $FF, $FF, $FF
 ; ---------------------------------------------------------------------------
 
@@ -1642,7 +1644,6 @@ WriteFMIorII:
 		btst	#2,SMPS_Track.VoiceControl(a5)
 		bne.s	WriteFMIIPart
 		add.b	SMPS_Track.VoiceControl(a5),d0
-
 ; ---------------------------------------------------------------------------
 ; these are what are in the default smps 68k type 1b driver
 ; why the final chose the ones from the type 1a driver is a mystery
@@ -1739,30 +1740,30 @@ PSGDoNext:
 		moveq	#0,d5
 		move.b	(a4)+,d5
 		cmpi.b	#$E0,d5
-		bcs.s	.notcommand
+		bcs.s	.gotnote
 		jsr	CoordFlag(pc)
 		bra.s	.command
 ; ---------------------------------------------------------------------------
 
-.notcommand:
+.gotnote:
 		tst.b	d5
-		bpl.s	.duration
-		jsr	LoadFreqPSG(pc)
+		bpl.s	.gotduration
+		jsr	PSGSetFreq(pc)
 		move.b	(a4)+,d5
 		tst.b	d5
-		bpl.s	.duration
+		bpl.s	.gotduration
 		subq.w	#1,a4
 		bra.w	FinishTrackUpdate
 ; ---------------------------------------------------------------------------
 
-.duration:
+.gotduration:
 		jsr	SetDuration(pc)
 		bra.w	FinishTrackUpdate
 ; ---------------------------------------------------------------------------
 
-LoadFreqPSG:
+PSGSetFreq:
 		subi.b	#$81,d5
-		bcs.s	.duration
+		bcs.s	.restpsg
 		add.b	SMPS_Track.Transpose(a5),d5
 		andi.w	#$7F,d5
 		lsl.w	#1,d5
@@ -1771,7 +1772,7 @@ LoadFreqPSG:
 		bra.w	FinishTrackUpdate
 ; ---------------------------------------------------------------------------
 
-.duration:
+.restpsg:
 		bset	#1,(a5)
 		move.w	#-1,SMPS_Track.Freq(a5)
 		jsr	FinishTrackUpdate(pc)
@@ -1780,7 +1781,7 @@ LoadFreqPSG:
 
 PSGDoNoteOn:
 		move.w	SMPS_Track.Freq(a5),d6
-		bmi.s	dRestPSG
+		bmi.s	PSGSetRest
 
 PSGUpdateFreq:
 		move.b	SMPS_Track.Detune(a5),d0
@@ -1792,10 +1793,10 @@ PSGUpdateFreq:
 		bne.s	.locret
 		move.b	SMPS_Track.VoiceControl(a5),d0
 		cmpi.b	#$E0,d0
-		bne.s	.nopsg4
+		bne.s	.notnoise
 		move.b	#$C0,d0
 
-.nopsg4:
+.notnoise:
 		move.w	d6,d1
 		andi.b	#$F,d1
 		or.b	d1,d0
@@ -1808,14 +1809,14 @@ PSGUpdateFreq:
 		rts
 ; ---------------------------------------------------------------------------
 
-dRestPSG:
+PSGSetRest:
 		bset	#1,(a5)
 		rts
 ; ---------------------------------------------------------------------------
 
 PSGUpdateVolFX:
 		tst.b	SMPS_Track.VoiceIndex(a5)
-		beq.w	SetPSGVolume.return
+		beq.w	PSGSendVolume.return
 
 PSGDoVolFX:
 		move.b	SMPS_Track.Volume(a5),d6
@@ -1830,7 +1831,7 @@ PSGDoVolFX:
 		move.b	(a0,d0.w),d0
 		addq.b	#1,SMPS_Track.VolEnvIndex(a5)
 		btst	#7,d0
-		beq.s	.volume
+		beq.s	.gotflutter
 		cmpi.b	#TBEND,d0
 		beq.s	VolEnvCmd_End
 		cmpi.b	#TBBAK,d0
@@ -1838,7 +1839,7 @@ PSGDoVolFX:
 		cmpi.b	#TBREPT,d0
 		beq.s	VolEnvCmd_Rept
 
-.volume:
+.gotflutter:
 		add.w	d0,d6
 		cmpi.b	#$10,d6
 		bcs.s	SetPSGVolume
@@ -1846,26 +1847,26 @@ PSGDoVolFX:
 
 SetPSGVolume:
 		btst	#1,(a5)
-		bne.s	SetPSGVolume.return
+		bne.s	PSGSendVolume.return
 		btst	#2,(a5)
-		bne.s	SetPSGVolume.return
+		bne.s	PSGSendVolume.return
 		btst	#4,(a5)
-		bne.s	SetPSGVolume_ChkGate
+		bne.s	PSGCheckNoteTimeout
 
-SetPSGVolume.doit:
+PSGSendVolume:
 		or.b	SMPS_Track.VoiceControl(a5),d6
 		addi.b	#$10,d6
 		move.b	d6,(psg_input).l
 
-SetPSGVolume.return:
+PSGSendVolume.return:
 		rts
 ; ---------------------------------------------------------------------------
 
-SetPSGVolume_ChkGate:
+PSGCheckNoteTimeout:
 		tst.b	SMPS_Track.NoteTimeoutMaster(a5)
-		beq.s	SetPSGVolume.doit
+		beq.s	PSGSendVolume
 		tst.b	SMPS_Track.NoteTimeout(a5)
-		bne.s	SetPSGVolume.doit
+		bne.s	PSGSendVolume
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -1977,7 +1978,7 @@ CoordFlag:
 ; ---------------------------------------------------------------------------
 		bra.w	cfClearPush			; ED
 ; ---------------------------------------------------------------------------
-		bra.w	dcYM1				; EE
+		bra.w	cfYM1				; EE
 ; ---------------------------------------------------------------------------
 		bra.w	cfSetVoice			; EF
 ; ---------------------------------------------------------------------------
@@ -2050,7 +2051,7 @@ cfE2_SetComm:
 ; ---------------------------------------------------------------------------
 
 cfE3_GlobalMod:
-		movea.l	(Go_Modulation).l,a0	; Get global modulation index
+		movea.l	(Go_ModulationIndex).l,a0	; Get global modulation index
 		moveq	#0,d0	; Clear high bit of d0
 		move.b	(a4)+,d0	; Move first byte into d0
 		subq.b	#1,d0	; Subtract 1 from d0
@@ -2230,7 +2231,7 @@ cfClearPush:
 		rts
 ; ---------------------------------------------------------------------------
 
-dcYM1:
+cfYM1:
 		move.b	(a4)+,d0
 		move.b	(a4)+,d1
 		bra.w	WriteFMI

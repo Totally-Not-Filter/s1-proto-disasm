@@ -8,7 +8,9 @@ TitleText:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_6AE8:	dc.w loc_6AEE-off_6AE8, loc_6B1A-off_6AE8, locret_6B18-off_6AE8
+off_6AE8:	dc.w loc_6AEE-off_6AE8
+		dc.w loc_6B1A-off_6AE8
+		dc.w locret_6B18-off_6AE8
 ; ---------------------------------------------------------------------------
 
 loc_6AEE:

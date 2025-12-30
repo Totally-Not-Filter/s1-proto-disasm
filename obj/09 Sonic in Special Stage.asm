@@ -8,6 +8,7 @@ SonicSpecial:
 		move.w	Obj09_Index(pc,d0.w),d1
 		jmp	Obj09_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
+
 Obj09_Index:
 		dc.w Obj09_Main-Obj09_Index
 		dc.w Obj09_Load-Obj09_Index
@@ -37,6 +38,7 @@ Obj09_Load:
 		jsr	(Sonic_LoadGfx).l
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
+
 Obj09_Modes:
 		dc.w Obj09_OnWall-Obj09_Modes
 		dc.w Obj09_InAir-Obj09_Modes

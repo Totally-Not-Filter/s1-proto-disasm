@@ -7,7 +7,9 @@ ObjNewtron:
 		jmp	off_BD26(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_BD26:	dc.w loc_BD2C-off_BD26, loc_BD5C-off_BD26, loc_BEC6-off_BD26
+off_BD26:	dc.w loc_BD2C-off_BD26
+		dc.w loc_BD5C-off_BD26
+		dc.w loc_BEC6-off_BD26
 ; ---------------------------------------------------------------------------
 
 loc_BD2C:
@@ -30,7 +32,11 @@ loc_BD5C:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_BD78:	dc.w loc_BD82-off_BD78, loc_BDC4-off_BD78, loc_BE38-off_BD78, loc_BE58-off_BD78, loc_BE5E-off_BD78
+off_BD78:	dc.w loc_BD82-off_BD78
+		dc.w loc_BDC4-off_BD78
+		dc.w loc_BE38-off_BD78
+		dc.w loc_BE58-off_BD78
+		dc.w loc_BE5E-off_BD78
 ; ---------------------------------------------------------------------------
 
 loc_BD82:

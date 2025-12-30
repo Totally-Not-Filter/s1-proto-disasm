@@ -7,7 +7,11 @@ ObjCollapseFloor:
 		jmp	off_5FF2(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_5FF2:	dc.w loc_5FFE-off_5FF2, loc_603A-off_5FF2, loc_607C-off_5FF2, loc_60A2-off_5FF2, loc_6102-off_5FF2
+off_5FF2:	dc.w loc_5FFE-off_5FF2
+		dc.w loc_603A-off_5FF2
+		dc.w loc_607C-off_5FF2
+		dc.w loc_60A2-off_5FF2
+		dc.w loc_6102-off_5FF2
 		dc.w sub_608E-off_5FF2
 ; ---------------------------------------------------------------------------
 

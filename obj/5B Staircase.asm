@@ -9,7 +9,9 @@ ObjStaircasePtfm:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_E358:	dc.w loc_E35E-off_E358, loc_E3DE-off_E358, loc_E3F2-off_E358
+off_E358:	dc.w loc_E35E-off_E358
+		dc.w loc_E3DE-off_E358
+		dc.w loc_E3F2-off_E358
 ; ---------------------------------------------------------------------------
 
 loc_E35E:
@@ -86,7 +88,10 @@ locret_E438:
 		rts
 ; ---------------------------------------------------------------------------
 
-off_E43A:	dc.w loc_E442-off_E43A, loc_E4A8-off_E43A, loc_E464-off_E43A, loc_E4A8-off_E43A
+off_E43A:	dc.w loc_E442-off_E43A
+		dc.w loc_E4A8-off_E43A
+		dc.w loc_E464-off_E43A
+		dc.w loc_E4A8-off_E43A
 ; ---------------------------------------------------------------------------
 
 loc_E442:

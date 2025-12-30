@@ -7,8 +7,12 @@ ObjSwingPtfm:
 		jmp	off_548A(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_548A:	dc.w ObjSwingPtfm_Init-off_548A, loc_55C8-off_548A, loc_55E4-off_548A, ObjSwingPtfm_Delete-off_548A
-		dc.w ObjSwingPtfm_Delete-off_548A, j_DisplaySprite-off_548A
+off_548A:	dc.w ObjSwingPtfm_Init-off_548A
+		dc.w loc_55C8-off_548A
+		dc.w loc_55E4-off_548A
+		dc.w ObjSwingPtfm_Delete-off_548A
+		dc.w ObjSwingPtfm_Delete-off_548A
+		dc.w j_DisplaySprite-off_548A
 ; ---------------------------------------------------------------------------
 
 ObjSwingPtfm_Init:

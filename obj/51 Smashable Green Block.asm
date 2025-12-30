@@ -8,7 +8,9 @@ ObjSmashBlock:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_D4D4:	dc.w loc_D4DA-off_D4D4, loc_D504-off_D4D4, loc_D580-off_D4D4
+off_D4D4:	dc.w loc_D4DA-off_D4D4
+		dc.w loc_D504-off_D4D4
+		dc.w loc_D580-off_D4D4
 ; ---------------------------------------------------------------------------
 
 loc_D4DA:

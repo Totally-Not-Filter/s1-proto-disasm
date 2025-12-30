@@ -8,7 +8,9 @@ ObjSeeSaw:
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 
-off_E6B0:	dc.w loc_E6B6-off_E6B0, loc_E6DA-off_E6B0, loc_E706-off_E6B0
+off_E6B0:	dc.w loc_E6B6-off_E6B0
+		dc.w loc_E6DA-off_E6B0
+		dc.w loc_E706-off_E6B0
 ; ---------------------------------------------------------------------------
 
 loc_E6B6:

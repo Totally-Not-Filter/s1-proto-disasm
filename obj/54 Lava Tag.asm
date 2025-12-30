@@ -7,7 +7,8 @@ ObjLavaHurt:
 		jmp	off_CD2E(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_CD2E:	dc.w loc_CD36-off_CD2E, loc_CD6C-off_CD2E
+off_CD2E:	dc.w loc_CD36-off_CD2E
+		dc.w loc_CD6C-off_CD2E
 
 byte_CD32:	dc.b $96, $94, $95, 0
 ; ---------------------------------------------------------------------------

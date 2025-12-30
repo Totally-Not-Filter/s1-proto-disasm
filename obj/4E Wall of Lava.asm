@@ -7,7 +7,11 @@ ObjLavaChase:
 		jmp	off_CBFC(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_CBFC:	dc.w loc_CC06-off_CBFC, loc_CC66-off_CBFC, loc_CCA2-off_CBFC, loc_CD00-off_CBFC, loc_CD1C-off_CBFC
+off_CBFC:	dc.w loc_CC06-off_CBFC
+		dc.w loc_CC66-off_CBFC
+		dc.w loc_CCA2-off_CBFC
+		dc.w loc_CD00-off_CBFC
+		dc.w loc_CD1C-off_CBFC
 ; ---------------------------------------------------------------------------
 
 loc_CC06:

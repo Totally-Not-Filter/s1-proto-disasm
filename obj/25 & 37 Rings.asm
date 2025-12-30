@@ -7,7 +7,11 @@ ObjRings:
 		jmp	off_7BEE(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7BEE:	dc.w loc_7C18-off_7BEE, loc_7CD0-off_7BEE, loc_7CF8-off_7BEE, loc_7D1E-off_7BEE, loc_7D2C-off_7BEE
+off_7BEE:	dc.w loc_7C18-off_7BEE
+		dc.w loc_7CD0-off_7BEE
+		dc.w loc_7CF8-off_7BEE
+		dc.w loc_7D1E-off_7BEE
+		dc.w loc_7D2C-off_7BEE
 
 byte_7BF8:	dc.b $10, 0
 		dc.b $18, 0
@@ -154,8 +158,10 @@ ObjRingLoss:
 		jmp	off_7D7E(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_7D7E:	dc.w loc_7D88-off_7D7E, loc_7E48-off_7D7E
-		dc.w loc_7E9A-off_7D7E, loc_7EAE-off_7D7E
+off_7D7E:	dc.w loc_7D88-off_7D7E
+		dc.w loc_7E48-off_7D7E
+		dc.w loc_7E9A-off_7D7E
+		dc.w loc_7EAE-off_7D7E
 		dc.w loc_7EBC-off_7D7E
 ; ---------------------------------------------------------------------------
 

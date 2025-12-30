@@ -7,7 +7,8 @@ ObjSLZGirder:
 		jmp	off_E4EA(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_E4EA:	dc.w loc_E4EE-off_E4EA, loc_E506-off_E4EA
+off_E4EA:	dc.w loc_E4EE-off_E4EA
+		dc.w loc_E506-off_E4EA
 ; ---------------------------------------------------------------------------
 
 loc_E4EE:

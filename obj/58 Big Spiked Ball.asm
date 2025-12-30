@@ -7,7 +7,8 @@ ObjGiantSpikedBalls:
 		jmp	ObjGiantBalls_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-ObjGiantBalls_Index:dc.w ObjGiantBalls_Init-ObjGiantBalls_Index, ObjGiantBalls_Move-ObjGiantBalls_Index
+ObjGiantBalls_Index:dc.w ObjGiantBalls_Init-ObjGiantBalls_Index
+		dc.w ObjGiantBalls_Move-ObjGiantBalls_Index
 ; ---------------------------------------------------------------------------
 
 ObjGiantBalls_Init:

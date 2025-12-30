@@ -7,7 +7,11 @@ ObjChainPtfm:
 		jmp	off_96C2(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_96C2:	dc.w loc_96EA-off_96C2, loc_97D0-off_96C2, loc_9834-off_96C2, loc_9846-off_96C2, loc_9818-off_96C2
+off_96C2:	dc.w loc_96EA-off_96C2
+		dc.w loc_97D0-off_96C2
+		dc.w loc_9834-off_96C2
+		dc.w loc_9846-off_96C2
+		dc.w loc_9818-off_96C2
 
 byte_96CC:	dc.b 0, 0
 		dc.b 1, 0
@@ -158,8 +162,13 @@ sub_986A:
 		jmp	off_987C(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_987C:	dc.w loc_988A-off_987C, loc_9926-off_987C, loc_9926-off_987C, loc_99B6-off_987C, loc_9926-off_987C
-		dc.w loc_99B6-off_987C, loc_9926-off_987C
+off_987C:	dc.w loc_988A-off_987C
+		dc.w loc_9926-off_987C
+		dc.w loc_9926-off_987C
+		dc.w loc_99B6-off_987C
+		dc.w loc_9926-off_987C
+		dc.w loc_99B6-off_987C
+		dc.w loc_9926-off_987C
 ; ---------------------------------------------------------------------------
 
 loc_988A:

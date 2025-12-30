@@ -8,7 +8,11 @@ ObjLavafallMaker:
 		bra.w	loc_CB28
 ; ---------------------------------------------------------------------------
 
-off_C926:	dc.w loc_C932-off_C926, loc_C95C-off_C926, loc_C9CE-off_C926, loc_C982-off_C926, loc_C9DA-off_C926
+off_C926:	dc.w loc_C932-off_C926
+		dc.w loc_C95C-off_C926
+		dc.w loc_C9CE-off_C926
+		dc.w loc_C982-off_C926
+		dc.w loc_C9DA-off_C926
 		dc.w loc_C9EA-off_C926
 ; ---------------------------------------------------------------------------
 
@@ -93,7 +97,10 @@ ObjLavafall:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
-off_CA12:	dc.w loc_CA1E-off_CA12, loc_CB0A-off_CA12, sub_CB8C-off_CA12, loc_CBEA-off_CA12
+off_CA12:	dc.w loc_CA1E-off_CA12
+		dc.w loc_CB0A-off_CA12
+		dc.w sub_CB8C-off_CA12
+		dc.w loc_CBEA-off_CA12
 
 word_CA1A:	dc.w -$500
 		dc.w 0
@@ -182,7 +189,8 @@ loc_CB28:
 		rts
 ; ---------------------------------------------------------------------------
 
-off_CB48:	dc.w loc_CB4C-off_CB48, loc_CB6C-off_CB48
+off_CB48:	dc.w loc_CB4C-off_CB48
+		dc.w loc_CB6C-off_CB48
 ; ---------------------------------------------------------------------------
 
 loc_CB4C:

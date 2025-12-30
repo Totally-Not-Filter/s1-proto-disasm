@@ -20,7 +20,11 @@ ObjGlassBlock:
 		rts
 ; ---------------------------------------------------------------------------
 
-off_93DE:	dc.w loc_93FA-off_93DE, loc_9498-off_93DE, loc_94B0-off_93DE, loc_94CA-off_93DE, loc_94D8-off_93DE
+off_93DE:	dc.w loc_93FA-off_93DE
+		dc.w loc_9498-off_93DE
+		dc.w loc_94B0-off_93DE
+		dc.w loc_94CA-off_93DE
+		dc.w loc_94D8-off_93DE
 		dc.w loc_9500-off_93DE
 
 byte_93EA:	dc.b 2, 4, 0
@@ -132,8 +136,11 @@ sub_9514:
 		jmp	off_9528(pc,d1.w)
 ; ---------------------------------------------------------------------------
 
-off_9528:	dc.w locret_9532-off_9528, loc_9534-off_9528, loc_9540-off_9528
-		dc.w loc_9550-off_9528, loc_95D6-off_9528
+off_9528:	dc.w locret_9532-off_9528
+		dc.w loc_9534-off_9528
+		dc.w loc_9540-off_9528
+		dc.w loc_9550-off_9528
+		dc.w loc_95D6-off_9528
 ; ---------------------------------------------------------------------------
 
 locret_9532:
