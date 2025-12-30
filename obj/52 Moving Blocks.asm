@@ -5,7 +5,7 @@ ObjMovingPtfm:
 		move.b	obRoutine(a0),d0
 		move.w	off_D5FC(pc,d0.w),d1
 		jsr	off_D5FC(pc,d1.w)
-		out_of_range.w	DeleteObject,$32(a0)
+		out_of_range.w	DeleteObject,objoff_32(a0)
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
