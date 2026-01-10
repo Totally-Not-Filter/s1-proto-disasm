@@ -45,8 +45,8 @@ Deform_GHZ:
 		asl.l	#1,d4
 		add.l	d1,d4
 		moveq	#0,d5
-		bsr.w	sub_4298
-		bsr.w	sub_4374
+		bsr.w	ScrollBlock1
+		bsr.w	ScrollBlock4
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	(v_scrposy).w,d0
 		andi.w	#$7FF,d0
@@ -130,7 +130,7 @@ Deform_MZ:
 		asl.l	#1,d4
 		add.l	d1,d4
 		moveq	#0,d5
-		bsr.w	sub_4298
+		bsr.w	ScrollBlock1
 		move.w	#$200,d0
 		move.w	(v_scrposy).w,d1
 		subi.w	#$1C8,d1
@@ -268,7 +268,7 @@ Deform_SZ:
 		move.l	d5,d1
 		asl.l	#1,d5
 		add.l	d1,d5
-		bsr.w	sub_4298
+		bsr.w	ScrollBlock1
 		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	#224-1,d1
@@ -571,7 +571,7 @@ loc_4290:
 		bra.w	loc_3E14
 ; ---------------------------------------------------------------------------
 
-sub_4298:
+ScrollBlock1:
 		move.l	(v_bgscrposx).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
@@ -668,7 +668,7 @@ locret_4372:
 		rts
 ; ---------------------------------------------------------------------------
 
-sub_4374:
+ScrollBlock4:
 		move.w	(v_bg2scrposx).w,d2
 		move.w	(v_bg2scrposy).w,d3
 		move.w	(v_scrshiftx).w,d0
