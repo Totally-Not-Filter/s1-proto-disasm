@@ -20,10 +20,10 @@ loc_3E14:
 		bsr.w	DynamicLevelEvents
 
 loc_3E18:
-		move.w	(v_scrposx).w,(v_scrposx_dup).w
-		move.w	(v_scrposy).w,(v_scrposy_dup).w
-		move.w	(v_bgscrposx).w,(v_bgscrposx_dup).w
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_scrposx).w,(v_scrposx_vdp).w
+		move.w	(v_scrposy).w,(v_scrposy_vdp).w
+		move.w	(v_bgscrposx).w,(v_bgscrposx_vdp).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		move.w	(v_bg3scrposx).w,(v_bg3scrposx_vdp).w
 		move.w	(v_bg3scrposy).w,(v_bg3scrposy_vdp).w
 		moveq	#0,d0
@@ -56,7 +56,7 @@ Deform_GHZ:
 		move.w	d0,(v_bg2scrposy).w
 		move.w	d0,d4
 		bsr.w	ScrollBlock3
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		move.w	#112-1,d1
 		sub.w	d4,d1
 		move.w	(v_scrposx).w,d0
@@ -144,7 +144,7 @@ Deform_MZ:
 loc_3F50:
 		move.w	d0,(v_bg2scrposy).w
 		bsr.w	ScrollBlock3
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	#224-1,d1
 		move.w	(v_scrposx).w,d0
@@ -167,7 +167,7 @@ Deform_SLZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	ScrollBlock2
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		bsr.w	Deform_SLZ_2
 		lea	(v_bgscroll_buffer).w,a2
 		move.w	(v_bgscrposy).w,d0
@@ -269,7 +269,7 @@ Deform_SZ:
 		asl.l	#1,d5
 		add.l	d1,d5
 		bsr.w	sub_4298
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	#224-1,d1
 		move.w	(v_scrposx).w,d0
