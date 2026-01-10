@@ -527,7 +527,7 @@ VInt:
 		beq.s	VInt_Exit
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	(v_scrposy_dup).w,(vdp_data_port).l
+		move.l	(v_scrposy_vdp).w,(vdp_data_port).l
 		btst	#6,(v_megadrive).w	; are we on a PAL machine?
 		beq.s	.notPAL	; if not, branch
 		move.w	#17930/10-1,d0	; intentionally lag the system to move the CRAM dots on PAL machines
@@ -799,8 +799,8 @@ VDPSetupGame:
 .clrCRAM:
 		move.w	d0,(a1)
 		dbf	d7,.clrCRAM
-		clr.l	(v_scrposy_dup).w
-		clr.l	(v_scrposx_dup).w
+		clr.l	(v_scrposy_vdp).w
+		clr.l	(v_scrposx_vdp).w
 		move.l	d1,-(sp)
 		fillVRAM	0,0,$10000
 		move.l	(sp)+,d1
@@ -833,8 +833,8 @@ ClearScreen:
 		fillVRAM	0, vram_fg, vram_fg+plane_size_64x32		; clear foreground namespace
 		fillVRAM	0, vram_bg, vram_bg+plane_size_64x32		; clear background namespace
 
-		move.l	#0,(v_scrposy_dup).w
-		move.l	#0,(v_scrposx_dup).w
+		move.l	#0,(v_scrposy_vdp).w
+		move.l	#0,(v_scrposx_vdp).w
 
 	if FixBugs
 		clearRAM v_spritetablebuffer,v_spritetablebuffer_end
@@ -1663,7 +1663,7 @@ loc_26E4:
 		moveq	#palid_LevelSel,d0
 		bsr.w	PalLoad2
 		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end
-		move.l	d0,(v_scrposy_dup).w
+		move.l	d0,(v_scrposy_vdp).w
 		disable_ints
 		lea	(vdp_data_port).l,a6
 		move.l	#$60000003,(vdp_control_port).l
@@ -2673,12 +2673,12 @@ loc_3760:
 		move.w	#$8200,d0
 		move.b	(a1)+,d0
 		move.w	d0,(a6)
-		move.b	(a1),(v_scrposy_dup).w
+		move.b	(a1),(v_scrposy_vdp).w
 		move.w	#$8400,d0
 		move.b	(a0)+,d0
 		move.w	d0,(a6)
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	(v_scrposy_dup).w,(vdp_data_port).l
+		move.l	(v_scrposy_vdp).w,(vdp_data_port).l
 		moveq	#0,d0
 		move.b	(a0)+,d0
 		bmi.s	loc_37B6
@@ -2801,7 +2801,7 @@ SS_AnimateBG:
 		move.w	(v_ssbganim).w,d0
 		bne.s	loc_39C4
 		move.w	#0,(v_bgscrposy).w
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 
 loc_39C4:
 		cmpi.w	#8,d0
@@ -2810,7 +2810,7 @@ loc_39C4:
 		bne.s	loc_39DE
 		addq.w	#1,(v_bg3scrposx).w
 		addq.w	#1,(v_bgscrposy).w
-		move.w	(v_bgscrposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscrposy).w,(v_bgscrposy_vdp).w
 
 loc_39DE:
 		moveq	#0,d0

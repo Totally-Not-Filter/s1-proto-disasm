@@ -101,10 +101,10 @@ v_jpadpress1:	rs.b 1
 v_vdp_buffer1:	rs.w 1
 			rs.b 6		; unused
 v_generictimer:	rs.w 1
-v_scrposy_dup:	rs.w 1
-v_bgscrposy_dup:	rs.w 1		; background screen position y (duplicate) (2 bytes)
-v_scrposx_dup:	rs.w 1
-v_bgscrposx_dup:	rs.w 1		; background screen position x (duplicate) (2 bytes)
+v_scrposy_vdp:	rs.w 1
+v_bgscrposy_vdp:	rs.w 1		; background screen position y (duplicate) (2 bytes)
+v_scrposx_vdp:	rs.w 1
+v_bgscrposx_vdp:	rs.w 1		; background screen position x (duplicate) (2 bytes)
 v_bg3scrposy_vdp:	rs.w 1
 v_bg3scrposx_vdp:	rs.w 1
 v_bg3scrposy_vdp_dup:	rs.w 1
