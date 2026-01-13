@@ -23,7 +23,7 @@ org macro address
 			endm
 		endif
 	endif
-    endm
+	endm
 
 ; define an alternate org that fills the extra space with 0s instead of FFs
 org0 macro address
@@ -38,7 +38,7 @@ org0 macro address
 		endm
 		dc.b [.diff]0
 	endif
-    endm
+	endm
 
 ; define the cnop pseudo-instruction
 cnop macro offset,alignment
@@ -47,22 +47,22 @@ cnop macro offset,alignment
 	else
 		org ($-1+(alignment)-(($-1+(-(offset)))#(alignment)))
 	endif
-    endm
+	endm
 
 ; define an alternate cnop that fills the extra space with 0s instead of FFs
 cnop0 macro offset,alignment
 	org0 (*-1+(alignment)-((*-1+(-(offset)))#(alignment)))
-    endm
+	endm
 
 ; redefine align in terms of cnop, because the built-in align can be stupid sometimes
 align macro alignment
 	cnop 0,alignment
-    endm
+	endm
 
 ; define an alternate align that fills the extra space with 0s instead of FFs
 align0 macro alignment
 	cnop0 0,alignment
-    endm
+	endm
 
 ; define the even pseudo-instruction
 even macro
@@ -75,7 +75,7 @@ even macro
 			db 0
 		endif
 	endif
-    endm
+	endm
 
 ; make ds work in Z80 code without creating a new segment
 ds macro
@@ -86,7 +86,7 @@ ds macro
 			db 0
 		endm
 	endif
-   endm
+	endm
 
 ; define a trace macro
 ; lets you easily check what address a location in this disassembly assembles to
@@ -99,60 +99,60 @@ trace macro optionalMessageWithoutQuotes
 		endif
 tracenum := (tracenum+1)
 	endif
-   endm
+	endm
 tracenum := 0
 
-    if zeroOffsetOptimization=0
-    ; disable a space optimization in AS so we can build a bit-perfect ROM
-    ; (the hard way, but it requires no modification of AS itself)
+	if zeroOffsetOptimization=0
+	; disable a space optimization in AS so we can build a bit-perfect ROM
+	; (the hard way, but it requires no modification of AS itself)
 
 
 chkop function op,ref,(substr(lowstring(op),0,strlen(ref))<>ref)
 
 ; 1-arg instruction that's self-patching to remove 0-offset optimization
-insn1op	 macro oper,x
-	  if (chkop("x","0(") && chkop("x","obj.id(") && chkop("x","obid(") && chkop("x","smps_ram.v_sndprio("))
+insn1op	macro oper,x
+	if (chkop("x","0(") && chkop("x","obj.id(") && chkop("x","obid(") && chkop("x","smps_ram.v_sndprio("))
 		!oper	x
-	  else
+	else
 		!oper	1+x
 		!org	*-1
 		!dc.b	0
-	  endif
-	 endm
+	endif
+	endm
 
 ; 2-arg instruction that's self-patching to remove 0-offset optimization
-insn2op	 macro oper,x,y
-	  if (chkop("x","0(") && chkop("x","obj.id(") && chkop("x","obid(") && chkop("x","smps_ram.v_sndprio("))
-		  if (chkop("y","0(") && chkop("y","obj.id(") && chkop("y","obid(") && chkop("y","smps_ram.v_sndprio("))
+insn2op	macro oper,x,y
+	if (chkop("x","0(") && chkop("x","obj.id(") && chkop("x","obid(") && chkop("x","smps_ram.v_sndprio("))
+		if (chkop("y","0(") && chkop("y","obj.id(") && chkop("y","obid(") && chkop("y","smps_ram.v_sndprio("))
 			!oper	x,y
-		  else
+		else
 			!oper	x,1+y
 			!org	*-1
 			!dc.b	0
-		  endif
-	  else
+		endif
+	else
 		if chkop("y","d")
-		  if (chkop("y","0(") && chkop("y","obj.id(") && chkop("y","obid(") && chkop("y","smps_ram.v_sndprio("))
+		if (chkop("y","0(") && chkop("y","obj.id(") && chkop("y","obid(") && chkop("y","smps_ram.v_sndprio("))
 .start:
 			!oper	1+x,y
 .end:
 			!org	.start+3
 			!dc.b	0
 			!org	.end
-		  else
+		else
 			!oper	1+x,1+y
 			!org	*-3
 			!dc.b	0
 			!org	*+1
 			!dc.b	0
-		  endif
+		endif
 		else
 			!oper	1+x,y
 			!org	*-1
 			!dc.b	0
 		endif
-	  endif
-	 endm
+	endif
+	endm
 
 	; instructions that were used with 0(a#) syntax
 	; defined to assemble as they originally did
@@ -203,4 +203,4 @@ _tst	macro
 		!tst.ATTRIBUTE ALLARGS
 	endm
 
-    endif
+	endif
