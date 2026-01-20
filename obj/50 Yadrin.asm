@@ -67,7 +67,7 @@ loc_D3D0:
 		cmpi.w	#$C,d1
 		bge.s	loc_D3F0
 		add.w	d1,obY(a0)
-		bsr.w	Enemy_ChkWall
+		bsr.w	ChkHitLeftRightWall
 		bne.s	loc_D3F0
 		rts
 ; ---------------------------------------------------------------------------
