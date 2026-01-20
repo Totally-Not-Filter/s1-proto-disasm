@@ -1,10 +1,10 @@
 Ani_Sonic_internal:
 
-ptr_Walk:	dc.w byte_F64C-Ani_Sonic_internal
-ptr_Run:	dc.w byte_F654-Ani_Sonic_internal
-ptr_Roll:	dc.w byte_F65C-Ani_Sonic_internal
-ptr_Roll2:	dc.w byte_F664-Ani_Sonic_internal
-ptr_Push:	dc.w byte_F66C-Ani_Sonic_internal
+ptr_Walk:	dc.w SonAni_Walk-Ani_Sonic_internal
+ptr_Run:	dc.w SonAni_Run-Ani_Sonic_internal
+ptr_Roll:	dc.w SonAni_Roll-Ani_Sonic_internal
+ptr_Roll2:	dc.w SonAni_Roll2-Ani_Sonic_internal
+ptr_Push:	dc.w SonAni_Push-Ani_Sonic_internal
 ptr_Wait:	dc.w byte_F674-Ani_Sonic_internal
 ptr_Balance:	dc.w byte_F68A-Ani_Sonic_internal
 ptr_LookUp:	dc.w byte_F68E-Ani_Sonic_internal
@@ -28,15 +28,15 @@ ptr_Death:	dc.w byte_F6DA-Ani_Sonic_internal
 ptr_Shrink:	dc.w byte_F6DE-Ani_Sonic_internal
 ptr_Hurt:	dc.w byte_F6E8-Ani_Sonic_internal
 
-byte_F64C:	dc.b $FF, 8, 9, $A, $B, 6, 7, afEnd
+SonAni_Walk:	dc.b $FF, 8, 9, $A, $B, 6, 7, afEnd
 		even
-byte_F654:	dc.b $FF, $1E, $1F, $20, $21, afEnd, afEnd, afEnd
+SonAni_Run:	dc.b $FF, $1E, $1F, $20, $21, afEnd, afEnd, afEnd
 		even
-byte_F65C:	dc.b $FE, $2E, $2F, $30, $31, $32, afEnd, afEnd
+SonAni_Roll:	dc.b $FE, $2E, $2F, $30, $31, $32, afEnd, afEnd
 		even
-byte_F664:	dc.b $FE, $2E, $2F, $32, $30, $31, $32, afEnd
+SonAni_Roll2:	dc.b $FE, $2E, $2F, $32, $30, $31, $32, afEnd
 		even
-byte_F66C:	dc.b $FD, $45, $46, $47, $48, afEnd, afEnd, afEnd
+SonAni_Push:	dc.b $FD, $45, $46, $47, $48, afEnd, afEnd, afEnd
 		even
 byte_F674:	dc.b $17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2
 		dc.b 2, 3, 4, afBack, 2

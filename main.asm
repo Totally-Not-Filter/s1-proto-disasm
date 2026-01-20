@@ -4650,7 +4650,7 @@ sub_10520:
 		cmpi.b	#$40,d0
 		beq.w	loc_107AE
 		cmpi.b	#$80,d0
-		beq.w	Sonic_NoRunningOnWalls
+		beq.w	Sonic_DontRunOnWalls
 		cmpi.b	#$C0,d0
 		beq.w	loc_10628
 
@@ -4817,7 +4817,7 @@ locret_106DE:
 		rts
 ; ---------------------------------------------------------------------------
 
-Sonic_NoRunningOnWalls:
+Sonic_DontRunOnWalls:
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
 		moveq	#0,d0
