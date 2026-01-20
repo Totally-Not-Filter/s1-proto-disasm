@@ -109,48 +109,46 @@ Routine:	ds.b 1		; routine number
 Solid:		ds.b 1		; solid status flag
 Angle:		ds.w 1		; angle
 Subtype:	ds.b 1		; object subtype
-Off_29		ds.b 1
-Off_2A		ds.b 1
-Off_2B		ds.b 1
-Off_2C		ds.b 1
-Off_2D		ds.b 1
-Off_2E		ds.b 1
-Off_2F		ds.b 1
-BossX
-Off_30		ds.b 1
-Off_31		ds.b 1
-Off_32		ds.b 1
-Off_33		ds.b 1
-Off_34		ds.b 1
-Off_35		ds.b 1
-Off_36		ds.b 1
-Off_37		ds.b 1
-BossY
-Off_38		ds.b 1
-Off_39		ds.b 1
-Off_3A		ds.b 1
-Off_3B		ds.b 1
-Off_3C		ds.b 1
-Off_3D		ds.b 1
-Off_3E		ds.b 1
-Off_3F		ds.b 1
-Size		ds.b 1					; size for each object
+off_29:		ds.b 1
+off_2A:		ds.b 1
+off_2B:		ds.b 1
+off_2C:		ds.b 1
+off_2D:		ds.b 1
+off_2E:		ds.b 1
+off_2F:		ds.b 1
+BossX:
+off_30:		ds.b 1
+off_31:		ds.b 1
+off_32:		ds.b 1
+off_33:		ds.b 1
+off_34:		ds.b 1
+off_35:		ds.b 1
+off_36:		ds.b 1
+off_37:		ds.b 1
+BossY:
+off_38:		ds.b 1
+off_39:		ds.b 1
+off_3A:		ds.b 1
+off_3B:		ds.b 1
+off_3C:		ds.b 1
+off_3D:		ds.b 1
+off_3E:		ds.b 1
+off_3F:		ds.b 1
+size:		ds.b 1					; size for each object
 obj ENDSTRUCT
 	!org 0
 
 ; Object variables used by Sonic
-flashtime:	equ obj.Off_30				; time between flashes after getting hit
-invtime:	equ obj.Off_32				; time left for invincibility
-shoetime:	equ obj.Off_34				; time left for speed shoes
-jumpflag:	equ obj.Off_3C				; flag for when sonic is jumping
-standonobject:	equ obj.Off_3D				; object Sonic stands on
-ctrllock:	equ obj.Off_3E				; lock left and right controls (2 bytes)
-; Object status bits used by Sonic
-status_in_air:	equ 1	; %0001
+flashtime:	equ obj.off_30				; time between flashes after getting hit
+invtime:	equ obj.off_32				; time left for invincibility
+shoetime:	equ obj.off_34				; time left for speed shoes
+jumpflag:	equ obj.off_3C				; flag for when sonic is jumping
+standonobject:	equ obj.off_3D				; object Sonic stands on
+ctrllock:	equ obj.off_3E				; lock left and right controls (2 bytes)
 
 ; Object variables used by the title card
-card_mainX:	equ obj.Off_30				; position for card to display on
-card_finalX:	equ obj.Off_32				; position for card to finish on
+card_mainX:	equ obj.off_30				; position for card to display on
+card_finalX:	equ obj.off_32				; position for card to finish on
 
 ; Compatibility constants with Sonic Retro's Sonic 1 disassembly
 obID:		equ obj.ID
@@ -184,30 +182,30 @@ obSubtype:	equ obj.Subtype
 obSolid:	equ obj.Solid
 objoff_25:	equ obj.Solid
 objoff_26:	equ obj.Angle
-objoff_29:	equ obj.Off_29
-objoff_2A:	equ obj.Off_2A
-objoff_2B:	equ obj.Off_2B
-objoff_2C:	equ obj.Off_2C
-objoff_2E:	equ obj.Off_2E
-objoff_2F:	equ obj.Off_2F
+objoff_29:	equ obj.off_29
+objoff_2A:	equ obj.off_2A
+objoff_2B:	equ obj.off_2B
+objoff_2C:	equ obj.off_2C
+objoff_2E:	equ obj.off_2E
+objoff_2F:	equ obj.off_2F
 obBossX:	equ obj.BossX
-objoff_30:	equ obj.Off_30
-objoff_32:	equ obj.Off_32
-objoff_33:	equ obj.Off_33
-objoff_34:	equ obj.Off_34
-objoff_35:	equ obj.Off_35
-objoff_36:	equ obj.Off_36
-objoff_37:	equ obj.Off_37
+objoff_30:	equ obj.off_30
+objoff_32:	equ obj.off_32
+objoff_33:	equ obj.off_33
+objoff_34:	equ obj.off_34
+objoff_35:	equ obj.off_35
+objoff_36:	equ obj.off_36
+objoff_37:	equ obj.off_37
 obBossY:	equ obj.BossY
-objoff_38:	equ obj.Off_38
-objoff_39:	equ obj.Off_39
-objoff_3A:	equ obj.Off_3A
-objoff_3B:	equ obj.Off_3B
-objoff_3C:	equ obj.Off_3C
-objoff_3D:	equ obj.Off_3D
-objoff_3E:	equ obj.Off_3E
-objoff_3F:	equ obj.Off_3F
-object_size:	equ obj.Size
+objoff_38:	equ obj.off_38
+objoff_39:	equ obj.off_39
+objoff_3A:	equ obj.off_3A
+objoff_3B:	equ obj.off_3B
+objoff_3C:	equ obj.off_3C
+objoff_3D:	equ obj.off_3D
+objoff_3E:	equ obj.off_3E
+objoff_3F:	equ obj.off_3F
+object_size:	equ obj.size
 object_size_bits:	equ 6
 
 ; Animation flags

@@ -28,45 +28,45 @@ v_hscrolltablebuffer_end
 			ds.b $80
 v_hscrolltablebuffer_end_padded
 v_objspace:				; RAM for object space ($600 bytes)
-v_objslot0:		ds.b obj.Size
-v_objslot1:		ds.b obj.Size
-v_objslot2:		ds.b obj.Size
-v_objslot3:		ds.b obj.Size
-v_objslot4:		ds.b obj.Size
-v_objslot5:		ds.b obj.Size
-v_objslot6:		ds.b obj.Size
-v_objslot7:		ds.b obj.Size
-v_objslot8:		ds.b obj.Size
-v_objslot9:		ds.b obj.Size
-v_objslotA:		ds.b obj.Size
-v_objslotB:		ds.b obj.Size
-v_objslotC:		ds.b obj.Size
-v_objslotD:		ds.b obj.Size
-v_objslotE:		ds.b obj.Size
-v_objslotF:		ds.b obj.Size
-v_objslot10:	ds.b obj.Size
-v_objslot11:	ds.b obj.Size
-v_objslot12:	ds.b obj.Size
-v_objslot13:	ds.b obj.Size
-v_objslot14:	ds.b obj.Size
-v_objslot15:	ds.b obj.Size
-v_objslot16:	ds.b obj.Size
-v_objslot17:	ds.b obj.Size
-v_objslot18:	ds.b obj.Size	; flag for victory animation (1 byte)
-v_objslot19:	ds.b obj.Size
-v_objslot1A:	ds.b obj.Size
-v_objslot1B:	ds.b obj.Size
-v_objslot1C:	ds.b obj.Size
-v_objslot1D:	ds.b obj.Size
-v_objslot1E:	ds.b obj.Size
-v_objslot1F:	ds.b obj.Size
+v_objslot0:		ds.b obj.size
+v_objslot1:		ds.b obj.size
+v_objslot2:		ds.b obj.size
+v_objslot3:		ds.b obj.size
+v_objslot4:		ds.b obj.size
+v_objslot5:		ds.b obj.size
+v_objslot6:		ds.b obj.size
+v_objslot7:		ds.b obj.size
+v_objslot8:		ds.b obj.size
+v_objslot9:		ds.b obj.size
+v_objslotA:		ds.b obj.size
+v_objslotB:		ds.b obj.size
+v_objslotC:		ds.b obj.size
+v_objslotD:		ds.b obj.size
+v_objslotE:		ds.b obj.size
+v_objslotF:		ds.b obj.size
+v_objslot10:	ds.b obj.size
+v_objslot11:	ds.b obj.size
+v_objslot12:	ds.b obj.size
+v_objslot13:	ds.b obj.size
+v_objslot14:	ds.b obj.size
+v_objslot15:	ds.b obj.size
+v_objslot16:	ds.b obj.size
+v_objslot17:	ds.b obj.size
+v_objslot18:	ds.b obj.size	; flag for victory animation (1 byte)
+v_objslot19:	ds.b obj.size
+v_objslot1A:	ds.b obj.size
+v_objslot1B:	ds.b obj.size
+v_objslot1C:	ds.b obj.size
+v_objslot1D:	ds.b obj.size
+v_objslot1E:	ds.b obj.size
+v_objslot1F:	ds.b obj.size
 
 v_player:	= v_objslot0
 v_hud:	= v_objslot1
 
 v_lvlobjspace:
 	rept 96
-			ds.b obj.Size
+			ds.b obj.size
 	endm
 v_lvlobjend
 v_objspace_end:
@@ -309,7 +309,7 @@ v_ssbuffer3		= v_start+$8000
 v_ssscroll_buffer	= v_ngfx_buffer+$100
 
 	phase v_objstate
-v_regbuffer:	ds.b obj.Size	; stores registers d0-a7 during an error event
+v_regbuffer:	ds.b obj.size	; stores registers d0-a7 during an error event
 v_spbuffer:		ds.l 1		; stores most recent sp address
 v_errortype:	ds.b 1		; error type
 	dephase

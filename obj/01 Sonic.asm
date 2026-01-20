@@ -817,7 +817,7 @@ Sonic_Jump:
 		muls.w	#$680,d0	; apply jump force to the sine angle.
 		asr.l	#8,d0
 		add.w	d0,obVelY(a0)	; apply to Y speed.
-		bset	#status_in_air,obStatus(a0)	; set in-air flag.
+		bset	#1,obStatus(a0)	; set in-air flag.
 		bclr	#5,obStatus(a0)	; clear pushing flag.
 		addq.l	#4,sp	; Run in-air subroutines when we return.
 		move.b	#1,jumpflag(a0)	; set jump flag.
@@ -971,7 +971,7 @@ Sonic_SlopeRepel:
 loc_F018:
 		cmpi.w	#$280,d0
 		bhs.s	locret_F02A
-		bset	#status_in_air,obStatus(a0)	; set in air status
+		bset	#1,obStatus(a0)	; set in-air flag
 		move.w	#30,ctrllock(a0)
 
 locret_F02A:
@@ -1212,7 +1212,7 @@ Sonic_ResetOnFloor:
 
 loc_F226:
 		bclr	#5,obStatus(a0)	; clear push flag.
-		bclr	#status_in_air,obStatus(a0)	; clear in-air flag.
+		bclr	#1,obStatus(a0)	; clear in-air flag.
 		bclr	#4,obStatus(a0)	; clear roll-jump flag.
 		btst	#2,obStatus(a0)	; check if Sonic is in a ball state.
 		beq.s	loc_F25C	; if not, skip.
@@ -1456,7 +1456,7 @@ Sonic_Loops:
 ; ===========================================================================
 
 .chkifinair:
-		btst	#status_in_air,obStatus(a0)	; is sonic in the air?
+		btst	#1,obStatus(a0)	; is sonic in the air?
 		beq.s	.chkifleft	; if not, branch
 
 		bclr	#6,obRender(a0) ; return Sonic to high plane

@@ -110,7 +110,7 @@ loc_8164:
 		move.w	#0,obVelX(a1)
 
 loc_8174:
-		btst	#status_in_air,obStatus(a1)
+		btst	#1,obStatus(a1)
 		bne.s	loc_8198
 		bset	#5,obStatus(a1)
 		bset	#5,obStatus(a0)

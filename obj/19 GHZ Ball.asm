@@ -61,7 +61,7 @@ loc_5D20:
 ; ---------------------------------------------------------------------------
 
 loc_5D2C:
-		btst	#status_in_air,obStatus(a0)	; is object in the air?
+		btst	#1,obStatus(a0)	; is object in the air?
 		bne.w	loc_5D86	; if so, branch
 		bsr.w	sub_5DC8
 		bsr.w	sub_5E50
@@ -78,7 +78,7 @@ loc_5D2C:
 		move.w	#$400,obInertia(a0)
 
 loc_5D70:
-		btst	#status_in_air,obStatus(a0)
+		btst	#1,obStatus(a0)
 		beq.s	loc_5D7E
 		move.w	#-$400,obVelY(a0)
 
@@ -98,7 +98,7 @@ loc_5D86:
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 		jsr	(Sonic_Floor).l
-		btst	#status_in_air,obStatus(a0)	; is object in the air?
+		btst	#1,obStatus(a0)	; is object in the air?
 		beq.s	loc_5DBE	; if not, branch
 		move.w	obVelY(a0),d0
 		addi.w	#$28,d0
