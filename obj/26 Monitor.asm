@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjMonitor:
+Monitor:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_8054(pc,d0.w),d1
 		jmp	off_8054(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_8054:
 		dc.w loc_805E-off_8054
 		dc.w loc_80C0-off_8054
@@ -47,7 +46,7 @@ loc_80C0:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		addi.w	#$B,d1
-		bsr.w	PtfmCheckExit
+		bsr.w	ExitPlatform
 		btst	#3,obStatus(a1)
 		bne.w	loc_80EA
 		clr.b	ob2ndRout(a0)

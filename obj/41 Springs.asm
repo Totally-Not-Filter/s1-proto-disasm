@@ -1,6 +1,6 @@
 ; ---------------------------------------------------------------------------
 
-ObjSpring:
+Springs:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_BAA0(pc,d0.w),d1
@@ -14,7 +14,6 @@ ObjSpring:
 		rts
 	endif
 ; ---------------------------------------------------------------------------
-
 off_BAA0:	dc.w loc_BAB8-off_BAA0
 		dc.w sub_BB2E-off_BAA0
 		dc.w loc_BB84-off_BAA0

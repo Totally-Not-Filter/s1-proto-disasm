@@ -1,13 +1,12 @@
 ; ---------------------------------------------------------------------------
 
-ObjLavaball:
+LavaBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_C23E(pc,d0.w),d1
 		jsr	off_C23E(pc,d1.w)
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
-
 off_C23E:	dc.w loc_C254-off_C23E
 		dc.w loc_C2C8-off_C23E
 		dc.w j_DeleteObject-off_C23E
@@ -55,7 +54,6 @@ loc_C2E6:
 		out_of_range.w	DeleteObject
 		rts
 ; ---------------------------------------------------------------------------
-
 off_C306:	dc.w loc_C318-off_C306
 		dc.w loc_C318-off_C306
 		dc.w loc_C318-off_C306

@@ -10,7 +10,6 @@ SonicPlayer:
 		move.w	Sonic_Index(pc,d0.w),d1
 		jmp	Sonic_Index(pc,d1.w)
 ; ===========================================================================
-
 Sonic_Index:	dc.w Sonic_Main-Sonic_Index
 		dc.w Sonic_Control-Sonic_Index
 		dc.w Sonic_Hurt-Sonic_Index
@@ -58,7 +57,6 @@ Sonic_Control:	; Routine 2
 		bsr.w	Sonic_LoadGfx
 		rts
 ; ===========================================================================
-
 Sonic_Modes:
 		dc.w Sonic_MdNormal-Sonic_Modes
 		dc.w Sonic_MdJump-Sonic_Modes
@@ -796,7 +794,6 @@ Sonic_ChkRoll:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_Jump:
 		move.b	(v_jpadpress2).w,d0
 		andi.b	#btnABC,d0	; is A, B or C pressed?
@@ -853,7 +850,6 @@ Sonic_Jump:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_JumpHeight:
 		tst.b	jumpflag(a0)	; has Sonic jumped?
 		beq.s	.capyvel		; if not, just cap Y speed normally.
@@ -881,7 +877,6 @@ Sonic_JumpHeight:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_SlopeResist:
 		move.b	obAngle(a0),d0
@@ -915,7 +910,6 @@ locret_EFBC:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_RollRepel:
 		move.b	obAngle(a0),d0
@@ -955,7 +949,6 @@ locret_EFF8:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_SlopeRepel:
 		nop
 		tst.w	ctrllock(a0)
@@ -989,7 +982,6 @@ loc_F02C:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_JumpAngle:
 		move.b	obAngle(a0),d0	; get Sonic's angle
 		beq.s	.return	; if already 0, branch
@@ -1018,7 +1010,6 @@ Sonic_JumpAngle:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_Floor:
 		move.w	obVelX(a0),d1
@@ -1202,7 +1193,6 @@ locret_F216:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_ResetOnFloor:
 		btst	#4,obStatus(a0)	; is Sonic roll-jumping?
 		beq.s	loc_F226	; if not, skip.
@@ -1230,7 +1220,7 @@ loc_F25C:
 
 ; ---------------------------------------------------------------------------
 ; Unused subroutine to read Sonic's x position, y position, and inertia.
-; And then write it in hexadecimal to the Debug Coordinate Sprites.
+; Then write it in hexadecimal to the Debug Coordinate Sprites.
 ; ---------------------------------------------------------------------------
 
 loc_F26A:
@@ -1282,7 +1272,6 @@ Sonic_Hurt:	; Routine 4
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_HurtStop:
 		move.w	(v_limitbtm2).w,d0
 	if FixBugs
@@ -1328,7 +1317,6 @@ Sonic_Death:
 		bra.w	DisplaySprite
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_GameOver:
 		move.w	(v_limitbtm2).w,d0
@@ -1423,7 +1411,6 @@ Sonic_ResetLevel:; Routine 8
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_Loops:
 		cmpi.b	#id_SLZ,(v_zone).w ; is level SLZ?
 		beq.s	.isstarlight	; if yes, branch
@@ -1507,7 +1494,6 @@ Sonic_Loops:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_Animate:
 		lea	(Ani_Sonic).l,a1

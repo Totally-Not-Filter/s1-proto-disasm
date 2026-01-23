@@ -1642,9 +1642,9 @@ loc_25D8:
 		move.b	#0,(f_debugmode).w
 		move.w	#376,(v_generictimer).w	; run title screen for 376 frames
 		move.b	#id_TitleSonic,(v_objslot1).w	; load big sonic object
-		move.b	#id_PSBTM,(v_objslot2).w	; load press start button text
+		move.b	#id_PSBTM,(v_objslot2).w	; load "PRESS START BUTTON" object
 		move.b	#id_PSBTM,(v_objslot3).w	; load object which hides sonic
-		move.b	#2,(v_objslot3+obFrame).w
+		move.b	#2,(v_objslot3+obFrame).w	; set the object prior to use the correct frame
 		moveq	#plcid_Main,d0
 		bsr.w	NewPLC
 		enable_display
@@ -2992,53 +2992,38 @@ Map_05:	include "_maps/05.asm"
 		include "obj/11 Bridge (part 1).asm"
 ; ---------------------------------------------------------------------------
 
-PtfmBridge:
-		moveq	#0,d1
-		move.b	obSubtype(a0),d1
-		lsl.w	#3,d1
-		move.w	d1,d2
-		addq.w	#8,d1
-		add.w	d2,d2
+PlatformObject:
 		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
-		bmi.w	locret_5048
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.w	locret_5048
-		cmp.w	d2,d0
-		bhs.w	locret_5048
-		bra.s	PtfmNormal2
-; ---------------------------------------------------------------------------
+		tst.w	obVelY(a1)	; is Sonic moving up/jumping?
+		bmi.w	Plat_Exit	; if yes, branch
 
-PtfmNormal:
-		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
-		bmi.w	locret_5048
+;		perform x-axis range check
 		move.w	obX(a1),d0
 		sub.w	obX(a0),d0
 		add.w	d1,d0
-		bmi.w	locret_5048
+		bmi.w	Plat_Exit
 		add.w	d1,d1
 		cmp.w	d1,d0
-		bhs.w	locret_5048
+		bhs.w	Plat_Exit
 
-PtfmNormal2:
+Plat_NoXCheck:
 		move.w	obY(a0),d0
 		subq.w	#8,d0
 
-PtfmNormal3:
+Platform3:
+;		perform y-axis range check
 		move.w	obY(a1),d2
 		move.b	obHeight(a1),d1
 		ext.w	d1
 		add.w	d2,d1
 		addq.w	#4,d1
 		sub.w	d1,d0
-		bhi.w	locret_5048
+		bhi.w	Plat_Exit
 		cmpi.w	#-$10,d0
-		blo.w	locret_5048
+		blo.w	Plat_Exit
+
 		cmpi.b	#6,obRoutine(a1)
-		bhs.w	locret_5048
+		bhs.w	Plat_Exit
 		add.w	d0,d2
 		addq.w	#3,d2
 		move.w	d2,obY(a1)
@@ -3080,21 +3065,27 @@ loc_503C:
 		bset	#3,obStatus(a1)
 		bset	#3,obStatus(a0)
 
-locret_5048:
+Plat_Exit:
 		rts
+; End of function PlatformObject
+
+; ---------------------------------------------------------------------------
+; Sloped platform subroutine (GHZ collapsing ledges and SLZ seesaws)
 ; ---------------------------------------------------------------------------
 
-PtfmSloped:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+SlopeObject:
 		lea	(v_player).w,a1
 		tst.w	obVelY(a1)
-		bmi.w	locret_5048
+		bmi.w	Plat_Exit
 		move.w	obX(a1),d0
 		sub.w	obX(a0),d0
 		add.w	d1,d0
-		bmi.s	locret_5048
+		bmi.s	Plat_Exit
 		add.w	d1,d1
 		cmp.w	d1,d0
-		bhs.s	locret_5048
+		bhs.s	Plat_Exit
 		btst	#0,obRender(a0)
 		beq.s	loc_5074
 		not.w	d0
@@ -3106,31 +3097,31 @@ loc_5074:
 		move.b	(a2,d0.w),d3
 		move.w	obY(a0),d0
 		sub.w	d3,d0
-		bra.w	PtfmNormal3
+		bra.w	Platform3
 ; ---------------------------------------------------------------------------
 
-PtfmNormalHeight:
+Swing_Solid:
 		lea	(v_player).w,a1
 		tst.w	obVelY(a1)
-		bmi.w	locret_5048
+		bmi.w	Plat_Exit
 		move.w	obX(a1),d0
 		sub.w	obX(a0),d0
 		add.w	d1,d0
-		bmi.w	locret_5048
+		bmi.w	Plat_Exit
 		add.w	d1,d1
 		cmp.w	d1,d0
-		bhs.w	locret_5048
+		bhs.w	Plat_Exit
 		move.w	obY(a0),d0
 		sub.w	d3,d0
-		bra.w	PtfmNormal3
+		bra.w	Platform3
 
 		include "obj/11 Bridge (part 2).asm"
 ; ---------------------------------------------------------------------------
 
-PtfmCheckExit:
+ExitPlatform:
 		move.w	d1,d2
 
-PtfmCheckExit2:
+ExitPlatform2:
 		add.w	d2,d2
 		lea	(v_player).w,a1
 		btst	#1,obStatus(a1)
@@ -3263,7 +3254,7 @@ locret_6224:
 		rts
 ; ---------------------------------------------------------------------------
 
-ObjCollapsePtfm_Slope:dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
+Ledge_SlopeData:dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
 		dc.b $22, $22, $23, $23, $24, $24, $25, $25, $26, $26
 		dc.b $27, $27, $28, $28, $29, $29, $2A, $2A, $2B, $2B
 		dc.b $2C, $2C, $2D, $2D, $2E, $2E, $2F, $2F, $30, $30
@@ -3281,7 +3272,7 @@ Map_1B:	include "_maps/1B.asm"
 Map_Scen:	include "_maps/Scenery.asm"
 
 		include "obj/1D Unused Switch.asm"
-Map_UnkSwitch:	include "_maps/Unknown Switch.asm"
+Map_Swi:	include "_maps/Unused Switch.asm"
 
 		include "obj/2A Switch Door.asm"
 ; ---------------------------------------------------------------------------
@@ -3487,8 +3478,8 @@ loc_6BCC:
 locret_6BDA:
 		rts
 ; ---------------------------------------------------------------------------
-Map_TitleText:	include "_maps/Press Start.asm"
-Map_TitleSonic:	include "_maps/Title Screen Sonic.asm"
+Map_PSB:	include "_maps/Press Start.asm"
+Map_TSon:	include "_maps/Title Screen Sonic.asm"
 
 		include "obj/1E Ball Hog.asm"
 		include "obj/20 Ball Hog's Bomb.asm"
@@ -3518,7 +3509,7 @@ Map_Buzz:	include "_maps/Buzz Bomber.asm"
 Map_Missile:	include "_maps/Buzz Bomber Missile.asm"
 
 		include "obj/25 & 37 Rings.asm"
-		include "obj/4B Giant Ring Flash.asm"
+		include "obj/4B Giant Ring.asm"
 		include "_anim/Rings.asm"
 Map_Ring:	include "_maps/Rings.asm"
 Map_GRing:	include "_maps/Giant Ring.asm"
@@ -4467,14 +4458,14 @@ Map_Fan:	include "_maps/Fan.asm"
 
 		include "obj/5E Seesaw.asm"
 
-ObjSeeSaw_SlopeTilt:dc.b $24, $24, $26, $28, $2A, $2C, $2A, $28, $26, $24
+See_DataSlope:dc.b $24, $24, $26, $28, $2A, $2C, $2A, $28, $26, $24
 		dc.b $23, $22, $21, $20, $1F, $1E, $1D, $1C, $1B, $1A
 		dc.b $19, $18, $17, $16, $15, $14, $13, $12, $11, $10
 		dc.b $F, $E, $D, $C, $B, $A, 9, 8, 7, 6, 5, 4, 3, 2, 2
 		dc.b 2, 2, 2
 		even
 
-ObjSeeSaw_SlopeLine:dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
+See_DataFlat:dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
@@ -4486,7 +4477,7 @@ Map_Seesaw:	include "_maps/Seesaw.asm"
 		include	"obj/01 Sonic.asm"
 
 		include "obj/38 Shield and Invincibility.asm"
-		include "obj/4A Giant Ring.asm"
+		include "obj/4A Special Stage Entry (Unused).asm"
 
 		include "_anim/Shield.asm"
 Map_Shield:	include "_maps/Shield.asm"

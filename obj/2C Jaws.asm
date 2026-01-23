@@ -1,18 +1,19 @@
 ; ---------------------------------------------------------------------------
+; Object 2C - Jaws enemy (LZ)
+; ---------------------------------------------------------------------------
 
-ObjJaws:
+Jaws:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_8C70(pc,d0.w),d1
-		jsr	off_8C70(pc,d1.w)
+		move.w	Jaws_Index(pc,d0.w),d1
+		jsr	Jaws_Index(pc,d1.w)
 		bra.w	RememberState
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Jaws_Index:	dc.w Jaws_Main-Jaws_Index
+		dc.w Jaws_Turn-Jaws_Index
+; ===========================================================================
 
-off_8C70:	dc.w loc_8C74-off_8C70
-		dc.w loc_8CA4-off_8C70
-; ---------------------------------------------------------------------------
-
-loc_8C74:
+Jaws_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Jaws,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Jaws,0,0),obGfx(a0)
@@ -20,9 +21,9 @@ loc_8C74:
 		move.b	#$A,obColType(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$10,obActWid(a0)
-		move.w	#-$40,obVelX(a0)
+		move.w	#-$40,obVelX(a0) ; move Jaws to the left
 
-loc_8CA4:
+Jaws_Turn:	; Routine 2
 		lea	(Ani_Jaws).l,a1
 		bsr.w	AnimateSprite
 		bra.w	SpeedToPos

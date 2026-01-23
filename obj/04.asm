@@ -1,20 +1,21 @@
 ; ---------------------------------------------------------------------------
+; Object 04 - Object
+; ---------------------------------------------------------------------------
 
 Obj04:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	Obj04_Index(pc,d0.w),d1
 		jmp	Obj04_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
-
+; ===========================================================================
 Obj04_Index:
 		dc.w Obj04_Main-Obj04_Index
 		dc.w Obj04_Display-Obj04_Index
 		dc.w Obj04_Delete-Obj04_Index
 		dc.w Obj04_Delete-Obj04_Index
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-Obj04_Main:
+Obj04_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	#$40,obY(a0)
 		move.l	#Map_02,obMap(a0)
@@ -24,7 +25,7 @@ Obj04_Main:
 		move.b	#2,obFrame(a0)
 		move.b	#3,obPriority(a0)
 
-Obj04_Display:
+Obj04_Display:	; Routine 2
 		bsr.w	DisplaySprite
 		subq.b	#1,obTimeFrame(a0)
 		bpl.s	locret_4D26
@@ -32,7 +33,7 @@ Obj04_Display:
 		move.b	obFrame(a0),d0
 		addq.b	#1,d0
 		cmpi.b	#4,d0
-		bcs.s	loc_4D22
+		blo.s	loc_4D22
 		moveq	#2,d0
 
 loc_4D22:
@@ -40,8 +41,8 @@ loc_4D22:
 
 locret_4D26:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-Obj04_Delete:
+Obj04_Delete:	; Routine 4, 6
 		bsr.w	DeleteObject
 		rts

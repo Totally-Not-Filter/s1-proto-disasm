@@ -36,14 +36,14 @@ loc_D606:
 loc_D648:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		jsr	(PtfmNormal).l
+		jsr	(PlatformObject).l
 		bra.w	sub_D674
 ; ---------------------------------------------------------------------------
 
 loc_D658:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		jsr	(PtfmCheckExit).l
+		jsr	(ExitPlatform).l
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_D674
 		move.w	(sp)+,d2

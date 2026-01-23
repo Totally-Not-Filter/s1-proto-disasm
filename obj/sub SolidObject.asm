@@ -34,7 +34,7 @@ loc_A302:
 		rts
 ; ---------------------------------------------------------------------------
 
-loc_A30C:
+SolidObject2F:
 		tst.w	(v_debuguse).w
 		bne.w	loc_A448
 		tst.b	obRender(a0)

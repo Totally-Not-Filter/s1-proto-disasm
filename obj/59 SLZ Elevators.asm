@@ -60,9 +60,9 @@ loc_DFE6:
 	else
 		; There is a bug in which Act 2 has 2 platforms, one with a subtype of $14, and another with a subtype of $7A.
 		; This results in the objects reading code rather than data, which results in a garbled mess.
-		; What causes this is that the table for Elev_Var1 reads beyond the entry list and into Elev_Var2.
+		; What causes this is that the table for Elev_Var1 reads beyond the entry list and reads what is in Elev_Var2.
 		; The subtype $14 goes beyond both variable tables, reading the instructions at loc_DFC2 as if they were object variables.
-		; The line below is the root cause of the issue, as it does not limit the table to be 1.
+		; The line below is the root cause of the issue, as it does not limit the table to be 1 entry.
 		; What's the most strange part about this (in my opinion) is that this bug technically still persists in the
 		; final game, but the issue never actually got fixed.
 		; Perhaps they were planning on different types of platforms? Who knows!
@@ -95,14 +95,14 @@ loc_DFE6:
 loc_E03A:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		jsr	(PtfmNormal).l
+		jsr	(PlatformObject).l
 		bra.w	sub_E06E
 ; ---------------------------------------------------------------------------
 
 loc_E04A:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		jsr	(PtfmCheckExit).l
+		jsr	(ExitPlatform).l
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_E06E
 		move.w	(sp)+,d2

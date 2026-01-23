@@ -76,7 +76,7 @@ loc_4EE6:
 		dbf	d1,Bridge_MakeLog
 
 loc_4F32:
-		bsr.s	PtfmBridge
+		bsr.s	Bri_Solid
 		tst.b	objoff_3E(a0)
 		beq.s	loc_4F42
 		subq.b	#4,objoff_3E(a0)
@@ -87,3 +87,25 @@ loc_4F42:
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Bridge_ChkDelete
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Bri_Solid:
+		moveq	#0,d1
+		move.b	obSubtype(a0),d1
+		lsl.w	#3,d1
+		move.w	d1,d2
+		addq.w	#8,d1
+		add.w	d2,d2
+		lea	(v_player).w,a1
+		tst.w	obVelY(a1)
+		bmi.w	Plat_Exit
+		move.w	obX(a1),d0
+		sub.w	obX(a0),d0
+		add.w	d1,d0
+		bmi.w	Plat_Exit
+		cmp.w	d2,d0
+		bhs.w	Plat_Exit
+		bra.s	Plat_NoXCheck
+; End of function Bri_Solid

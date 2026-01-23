@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjRollingBall:
+GBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_5C8E(pc,d0.w),d1
 		jmp	off_5C8E(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_5C8E:	dc.w loc_5C98-off_5C8E
 		dc.w loc_5D2C-off_5C8E
 		dc.w loc_5D86-off_5C8E

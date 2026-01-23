@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjNewtron:
+Newtron:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_BD26(pc,d0.w),d1
 		jmp	off_BD26(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_BD26:	dc.w loc_BD2C-off_BD26
 		dc.w loc_BD5C-off_BD26
 		dc.w loc_BEC6-off_BD26
@@ -31,7 +30,6 @@ loc_BD5C:
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
-
 off_BD78:	dc.w loc_BD82-off_BD78
 		dc.w loc_BDC4-off_BD78
 		dc.w loc_BE38-off_BD78

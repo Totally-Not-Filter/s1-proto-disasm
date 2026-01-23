@@ -57,7 +57,7 @@ loc_59AE:
 loc_59B8:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		bsr.w	PtfmNormal
+		bsr.w	PlatformObject
 
 loc_59C2:
 		bsr.w	sub_5A1E
@@ -76,7 +76,7 @@ loc_59D2:
 loc_59DE:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		bsr.w	PtfmCheckExit
+		bsr.w	ExitPlatform
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_5A1E
 		bsr.w	sub_5A04

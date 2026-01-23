@@ -1,18 +1,21 @@
 ; ---------------------------------------------------------------------------
+; Object 2D - Burrobot enemy (LZ)
+; ---------------------------------------------------------------------------
 
-ObjBurrobot:
+Burrobot:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_8CFC(pc,d0.w),d1
-		jmp	off_8CFC(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	Burro_Index(pc,d0.w),d1
+		jmp	Burro_Index(pc,d1.w)
+; ===========================================================================
+Burro_Index:	dc.w Burro_Main-Burro_Index
+		dc.w Burro_Action-Burro_Index
+		dc.w Burro_Delete-Burro_Index
 
-off_8CFC:	dc.w loc_8D02-off_8CFC
-		dc.w loc_8D56-off_8CFC
-		dc.w loc_8E46-off_8CFC
-; ---------------------------------------------------------------------------
+burro_timedelay = objoff_30		; time between direction changes
+; ===========================================================================
 
-loc_8D02:
+Burro_Main:
 		move.b	#$13,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Burro,obMap(a0)
@@ -32,40 +35,39 @@ loc_8D02:
 
 locret_8D54:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_8D56:
+Burro_Action:
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_8D72(pc,d0.w),d1
-		jsr	off_8D72(pc,d1.w)
+		move.w	.index(pc,d0.w),d1
+		jsr	.index(pc,d1.w)
 		lea	(Ani_Burro).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
-; ---------------------------------------------------------------------------
+; ===========================================================================
+.index:	dc.w .changedir-.index
+		dc.w Burro_Move-.index
+		dc.w Burro_Jump-.index
+; ===========================================================================
 
-off_8D72:	dc.w loc_8D78-off_8D72
-		dc.w loc_8DA2-off_8D72
-		dc.w loc_8E10-off_8D72
-; ---------------------------------------------------------------------------
-
-loc_8D78:
-		subq.w	#1,objoff_30(a0)
-		bpl.s	locret_8DA0
+.changedir:
+		subq.w	#1,burro_timedelay(a0)
+		bpl.s	.nochg
 		addq.b	#2,ob2ndRout(a0)
-		move.w	#256-1,objoff_30(a0)
+		move.w	#256-1,burro_timedelay(a0)
 		move.w	#$80,obVelX(a0)
 		move.b	#1,obAnim(a0)
-		bchg	#0,obStatus(a0)
-		beq.s	locret_8DA0
-		neg.w	obVelX(a0)
+		bchg	#0,obStatus(a0)	; change direction the Burrobot is facing
+		beq.s	.nochg
+		neg.w	obVelX(a0)	; change direction the Burrobot is moving
 
-locret_8DA0:
+.nochg:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_8DA2:
-		subq.w	#1,objoff_30(a0)
+Burro_Move:
+		subq.w	#1,burro_timedelay(a0)
 		bmi.s	loc_8DDE
 		bsr.w	SpeedToPos
 		bchg	#0,objoff_32(a0)
@@ -81,32 +83,32 @@ loc_8DC8:
 		cmpi.w	#$C,d1
 		bge.s	loc_8DDE
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_8DD4:
 		bsr.w	ObjFloorDist
 		add.w	d1,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_8DDE:
 		btst	#2,(v_vint_byte).w
 		beq.s	loc_8DFE
 		subq.b	#2,ob2ndRout(a0)
-		move.w	#60-1,objoff_30(a0)
+		move.w	#60-1,burro_timedelay(a0)
 		move.w	#0,obVelX(a0)
 		move.b	#0,obAnim(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_8DFE:
 		addq.b	#2,ob2ndRout(a0)
 		move.w	#-$400,obVelY(a0)
 		move.b	#2,obAnim(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_8E10:
+Burro_Jump:
 		bsr.w	SpeedToPos
 		addi.w	#$18,obVelY(a0)
 		bmi.s	locret_8E44
@@ -117,13 +119,13 @@ loc_8E10:
 		add.w	d1,obY(a0)
 		move.w	#0,obVelY(a0)
 		move.b	#1,obAnim(a0)
-		move.w	#256-1,objoff_30(a0)
+		move.w	#256-1,burro_timedelay(a0)
 		subq.b	#2,ob2ndRout(a0)
 
 locret_8E44:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_8E46:
+Burro_Delete:
 		bsr.w	DeleteObject
 		rts

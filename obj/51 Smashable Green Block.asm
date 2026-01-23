@@ -1,13 +1,12 @@
 ; ---------------------------------------------------------------------------
 
-ObjSmashBlock:
+SmashBlock:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_D4D4(pc,d0.w),d1
 		jsr	off_D4D4(pc,d1.w)
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
-
 off_D4D4:	dc.w loc_D4DA-off_D4D4
 		dc.w loc_D504-off_D4D4
 		dc.w loc_D580-off_D4D4

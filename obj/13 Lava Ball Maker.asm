@@ -1,13 +1,12 @@
 ; ---------------------------------------------------------------------------
 
-ObjLavaMaker:
+LavaMaker:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_C1D0(pc,d0.w),d1
 		jsr	off_C1D0(pc,d1.w)
 		bra.w	loc_C2E6
 ; ---------------------------------------------------------------------------
-
 off_C1D0:	dc.w loc_C1DA-off_C1D0
 		dc.w loc_C1FA-off_C1D0
 

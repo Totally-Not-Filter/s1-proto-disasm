@@ -1,6 +1,6 @@
 ; ---------------------------------------------------------------------------
 
-ObjPushBlock:
+PushBlock:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_9F10(pc,d0.w),d1
@@ -217,7 +217,7 @@ sub_A14E:
 		beq.w	loc_A1DE
 		subq.b	#2,d0
 		bne.s	loc_A172
-		bsr.w	PtfmCheckExit
+		bsr.w	ExitPlatform
 		btst	#3,obStatus(a1)
 		bne.s	loc_A16C
 		clr.b	ob2ndRout(a0)

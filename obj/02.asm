@@ -1,4 +1,6 @@
 ; ---------------------------------------------------------------------------
+; Object 02 - Object from February 1990.
+; ---------------------------------------------------------------------------
 
 Obj02:
 		moveq	#0,d0
@@ -14,7 +16,7 @@ Obj02_Index:
 		dc.w Obj02_Delete-Obj02_Index
 ; ---------------------------------------------------------------------------
 
-Obj02_Main:
+Obj02_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	#$200,obX(a0)	; Fixed positions
 		move.w	#$60,obY(a0)
@@ -24,7 +26,7 @@ Obj02_Main:
 		move.b	#1,obColProp(a0)
 		move.b	#3,obPriority(a0)
 
-Obj02_Display:
+Obj02_Display:	; Routine 2
 		bsr.w	DisplaySprite
 		subq.b	#1,obTimeFrame(a0)	; Decrement delay timer
 		bpl.s	.wait			; Branch if it's not 0
@@ -42,6 +44,6 @@ Obj02_Display:
 		rts
 ; ---------------------------------------------------------------------------
 
-Obj02_Delete:
+Obj02_Delete:	; Routine 4, 6
 		bsr.w	DeleteObject
 		rts

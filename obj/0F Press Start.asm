@@ -1,32 +1,33 @@
 ; ---------------------------------------------------------------------------
+; Object 0F - "PRESS START BUTTON" from title screen
+; ---------------------------------------------------------------------------
 
-TitleText:
+PSB:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_6AE8(pc,d0.w),d1
-		jsr	off_6AE8(pc,d1.w)
+		move.w	PSB_Index(pc,d0.w),d1
+		jsr	PSB_Index(pc,d1.w)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+PSB_Index:	dc.w PSB_Main-PSB_Index
+		dc.w PSB_PrsStart-PSB_Index
+		dc.w PSB_Exit-PSB_Index
+; ===========================================================================
 
-off_6AE8:	dc.w loc_6AEE-off_6AE8
-		dc.w loc_6B1A-off_6AE8
-		dc.w locret_6B18-off_6AE8
-; ---------------------------------------------------------------------------
-
-loc_6AEE:
+PSB_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	#$D0,obX(a0)
 		move.w	#$130,obScreenY(a0)
-		move.l	#Map_TitleText,obMap(a0)
+		move.l	#Map_PSB,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Title_Foreground,0,0),obGfx(a0)
-		cmpi.b	#2,obFrame(a0)
-		bne.s	loc_6B1A
+		cmpi.b	#2,obFrame(a0)	; is object meant to hide sonic?
+		bne.s	PSB_PrsStart	; if not, branch
 		addq.b	#2,obRoutine(a0)
 
-locret_6B18:
+PSB_Exit:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_6B1A:
-		lea	(Ani_PSBTM).l,a1
-		bra.w	AnimateSprite
+PSB_PrsStart:	; Routine 4
+		lea	(Ani_PSB).l,a1
+		bra.w	AnimateSprite	; "PRESS START" is animated

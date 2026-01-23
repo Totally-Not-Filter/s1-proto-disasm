@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjBasaran:
+Basaran:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	ObjBasaran_Index(pc,d0.w),d1
 		jmp	ObjBasaran_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 ObjBasaran_Index:dc.w ObjBasaran_Init-ObjBasaran_Index
 		dc.w ObjBasaran_Action-ObjBasaran_Index
 ; ---------------------------------------------------------------------------
@@ -30,7 +29,6 @@ ObjBasaran_Action:
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
-
 ObjBasaran_Index2:dc.w ObjBasaran_ChkDrop-ObjBasaran_Index2
 		dc.w ObjBasaran_DropFly-ObjBasaran_Index2
 		dc.w ObjBasaran_PlaySound-ObjBasaran_Index2

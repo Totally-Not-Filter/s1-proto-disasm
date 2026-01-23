@@ -1,4 +1,4 @@
-ObjHUD:
+HUD:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_115EA(pc,d0.w),d1

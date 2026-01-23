@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjSpikes:
+Spikes:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_AB0A(pc,d0.w),d1
 		jmp	off_AB0A(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_AB0A:	dc.w loc_AB1A-off_AB0A
 		dc.w loc_AB64-off_AB0A
 
@@ -104,7 +103,6 @@ sub_AC02:
 		move.w	off_AC12(pc,d0.w),d1
 		jmp	off_AC12(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_AC12:	dc.w locret_AC18-off_AC12
 		dc.w loc_AC1A-off_AC12
 		dc.w loc_AC2E-off_AC12

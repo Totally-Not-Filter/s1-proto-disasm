@@ -1,6 +1,6 @@
 ; ---------------------------------------------------------------------------
 
-ObjYadrin:
+Yadrin:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_D334(pc,d0.w),d1

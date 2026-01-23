@@ -1,6 +1,6 @@
 ; ---------------------------------------------------------------------------
 
-ObjWaterfallSnd:
+WaterSound:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	.act(pc,d0.w),d1

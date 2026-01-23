@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjCollapseFloor:
+CollapseFloor:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_5FF2(pc,d0.w),d1
 		jmp	off_5FF2(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_5FF2:	dc.w loc_5FFE-off_5FF2
 		dc.w loc_603A-off_5FF2
 		dc.w loc_607C-off_5FF2
@@ -39,7 +38,7 @@ loc_603A:
 
 loc_604C:
 		move.w	#$20,d1
-		bsr.w	PtfmNormal
+		bsr.w	PlatformObject
 		tst.b	obSubtype(a0)
 		bpl.s	loc_6078
 		btst	#3,obStatus(a1)
@@ -63,7 +62,7 @@ loc_607C:
 
 sub_608E:
 		move.w	#$20,d1
-		bsr.w	PtfmCheckExit
+		bsr.w	ExitPlatform
 		move.w	obX(a0),d2
 		bsr.w	ptfmSurfaceNormal
 		bra.w	RememberState

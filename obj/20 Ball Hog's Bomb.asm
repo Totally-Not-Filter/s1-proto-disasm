@@ -6,7 +6,6 @@ ObjCannonball:
 		move.w	off_7070(pc,d0.w),d1
 		jmp	off_7070(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_7070:	dc.w ObjCannonball_Init-off_7070
 		dc.w ObjCannonball_Act-off_7070
 		dc.w ObjCannonball_Delete-off_7070
@@ -35,7 +34,7 @@ ObjCannonball_Act:
 loc_70C2:
 		_move.b	#id_MissileDissolve,obID(a0)
 		move.b	#0,obRoutine(a0)
-		bra.w	ObjCannonballExplode
+		bra.w	MissileDissolve
 ; ---------------------------------------------------------------------------
 
 loc_70D2:

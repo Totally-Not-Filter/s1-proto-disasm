@@ -1,20 +1,22 @@
 ; ---------------------------------------------------------------------------
+; Object 10 - Sonic animation test object
+; (Referred to as "play02" in source code)
+; ---------------------------------------------------------------------------
 
 Obj10:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	Obj10_Index(pc,d0.w),d1
 		jmp	Obj10_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
-
+; ===========================================================================
 Obj10_Index:
 		dc.w Obj10_Init-Obj10_Index
 		dc.w Obj10_Main-Obj10_Index
 		dc.w Obj10_Delete-Obj10_Index
 		dc.w Obj10_Delete-Obj10_Index
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-Obj10_Init:
+Obj10_Init:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.b	#$12,obHeight(a0)	; The height defined here is 1 pixel shorter than what the Sonic object actually uses.
 		move.b	#9,obWidth(a0)
@@ -23,13 +25,13 @@ Obj10_Init:
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 
-Obj10_Main:
-		bsr.w	.playerctrl
+Obj10_Main:	; Routine 2
+		bsr.w	.playctrl
 		bsr.w	Sonic_LoadGfx
 		jmp	(DisplaySprite).l
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-.playerctrl:
+.playctrl:
 		move.b	(v_jpadhold2).w,d4
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
@@ -84,7 +86,7 @@ Obj10_Main:
 .notreset:
 		jsr	(Sonic_Animate).l
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-Obj10_Delete:
+Obj10_Delete:	; Routine 4, 6
 		jmp	(DeleteObject).l

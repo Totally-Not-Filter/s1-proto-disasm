@@ -1,19 +1,20 @@
 ; ---------------------------------------------------------------------------
+; Object 2E - contents of monitors
+; ---------------------------------------------------------------------------
 
-ObjMonitorItem:
+PowerUp:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_8242(pc,d0.w),d1
-		jsr	off_8242(pc,d1.w)
+		move.w	Pow_Index(pc,d0.w),d1
+		jsr	Pow_Index(pc,d1.w)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Pow_Index:	dc.w Pow_Main-Pow_Index
+		dc.w Pow_Move-Pow_Index
+		dc.w loc_83AA-Pow_Index
+; ===========================================================================
 
-off_8242:	dc.w loc_8248-off_8242
-		dc.w loc_8288-off_8242
-		dc.w loc_83AA-off_8242
-; ---------------------------------------------------------------------------
-
-loc_8248:
+Pow_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	#make_art_tile(ArtTile_Monitor,0,0),obGfx(a0)
 		move.b	#$24,obRender(a0)
@@ -21,108 +22,114 @@ loc_8248:
 		move.b	#8,obActWid(a0)
 		move.w	#-$300,obVelY(a0)
 		moveq	#0,d0
-		move.b	obAnim(a0),d0
+		move.b	obAnim(a0),d0	; get subtype
 		addq.b	#2,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,obFrame(a0)	; use correct frame
 		movea.l	#Map_Monitor,a1
 		add.b	d0,d0
 		adda.w	(a1,d0.w),a1
 		addq.w	#1,a1
 		move.l	a1,obMap(a0)
 
-loc_8288:
-		tst.w	obVelY(a0)
-		bpl.w	loc_829C
+Pow_Move:	; Routine 2
+		tst.w	obVelY(a0)	; is object moving?
+		bpl.w	Pow_Checks	; if not, branch
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,obVelY(a0)	; reduce object speed
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_829C:
+Pow_Checks:
 		addq.b	#2,obRoutine(a0)
-		move.w	#29,obTimeFrame(a0)
+		move.w	#30-1,obTimeFrame(a0) ; display icon for half a second
+
+Pow_ChkEggman:
 		move.b	obAnim(a0),d0
-		cmpi.b	#1,d0
-		bne.s	loc_82B2
-		rts
-; ---------------------------------------------------------------------------
+		cmpi.b	#1,d0		; does monitor contain Eggman?
+		bne.s	Pow_ChkSonic
+		rts		; Eggman monitor does nothing
+; ===========================================================================
 
-loc_82B2:
-		cmpi.b	#2,d0
-		bne.s	loc_82CA
+Pow_ChkSonic:
+		cmpi.b	#2,d0		; does monitor contain Sonic?
+		bne.s	Pow_ChkShoes
 
-loc_82B8:
-		addq.b	#1,(v_lives).w
-		addq.b	#1,(f_lifecount).w
+ExtraLife:
+		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
+		addq.b	#1,(f_lifecount).w ; update the lives counter
 		move.w	#bgm_ExtraLife,d0
-		jmp	(QueueSound1).l
-; ---------------------------------------------------------------------------
+		jmp	(QueueSound1).l	; play extra life music
+; ===========================================================================
 
-loc_82CA:
-		cmpi.b	#3,d0
-		bne.s	loc_82F8
-		move.b	#1,(v_shoes).w
-		move.w	#1200,(v_objspace+shoetime).w
-		move.w	#$C00,(v_sonspeedmax).w
-		move.w	#$18,(v_sonspeedacc).w
-		move.w	#$80,(v_sonspeeddec).w
+Pow_ChkShoes:
+		cmpi.b	#3,d0		; does monitor contain speed shoes?
+		bne.s	Pow_ChkShield
+
+		move.b	#1,(v_shoes).w	; speed up the BG music
+		move.w	#1200,(v_player+shoetime).w	; time limit for the power-up
+		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
+		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
+		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
 		move.w	#bgm_Speedup,d0
-		jmp	(QueueSound1).l
-; ---------------------------------------------------------------------------
+		jmp	(QueueSound1).l		; Speed up the music
+; ===========================================================================
 
-loc_82F8:
-		cmpi.b	#4,d0
-		bne.s	loc_8314
-		move.b	#1,(v_shield).w
-		move.b	#id_ShieldItem,(v_objslot6).w
+Pow_ChkShield:
+		cmpi.b	#4,d0		; does monitor contain a shield?
+		bne.s	Pow_ChkInvinc
+
+		move.b	#1,(v_shield).w	; give Sonic a shield
+		move.b	#id_ShieldItem,(v_objslot6).w ; load shield object ($38)
 		move.w	#sfx_Shield,d0
-		jmp	(QueueSound1).l
-; ---------------------------------------------------------------------------
+		jmp	(QueueSound1).l	; play shield sound
+; ===========================================================================
 
-loc_8314:
-		cmpi.b	#5,d0
-		bne.s	loc_8360
-		move.b	#1,(v_invinc).w
-		move.w	#1200,(v_objspace+invtime).w
-		move.b	#id_ShieldItem,(v_objslot8).w
+Pow_ChkInvinc:
+		cmpi.b	#5,d0		; does monitor contain invincibility?
+		bne.s	Pow_ChkRings
+
+		move.b	#1,(v_invinc).w	; make Sonic invincible
+		move.w	#1200,(v_player+invtime).w ; time limit for the power-up
+		move.b	#id_ShieldItem,(v_objslot8).w ; load stars object ($3801)
 		move.b	#1,(v_objslot8+obAnim).w
-		move.b	#id_ShieldItem,(v_objslot9).w
+		move.b	#id_ShieldItem,(v_objslot9).w ; load stars object ($3802)
 		move.b	#2,(v_objslot9+obAnim).w
-		move.b	#id_ShieldItem,(v_objslotA).w
+		move.b	#id_ShieldItem,(v_objslotA).w ; load stars object ($3803)
 		move.b	#3,(v_objslotA+obAnim).w
-		move.b	#id_ShieldItem,(v_objslotB).w
+		move.b	#id_ShieldItem,(v_objslotB).w ; load stars object ($3804)
 		move.b	#4,(v_objslotB+obAnim).w
 		move.w	#bgm_Invincible,d0
-		jmp	(QueueSound1).l
-; ---------------------------------------------------------------------------
+		jmp	(QueueSound1).l ; play invincibility music
+; ===========================================================================
 
-loc_8360:
-		cmpi.b	#6,d0
-		bne.s	loc_83A0
+Pow_ChkRings:
+		cmpi.b	#6,d0		; does monitor contain 10 rings?
+		bne.s	Pow_ChkS
+
 		addi.w	#10,(v_rings).w
 		ori.b	#1,(f_ringcount).w
 		cmpi.w	#50,(v_rings).w
-		bcs.s	loc_8396
+		bcs.s	Pow_RingSound
 		bset	#0,(v_lifecount).w
-		beq.w	loc_82B8
+		beq.w	ExtraLife
 		cmpi.w	#100,(v_rings).w
-		bcs.s	loc_8396
+		bcs.s	Pow_RingSound
 		bset	#1,(v_lifecount).w
-		beq.w	loc_82B8
+		beq.w	ExtraLife
 
-loc_8396:
+Pow_RingSound:
 		move.w	#sfx_Ring,d0
-		jmp	(QueueSound1).l
-; ---------------------------------------------------------------------------
+		jmp	(QueueSound1).l	; play ring sound
+; ===========================================================================
 
-loc_83A0:
-		cmpi.b	#7,d0
-		bne.s	locret_83A8
+Pow_ChkS:
+		cmpi.b	#7,d0		; does monitor contain 'S'?
+		bne.s	Pow_ChkEnd
 		nop
 
-locret_83A8:
-		rts
-; ---------------------------------------------------------------------------
+Pow_ChkEnd:
+		rts		; 'S' and goggles monitors do nothing
+; ===========================================================================
 
 loc_83AA:
 		subq.w	#1,obTimeFrame(a0)

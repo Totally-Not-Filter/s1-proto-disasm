@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjSpikedBalls:
+SpikeBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	ObjSpikedBalls_Index(pc,d0.w),d1
 		jmp	ObjSpikedBalls_Index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 ObjSpikedBalls_Index:dc.w ObjSpikedBalls_Init-ObjSpikedBalls_Index
 		dc.w ObjSpikedBalls_Move-ObjSpikedBalls_Index
 		dc.w ObjSpikedBalls_Display-ObjSpikedBalls_Index

@@ -1,14 +1,17 @@
-RememberState:
-		out_of_range_rememberstate.w	loc_B938
-		bra.w	DisplaySprite
+; ---------------------------------------------------------------------------
+; Subroutine to remember whether an object is destroyed/collected
 ; ---------------------------------------------------------------------------
 
-loc_B938:
-		lea	(v_regbuffer).w,a2
+RememberState:
+		out_of_range_rememberstate.w	.offscreen
+		bra.w	DisplaySprite
+
+.offscreen:
+		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	obRespawnNo(a0),d0
-		beq.s	loc_B94A
+		beq.s	.delete
 		bclr	#7,2(a2,d0.w)
 
-loc_B94A:
+.delete:
 		bra.w	DeleteObject

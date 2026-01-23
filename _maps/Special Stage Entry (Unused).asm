@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Sprite mappings - special stage entry	from beta
+; Sprite mappings - special stage entry
 ; ---------------------------------------------------------------------------
 Map_Vanish_internal:
 		dc.w .flash1-Map_Vanish_internal

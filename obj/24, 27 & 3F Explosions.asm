@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjCannonballExplode:
+MissileDissolve:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_7102(pc,d0.w),d1
 		jmp	off_7102(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_7102:	dc.w ObjCannonballExplode_Init-off_7102
 		dc.w ObjCannonballExplode_Act-off_7102
 ; ---------------------------------------------------------------------------
@@ -42,7 +41,6 @@ ObjExplode:
 		move.w	off_7172(pc,d0.w),d1
 		jmp	off_7172(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_7172:	dc.w ObjExplode_Load-off_7172
 		dc.w ObjExplode_Init-off_7172
 		dc.w ObjExplode_Act-off_7172
@@ -80,7 +78,6 @@ ObjExplode_Act:
 .display:
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
-
 ObjBombExplode:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0

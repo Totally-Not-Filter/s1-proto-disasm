@@ -6,7 +6,6 @@ ObjSwingPtfm:
 		move.w	off_548A(pc,d0.w),d1
 		jmp	off_548A(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_548A:	dc.w ObjSwingPtfm_Init-off_548A
 		dc.w loc_55C8-off_548A
 		dc.w loc_55E4-off_548A
@@ -104,7 +103,7 @@ loc_55C8:
 		move.b	obActWid(a0),d1
 		moveq	#0,d3
 		move.b	obHeight(a0),d3
-		bsr.w	PtfmNormalHeight
+		bsr.w	Swing_Solid
 		bsr.w	sub_563C
 	if ~~FixBugs
 		bsr.w	DisplaySprite
@@ -115,7 +114,7 @@ loc_55C8:
 loc_55E4:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
-		bsr.w	PtfmCheckExit
+		bsr.w	ExitPlatform
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_563C
 		move.w	(sp)+,d2

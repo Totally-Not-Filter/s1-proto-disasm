@@ -1,12 +1,11 @@
 ; ---------------------------------------------------------------------------
 
-ObjBuzzMissile:
+Missile:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	off_79FA(pc,d0.w),d1
 		jmp	off_79FA(pc,d1.w)
 ; ---------------------------------------------------------------------------
-
 off_79FA:	dc.w loc_7A04-off_79FA
 		dc.w loc_7A4E-off_79FA
 		dc.w loc_7A6C-off_79FA
@@ -52,15 +51,17 @@ loc_7A6C:
 		move.b	#$87,obColType(a0)
 		move.b	#1,obAnim(a0)
 		bsr.w	SpeedToPos
-		lea	(Ani_Missile).l,a1
-		bsr.w	AnimateSprite
 	if FixBugs
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
 		cmp.w	obY(a0),d0
 		bcs.s	loc_7AB2
+		lea	(Ani_Missile).l,a1
+		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
 	else
+		lea	(Ani_Missile).l,a1
+		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
@@ -73,7 +74,7 @@ loc_7A6C:
 loc_7AA2:
 		_move.b	#id_MissileDissolve,obID(a0)
 		move.b	#0,obRoutine(a0)
-		bra.w	ObjCannonballExplode
+		bra.w	MissileDissolve
 ; ---------------------------------------------------------------------------
 
 loc_7AB2:
