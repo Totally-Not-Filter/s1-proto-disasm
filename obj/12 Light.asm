@@ -1,17 +1,18 @@
 ; ---------------------------------------------------------------------------
+; Object 12 - lamp (SZ)
+; ---------------------------------------------------------------------------
 
-ObjSceneryLamp:
+SpinningLight:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C538(pc,d0.w),d1
-		jmp	off_C538(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	Light_Index(pc,d0.w),d1
+		jmp	Light_Index(pc,d1.w)
+; ===========================================================================
+Light_Index:	dc.w Light_Main-Light_Index
+		dc.w Light_Animate-Light_Index
+; ===========================================================================
 
-off_C538:	dc.w loc_C53C-off_C538
-		dc.w loc_C560-off_C538
-; ---------------------------------------------------------------------------
-
-loc_C53C:
+Light_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Light,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Level,0,0),obGfx(a0)
@@ -19,16 +20,16 @@ loc_C53C:
 		move.b	#$10,obActWid(a0)
 		move.b	#6,obPriority(a0)
 
-loc_C560:
+Light_Animate:	; Routine 2
 		subq.b	#1,obTimeFrame(a0)
-		bpl.s	loc_C57E
+		bpl.s	.chkdel
 		move.b	#7,obTimeFrame(a0)
 		addq.b	#1,obFrame(a0)
 		cmpi.b	#6,obFrame(a0)
-		bcs.s	loc_C57E
+		blo.s	.chkdel
 		move.b	#0,obFrame(a0)
 
-loc_C57E:
+.chkdel:
 	if FixBugs
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite

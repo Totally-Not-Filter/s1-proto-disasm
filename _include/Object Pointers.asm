@@ -18,7 +18,7 @@ ptr_TitleSonic:	dc.l TitleSonic	; 0E
 ptr_PSBTM:	dc.l PSB	; 0F
 ptr_Obj10:	dc.l Obj10	; 10
 ptr_Bridge:	dc.l Bridge	; 11
-ptr_SpinningLight:	dc.l ObjSceneryLamp	; 12
+ptr_SpinningLight:	dc.l SpinningLight	; 12
 ptr_LavaMaker:	dc.l LavaMaker	; 13
 ptr_LavaBall:	dc.l LavaBall	; 14
 ptr_SwingingPlatform:	dc.l ObjSwingPtfm	; 15
