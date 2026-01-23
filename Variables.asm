@@ -61,6 +61,11 @@ v_objslot1D:	ds.b obj.size
 v_objslot1E:	ds.b obj.size
 v_objslot1F:	ds.b obj.size
 
+; Title screen objects
+v_titlesonic	= v_objspace+object_size*1	; object variable space for Sonic in the title screen ($40 bytes)
+v_pressstart	= v_objspace+object_size*2	; object variable space for the "PRESS START BUTTON" text ($40 bytes)
+v_ttlsonichide	= v_objspace+object_size*3	; object variable space for hiding part of Sonic ($40 bytes)
+
 v_player:	= v_objslot0
 v_hud:	= v_objslot1
 

@@ -1641,10 +1641,10 @@ loc_25D8:
 		bsr.w	QueueSound2
 		move.b	#0,(f_debugmode).w
 		move.w	#376,(v_generictimer).w	; run title screen for 376 frames
-		move.b	#id_TitleSonic,(v_objslot1).w	; load big sonic object
-		move.b	#id_PSBTM,(v_objslot2).w	; load "PRESS START BUTTON" object
-		move.b	#id_PSBTM,(v_objslot3).w	; load object which hides sonic
-		move.b	#2,(v_objslot3+obFrame).w	; set the object prior to use the correct frame
+		move.b	#id_TitleSonic,(v_titlesonic).w	; load big sonic object
+		move.b	#id_PSBTM,(v_pressstart).w	; load "PRESS START BUTTON" object
+		move.b	#id_PSBTM,(v_ttlsonichide).w	; load object which hides sonic
+		move.b	#2,(v_ttlsonichide+obFrame).w	; set the object prior to use the correct frame
 		moveq	#plcid_Main,d0
 		bsr.w	NewPLC
 		enable_display
