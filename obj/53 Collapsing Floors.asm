@@ -64,7 +64,7 @@ sub_608E:
 		move.w	#$20,d1
 		bsr.w	ExitPlatform
 		move.w	obX(a0),d2
-		bsr.w	ptfmSurfaceNormal
+		bsr.w	MvSonicOnPtfm2
 		bra.w	RememberState
 ; ---------------------------------------------------------------------------
 

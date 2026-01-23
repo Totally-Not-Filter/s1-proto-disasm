@@ -226,7 +226,7 @@ sub_A14E:
 
 loc_A16C:
 		move.w	d4,d2
-		bra.w	PtfmSurfaceHeight
+		bra.w	MvSonicOnPtfm
 ; ---------------------------------------------------------------------------
 
 loc_A172:

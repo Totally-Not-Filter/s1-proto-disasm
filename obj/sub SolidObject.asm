@@ -29,7 +29,7 @@ loc_A2FE:
 
 loc_A302:
 		move.w	d4,d2
-		bsr.w	PtfmSurfaceHeight
+		bsr.w	MvSonicOnPtfm
 		moveq	#0,d4
 		rts
 ; ---------------------------------------------------------------------------

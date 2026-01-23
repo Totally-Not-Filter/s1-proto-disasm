@@ -47,7 +47,7 @@ loc_D658:
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_D674
 		move.w	(sp)+,d2
-		jmp	(ptfmSurfaceNormal).l
+		jmp	(MvSonicOnPtfm2).l
 ; ---------------------------------------------------------------------------
 
 sub_D674:

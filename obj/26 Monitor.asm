@@ -56,7 +56,7 @@ loc_80C0:
 loc_80EA:
 		move.w	#$10,d3
 		move.w	obX(a0),d2
-		bsr.w	PtfmSurfaceHeight
+		bsr.w	MvSonicOnPtfm
 		bra.w	loc_81A4
 ; ---------------------------------------------------------------------------
 

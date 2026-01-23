@@ -21,7 +21,7 @@ ptr_Bridge:	dc.l Bridge	; 11
 ptr_SpinningLight:	dc.l SpinningLight	; 12
 ptr_LavaMaker:	dc.l LavaMaker	; 13
 ptr_LavaBall:	dc.l LavaBall	; 14
-ptr_SwingingPlatform:	dc.l ObjSwingPtfm	; 15
+ptr_SwingingPlatform:	dc.l SwingingPlatform	; 15
 ptr_Obj16:	dc.l NullObject	; 16
 ptr_Helix:	dc.l Helix	; 17
 ptr_BasicPlatform:	dc.l ObjPlatform	; 18

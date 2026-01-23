@@ -38,7 +38,7 @@ loc_E268:
 		move.w	obX(a0),-(sp)
 		bsr.w	sub_E284
 		move.w	(sp)+,d2
-		jmp	(ptfmSurfaceNormal).l
+		jmp	(MvSonicOnPtfm2).l
 ; ---------------------------------------------------------------------------
 
 sub_E284:

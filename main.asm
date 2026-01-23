@@ -3144,7 +3144,43 @@ locret_511C:
 		include "obj/11 Bridge (part 3).asm"
 MapBridge:	include "_maps/Bridge.asm"
 
-		include "obj/15 Swinging Platform.asm"
+		include "obj/15 Swinging Platforms (Part 1).asm"
+
+; ---------------------------------------------------------------------------
+; Subroutine to change Sonic's position with a platform
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+MvSonicOnPtfm:
+		lea	(v_player).w,a1
+		move.w	obY(a0),d0
+		sub.w	d3,d0
+		bra.s	MvSonic2
+; End of function MvSonicOnPtfm
+
+; ---------------------------------------------------------------------------
+; Subroutine to change Sonic's position with a platform
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+MvSonicOnPtfm2:
+		lea	(v_player).w,a1
+		move.w	obY(a0),d0
+		subi.w	#9,d0
+
+MvSonic2:
+		moveq	#0,d1
+		move.b	obHeight(a1),d1
+		sub.w	d1,d0
+		move.w	d0,obY(a1)
+		sub.w	obX(a0),d2
+		sub.w	d2,obX(a1)
+		rts
+; End of function MvSonicOnPtfm2
+
+		include "obj/15 Swinging Platforms (Part 2).asm"
 Map_Swing_GHZ:	include "_maps/Swinging Platforms (GHZ).asm"
 Map_Swing_SLZ:	include "_maps/Swinging Platforms (SLZ).asm"
 

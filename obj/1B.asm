@@ -44,7 +44,7 @@ loc_668A:
 		bsr.w	ExitPlatform
 		move.w	obX(a0),d2
 		move.w	#-$14,d3
-		bsr.w	PtfmSurfaceHeight
+		bsr.w	MvSonicOnPtfm
 	if ~~FixBugs
 		bsr.w	DisplaySprite
 	endif

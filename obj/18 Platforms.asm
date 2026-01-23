@@ -81,7 +81,7 @@ loc_59DE:
 		bsr.w	sub_5A1E
 		bsr.w	sub_5A04
 		move.w	(sp)+,d2
-		bsr.w	ptfmSurfaceNormal
+		bsr.w	MvSonicOnPtfm2
 	if ~~FixBugs
 		bsr.w	DisplaySprite
 	endif

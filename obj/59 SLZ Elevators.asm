@@ -108,7 +108,7 @@ loc_E04A:
 		move.w	(sp)+,d2
 		_tst.b	obID(a0)
 		beq.s	locret_E06C
-		jmp	(ptfmSurfaceNormal).l
+		jmp	(MvSonicOnPtfm2).l
 ; ---------------------------------------------------------------------------
 
 locret_E06C:
