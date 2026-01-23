@@ -4317,7 +4317,7 @@ Map_PRock:	include "_maps/Purple Rock.asm"
 		include "obj/3C Smashable Wall.asm"
 		include "obj/sub SmashObject.asm"
 
-ObjSmashWall_FragRight:
+Smash_FragSpd1:
 		dc.w $400, -$500
 		dc.w $600, -$100
 		dc.w $600, $100
@@ -4327,7 +4327,7 @@ ObjSmashWall_FragRight:
 		dc.w $800, $200
 		dc.w $600, $600
 
-ObjSmashWall_FragLeft:
+Smash_FragSpd2:
 		dc.w -$600, -$600
 		dc.w -$800, -$200
 		dc.w -$800, $200

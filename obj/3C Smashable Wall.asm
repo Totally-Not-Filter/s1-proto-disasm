@@ -1,18 +1,22 @@
 ; ---------------------------------------------------------------------------
+; Object 3C - smashable wall (GHZ, SLZ)
+; ---------------------------------------------------------------------------
 
 SmashWall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_ADEA(pc,d0.w),d1
-		jsr	off_ADEA(pc,d1.w)
+		move.w	Smash_Index(pc,d0.w),d1
+		jsr	Smash_Index(pc,d1.w)
 		bra.w	RememberState
 ; ===========================================================================
-off_ADEA:	dc.w loc_ADF0-off_ADEA
-		dc.w loc_AE1A-off_ADEA
-		dc.w loc_AE92-off_ADEA
+Smash_Index:	dc.w Smash_Main-Smash_Index
+		dc.w Smash_Solid-Smash_Index
+		dc.w Smash_FragMove-Smash_Index
+
+smash_speed = objoff_30		; Sonic's horizontal speed
 ; ===========================================================================
 
-loc_ADF0:
+Smash_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Smash,obMap(a0)
 		move.w	#make_art_tile(ArtTile_GHZ_SLZ_Smashable_Wall,2,0),obGfx(a0)
@@ -21,53 +25,53 @@ loc_ADF0:
 		move.b	#4,obPriority(a0)
 		move.b	obSubtype(a0),obFrame(a0)
 
-loc_AE1A:
-		move.w	(v_player+obVelX).w,objoff_30(a0)
+Smash_Solid:	; Routine 2
+		move.w	(v_player+obVelX).w,smash_speed(a0) ; load Sonic's horizontal speed
 		move.w	#$1B,d1
 		move.w	#$20,d2
 		move.w	#$20,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
-		btst	#5,obStatus(a0)
-		bne.s	loc_AE3E
+		btst	#5,obStatus(a0)	; is Sonic pushing against the wall?
+		bne.s	.chkroll	; if yes, branch
 
-locret_AE3C:
+.donothing:
 		rts
 ; ===========================================================================
 
-loc_AE3E:
-		cmpi.b	#id_Roll,obAnim(a1)
-		bne.s	locret_AE3C
-		move.w	objoff_30(a0),d0
-		bpl.s	loc_AE4E
+.chkroll:
+		cmpi.b	#id_Roll,obAnim(a1) ; is Sonic rolling?
+		bne.s	.donothing	; if not, branch
+		move.w	smash_speed(a0),d0
+		bpl.s	.chkspeed
 		neg.w	d0
 
-loc_AE4E:
-		cmpi.w	#$480,d0
-		bcs.s	locret_AE3C
-		move.w	objoff_30(a0),obVelX(a1)
+.chkspeed:
+		cmpi.w	#$480,d0	; is Sonic's speed $480 or higher?
+		blo.s	.donothing	; if not, branch
+		move.w	smash_speed(a0),obVelX(a1)
 		addq.w	#4,obX(a1)
-		lea	(ObjSmashWall_FragRight).l,a4
+		lea	(Smash_FragSpd1).l,a4 ; use fragments that move right
 		move.w	obX(a0),d0
-		cmp.w	obX(a1),d0
-		bcs.s	loc_AE78
+		cmp.w	obX(a1),d0	; is Sonic to the right of the block?
+		blo.s	.smash		; if yes, branch
 		subq.w	#8,obX(a1)
-		lea	(ObjSmashWall_FragLeft).l,a4
+		lea	(Smash_FragSpd2).l,a4 ; use fragments that move left
 
-loc_AE78:
+.smash:
 		move.w	obVelX(a1),obInertia(a1)
 		bclr	#5,obStatus(a0)
 		bclr	#5,obStatus(a1)
-		moveq	#7,d1
+		moveq	#7,d1		; load 8 fragments
 		move.w	#$70,d2
 		bsr.s	ObjectFragment
 
-loc_AE92:
+Smash_FragMove:	; Routine 4
 	if FixBugs
 		addq.l	#4,sp	; do not return to caller
 	endif
 		bsr.w	SpeedToPos
-		addi.w	#$70,obVelY(a0)
+		addi.w	#$70,obVelY(a0)	; make fragment fall faster
 	if FixBugs
 		tst.b	obRender(a0)
 		bpl.w	DeleteObject
