@@ -431,7 +431,6 @@ locret_EBFA:
 		rts
 ; End of function Sonic_MoveLeft
 
-
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Sonic_MoveRight:
@@ -487,7 +486,6 @@ locret_EC60:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_RollSpeed:
 		move.w	(v_sonspeedmax).w,d6
@@ -549,7 +547,6 @@ loc_ECD6:
 		bra.w	loc_EB34
 ; End of function Sonic_RollSpeed
 
-
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Sonic_RollLeft:
@@ -572,7 +569,6 @@ loc_ED16:
 		move.w	d0,obInertia(a0)
 		rts
 ; End of function Sonic_RollLeft
-
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -695,7 +691,6 @@ Sonic_SquashUnused:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 Sonic_LevelBound:
 		move.l	obX(a0),d1
 		move.w	obVelX(a0),d0
@@ -743,7 +738,6 @@ Sonic_LevelBound:
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Sonic_Roll:
 		move.w	obInertia(a0),d0
