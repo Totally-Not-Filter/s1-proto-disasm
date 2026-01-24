@@ -760,14 +760,13 @@ ReadJoypads:
 		waitZ80
 		lea	(v_jpadhold1).w,a0
 		lea	(ctrl_port_1_data_b).l,a1
-		bsr.s	Joypad_Read
+		bsr.s	.read
 		addq.w	#2,a1
-		bsr.s	Joypad_Read
+		bsr.s	.read
 		startZ80
 		rts
-; ---------------------------------------------------------------------------
 
-Joypad_Read:
+.read:
 		move.b	#0,(a1)
 		nop
 		nop
@@ -2071,7 +2070,7 @@ loc_2C0A:
 		lea	(MusicList).l,a1
 		move.b	(a1,d0.w),d0
 		bsr.w	QueueSound1
-		move.b	#id_TitleCard,(v_objslot2).w	; load title card object
+		move.b	#id_TitleCard,(v_titlecard).w	; load title card object
 
 loc_2C92:
 		move.b	#id_VInt_0C,(v_vint_routine).w
@@ -2079,8 +2078,8 @@ loc_2C92:
 		bsr.w	ExecuteObjects
 		bsr.w	BuildSprites
 		bsr.w	RunPLC
-		move.w	(v_objslot4+obX).w,d0
-		cmp.w	(v_objslot4+card_mainX).w,d0
+		move.w	(v_ttlcardact+obX).w,d0
+		cmp.w	(v_ttlcardact+card_mainX).w,d0
 		bne.s	loc_2C92
 		tst.l	(v_plc_buffer).w
 		bne.s	loc_2C92
@@ -2160,10 +2159,10 @@ loc_2D54:
 		bsr.w	WaitForVInt
 		move.w	#$202F,(v_pfade_start).w
 		bsr.w	PalFadeIn_Alt
-		addq.b	#2,(v_objslot2+obRoutine).w
-		addq.b	#4,(v_objslot3+obRoutine).w
-		addq.b	#4,(v_objslot4+obRoutine).w
-		addq.b	#4,(v_objslot5+obRoutine).w
+		addq.b	#2,(v_ttlcardname+obRoutine).w
+		addq.b	#4,(v_ttlcardzone+obRoutine).w
+		addq.b	#4,(v_ttlcardact+obRoutine).w
+		addq.b	#4,(v_ttlcardoval+obRoutine).w
 
 GM_LevelLoop:
 		bsr.w	PauseGame
@@ -2188,8 +2187,8 @@ loc_2E2E:
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
 		bsr.w	OscillateNumDo
-		bsr.w	UpdateTimers
-		bsr.w	LoadSignpostPLC
+		bsr.w	SynchroAnimate
+		bsr.w	SignpostArtLoad
 		cmpi.b	#id_Demo,(v_gamemode).w
 		beq.s	loc_2E66
 		tst.w	(f_restart).w
@@ -2416,7 +2415,7 @@ Anim16MZ_End
 DebugPosLoadArt:
 		rts
 ; ---------------------------------------------------------------------------
-		locVRAM $4F0*tile_size
+		locVRAM ArtTile_Debug_Numbers*tile_size
 		lea	(Art_Text).l,a0
 		move.w	#bytesToWcnt(Art_Text_End-Art_Text-tile_size*$1F),d1
 		bsr.s	.loadtext
@@ -2450,34 +2449,45 @@ DebugPosLoadArt:
 .1bpp:	dc.b 0, 6, $60, $66
 
 		include "_include/Oscillatory Routines.asm"
+
+; ---------------------------------------------------------------------------
+; Subroutine to change synchronised animation variables (rings)
 ; ---------------------------------------------------------------------------
 
-UpdateTimers:
-		subq.b	#1,(v_ani0_time).w
-		bpl.s	loc_3464
-		move.b	#12-1,(v_ani0_time).w
-		subq.b	#1,(v_ani0_frame).w
-		andi.b	#8-1,(v_ani0_frame).w
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-loc_3464:
+SynchroAnimate:
+
+; Used for GHZ spiked log
+Sync1:
+		subq.b	#1,(v_ani0_time).w ; has timer reached 0?
+		bpl.s	Sync2		; if not, branch
+		move.b	#12-1,(v_ani0_time).w ; reset timer
+		subq.b	#1,(v_ani0_frame).w ; next frame
+		andi.b	#8-1,(v_ani0_frame).w ; max frame is 7
+
+; Used for rings
+Sync2:
 		subq.b	#1,(v_ani1_time).w
-		bpl.s	loc_347A
+		bpl.s	Sync3
 		move.b	#8-1,(v_ani1_time).w
 		addq.b	#1,(v_ani1_frame).w
 		andi.b	#4-1,(v_ani1_frame).w
 
-loc_347A:
+; Used for nothing
+Sync3:
 		subq.b	#1,(v_ani2_time).w
-		bpl.s	loc_3498
+		bpl.s	Sync4
 		move.b	#8-1,(v_ani2_time).w
 		addq.b	#1,(v_ani2_frame).w
 		cmpi.b	#6,(v_ani2_frame).w
-		blo.s	loc_3498
+		blo.s	Sync4
 		move.b	#0,(v_ani2_frame).w
 
-loc_3498:
+; Used for bouncing rings
+Sync4:
 		tst.b	(v_ani3_time).w
-		beq.s	locret_34BA
+		beq.s	SyncEnd
 		moveq	#0,d0
 		move.b	(v_ani3_time).w,d0
 		add.w	(v_ani3_buf).w,d0
@@ -2487,35 +2497,42 @@ loc_3498:
 		move.b	d0,(v_ani3_frame).w
 		subq.b	#1,(v_ani3_time).w
 
-locret_34BA:
+SyncEnd:
 		rts
+; End of function SynchroAnimate
+
+; ---------------------------------------------------------------------------
+; End-of-act signpost pattern loading subroutine
 ; ---------------------------------------------------------------------------
 
-LoadSignpostPLC:
-		tst.w	(v_debuguse).w
-		bne.w	locret_34FA
-		cmpi.w	#id_MZ<<8+2,(v_zone).w	; are we on Marble Zone Act 3?
-		beq.s	loc_34D4	; if so, load the signpost
-		cmpi.b	#2,(v_act).w
-		beq.s	locret_34FA
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-loc_34D4:
+SignpostArtLoad:
+		tst.w	(v_debuguse).w
+		bne.w	.exit
+		cmpi.w	#id_MZ<<8+2,(v_zone).w	; are we on Marble Zone Act 3?
+		beq.s	.isMZ3	; if so, load the signpost
+		cmpi.b	#2,(v_act).w
+		beq.s	.exit
+
+.isMZ3:
 		move.w	(v_scrposx).w,d0
 		move.w	(v_limitright2).w,d1
 		subi.w	#$100,d1
 		cmp.w	d1,d0
-		blt.s	locret_34FA
+		blt.s	.exit
 		tst.b	(f_timecount).w
-		beq.s	locret_34FA
+		beq.s	.exit
 		cmp.w	(v_limitleft2).w,d1
-		beq.s	locret_34FA
+		beq.s	.exit
 		move.w	d1,(v_limitleft2).w
 		moveq	#plcid_Signpost,d0
 		bra.w	NewPLC
-; ---------------------------------------------------------------------------
 
-locret_34FA:
+.exit:
 		rts
+; End of function SignpostArtLoad
+
 ; ---------------------------------------------------------------------------
 
 GM_Special:
@@ -2927,30 +2944,44 @@ LoadLevelData:
 
 .skipPLC:
 		rts
-; ---------------------------------------------------------------------------
+; End of function LevelDataLoad
+
 		include	"leftovers/routines/Lives Window Plane.asm"
+
 ; ---------------------------------------------------------------------------
+; Level layout loading subroutine
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 LevelLayoutLoad:
 		lea	(v_lvllayout).w,a3
 	if FixBugs
 		move.w	#bytesToLcnt(v_lvllayout_end-v_lvllayout),d1
 	else
-		; Bug: This clears too much data!
+		; v_lvllayout is only $400 bytes, but this clears $800...
+		; In Sonic 2, this function was corrected to only clear the
+		; layout buffer.
 		move.w	#bytesToWcnt(v_lvllayout_end-v_lvllayout),d1
 	endif
 		moveq	#0,d0
 
-loc_48C4:
+LevLoad_ClrRam:
 		move.l	d0,(a3)+
-		dbf	d1,loc_48C4
-		lea	(v_lvllayout).w,a3
-		moveq	#0,d1
-		bsr.w	sub_48DA
-		lea	(v_lvllayoutbg).w,a3
-		moveq	#2,d1
+		dbf	d1,LevLoad_ClrRam ; clear the RAM ($A400-A7FF)
 
-sub_48DA:
+		lea	(v_lvllayout).w,a3 ; RAM address for level layout
+		moveq	#0,d1
+		bsr.w	LevelLayoutLoad2 ; load level layout into RAM
+		lea	(v_lvllayoutbg).w,a3 ; RAM address for background layout
+		moveq	#2,d1
+; End of function LevelLayoutLoad
+
+; "LevelLayoutLoad2" is run twice - for the level and the background
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+LevelLayoutLoad2:
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
 		lsr.w	#5,d0
@@ -2963,20 +2994,21 @@ sub_48DA:
 		lea	(a1,d0.w),a1
 		moveq	#0,d1
 		move.w	d1,d2
-		move.b	(a1)+,d1
-		move.b	(a1)+,d2
+		move.b	(a1)+,d1	; load level width (in tiles)
+		move.b	(a1)+,d2	; load level height (in tiles)
 
-loc_4900:
+LevLoad_NumRows:
 		move.w	d1,d0
 		movea.l	a3,a0
 
-loc_4904:
+LevLoad_Row:
 		move.b	(a1)+,(a0)+
-		dbf	d0,loc_4904
-		lea	layout_size*2(a3),a3
-		dbf	d2,loc_4900
+		dbf	d0,LevLoad_Row	; load 1 row
+		lea	layout_size*2(a3),a3	; do next row
+		dbf	d2,LevLoad_NumRows
 		rts
-; ---------------------------------------------------------------------------
+; End of function LevelLayoutLoad2
+
 		include "_include/DynamicLevelEvents.asm"
 
 		include "obj/02.asm"

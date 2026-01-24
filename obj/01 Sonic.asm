@@ -822,7 +822,7 @@ Sonic_Jump:
 		jsr	(QueueSound2).l	; play jumping sound
 		move.b	#$13,obHeight(a0)	; set Sonic's hitbox to standing size.
 		move.b	#9,obWidth(a0)
-		tst.b	(f_victory).w	; has the victory animation flag been set?
+		tst.b	(v_endcard).w	; has the end title card been loaded?
 		bne.s	.leapanim	; if so, branch
 		btst	#2,obStatus(a0)	; is Sonic already in a ball state?
 		bne.s	.rolljump	; if so, branch.
@@ -1224,13 +1224,13 @@ loc_F25C:
 ; ---------------------------------------------------------------------------
 
 loc_F26A:
-		lea	(v_objslot10).w,a1
+		lea	(v_debugnumxpos).w,a1
 		move.w	obX(a0),d0	; get Sonic's x position.
 		bsr.w	.writehex
-		lea	(v_objslot14).w,a1
+		lea	(v_debugnumypos).w,a1
 		move.w	obY(a0),d0	; get Sonic's y position.
 		bsr.w	.writehex
-		lea	(v_objslot18).w,a1
+		lea	(v_debugnuminertia).w,a1
 		move.w	obInertia(a0),d0	; get Sonic's inertia.
 		bsr.w	.writehex
 		rts

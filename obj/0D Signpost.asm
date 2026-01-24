@@ -112,12 +112,12 @@ Sign_GotThrough:	; Routine 6
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 GotThroughAct:
-		tst.b	(f_victory).w
+		tst.b	(v_endcard).w
 		bne.s	locret_C880
 		move.w	(v_limitright2).w,(v_limitleft2).w
 		clr.b	(v_invinc).w	; disable invincibility
 		clr.b	(f_timecount).w	; stop time counter
-		move.b	#id_GotThroughCard,(v_objslot18).w
+		move.b	#id_GotThroughCard,(v_endcard).w
 		moveq	#plcid_TitleCard,d0
 		jsr	(NewPLC).l	; load title card patterns
 		move.b	#1,(f_endactbonus).w

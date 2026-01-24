@@ -467,7 +467,6 @@ ArtTile_Prison_Capsule:	equ $49D
 ArtTile_Hidden_Points:	equ $4B6
 ArtTile_Giant_Ring:		equ $4EC
 ArtTile_Warp:			equ $541
-ArtTile_Mini_Sonic:		equ $551
 ArtTile_Bonuses:		equ $570
 ArtTile_Signpost:		equ $680
 
@@ -503,4 +502,6 @@ ArtTile_SS_Plane_6:		equ $700
 ArtTile_Error_Handler_Font:	equ $7C0
 
 ; Early VRAM locations
+ArtTile_Debug_Numbers:	equ $4F0	; Note: This overwrites the Moto Bug graphics.
+
 ArtTile_Early_Lives_Icon:	equ	$579

@@ -1,7 +1,7 @@
 ; sub_2ED0:
 Debug_Coord_Sprites:
 		lea	(Debug_Coords_XY_Index).l,a0
-		lea	(v_objslot10).w,a1
+		lea	(v_debugnumbers1).w,a1
 		move.w	#bytesToLcnt(Debug_Coords_XY_Index_End-Debug_Coords_XY_Index),d1
 
 .loop:
@@ -31,7 +31,7 @@ Debug_Coords_XY_Index_End:
 ; sub_2F24:
 Debug_Coord_B_Sprites:
 		lea	(Debug_Coords_B_XY_Index).l,a0
-		lea	(v_objslotA).w,a1
+		lea	(v_debugnumbers2).w,a1
 		move.w	#bytesToLcnt(Debug_Coords_B_XY_Index_End-Debug_Coords_B_XY_Index),d1
 
 .loop:

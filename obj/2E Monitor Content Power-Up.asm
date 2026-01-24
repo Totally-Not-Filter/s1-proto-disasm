@@ -79,7 +79,7 @@ Pow_ChkShield:
 		bne.s	Pow_ChkInvinc
 
 		move.b	#1,(v_shield).w	; give Sonic a shield
-		move.b	#id_ShieldItem,(v_objslot6).w ; load shield object ($38)
+		move.b	#id_ShieldItem,(v_shieldobj).w ; load shield object ($38)
 		move.w	#sfx_Shield,d0
 		jmp	(QueueSound1).l	; play shield sound
 ; ===========================================================================
@@ -90,14 +90,14 @@ Pow_ChkInvinc:
 
 		move.b	#1,(v_invinc).w	; make Sonic invincible
 		move.w	#1200,(v_player+invtime).w ; time limit for the power-up
-		move.b	#id_ShieldItem,(v_objslot8).w ; load stars object ($3801)
-		move.b	#1,(v_objslot8+obAnim).w
-		move.b	#id_ShieldItem,(v_objslot9).w ; load stars object ($3802)
-		move.b	#2,(v_objslot9+obAnim).w
-		move.b	#id_ShieldItem,(v_objslotA).w ; load stars object ($3803)
-		move.b	#3,(v_objslotA+obAnim).w
-		move.b	#id_ShieldItem,(v_objslotB).w ; load stars object ($3804)
-		move.b	#4,(v_objslotB+obAnim).w
+		move.b	#id_ShieldItem,(v_starsobj1).w ; load stars object ($3801)
+		move.b	#1,(v_starsobj1+obAnim).w
+		move.b	#id_ShieldItem,(v_starsobj2).w ; load stars object ($3802)
+		move.b	#2,(v_starsobj2+obAnim).w
+		move.b	#id_ShieldItem,(v_starsobj3).w ; load stars object ($3803)
+		move.b	#3,(v_starsobj3+obAnim).w
+		move.b	#id_ShieldItem,(v_starsobj4).w ; load stars object ($3804)
+		move.b	#4,(v_starsobj4+obAnim).w
 		move.w	#bgm_Invincible,d0
 		jmp	(QueueSound1).l ; play invincibility music
 ; ===========================================================================

@@ -52,7 +52,7 @@ v_objslot14:	ds.b obj.size
 v_objslot15:	ds.b obj.size
 v_objslot16:	ds.b obj.size
 v_objslot17:	ds.b obj.size
-v_objslot18:	ds.b obj.size	; flag for victory animation (1 byte)
+v_objslot18:	ds.b obj.size
 v_objslot19:	ds.b obj.size
 v_objslot1A:	ds.b obj.size
 v_objslot1B:	ds.b obj.size
@@ -66,15 +66,44 @@ v_titlesonic	= v_objspace+object_size*1	; object variable space for Sonic in the
 v_pressstart	= v_objspace+object_size*2	; object variable space for the "PRESS START BUTTON" text ($40 bytes)
 v_ttlsonichide	= v_objspace+object_size*3	; object variable space for hiding part of Sonic ($40 bytes)
 
-v_player:	= v_objslot0
-v_hud:	= v_objslot1
+; Level objects
+v_player	= v_objspace+object_size*0	; object variable space for Sonic ($40 bytes)
+v_hud		= v_objspace+object_size*1	; object variable space for the HUD ($40 bytes)
+
+v_titlecard	= v_objspace+object_size*2	; object variable space for the title card ($100 bytes)
+v_ttlcardname	= v_titlecard+object_size*0		; object variable space for the title card zone name text ($40 bytes)
+v_ttlcardzone	= v_titlecard+object_size*1	; object variable space for the title card "ZONE" text ($40 bytes)
+v_ttlcardact	= v_titlecard+object_size*2	; object variable space for the title card act text ($40 bytes)
+v_ttlcardoval	= v_titlecard+object_size*3	; object variable space for the title card oval ($40 bytes)
+
+v_gameovertext1	= v_objspace+object_size*2	; object variable space for the "GAME" in "GAME OVER" text ($40 bytes)
+v_gameovertext2	= v_objspace+object_size*3	; object variable space for the "OVER" in "GAME OVER" text ($40 bytes)
+
+v_shieldobj	= v_objspace+object_size*6	; object variable space for the shield ($40 bytes)
+v_starsobj1	= v_objspace+object_size*8	; object variable space for the invincibility stars #1 ($40 bytes)
+v_starsobj2	= v_objspace+object_size*9	; object variable space for the invincibility stars #2 ($40 bytes)
+v_starsobj3	= v_objspace+object_size*10	; object variable space for the invincibility stars #3 ($40 bytes)
+v_starsobj4	= v_objspace+object_size*11	; object variable space for the invincibility stars #4 ($40 bytes)
+
+v_endcard	= v_objspace+object_size*24	; object variable space for the level results card ($1C0 bytes)
+v_endcardsonic	= v_endcard+object_size*0	; object variable space for the level results card "SONIC HAS" text ($40 bytes)
+v_endcardpassed	= v_endcard+object_size*1	; object variable space for the level results card "PASSED" text ($40 bytes)
+v_endcardact	= v_endcard+object_size*2	; object variable space for the level results card act text ($40 bytes)
+v_endcardscore	= v_endcard+object_size*3	; object variable space for the level results card score tally ($40 bytes)
+v_endcardtime	= v_endcard+object_size*4	; object variable space for the level results card time bonus tally ($40 bytes)
+v_endcardring	= v_endcard+object_size*5	; object variable space for the level results card ring bonus tally ($40 bytes)
+v_endcardoval	= v_endcard+object_size*6	; object variable space for the level results card oval ($40 bytes)
+
+v_debugnumbers1	=	v_objspace+object_size*16	; object variable space for the unused debug numbers ($300 bytes)
+v_debugnumxpos	=	v_debugnumbers1+object_size*0	; object variable space for the x position of the unused debug numbers ($100 bytes)
+v_debugnumypos	=	v_debugnumbers1+object_size*4	; object variable space for the y position of the unused debug numbers ($100 bytes)
+v_debugnuminertia	=	v_debugnumbers1+object_size*8	; object variable space for the inertia of the unused debug numbers ($100 bytes)
+v_debugnumbers2	=	v_objspace+object_size*10	; object variable space for the unused debug numbers ($D00 bytes)
 
 v_lvlobjspace:
-	rept 96
-			ds.b obj.size
-	endm
+			ds.b obj.size*96
 v_lvlobjend
-v_objspace_end:
+v_objspace_end
 ; $FFFFF000
 v_snddriver_ram:	SMPS_RAM	; start of RAM for the sound driver data ($600 bytes)
 v_snddriver_ram_end
@@ -317,9 +346,5 @@ v_ssscroll_buffer	= v_ngfx_buffer+$100
 v_regbuffer:	ds.b obj.size	; stores registers d0-a7 during an error event
 v_spbuffer:		ds.l 1		; stores most recent sp address
 v_errortype:	ds.b 1		; error type
-	dephase
-
-	phase v_objslot18
-f_victory:		ds.b 1		; flag for victory animation (1 byte)
 	dephase
 	!org 0
