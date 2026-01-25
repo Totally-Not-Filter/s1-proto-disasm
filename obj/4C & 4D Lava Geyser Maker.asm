@@ -1,134 +1,173 @@
 ; ---------------------------------------------------------------------------
+; Object 4C - lava geyser / lavafall producer (MZ)
+; ---------------------------------------------------------------------------
 
-ObjLavafallMaker:
+GeyserMaker:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C926(pc,d0.w),d1
-		jsr	off_C926(pc,d1.w)
-		bra.w	loc_CB28
-; ---------------------------------------------------------------------------
+		move.w	GMake_Index(pc,d0.w),d1
+	if FixBugs
+		; Deletion has been changed to eliminate potential
+		; double-delete and display-and-delete bugs.
+		jmp	GMake_Index(pc,d1.w)
+	else
+		jsr	GMake_Index(pc,d1.w)
+		bra.w	Geyser_ChkDel
+	endif
+; ===========================================================================
+GMake_Index:	dc.w GMake_Main-GMake_Index
+		dc.w GMake_Wait-GMake_Index
+		dc.w GMake_ChkType-GMake_Index
+		dc.w GMake_MakeLava-GMake_Index
+		dc.w GMake_Display-GMake_Index
+		dc.w GMake_Delete-GMake_Index
 
-off_C926:	dc.w loc_C932-off_C926
-		dc.w loc_C95C-off_C926
-		dc.w loc_C9CE-off_C926
-		dc.w loc_C982-off_C926
-		dc.w loc_C9DA-off_C926
-		dc.w loc_C9EA-off_C926
-; ---------------------------------------------------------------------------
+gmake_time = objoff_34		; time delay (2 bytes)
+gmake_timer = objoff_32		; current time remaining (2 bytes)
+gmake_parent = objoff_3C		; address of parent object
+; ===========================================================================
 
-loc_C932:
+GMake_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Geyser,obMap(a0)
 		move.w	#make_art_tile(ArtTile_MZ_Lava,3,1),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#$38,obActWid(a0)
-		move.w	#120,objoff_34(a0)
+		move.w	#120,gmake_time(a0) ; set time delay to 2 seconds
 
-loc_C95C:
-		subq.w	#1,objoff_32(a0)
-		bpl.s	locret_C980
-		move.w	objoff_34(a0),objoff_32(a0)
+GMake_Wait:	; Routine 2
+		subq.w	#1,gmake_timer(a0) ; decrement timer
+		bpl.s	.cancel		; if time remains, branch
+
+		move.w	gmake_time(a0),gmake_timer(a0) ; reset timer
 		move.w	(v_player+obY).w,d0
 		move.w	obY(a0),d1
 		cmp.w	d1,d0
-		bcc.s	locret_C980
+		bhs.s	.cancel
 		subi.w	#$170,d1
 		cmp.w	d1,d0
-		bcs.s	locret_C980
-		addq.b	#2,obRoutine(a0)
+		blo.s	.cancel
+		addq.b	#2,obRoutine(a0) ; if Sonic is within range, goto GMake_ChkType
 
-locret_C980:
+.cancel:
+	if FixBugs
+		; Deletion has been changed to eliminate potential
+		; double-delete and display-and-delete bugs.
+		out_of_range.w	DeleteObject
+	endif
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C982:
+GMake_MakeLava:	; Routine 6
 		addq.b	#2,obRoutine(a0)
 		bsr.w	FindNextFreeObj
-		bne.s	loc_C9A8
-		_move.b	#id_LavaGeyser,obID(a1)
+		bne.s	.fail
+		_move.b	#id_LavaGeyser,obID(a1) ; load lavafall object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obSubtype(a0),obSubtype(a1)
-		move.l	a0,objoff_3C(a1)
+		move.l	a0,gmake_parent(a1)
 
-loc_C9A8:
+.fail:
 		move.b	#1,obAnim(a0)
-		tst.b	obSubtype(a0)
-		beq.s	loc_C9BC
+		tst.b	obSubtype(a0)	; is object type 0 (geyser) ?
+		beq.s	.isgeyser	; if yes, branch
 		move.b	#4,obAnim(a0)
-		bra.s	loc_C9DA
-; ---------------------------------------------------------------------------
+		bra.s	GMake_Display
+; ===========================================================================
 
-loc_C9BC:
-		movea.l	objoff_3C(a0),a1
+.isgeyser:
+		movea.l	gmake_parent(a0),a1 ; get parent object address
 		bset	#1,obStatus(a1)
 		move.w	#-$580,obVelY(a1)
-		bra.s	loc_C9DA
-; ---------------------------------------------------------------------------
+		bra.s	GMake_Display
+; ===========================================================================
 
-loc_C9CE:
-		tst.b	obSubtype(a0)
-		beq.s	loc_C9DA
+GMake_ChkType:	; Routine 4
+		tst.b	obSubtype(a0)	; is object type 00 (geyser) ?
+		beq.s	GMake_Display	; if yes, branch
 		addq.b	#2,obRoutine(a0)
+	if FixBugs
+		; Deletion has been changed to eliminate potential
+		; double-delete and display-and-delete bugs.
+		out_of_range.w	DeleteObject
+	endif
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C9DA:
+GMake_Display:	; Routine 8
+	if FixBugs
+		; Deletion has been changed to eliminate potential
+		; double-delete and display-and-delete bugs.
+		out_of_range.w	DeleteObject
+	endif
 		lea	(Ani_Geyser).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C9EA:
+GMake_Delete:	; Routine $A
 		move.b	#0,obAnim(a0)
 		move.b	#2,obRoutine(a0)
 		tst.b	obSubtype(a0)
 		beq.w	DeleteObject
+	if FixBugs
+		; Deletion has been changed to eliminate potential
+		; double-delete and display-and-delete bugs.
+		out_of_range.w	DeleteObject
+	endif
 		rts
+
+; ---------------------------------------------------------------------------
+; Object 4D - lava geyser / lavafall (MZ)
 ; ---------------------------------------------------------------------------
 
-ObjLavafall:
+LavaGeyser:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_CA12(pc,d0.w),d1
-		jsr	off_CA12(pc,d1.w)
+		move.w	Geyser_Index(pc,d0.w),d1
+	if FixBugs
+		; The call to DisplaySprite has been moved to prevent a
+		; display-and-delete bug.
+		jmp	Geyser_Index(pc,d1.w)
+	else
+		jsr	Geyser_Index(pc,d1.w)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+	endif
+; ===========================================================================
+Geyser_Index:	dc.w Geyser_Main-Geyser_Index
+		dc.w Geyser_Action-Geyser_Index
+		dc.w loc_CB8C-Geyser_Index
+		dc.w Geyser_Delete-Geyser_Index
 
-off_CA12:	dc.w loc_CA1E-off_CA12
-		dc.w loc_CB0A-off_CA12
-		dc.w sub_CB8C-off_CA12
-		dc.w loc_CBEA-off_CA12
+Geyser_Speeds:	dc.w $FB00, 0
+; ===========================================================================
 
-word_CA1A:	dc.w -$500
-		dc.w 0
-; ---------------------------------------------------------------------------
-
-loc_CA1E:
+Geyser_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	obY(a0),objoff_30(a0)
 		tst.b	obSubtype(a0)
-		beq.s	loc_CA34
+		beq.s	.isgeyser
 		subi.w	#$250,obY(a0)
 
-loc_CA34:
+.isgeyser:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
-		move.w	word_CA1A(pc,d0.w),obVelY(a0)
+		move.w	Geyser_Speeds(pc,d0.w),obVelY(a0)
 		movea.l	a0,a1
 		moveq	#1,d1
-		bsr.s	sub_CA50
-		bra.s	loc_CAA0
-; ---------------------------------------------------------------------------
+		bsr.s	.makelava
+		bra.s	.activate
+; ===========================================================================
 
-sub_CA4A:
+.loop:
 		bsr.w	FindNextFreeObj
-		bne.s	loc_CA9A
+		bne.s	.fail
 
-sub_CA50:
+.makelava:
 		_move.b	#id_LavaGeyser,obID(a1)
 		move.l	#Map_Geyser,obMap(a1)
 		move.w	#make_art_tile(ArtTile_MZ_Lava,3,0),obGfx(a1)
@@ -140,15 +179,15 @@ sub_CA50:
 		move.b	#1,obPriority(a1)
 		move.b	#5,obAnim(a1)
 		tst.b	obSubtype(a0)
-		beq.s	loc_CA9A
+		beq.s	.fail
 		move.b	#2,obAnim(a1)
 
-loc_CA9A:
-		dbf	d1,sub_CA4A
+.fail:
+		dbf	d1,.loop
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_CAA0:
+.activate:
 		addi.w	#$60,obY(a1)
 		move.w	objoff_30(a0),objoff_30(a1)
 		addi.w	#$60,objoff_30(a1)
@@ -158,9 +197,9 @@ loc_CAA0:
 		addq.b	#4,obRoutine(a1)
 		move.l	a0,objoff_3C(a1)
 		tst.b	obSubtype(a0)
-		beq.s	loc_CB00
+		beq.s	.sound
 		moveq	#0,d1
-		bsr.w	sub_CA4A
+		bsr.w	.loop
 		addq.b	#2,obRoutine(a1)
 		bset	#4,obGfx(a1)
 		addi.w	#$100,obY(a1)
@@ -169,59 +208,63 @@ loc_CAA0:
 		move.l	objoff_3C(a0),objoff_3C(a1)
 		move.b	#0,obSubtype(a0)
 
-loc_CB00:
+.sound:
 		move.w	#sfx_Burning,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play flame sound
 
-loc_CB0A:
+Geyser_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
-		move.w	off_CB48(pc,d0.w),d1
-		jsr	off_CB48(pc,d1.w)
+		move.w	Geyser_Types(pc,d0.w),d1
+		jsr	Geyser_Types(pc,d1.w)
 		bsr.w	SpeedToPos
 		lea	(Ani_Geyser).l,a1
 		bsr.w	AnimateSprite
 
-loc_CB28:
+Geyser_ChkDel:
 		out_of_range.w	DeleteObject
+	if FixBugs
+		; Moved to prevent a delete-and-display bug.
+		bra.w	DisplaySprite
+	else
 		rts
-; ---------------------------------------------------------------------------
+	endif
+; ===========================================================================
+Geyser_Types:	dc.w Geyser_Type00-Geyser_Types
+		dc.w Geyser_Type01-Geyser_Types
+; ===========================================================================
 
-off_CB48:	dc.w loc_CB4C-off_CB48
-		dc.w loc_CB6C-off_CB48
-; ---------------------------------------------------------------------------
-
-loc_CB4C:
-		addi.w	#$18,obVelY(a0)
+Geyser_Type00:
+		addi.w	#$18,obVelY(a0)	; increase object's falling speed
 		move.w	objoff_30(a0),d0
 		cmp.w	obY(a0),d0
-		bcc.s	locret_CB6A
+		bhs.s	locret_CB6A
 		addq.b	#4,obRoutine(a0)
 		movea.l	objoff_3C(a0),a1
 		move.b	#3,obAnim(a1)
 
 locret_CB6A:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_CB6C:
-		addi.w	#$18,obVelY(a0)
+Geyser_Type01:
+		addi.w	#$18,obVelY(a0)	; increase object's falling speed
 		move.w	objoff_30(a0),d0
 		cmp.w	obY(a0),d0
-		bcc.s	locret_CB8A
+		bhs.s	locret_CB8A
 		addq.b	#4,obRoutine(a0)
 		movea.l	objoff_3C(a0),a1
 		move.b	#1,obAnim(a1)
 
 locret_CB8A:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_CB8C:
+loc_CB8C:	; Routine 4
 		movea.l	objoff_3C(a0),a1
 		cmpi.b	#6,obRoutine(a1)
-		beq.w	loc_CBEA
+		beq.w	Geyser_Delete
 		move.w	obY(a1),d0
 		addi.w	#$60,d0
 		move.w	d0,obY(a0)
@@ -243,15 +286,15 @@ loc_CBBE:
 		move.b	#7,obTimeFrame(a0)
 		addq.b	#1,obAniFrame(a0)
 		cmpi.b	#2,obAniFrame(a0)
-		bcs.s	loc_CBDC
+		blo.s	loc_CBDC
 		move.b	#0,obAniFrame(a0)
 
 loc_CBDC:
 		move.b	obAniFrame(a0),d0
 		add.b	d1,d0
 		move.b	d0,obFrame(a0)
-		bra.w	loc_CB28
-; ---------------------------------------------------------------------------
+		bra.w	Geyser_ChkDel
+; ===========================================================================
 
-loc_CBEA:
+Geyser_Delete:	; Routine 6
 		bra.w	DeleteObject

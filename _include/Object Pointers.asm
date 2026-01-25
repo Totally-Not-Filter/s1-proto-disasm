@@ -76,8 +76,8 @@ ptr_BossBall:	dc.l BossBall	; 48
 ptr_WaterSound:	dc.l WaterSound	; 49
 ptr_VanishSonic:	dc.l VanishSonic	; 4A
 ptr_GiantRing:	dc.l GiantRing	; 4B
-ptr_GeyserMaker:	dc.l ObjLavafallMaker	; 4C
-ptr_LavaGeyser:	dc.l ObjLavafall	; 4D
+ptr_GeyserMaker:	dc.l GeyserMaker	; 4C
+ptr_LavaGeyser:	dc.l LavaGeyser	; 4D
 ptr_LavaWall:	dc.l ObjLavaChase	; 4E
 ptr_Splats:	dc.l Obj4F	; 4F
 ptr_Yadrin:	dc.l Yadrin	; 50

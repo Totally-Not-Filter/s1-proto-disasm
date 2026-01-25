@@ -18,9 +18,9 @@ Got_Index:	dc.w Got_ChkPLC-Got_Index
 got_mainX = objoff_30		; position for card to display on
 ; ===========================================================================
 
-Got_ChkPLC:
-		tst.l	(v_plc_buffer).w
-		beq.s	Got_Main
+Got_ChkPLC:	; Routine 0
+		tst.l	(v_plc_buffer).w ; are the pattern load cues empty?
+		beq.s	Got_Main	; if yes, branch
 		rts
 ; ===========================================================================
 
@@ -31,14 +31,14 @@ Got_Main:
 
 Got_Loop:
 		_move.b	#id_GotThroughCard,obID(a1)
-		move.w	(a2)+,obX(a1)
-		move.w	(a2)+,got_mainX(a1)
-		move.w	(a2)+,obScreenY(a1)
+		move.w	(a2)+,obX(a1)	; load start x-position
+		move.w	(a2)+,got_mainX(a1) ; load main x-position
+		move.w	(a2)+,obScreenY(a1) ; load y-position
 		move.b	(a2)+,obRoutine(a1)
 		move.b	(a2)+,d0
 		cmpi.b	#6,d0
 		bne.s	loc_A72E
-		add.b	(v_act).w,d0
+		add.b	(v_act).w,d0	; add act number to frame number
 
 loc_A72E:
 		move.b	d0,obFrame(a1)
@@ -46,24 +46,24 @@ loc_A72E:
 		move.w	#make_art_tile(ArtTile_Title_Card,0,1),obGfx(a1)
 		move.b	#0,obRender(a1)
 		lea	object_size(a1),a1
-		dbf	d1,Got_Loop
+		dbf	d1,Got_Loop	; repeat 6 times
 
-Got_Move:
-		moveq	#$10,d1
+Got_Move:	; Routine 2
+		moveq	#$10,d1		; set horizontal speed
 		move.w	got_mainX(a0),d0
-		cmp.w	obX(a0),d0
-		beq.s	loc_A774
+		cmp.w	obX(a0),d0	; has item reached its target position?
+		beq.s	loc_A774	; if yes, branch
 		bge.s	Got_ChgPos
 		neg.w	d1
 
 Got_ChgPos:
-		add.w	d1,obX(a0)
+		add.w	d1,obX(a0)	; change item's position
 
 loc_A762:
 		move.w	obX(a0),d0
 		bmi.s	locret_A772
-		cmpi.w	#$200,d0
-		bcc.s	locret_A772
+		cmpi.w	#$200,d0	; has item moved beyond $200 on x-axis?
+		bhs.s	locret_A772	; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -75,10 +75,10 @@ loc_A774:
 		cmpi.b	#4,obFrame(a0)
 		bne.s	loc_A762
 		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0)
+		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
 
-Got_Wait:
-		subq.w	#1,obTimeFrame(a0)
+Got_Wait:	; Routine 4, 8, $C
+		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
 		bne.s	Got_Display
 		addq.b	#2,obRoutine(a0)
 
@@ -86,28 +86,28 @@ Got_Display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Got_TimeBonus:
+Got_TimeBonus:	; Routine 6
 		bsr.w	DisplaySprite
-		move.b	#1,(f_endactbonus).w
+		move.b	#1,(f_endactbonus).w ; set time/ring bonus update flag
 		moveq	#0,d0
-		tst.w	(v_timebonus).w
-		beq.s	Got_RingBonus
-		addi.w	#10,d0
-		subi.w	#10,(v_timebonus).w
+		tst.w	(v_timebonus).w	; is time bonus = zero?
+		beq.s	Got_RingBonus	; if yes, branch
+		addi.w	#10,d0		; add 10 to score
+		subi.w	#10,(v_timebonus).w ; subtract 10 from time bonus
 
 Got_RingBonus:
-		tst.w	(v_ringbonus).w
-		beq.s	Got_ChkBonus
-		addi.w	#10,d0
-		subi.w	#10,(v_ringbonus).w
+		tst.w	(v_ringbonus).w	; is ring bonus = zero?
+		beq.s	Got_ChkBonus	; if yes, branch
+		addi.w	#10,d0		; add 10 to score
+		subi.w	#10,(v_ringbonus).w ; subtract 10 from ring bonus
 
 Got_ChkBonus:
-		tst.w	d0
-		bne.s	Got_AddBonus
+		tst.w	d0		; is there any bonus?
+		bne.s	Got_AddBonus	; if yes, branch
 		move.w	#sfx_Cash,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play "ker-ching" sound
 		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0)
+		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
 
 locret_A7D8:
 		rts
@@ -119,10 +119,10 @@ Got_AddBonus:
 		andi.b	#3,d0
 		bne.s	locret_A7D8
 		move.w	#sfx_Switch,d0
-		jmp	(QueueSound2).l
+		jmp	(QueueSound2).l	; play "blip" sound
 ; ===========================================================================
 
-Got_NextLevel:
+Got_NextLevel:	; Routine $A
 		move.b	(v_zone).w,d0
 		andi.w	#7,d0
 		lsl.w	#3,d0
@@ -130,8 +130,8 @@ Got_NextLevel:
 		andi.w	#3,d1
 		add.w	d1,d1
 		add.w	d1,d0
-		move.w	LevelOrder(pc,d0.w),d0
-		move.w	d0,(v_zone).w
+		move.w	LevelOrder(pc,d0.w),d0 ; load level from level order array
+		move.w	d0,(v_zone).w	; set level number
 		tst.w	d0
 		bne.s	loc_A81C
 		move.b	#id_Sega,(v_gamemode).w
@@ -144,33 +144,46 @@ loc_A81C:
 Got_Display2:
 		bra.w	DisplaySprite
 ; ===========================================================================
+; ---------------------------------------------------------------------------
 ; Level order array
-; ===========================================================================
+; ---------------------------------------------------------------------------
 LevelOrder:
-		dc.b id_GHZ,1	; GHZ1
-		dc.b id_GHZ,2	; GHZ2
-		dc.b id_MZ,0	; GHZ3
+		; Green Hill Zone
+		dc.b id_GHZ,1	; Act 1
+		dc.b id_GHZ,2	; Act 2
+		dc.b id_MZ,0	; Act 3
 		dc.b 0,0
-		dc.b id_LZ,1	; LZ1
-		dc.b id_LZ,2	; LZ2
-		dc.b id_MZ,0	; LZ3
+
+		; Labyrinth Zone
+		dc.b id_LZ,1	; Act 1
+		dc.b id_LZ,2	; Act 2
+		dc.b id_MZ,0	; Act 3
 		dc.b 0,0
-		dc.b id_MZ,1	; MZ1
-		dc.b id_MZ,2	; MZ2
-		dc.b id_SZ,0	; MZ3
+
+		; Marble Zone Zone
+		dc.b id_MZ,1	; Act 1
+		dc.b id_MZ,2	; Act 2
+		dc.b id_SZ,0	; Act 3
+		dc.b 0,0
+
+		; Star Light Zone
+		dc.b 0,0		; Act 1
+		dc.b id_SLZ,2	; Act 2
+		dc.b id_MZ,0	; Act 3
+		dc.b 0,0
+
+		; Sparkling Zone
+		dc.b id_SLZ,0	; Act 1
+		dc.b id_SZ,2	; Act 2
+		dc.b id_CWZ,0	; Act 3
+		dc.b 0,0
+
+		; Clock Work Zone
+		dc.b id_CWZ,1	; Act 1
+		dc.b id_CWZ,2	; Act 2
 		dc.b 0,0
 		dc.b 0,0
-		dc.b id_SLZ,2	; SLZ2
-		dc.b id_MZ,0	; SLZ3
-		dc.b 0,0
-		dc.b id_SLZ,0	; SZ1
-		dc.b id_SZ,2	; SZ2
-		dc.b id_CWZ,0	; SZ3
-		dc.b 0,0
-		dc.b id_CWZ,1	; CWZ1
-		dc.b id_CWZ,2	; CWZ2
-		dc.b 0,0
-		dc.b 0,0
+		even
 ; ===========================================================================
 		;    x-start, x-main, y-main,
 		;    routine, frame number
