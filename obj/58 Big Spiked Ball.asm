@@ -1,100 +1,104 @@
 ; ---------------------------------------------------------------------------
+; Object 58 - giant spiked balls (SZ)
+; ---------------------------------------------------------------------------
 
-ObjGiantSpikedBalls:
+BigSpikeBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	ObjGiantBalls_Index(pc,d0.w),d1
-		jmp	ObjGiantBalls_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	BBall_Index(pc,d0.w),d1
+		jmp	BBall_Index(pc,d1.w)
+; ===========================================================================
+BBall_Index:	dc.w BBall_Main-BBall_Index
+		dc.w BBall_Move-BBall_Index
 
-ObjGiantBalls_Index:dc.w ObjGiantBalls_Init-ObjGiantBalls_Index
-		dc.w ObjGiantBalls_Move-ObjGiantBalls_Index
-; ---------------------------------------------------------------------------
+bball_origX = objoff_3A		; original x-axis position
+bball_origY = objoff_38		; original y-axis position
+bball_radius = objoff_3C	; radius of circle
+bball_speed = objoff_3E		; speed
+; ===========================================================================
 
-ObjGiantBalls_Init:
+BBall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_BBall,obMap(a0)
 		move.w	#make_art_tile(ArtTile_SZ_Big_Spikeball,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)
-		move.w	obX(a0),objoff_3A(a0)
-		move.w	obY(a0),objoff_38(a0)
+		move.w	obX(a0),bball_origX(a0)
+		move.w	obY(a0),bball_origY(a0)
 		move.b	#$86,obColType(a0)
-		move.b	obSubtype(a0),d1
-		andi.b	#$F0,d1
+		move.b	obSubtype(a0),d1 ; get object type
+		andi.b	#$F0,d1		; read only the 1st digit
 		ext.w	d1
-		asl.w	#3,d1
-		move.w	d1,objoff_3E(a0)
+		asl.w	#3,d1		; multiply by 8
+		move.w	d1,bball_speed(a0) ; set object speed
 		move.b	obStatus(a0),d0
 		ror.b	#2,d0
 		andi.b	#$C0,d0
 		move.b	d0,obAngle(a0)
-		move.b	#$50,objoff_3C(a0)
+		move.b	#$50,bball_radius(a0) ; set radius of circle motion
 
-ObjGiantBalls_Move:
+BBall_Move:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
-		andi.w	#7,d0
+		move.b	obSubtype(a0),d0 ; get object type
+		andi.w	#7,d0		; read only the 2nd digit
 		add.w	d0,d0
-		move.w	ObjGiantBalls_TypeIndex(pc,d0.w),d1
-		jsr	ObjGiantBalls_TypeIndex(pc,d1.w)
-		out_of_range.w	DeleteObject,objoff_3A(a0)
+		move.w	.index(pc,d0.w),d1
+		jsr	.index(pc,d1.w)
+		out_of_range.w	DeleteObject,bball_origX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+.index:	dc.w .type00-.index
+		dc.w .type01-.index
+		dc.w .type02-.index
+		dc.w .type03-.index
+; ===========================================================================
 
-ObjGiantBalls_TypeIndex:
-		dc.w ObjGiantBalls_Type00-ObjGiantBalls_TypeIndex
-		dc.w ObjGiantBalls_Type01-ObjGiantBalls_TypeIndex
-		dc.w ObjGiantBalls_Type02-ObjGiantBalls_TypeIndex
-		dc.w ObjGiantBalls_Type03-ObjGiantBalls_TypeIndex
-; ---------------------------------------------------------------------------
-
-ObjGiantBalls_Type00:
+.type00:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjGiantBalls_Type01:
+.type01:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
 		btst	#0,obStatus(a0)
-		beq.s	loc_DED6
+		beq.s	.noflip1
 		neg.w	d0
 		add.w	d1,d0
 
-loc_DED6:
-		move.w	objoff_3A(a0),d1
+.noflip1:
+		move.w	bball_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,obX(a0)	; move object horizontally
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjGiantBalls_Type02:
+.type02:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
 		btst	#0,obStatus(a0)
-		beq.s	loc_DEFA
+		beq.s	.noflip2
 		neg.w	d0
 		addi.w	#$80,d0
 
-loc_DEFA:
-		move.w	objoff_38(a0),d1
+.noflip2:
+		move.w	bball_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,obY(a0)	; move object vertically
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjGiantBalls_Type03:
-		move.w	objoff_3E(a0),d0
+.type03:
+		move.w	bball_speed(a0),d0
 		add.w	d0,obAngle(a0)
 		move.b	obAngle(a0),d0
 		jsr	(CalcSine).l
-		move.w	objoff_38(a0),d2
-		move.w	objoff_3A(a0),d3
+		move.w	bball_origY(a0),d2
+		move.w	bball_origX(a0),d3
 		moveq	#0,d4
-		move.b	objoff_3C(a0),d4
+		move.b	bball_radius(a0),d4
 		move.l	d4,d5
 		muls.w	d0,d4
 		asr.l	#8,d4
@@ -102,6 +106,6 @@ ObjGiantBalls_Type03:
 		asr.l	#8,d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,obY(a0)
+		move.w	d4,obY(a0)	; move object circularly
 		move.w	d5,obX(a0)
 		rts

@@ -1,32 +1,35 @@
 ; ---------------------------------------------------------------------------
+; Object 4E - advancing wall of lava (MZ)
+; ---------------------------------------------------------------------------
 
-ObjLavaChase:
+LavaWall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_CBFC(pc,d0.w),d1
-		jmp	off_CBFC(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	LWall_Index(pc,d0.w),d1
+		jmp	LWall_Index(pc,d1.w)
+; ===========================================================================
+LWall_Index:	dc.w LWall_Main-LWall_Index
+		dc.w LWall_Action-LWall_Index
+		dc.w LWall_Solid-LWall_Index
+		dc.w LWall_Move-LWall_Index
+		dc.w LWall_Delete-LWall_Index
 
-off_CBFC:	dc.w loc_CC06-off_CBFC
-		dc.w loc_CC66-off_CBFC
-		dc.w loc_CCA2-off_CBFC
-		dc.w loc_CD00-off_CBFC
-		dc.w loc_CD1C-off_CBFC
-; ---------------------------------------------------------------------------
+lwall_flag = objoff_36		; flag to start wall moving
+; ===========================================================================
 
-loc_CC06:
+LWall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		movea.l	a0,a1
 		moveq	#1,d1
-		bra.s	loc_CC16
-; ---------------------------------------------------------------------------
+		bra.s	.make
+; ===========================================================================
 
-loc_CC10:
+.loop:
 		bsr.w	FindNextFreeObj
-		bne.s	loc_CC58
+		bne.s	.fail
 
-loc_CC16:
-		_move.b	#id_LavaWall,obID(a1)
+.make:
+		_move.b	#id_LavaWall,obID(a1)	; load object
 		move.l	#Map_LWall,obMap(a1)
 		move.w	#make_art_tile(ArtTile_MZ_Lava,3,0),obGfx(a1)
 		move.b	#4,obRender(a1)
@@ -38,83 +41,84 @@ loc_CC16:
 		move.b	#$94,obColType(a1)
 		move.l	a0,objoff_3C(a1)
 
-loc_CC58:
-		dbf	d1,loc_CC10
+.fail:
+		dbf	d1,.loop	; repeat sequence once
+
 		addq.b	#6,obRoutine(a1)
 		move.b	#4,obFrame(a1)
 
-loc_CC66:
+LWall_Action:	; Routine 2
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
-		bcc.s	loc_CC72
+		bcc.s	.rangechk
 		neg.w	d0
 
-loc_CC72:
-		cmpi.w	#$E0,d0
-		bcc.s	loc_CC92
+.rangechk:
+		cmpi.w	#$E0,d0		; is Sonic within $E0 pixels (x-axis)?
+		bhs.s	.movewall	; if not, branch
 		move.w	(v_player+obY).w,d0
 		sub.w	obY(a0),d0
-		bcc.s	loc_CC84
+		bcc.s	.rangechk2
 		neg.w	d0
 
-loc_CC84:
-		cmpi.w	#$60,d0
-		bcc.s	loc_CC92
-		move.b	#1,objoff_36(a0)
-		bra.s	loc_CCA2
-; ---------------------------------------------------------------------------
+.rangechk2:
+		cmpi.w	#$60,d0		; is Sonic within $60 pixels (y-axis)?
+		bhs.s	.movewall	; if not, branch
+		move.b	#1,lwall_flag(a0) ; set object to move
+		bra.s	LWall_Solid
+; ===========================================================================
 
-loc_CC92:
-		tst.b	objoff_36(a0)
-		beq.s	loc_CCA2
-		move.w	#$100,obVelX(a0)
+.movewall:
+		tst.b	lwall_flag(a0)	; is object set to move?
+		beq.s	LWall_Solid	; if not, branch
+		move.w	#$100,obVelX(a0) ; set object speed
 		addq.b	#2,obRoutine(a0)
 
-loc_CCA2:
-		cmpi.w	#$6A0,obX(a0)
-		bne.s	loc_CCB2
-		clr.w	obVelX(a0)
-		clr.b	objoff_36(a0)
+LWall_Solid:	; Routine 4
+		cmpi.w	#$6A0,obX(a0)	; has object reached $6A0 on the x-axis?
+		bne.s	.animate	; if not, branch
+		clr.w	obVelX(a0)	; stop object moving
+		clr.b	lwall_flag(a0)
 
-loc_CCB2:
+.animate:
 		lea	(Ani_LWall).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
 	if FixBugs
-		tst.b	objoff_36(a0)
-		bne.s	locret_CCE6
-		out_of_range.s	loc_CCE8
+		tst.b	lwall_flag(a0)	; is wall already moving?
+		bne.s	.moving		; if yes, branch
+		out_of_range.s	.chkgone
 
-locret_CCE6:
+.moving:
 		bra.w	DisplaySprite
 	else
 		bsr.w	DisplaySprite
-		tst.b	objoff_36(a0)
-		bne.s	locret_CCE6
-		out_of_range.s	loc_CCE8
+		tst.b	lwall_flag(a0)	; is wall already moving?
+		bne.s	.moving		; if yes, branch
+		out_of_range.s	.chkgone
 
-locret_CCE6:
+.moving:
 		rts
 	endif
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_CCE8:
-		lea	(v_regbuffer).w,a2
+.chkgone:
+		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	obRespawnNo(a0),d0
 		bclr	#7,2(a2,d0.w)
 		move.b	#8,obRoutine(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_CD00:
+LWall_Move:	; Routine 6
 		movea.l	objoff_3C(a0),a1
 		cmpi.b	#8,obRoutine(a1)
-		beq.s	loc_CD1C
-		move.w	obX(a1),obX(a0)
+		beq.s	LWall_Delete
+		move.w	obX(a1),obX(a0)	; move rest of lava wall
 		subi.w	#$80,obX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_CD1C:
+LWall_Delete:	; Routine 8
 		bra.w	DeleteObject

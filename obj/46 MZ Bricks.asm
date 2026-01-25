@@ -1,18 +1,20 @@
 ; ---------------------------------------------------------------------------
+; Object 46 - solid blocks and blocks that fall from the ceiling (MZ)
+; ---------------------------------------------------------------------------
 
-ObjMZBlocks:
+MarbleBrick:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C3FC(pc,d0.w),d1
-		jmp	off_C3FC(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_C3FC:	dc.w loc_C400-off_C3FC
-		dc.w loc_C43C-off_C3FC
+		move.w	Brick_Index(pc,d0.w),d1
+		jmp	Brick_Index(pc,d1.w)
+; ===========================================================================
+Brick_Index:	dc.w Brick_Main-Brick_Index
+		dc.w Brick_Action-Brick_Index
 
 brick_origY = objoff_30
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C400:
+Brick_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.b	#$F,obHeight(a0)
 		move.b	#$F,obWidth(a0)
@@ -24,22 +26,22 @@ loc_C400:
 		move.w	obY(a0),brick_origY(a0)
 		move.w	#$5C0,objoff_32(a0)
 
-loc_C43C:
+Brick_Action:	; Routine 2
 		tst.b	obRender(a0)
-		bpl.s	loc_C46A
+		bpl.s	.chkdel
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
-		andi.w	#7,d0
+		move.b	obSubtype(a0),d0 ; get object type
+		andi.w	#7,d0		; read only the 1st digit
 		add.w	d0,d0
-		move.w	off_C48E(pc,d0.w),d1
-		jsr	off_C48E(pc,d1.w)
+		move.w	Brick_TypeIndex(pc,d0.w),d1
+		jsr	Brick_TypeIndex(pc,d1.w)
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 
-loc_C46A:
+.chkdel:
 	if FixBugs
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
@@ -48,31 +50,30 @@ loc_C46A:
 		out_of_range.w	DeleteObject
 		rts
 	endif
-; ---------------------------------------------------------------------------
-off_C48E:
-		dc.w locret_C498-off_C48E
-		dc.w loc_C4B2-off_C48E
-		dc.w loc_C49A-off_C48E
-		dc.w loc_C4D2-off_C48E
-		dc.w loc_C50E-off_C48E
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Brick_TypeIndex:	dc.w Brick_Type00-Brick_TypeIndex
+		dc.w Brick_Type01-Brick_TypeIndex
+		dc.w Brick_Type02-Brick_TypeIndex
+		dc.w Brick_Type03-Brick_TypeIndex
+		dc.w Brick_Type04-Brick_TypeIndex
+; ===========================================================================
 
-locret_C498:
+Brick_Type00:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C49A:
+Brick_Type02:
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
 		bcc.s	loc_C4A6
 		neg.w	d0
 
 loc_C4A6:
-		cmpi.w	#$90,d0
-		bcc.s	loc_C4B2
-		move.b	#3,obSubtype(a0)
+		cmpi.w	#$90,d0		; is Sonic within $90 pixels of the block?
+		bhs.s	Brick_Type01	; if not, resume wobbling
+		move.b	#3,obSubtype(a0)	; if yes, make the block fall
 
-loc_C4B2:
+Brick_Type01:
 		moveq	#0,d0
 		move.b	(v_oscillate+$16).w,d0
 		btst	#3,obSubtype(a0)
@@ -83,18 +84,18 @@ loc_C4B2:
 loc_C4C6:
 		move.w	brick_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,obY(a0)	; update the block's position to make it wobble
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C4D2:
+Brick_Type03:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,obVelY(a0)	; increase falling speed
 		bsr.w	ObjFloorDist
-		tst.w	d1
-		bpl.w	locret_C50C
+		tst.w	d1		; has the block hit the floor?
+		bpl.w	locret_C50C	; if not, branch
 		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)
+		clr.w	obVelY(a0)	; stop the block falling
 		move.w	obY(a0),brick_origY(a0)
 		move.b	#4,obSubtype(a0)
 		move.w	(a1),d0
@@ -105,13 +106,13 @@ loc_C4D2:
 
 locret_C50C:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C50E:
+Brick_Type04:
 		moveq	#0,d0
 		move.b	(v_oscillate+$12).w,d0
 		lsr.w	#3,d0
 		move.w	brick_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,obY(a0)	; make the block wobble
 		rts

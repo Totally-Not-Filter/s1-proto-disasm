@@ -2,27 +2,26 @@
 ; Object 59 - platforms	that move when you stand on them (SLZ)
 ; ---------------------------------------------------------------------------
 
-elev_origX	= objoff_32				; original x-axis position
-elev_origY	= objoff_30				; original y-axis position
-elev_dist	= objoff_3C				; distance to move (2 bytes)
+elev_origX = objoff_32		; original x-axis position
+elev_origY = objoff_30		; original y-axis position
+elev_dist = objoff_3C		; distance to move (2 bytes)
 
-ObjSLZMovingPtfm:
+Elevator:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_DF9A(pc,d0.w),d1
-		jsr	off_DF9A(pc,d1.w)
+		move.w	Elev_Index(pc,d0.w),d1
+		jsr	Elev_Index(pc,d1.w)
 		out_of_range.w	DeleteObject,elev_origX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Elev_Index:	dc.w Elev_Main-Elev_Index
+		dc.w Elev_Platform-Elev_Index
+		dc.w Elev_Action-Elev_Index
+		dc.w Elev_MakeMulti-Elev_Index
 
-off_DF9A:	dc.w loc_DFC2-off_DF9A
-		dc.w loc_E03A-off_DF9A
-		dc.w loc_E04A-off_DF9A
-		dc.w loc_E194-off_DF9A
+Elev_Var1:	dc.b $28, 0		; width, frame number
 
-Elev_Var1:	dc.b $28, 0 ; act width, frame
-
-Elev_Var2:	dc.b $10, 1 ; elev_dist, subtype
+Elev_Var2:	dc.b $10, 1		; distance to move, action type
 		dc.b $20, 1
 		dc.b $34, 1
 		dc.b $10, 3
@@ -37,23 +36,23 @@ Elev_Var2:	dc.b $10, 1 ; elev_dist, subtype
 		dc.b $20, 5
 		dc.b $20, 7
 		dc.b $30, 9
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_DFC2:
+Elev_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
-		bpl.s	loc_DFE6
-		addq.b	#4,obRoutine(a0)
+		bpl.s	.normal		; branch for types 00-7F
+		addq.b	#4,obRoutine(a0) ; goto Elev_MakeMulti next
 		andi.w	#$7F,d0
 		mulu.w	#6,d0
 		move.w	d0,elev_dist(a0)
 		move.w	d0,objoff_3E(a0)
 		addq.l	#4,sp	; do not return to caller
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_DFE6:
+.normal:
 		lsr.w	#3,d0
 	if FixBugs
 		andi.w	#1,d0
@@ -61,16 +60,16 @@ loc_DFE6:
 		; There is a bug in which Act 2 has 2 platforms, one with a subtype of $14, and another with a subtype of $7A.
 		; This results in the objects reading code rather than data, which results in a garbled mess.
 		; What causes this is that the table for Elev_Var1 reads beyond the entry list and reads what is in Elev_Var2.
-		; The subtype $14 goes beyond both variable tables, reading the instructions at loc_DFC2 as if they were object variables.
+		; The subtype $14 goes beyond both variable tables, reading the instructions at Elev_Main as if they were object variables.
 		; The line below is the root cause of the issue, as it does not limit the table to be 1 entry.
-		; What's the most strange part about this (in my opinion) is that this bug technically still persists in the
-		; final game, but the issue never actually got fixed.
+		; The most strange part about this (in my opinion) is that this bug technically still persists in the final game, but the
+		; issue never actually got fixed.
 		; Perhaps they were planning on different types of platforms? Who knows!
 		andi.w	#$1E,d0
 	endif
 		lea	Elev_Var1(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0)
-		move.b	(a2)+,obFrame(a0)
+		move.b	(a2)+,obActWid(a0) ; set width
+		move.b	(a2)+,obFrame(a0) ; set frame
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
@@ -83,8 +82,8 @@ loc_DFE6:
 		lea	Elev_Var2(pc,d0.w),a2
 		move.b	(a2)+,d0
 		lsl.w	#2,d0
-		move.w	d0,elev_dist(a0)
-		move.b	(a2)+,obSubtype(a0)
+		move.w	d0,elev_dist(a0)	; set distance to move
+		move.b	(a2)+,obSubtype(a0)	; set type
 		move.l	#Map_Elev,obMap(a0)
 		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
 		move.b	#4,obRender(a0)
@@ -92,82 +91,80 @@ loc_DFE6:
 		move.w	obX(a0),elev_origX(a0)
 		move.w	obY(a0),elev_origY(a0)
 
-loc_E03A:
+Elev_Platform:	; Routine 2
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(PlatformObject).l
-		bra.w	sub_E06E
-; ---------------------------------------------------------------------------
+		bra.w	Elev_Types
+; ===========================================================================
 
-loc_E04A:
+Elev_Action:	; Routine 4
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(ExitPlatform).l
 		move.w	obX(a0),-(sp)
-		bsr.w	sub_E06E
+		bsr.w	Elev_Types
 		move.w	(sp)+,d2
 		_tst.b	obID(a0)
-		beq.s	locret_E06C
+		beq.s	.deleted
 		jmp	(MvSonicOnPtfm2).l
-; ---------------------------------------------------------------------------
 
-locret_E06C:
+.deleted:
+	if FixBugs
+		; Avoid returning to Elevator to prevent display-and-delete
+		; and double-delete bugs.
+		addq.l	#4,sp
+	endif
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_E06E:
+Elev_Types:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
-		move.w	off_E082(pc,d0.w),d1
-		jmp	off_E082(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	.index(pc,d0.w),d1
+		jmp	.index(pc,d1.w)
+; ===========================================================================
+.index:	dc.w .type00-.index, .type01-.index
+		dc.w .type02-.index, .type01-.index
+		dc.w .type04-.index, .type01-.index
+		dc.w .type06-.index, .type01-.index
+		dc.w .type08-.index, .type09-.index
+; ===========================================================================
 
-off_E082:	dc.w locret_E096-off_E082
-		dc.w loc_E098-off_E082
-		dc.w loc_E0A6-off_E082
-		dc.w loc_E098-off_E082
-		dc.w loc_E0BA-off_E082
-		dc.w loc_E098-off_E082
-		dc.w loc_E0CC-off_E082
-		dc.w loc_E098-off_E082
-		dc.w loc_E0EE-off_E082
-		dc.w loc_E110-off_E082
-; ---------------------------------------------------------------------------
-
-locret_E096:
+.type00:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E098:
-		cmpi.b	#4,obRoutine(a0)
-		bne.s	locret_E0A4
-		addq.b	#1,obSubtype(a0)
+.type01:
+		cmpi.b	#4,obRoutine(a0) ; check if Sonic is standing on the object
+		bne.s	.notstanding
+		addq.b	#1,obSubtype(a0) ; if yes, add 1 to type
 
-locret_E0A4:
+.notstanding:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E0A6:
-		bsr.w	sub_E14A
+.type02:
+		bsr.w	Elev_Move
 		move.w	objoff_34(a0),d0
 		neg.w	d0
 		add.w	elev_origY(a0),d0
 		move.w	d0,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E0BA:
-		bsr.w	sub_E14A
+.type04:
+		bsr.w	Elev_Move
 		move.w	objoff_34(a0),d0
 		add.w	elev_origY(a0),d0
 		move.w	d0,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E0CC:
-		bsr.w	sub_E14A
+.type06:
+		bsr.w	Elev_Move
 		move.w	objoff_34(a0),d0
 		asr.w	#1,d0
 		neg.w	d0
@@ -177,10 +174,10 @@ loc_E0CC:
 		add.w	elev_origX(a0),d0
 		move.w	d0,obX(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E0EE:
-		bsr.w	sub_E14A
+.type08:
+		bsr.w	Elev_Move
 		move.w	objoff_34(a0),d0
 		asr.w	#1,d0
 		add.w	elev_origY(a0),d0
@@ -190,39 +187,40 @@ loc_E0EE:
 		add.w	elev_origX(a0),d0
 		move.w	d0,obX(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E110:
-		bsr.w	sub_E14A
+.type09:
+		bsr.w	Elev_Move
 		move.w	objoff_34(a0),d0
 		neg.w	d0
 		add.w	elev_origY(a0),d0
 		move.w	d0,obY(a0)
 		tst.b	obSubtype(a0)
-		beq.w	loc_E12C
+		beq.w	.typereset
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E12C:
+.typereset:
 		btst	#3,obStatus(a0)
-		beq.s	loc_E146
+		beq.s	.delete
 		bset	#1,obStatus(a1)
 		bclr	#3,obStatus(a1)
 		move.b	#2,obRoutine(a1)
 
-loc_E146:
+.delete:
 		bra.w	DeleteObject
-; ---------------------------------------------------------------------------
 
-sub_E14A:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+Elev_Move:
 		move.w	objoff_38(a0),d0
 		tst.b	objoff_3A(a0)
 		bne.s	loc_E160
 		cmpi.w	#$800,d0
-		bcc.s	loc_E168
+		bhs.s	loc_E168
 		addi.w	#$10,d0
 		bra.s	loc_E168
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_E160:
 		tst.w	d0
@@ -249,20 +247,22 @@ loc_E188:
 
 locret_E192:
 		rts
-; ---------------------------------------------------------------------------
+; End of function Elev_Move
 
-loc_E194:
+; ===========================================================================
+
+Elev_MakeMulti:	; Routine 6
 		subq.w	#1,elev_dist(a0)
-		bne.s	loc_E1BE
+		bne.s	.chkdel
 		move.w	objoff_3E(a0),elev_dist(a0)
 		bsr.w	FindFreeObj
-		bne.s	loc_E1BE
-		_move.b	#id_Elevator,obID(a1)
+		bne.s	.chkdel
+		_move.b	#id_Elevator,obID(a1) ; duplicate the object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	#$E,obSubtype(a1)
 
-loc_E1BE:
+.chkdel:
 		addq.l	#4,sp	; do not return to caller
 		out_of_range.w	DeleteObject
 		rts

@@ -1,86 +1,89 @@
 ; ---------------------------------------------------------------------------
+; Object 5A - platforms moving in circles (SLZ)
+; ---------------------------------------------------------------------------
 
-ObjCirclePtfm:
+circ_origX = objoff_32		; original x-axis position
+circ_origY = objoff_30		; original y-axis position
+
+CirclingPlatform:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_E222(pc,d0.w),d1
-		jsr	off_E222(pc,d1.w)
-		out_of_range.w	DeleteObject,objoff_32(a0)
+		move.w	Circ_Index(pc,d0.w),d1
+		jsr	Circ_Index(pc,d1.w)
+		out_of_range.w	DeleteObject,circ_origX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Circ_Index:	dc.w Circ_Main-Circ_Index
+		dc.w Circ_Platform-Circ_Index
+		dc.w Circ_Action-Circ_Index
+; ===========================================================================
 
-off_E222:	dc.w loc_E228-off_E222
-		dc.w loc_E258-off_E222
-		dc.w loc_E268-off_E222
-; ---------------------------------------------------------------------------
-
-loc_E228:
+Circ_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Circ,obMap(a0)
 		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)
-		move.w	obX(a0),objoff_32(a0)
-		move.w	obY(a0),objoff_30(a0)
+		move.w	obX(a0),circ_origX(a0)
+		move.w	obY(a0),circ_origY(a0)
 
-loc_E258:
+Circ_Platform:	; Routine 2
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(PlatformObject).l
-		bra.w	sub_E284
-; ---------------------------------------------------------------------------
+		bra.w	Circ_Types
+; ===========================================================================
 
-loc_E268:
+Circ_Action:	; Routine 4
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		jsr	(ExitPlatform).l
 		move.w	obX(a0),-(sp)
-		bsr.w	sub_E284
+		bsr.w	Circ_Types
 		move.w	(sp)+,d2
 		jmp	(MvSonicOnPtfm2).l
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_E284:
+Circ_Types:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		andi.w	#$C,d0
 		lsr.w	#1,d0
-		move.w	off_E298(pc,d0.w),d1
-		jmp	off_E298(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	.index(pc,d0.w),d1
+		jmp	.index(pc,d1.w)
+; ===========================================================================
+.index:	dc.w .type00-.index
+		dc.w .type04-.index
+; ===========================================================================
 
-off_E298:	dc.w loc_E29C-off_E298
-		dc.w loc_E2DA-off_E298
-; ---------------------------------------------------------------------------
-
-loc_E29C:
-		move.b	(v_oscillate+$22).w,d1
-		subi.b	#$50,d1
+.type00:
+		move.b	(v_oscillate+$22).w,d1 ; get rotating value
+		subi.b	#$50,d1		; set radius of circle
 		ext.w	d1
 		move.b	(v_oscillate+$26).w,d2
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,obSubtype(a0)
-		beq.s	loc_E2BC
+		beq.s	.noshift00a
 		neg.w	d1
 		neg.w	d2
 
-loc_E2BC:
+.noshift00a:
 		btst	#1,obSubtype(a0)
-		beq.s	loc_E2C8
+		beq.s	.noshift00b
 		neg.w	d1
 		exg	d1,d2
 
-loc_E2C8:
-		add.w	objoff_32(a0),d1
+.noshift00b:
+		add.w	circ_origX(a0),d1
 		move.w	d1,obX(a0)
-		add.w	objoff_30(a0),d2
+		add.w	circ_origY(a0),d2
 		move.w	d2,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E2DA:
+.type04:
 		move.b	(v_oscillate+$22).w,d1
 		subi.b	#$50,d1
 		ext.w	d1
@@ -88,20 +91,20 @@ loc_E2DA:
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,obSubtype(a0)
-		beq.s	loc_E2FA
+		beq.s	.noshift04a
 		neg.w	d1
 		neg.w	d2
 
-loc_E2FA:
+.noshift04a:
 		btst	#1,obSubtype(a0)
-		beq.s	loc_E306
+		beq.s	.noshift04b
 		neg.w	d1
 		exg	d1,d2
 
-loc_E306:
+.noshift04b:
 		neg.w	d1
-		add.w	objoff_32(a0),d1
+		add.w	circ_origX(a0),d1
 		move.w	d1,obX(a0)
-		add.w	objoff_30(a0),d2
+		add.w	circ_origY(a0),d2
 		move.w	d2,obY(a0)
 		rts
