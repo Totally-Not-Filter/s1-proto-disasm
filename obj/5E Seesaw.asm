@@ -33,10 +33,10 @@ See_Slope:	; Routine 2
 		move.w	#$30,d1
 		jsr	(SlopeObject).l
 		btst	#3,obID(a0)	; is bit 3 set in object ID?
-		beq.s	locret_E704	; if not, exit
+		beq.s	.return	; if not, exit
 		nop
 
-locret_E704:
+.return:
 		rts
 ; ===========================================================================
 
