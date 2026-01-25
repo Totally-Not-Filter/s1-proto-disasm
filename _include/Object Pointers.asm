@@ -24,7 +24,7 @@ ptr_LavaBall:	dc.l LavaBall	; 14
 ptr_SwingingPlatform:	dc.l SwingingPlatform	; 15
 ptr_Obj16:	dc.l NullObject	; 16
 ptr_Helix:	dc.l Helix	; 17
-ptr_BasicPlatform:	dc.l ObjPlatform	; 18
+ptr_BasicPlatform:	dc.l BasicPlatform	; 18
 ptr_GBall:	dc.l GBall	; 19
 ptr_CollapseLedge:	dc.l CollapseLedge	; 1A
 ptr_Obj1B:	dc.l Obj1B	; 1B
