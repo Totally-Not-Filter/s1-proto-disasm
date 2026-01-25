@@ -1,33 +1,35 @@
 ; ---------------------------------------------------------------------------
+; Object 3D - Eggman (GHZ)
+; ---------------------------------------------------------------------------
 
-ObjGHZBoss:
+BossGreenHill:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_B002(pc,d0.w),d1
-		jmp	off_B002(pc,d1.w)
+		move.w	BGHZ_Index(pc,d0.w),d1
+		jmp	BGHZ_Index(pc,d1.w)
 ; ===========================================================================
-off_B002:	dc.w loc_B010-off_B002
-		dc.w loc_B07C-off_B002
-		dc.w loc_B2AE-off_B002
-		dc.w loc_B2D6-off_B002
+BGHZ_Index:	dc.w BGHZ_Main-BGHZ_Index
+		dc.w BGHZ_ShipMain-BGHZ_Index
+		dc.w BGHZ_FaceMain-BGHZ_Index
+		dc.w BGHZ_FlameMain-BGHZ_Index
 
-byte_B00A:	dc.b 2, 0
+BGHZ_ObjData:	dc.b 2, 0		; routine counter, animation
 		dc.b 4, 1
 		dc.b 6, 7
 ; ===========================================================================
 
-loc_B010:
-		lea	(byte_B00A).l,a2
+BGHZ_Main:	; Routine 0
+		lea	(BGHZ_ObjData).l,a2
 		movea.l	a0,a1
 		moveq	#2,d1
-		bra.s	loc_B022
+		bra.s	BGHZ_LoadBoss
 ; ===========================================================================
 
-loc_B01C:
+BGHZ_Loop:
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B064
 
-loc_B022:
+BGHZ_LoadBoss:
 		move.b	(a2)+,obRoutine(a1)
 		_move.b	#id_BossGreenHill,obID(a1)
 		move.w	obX(a0),obX(a1)
@@ -39,19 +41,19 @@ loc_B022:
 		move.b	#3,obPriority(a1)
 		move.b	(a2)+,obAnim(a1)
 		move.l	a0,objoff_34(a1)
-		dbf	d1,loc_B01C
+		dbf	d1,BGHZ_Loop	; repeat sequence 2 more times
 
 loc_B064:
 		move.w	obX(a0),obBossX(a0)
 		move.w	obY(a0),obBossY(a0)
 		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0)
+		move.b	#8,obColProp(a0) ; set number of hits to 8
 
-loc_B07C:
+BGHZ_ShipMain:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_B0AA(pc,d0.w),d1
-		jsr	off_B0AA(pc,d1.w)
+		move.w	BGHZ_ShipIndex(pc,d0.w),d1
+		jsr	BGHZ_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		bsr.w	AnimateSprite
 		move.b	obStatus(a0),d0
@@ -60,21 +62,21 @@ loc_B07C:
 		or.b	d0,obRender(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-off_B0AA:	dc.w loc_B0B6-off_B0AA
-		dc.w loc_B1AE-off_B0AA
-		dc.w loc_B1FC-off_B0AA
-		dc.w loc_B236-off_B0AA
-		dc.w loc_B25C-off_B0AA
-		dc.w loc_B290-off_B0AA
+BGHZ_ShipIndex:	dc.w BGHZ_ShipStart-BGHZ_ShipIndex
+		dc.w BGHZ_MakeBall-BGHZ_ShipIndex
+		dc.w BGHZ_ShipMove-BGHZ_ShipIndex
+		dc.w loc_B236-BGHZ_ShipIndex
+		dc.w loc_B25C-BGHZ_ShipIndex
+		dc.w loc_B290-BGHZ_ShipIndex
 ; ===========================================================================
 
-loc_B0B6:
-		move.w	#$100,obVelY(a0)
+BGHZ_ShipStart:
+		move.w	#$100,obVelY(a0) ; move ship down
 		bsr.w	BossMove
 		cmpi.w	#$338,obBossY(a0)
 		bne.s	loc_B0D2
-		move.w	#0,obVelY(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	#0,obVelY(a0)	; stop ship
+		addq.b	#2,ob2ndRout(a0) ; goto next routine
 
 loc_B0D2:
 		move.b	objoff_3F(a0),d0
@@ -91,20 +93,20 @@ loc_B0D2:
 		tst.b	obColType(a0)
 		bne.s	locret_B136
 		tst.b	objoff_3E(a0)
-		bne.s	loc_B11A
-		move.b	#$20,objoff_3E(a0)
+		bne.s	BGHZ_ShipFlash
+		move.b	#$20,objoff_3E(a0)	; set number of times for ship to flash
 		move.w	#sfx_HitBoss,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play boss damage sound
 
-loc_B11A:
-		lea	(v_palette+$22).w,a1
-		moveq	#0,d0
+BGHZ_ShipFlash:
+		lea	(v_palette+$22).w,a1 ; load 2nd palette, 2nd entry
+		moveq	#0,d0		; move 0 (black) to d0
 		tst.w	(a1)
 		bne.s	loc_B128
-		move.w	#cWhite,d0
+		move.w	#cWhite,d0	; move 0EEE (white) to d0
 
 loc_B128:
-		move.w	d0,(a1)
+		move.w	d0,(a1)		; load colour stored in d0
 		subq.b	#1,objoff_3E(a0)
 		bne.s	locret_B136
 		move.b	#$F,obColType(a0)

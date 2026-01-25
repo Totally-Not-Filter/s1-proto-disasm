@@ -1,10 +1,12 @@
 ; ---------------------------------------------------------------------------
+; Object 3E - prison capsule
+; ---------------------------------------------------------------------------
 
-ObjCapsule:
+Prison:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_B66C(pc,d0.w),d1
-		jsr	off_B66C(pc,d1.w)
+		move.w	Pri_Index(pc,d0.w),d1
+		jsr	Pri_Index(pc,d1.w)
 	if FixBugs
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
@@ -14,47 +16,49 @@ ObjCapsule:
 		rts
 	endif
 ; ===========================================================================
-off_B66C:	dc.w loc_B68C-off_B66C
-		dc.w loc_B6D6-off_B66C
-		dc.w loc_B710-off_B66C
-		dc.w loc_B760-off_B66C
-		dc.w loc_B760-off_B66C
-		dc.w loc_B760-off_B66C
-		dc.w loc_B7C6-off_B66C
-		dc.w loc_B7FA-off_B66C
+Pri_Index:	dc.w Pri_Main-Pri_Index
+		dc.w Pri_BodyMain-Pri_Index
+		dc.w Pri_Switched-Pri_Index
+		dc.w Pri_Explosion-Pri_Index
+		dc.w Pri_Explosion-Pri_Index
+		dc.w Pri_Explosion-Pri_Index
+		dc.w Pri_Animals-Pri_Index
+		dc.w Pri_EndAct-Pri_Index
 
-byte_B67C:	;    routine, actwid, priority, frame
-		dc.b 2, $20, 4, 0
+pri_origY = objoff_30		; original y-axis position
+
+Pri_Var:	dc.b 2, $20, 4, 0	; routine, width, priority, frame
 		dc.b 4, $C, 5, 1
 		dc.b 6, $10, 4, 3
 		dc.b 8, $10, 3, 5
 ; ===========================================================================
 
-loc_B68C:
+Pri_Main:	; Routine 0
 		move.l	#Map_Pri,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Prison_Capsule,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
-		move.w	obY(a0),objoff_30(a0)
+		move.w	obY(a0),pri_origY(a0)
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		lsl.w	#2,d0
-		lea	byte_B67C(pc,d0.w),a1
+		lea	Pri_Var(pc,d0.w),a1
 		move.b	(a1)+,obRoutine(a0)
 		move.b	(a1)+,obActWid(a0)
 		move.b	(a1)+,obPriority(a0)
 		move.b	(a1)+,obFrame(a0)
-		cmpi.w	#8,d0
-		bne.s	locret_B6D4
+		cmpi.w	#8,d0		; is object type number 02?
+		bne.s	.not02		; if not, branch
+
 		move.b	#6,obColType(a0)
 		move.b	#8,obColProp(a0)
 
-locret_B6D4:
+.not02:
 		rts
 ; ===========================================================================
 
-loc_B6D6:
+Pri_BodyMain:	; Routine 2
 		cmpi.b	#2,(v_bossstatus).w
-		beq.s	loc_B6F2
+		beq.s	.chkopened
 		move.w	#$2B,d1
 		move.w	#$18,d2
 		move.w	#$18,d3
@@ -62,19 +66,19 @@ loc_B6D6:
 		bra.w	SolidObject
 ; ===========================================================================
 
-loc_B6F2:
-		tst.b	ob2ndRout(a0)
-		beq.s	loc_B708
+.chkopened:
+		tst.b	ob2ndRout(a0)	; has the prison been opened?
+		beq.s	.open		; if yes, branch
 		clr.b	ob2ndRout(a0)
 		bclr	#3,(v_player+obStatus).w
 		bset	#1,(v_player+obStatus).w
 
-loc_B708:
-		move.b	#2,obFrame(a0)
+.open:
+		move.b	#2,obFrame(a0)	; use frame number 2 (destroyed prison)
 		rts
 ; ===========================================================================
 
-loc_B710:
+Pri_Switched:	; Routine 4
 		move.w	#$17,d1
 		move.w	#8,d2
 		move.w	#8,d3
@@ -82,28 +86,29 @@ loc_B710:
 		bsr.w	SolidObject
 		lea	(Ani_Pri).l,a1
 		bsr.w	AnimateSprite
-		move.w	objoff_30(a0),obY(a0)
-		tst.b	ob2ndRout(a0)
-		beq.s	locret_B75E
+		move.w	pri_origY(a0),obY(a0)
+		tst.b	ob2ndRout(a0)	; has prison already been opened?
+		beq.s	.open2		; if yes, branch
+
 		addq.w	#8,obY(a0)
 		move.b	#$A,obRoutine(a0)
-		move.w	#60,obTimeFrame(a0)
-		clr.b	(f_timecount).w
+		move.w	#60,obTimeFrame(a0) ; set time between animal spawns
+		clr.b	(f_timecount).w	; stop time counter
 		clr.b	ob2ndRout(a0)
 		bclr	#3,(v_player+obStatus).w
 		bset	#1,(v_player+obStatus).w
 
-locret_B75E:
+.open2:
 		rts
 ; ===========================================================================
 
-loc_B760:
+Pri_Explosion:	; Routine 6, 8, $A
 		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
-		bne.s	loc_B7A0
+		bne.s	.noexplosion
 		bsr.w	FindFreeObj
-		bne.s	loc_B7A0
-		_move.b	#id_ExplosionBomb,obID(a1)
+		bne.s	.noexplosion
+		_move.b	#id_ExplosionBomb,obID(a1) ; load explosion object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		jsr	(RandomNumber).l
@@ -117,48 +122,47 @@ loc_B760:
 		lsr.b	#3,d0
 		add.w	d0,obY(a1)
 
-loc_B7A0:
+.noexplosion:
 		subq.w	#1,obTimeFrame(a0)
-		bne.s	locret_B7C4
+		bne.s	.wait
 		move.b	#2,(v_bossstatus).w
-		move.b	#$C,obRoutine(a0)
+		move.b	#$C,obRoutine(a0)	; replace explosions with animals
 		move.b	#9,obFrame(a0)
 		move.w	#180,obTimeFrame(a0)
 		addi.w	#$20,obY(a0)
 
-locret_B7C4:
+.wait:
 		rts
 ; ===========================================================================
 
-loc_B7C6:
+Pri_Animals:	; Routine $C
 		move.b	(v_vint_byte).w,d0
 		andi.b	#7,d0
-		bne.s	loc_B7E8
+		bne.s	.noanimal
 		bsr.w	FindFreeObj
-		bne.s	loc_B7E8
-		_move.b	#id_Animals,obID(a1)
+		bne.s	.noanimal
+		_move.b	#id_Animals,obID(a1) ; load animal object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
-loc_B7E8:
+.noanimal:
 		subq.w	#1,obTimeFrame(a0)
-		bne.s	locret_B7F8
+		bne.s	.wait
 		addq.b	#2,obRoutine(a0)
 		move.w	#60,obTimeFrame(a0)
 
-locret_B7F8:
+.wait:
 		rts
 ; ===========================================================================
 
-loc_B7FA:
+Pri_EndAct:	; Routine $E
 		subq.w	#1,obTimeFrame(a0)
-		bne.s	locret_B808
+		bne.s	.wait
 		bsr.w	GotThroughAct
 	if FixBugs
 		addq.l	#4,sp	; do not return to caller
 	endif
 		bra.w	DeleteObject
-; ===========================================================================
 
-locret_B808:
+.wait:
 		rts

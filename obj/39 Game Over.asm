@@ -1,73 +1,74 @@
 ; ---------------------------------------------------------------------------
+; Object 39 - "GAME OVER"
+; ---------------------------------------------------------------------------
 
-ObjGameOver:
+GameOverCard:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_A652(pc,d0.w),d1
-		jmp	off_A652(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	Over_Index(pc,d0.w),d1
+		jmp	Over_Index(pc,d1.w)
+; ===========================================================================
+Over_Index:	dc.w Over_ChkPLC-Over_Index
+		dc.w Over_Move-Over_Index
+		dc.w Over_Wait-Over_Index
+; ===========================================================================
 
-off_A652:	dc.w loc_A658-off_A652
-		dc.w loc_A696-off_A652
-		dc.w loc_A6B8-off_A652
-; ---------------------------------------------------------------------------
-
-loc_A658:
-		tst.l	(v_plc_buffer).w
-		beq.s	loc_A660
+Over_ChkPLC:	; Routine 0
+		tst.l	(v_plc_buffer).w ; are the pattern load cues empty?
+		beq.s	Over_Main	; if yes, branch
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_A660:
+Over_Main:
 		addq.b	#2,obRoutine(a0)
-		move.w	#$50,obX(a0)
-		tst.b	obFrame(a0)
-		beq.s	loc_A676
-		move.w	#$1F0,obX(a0)
+		move.w	#$50,obX(a0)	; set x-position
+		tst.b	obFrame(a0)	; is the object "OVER"?
+		beq.s	Over_1stWord	; if not, branch
+		move.w	#$1F0,obX(a0)	; set x-position for "OVER"
 
-loc_A676:
+Over_1stWord:
 		move.w	#$F0,obScreenY(a0)
 		move.l	#Map_Over,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Game_Over,0,1),obGfx(a0)
 		move.b	#0,obRender(a0)
 		move.b	#0,obPriority(a0)
 
-loc_A696:
-		moveq	#$10,d1
-		cmpi.w	#$120,obX(a0)
-		beq.s	loc_A6AC
-		bcs.s	loc_A6A4
+Over_Move:	; Routine 2
+		moveq	#$10,d1		; set horizontal speed
+		cmpi.w	#$120,obX(a0)	; has item reached its target position?
+		beq.s	Over_SetWait	; if yes, branch
+		bcs.s	Over_UpdatePos
 		neg.w	d1
 
-loc_A6A4:
-		add.w	d1,obX(a0)
+Over_UpdatePos:
+		add.w	d1,obX(a0)	; change item's position
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_A6AC:
-		move.w	#60*10,obTimeFrame(a0)	; wait 10 seconds
+Over_SetWait:
+		move.w	#600,obTimeFrame(a0)	; set time delay to 10 seconds
 		addq.b	#2,obRoutine(a0)
 	if FixBugs
 		bra.w	DisplaySprite
 	else
 		rts
 	endif
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_A6B8:
+Over_Wait:	; Routine 4
 		move.b	(v_jpadpress2).w,d0
-		andi.b	#btnABC,d0
-		bne.s	loc_A6D6
+		andi.b	#btnABC,d0	; is button A, B or C pressed?
+		bne.s	Over_ChgMode	; if yes, branch
 		tst.b	obFrame(a0)
-		bne.s	loc_A6DC
-		tst.w	obTimeFrame(a0)
-		beq.s	loc_A6D6
-		subq.w	#1,obTimeFrame(a0)
+		bne.s	Over_Display
+		tst.w	obTimeFrame(a0)	; has time delay reached zero?
+		beq.s	Over_ChgMode	; if yes, branch
+		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_A6D6:
-		move.b	#id_Sega,(v_gamemode).w
+Over_ChgMode:
+		move.b	#id_Sega,(v_gamemode).w ; set mode to 0 (Sega screen)
 
-loc_A6DC:
+Over_Display:
 		bra.w	DisplaySprite

@@ -3555,7 +3555,7 @@ Map_TSon:	include "_maps/Title Screen Sonic.asm"
 		include "_anim/Ball Hog.asm"
 Map_Hog:	include "_maps/Ball Hog.asm"
 Map_Cannonball:	include "_maps/Cannonball.asm"
-		include "_maps/Ball Hog's Bomb Explosion.asm"
+Map_MisDissolve:	include "_maps/Ball Hog's Bomb Explosion.asm"
 		include "_maps/Explosions.asm"
 
 		include "obj/28 Animals.asm"

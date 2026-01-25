@@ -1,22 +1,25 @@
 ; ---------------------------------------------------------------------------
-
-ObjChainPtfm:
-		moveq	#0,d0
-		move.b	obRoutine(a0),d0
-		move.w	off_96C2(pc,d0.w),d1
-		jmp	off_96C2(pc,d1.w)
+; Object 31 - stomping metal blocks on chains (MZ)
 ; ---------------------------------------------------------------------------
 
-off_96C2:	dc.w loc_96EA-off_96C2
-		dc.w loc_97D0-off_96C2
-		dc.w loc_9834-off_96C2
-		dc.w loc_9846-off_96C2
-		dc.w loc_9818-off_96C2
+ChainStomp:
+		moveq	#0,d0
+		move.b	obRoutine(a0),d0
+		move.w	CStom_Index(pc,d0.w),d1
+		jmp	CStom_Index(pc,d1.w)
+; ===========================================================================
+CStom_Index:	dc.w CStom_Main-CStom_Index
+		dc.w loc_97D0-CStom_Index
+		dc.w loc_9834-CStom_Index
+		dc.w CStom_Display2-CStom_Index
+		dc.w loc_9818-CStom_Index
 
-byte_96CC:	dc.b 0, 0
+CStom_switch = objoff_3A			; switch number for the current stomper
+
+CStom_SwchNums:	dc.b 0, 0		; switch number, obj number
 		dc.b 1, 0
 
-byte_96D0:	dc.b 2, 0, 0
+CStom_Var:	dc.b 2, 0, 0		; routine number, y-position, frame number
 		dc.b 4, $1C, 1
 		dc.b 8, $CC, 3
 		dc.b 6, $F0, 2
@@ -25,16 +28,16 @@ word_96DC:	dc.w $7000, $A000
 		dc.w $5000, $7800
 		dc.w $3800, $5800
 		dc.w $B800
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_96EA:
+CStom_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		bpl.s	loc_9706
 		andi.w	#$7F,d0
 		add.w	d0,d0
-		lea	byte_96CC(pc,d0.w),a2
-		move.b	(a2)+,objoff_3A(a0)
+		lea	CStom_SwchNums(pc,d0.w),a2
+		move.b	(a2)+,CStom_switch(a0)
 		move.b	(a2)+,d0
 		move.b	d0,obSubtype(a0)
 
@@ -47,17 +50,17 @@ loc_9706:
 		move.w	d2,objoff_32(a0)
 
 loc_9718:
-		lea	(byte_96D0).l,a2
+		lea	(CStom_Var).l,a2
 		movea.l	a0,a1
 		moveq	#3,d1
-		bra.s	loc_972C
-; ---------------------------------------------------------------------------
+		bra.s	CStom_MakeStomper
+; ===========================================================================
 
-loc_9724:
+CStom_Loop:
 		bsr.w	FindNextFreeObj
-		bne.w	loc_97B0
+		bne.w	CStom_SetSize
 
-loc_972C:
+CStom_MakeStomper:
 		move.b	(a2)+,obRoutine(a1)
 		_move.b	#id_ChainStomp,obID(a1)
 		move.w	obX(a0),obX(a1)
@@ -80,34 +83,34 @@ loc_972C:
 		move.b	obSubtype(a0),d0
 		andi.w	#$F0,d0
 		cmpi.w	#$20,d0
-		beq.s	loc_972C
+		beq.s	CStom_MakeStomper
 		move.b	#$38,obActWid(a1)
 		move.b	#$90,obColType(a1)
 		addq.w	#1,d1
 
 loc_97A2:
 		move.l	a0,objoff_3C(a1)
-		dbf	d1,loc_9724
+		dbf	d1,CStom_Loop
+
 		move.b	#3,obPriority(a1)
 
-loc_97B0:
+CStom_SetSize:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		lsr.w	#3,d0
 		andi.b	#$E,d0
-		lea	byte_97CA(pc,d0.w),a2
+		lea	CStom_Var2(pc,d0.w),a2
 		move.b	(a2)+,obActWid(a0)
 		move.b	(a2)+,obFrame(a0)
 		bra.s	loc_97D0
-; ---------------------------------------------------------------------------
-
-byte_97CA:	dc.b $38, 0
+; ===========================================================================
+CStom_Var2:	dc.b $38, 0		; width, frame number
 		dc.b $30, 9
 		dc.b $10, $A
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_97D0:
-		bsr.w	sub_986A
+loc_97D0:	; Routine 2
+		bsr.w	CStom_Types
 		move.w	obY(a0),(v_obj31ypos).w
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
@@ -117,20 +120,22 @@ loc_97D0:
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 		btst	#3,obStatus(a0)
-		beq.s	loc_9810
+		beq.s	CStom_Display
 		cmpi.b	#$10,objoff_32(a0)
-		bcc.s	loc_9810
+		bhs.s	CStom_Display
 		movea.l	a0,a2
 		lea	(v_player).w,a0
 		bsr.w	KillSonic
 		movea.l	a2,a0
 
-loc_9810:
+CStom_Display:
+	if ~~FixBugs
 		bsr.w	DisplaySprite
-		bra.w	loc_984A
-; ---------------------------------------------------------------------------
+	endif
+		bra.w	CStom_ChkDel
+; ===========================================================================
 
-loc_9818:
+loc_9818:	; Routine 8
 		move.b	#$80,obHeight(a0)
 		bset	#4,obRender(a0)
 		movea.l	objoff_3C(a0),a1
@@ -139,44 +144,51 @@ loc_9818:
 		addq.b	#3,d0
 		move.b	d0,obFrame(a0)
 
-loc_9834:
+loc_9834:	; Routine 4
 		movea.l	objoff_3C(a0),a1
 		moveq	#0,d0
 		move.b	objoff_32(a1),d0
 		add.w	objoff_30(a0),d0
 		move.w	d0,obY(a0)
 
-loc_9846:
+CStom_Display2:	; Routine 6
+	if ~~FixBugs
 		bsr.w	DisplaySprite
+	endif
 
-loc_984A:
+CStom_ChkDel:
 		out_of_range.w	DeleteObject
+	if FixBugs
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame or else cause a null-pointer dereference.
+		bra.w	DisplaySprite
+	else
 		rts
-; ---------------------------------------------------------------------------
+	endif
+; ===========================================================================
 
-sub_986A:
+CStom_Types:
 		move.b	obSubtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
-		move.w	off_987C(pc,d0.w),d1
-		jmp	off_987C(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	CStom_TypeIndex(pc,d0.w),d1
+		jmp	CStom_TypeIndex(pc,d1.w)
+; ===========================================================================
+CStom_TypeIndex:	dc.w CStom_Type00-CStom_TypeIndex
+		dc.w CStom_Type01-CStom_TypeIndex
+		dc.w CStom_Type01-CStom_TypeIndex
+		dc.w CStom_Type03-CStom_TypeIndex
+		dc.w CStom_Type01-CStom_TypeIndex
+		dc.w CStom_Type03-CStom_TypeIndex
+		dc.w CStom_Type01-CStom_TypeIndex
+; ===========================================================================
 
-off_987C:	dc.w loc_988A-off_987C
-		dc.w loc_9926-off_987C
-		dc.w loc_9926-off_987C
-		dc.w loc_99B6-off_987C
-		dc.w loc_9926-off_987C
-		dc.w loc_99B6-off_987C
-		dc.w loc_9926-off_987C
-; ---------------------------------------------------------------------------
-
-loc_988A:
-		lea	(f_switch).w,a2
+CStom_Type00:
+		lea	(f_switch).w,a2	; load switch statuses
 		moveq	#0,d0
-		move.b	objoff_3A(a0),d0
-		tst.b	(a2,d0.w)
-		beq.s	loc_98DE
+		move.b	CStom_switch(a0),d0 ; move number 0 or 1 to d0
+		tst.b	(a2,d0.w)	; has switch (d0) been pressed?
+		beq.s	loc_98DE	; if not, branch
 		tst.w	(v_obj31ypos).w
 		bpl.s	loc_98A8
 		cmpi.b	#$10,objoff_32(a0)
@@ -191,50 +203,50 @@ loc_98A8:
 		tst.b	obRender(a0)
 		bpl.s	loc_98C8
 		move.w	#sfx_ChainRise,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play rising chain sound
 
 loc_98C8:
 		subi.w	#$80,objoff_32(a0)
-		bcc.s	loc_9916
+		bcc.s	CStom_Restart
 		move.w	#0,objoff_32(a0)
 
 loc_98D6:
 		move.w	#0,obVelY(a0)
-		bra.s	loc_9916
-; ---------------------------------------------------------------------------
+		bra.s	CStom_Restart
+; ===========================================================================
 
 loc_98DE:
 		move.w	objoff_34(a0),d1
 		cmp.w	objoff_32(a0),d1
-		beq.s	loc_9916
+		beq.s	CStom_Restart
 		move.w	obVelY(a0),d0
-		addi.w	#$70,obVelY(a0)
+		addi.w	#$70,obVelY(a0)	; make object fall
 		add.w	d0,objoff_32(a0)
 		cmp.w	objoff_32(a0),d1
-		bhi.s	loc_9916
+		bhi.s	CStom_Restart
 		move.w	d1,objoff_32(a0)
-		move.w	#0,obVelY(a0)
+		move.w	#0,obVelY(a0)	; stop object falling
 		tst.b	obRender(a0)
-		bpl.s	loc_9916
+		bpl.s	CStom_Restart
 		move.w	#sfx_ChainStomp,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play stomping sound
 
-loc_9916:
+CStom_Restart:
 		moveq	#0,d0
 		move.b	objoff_32(a0),d0
 		add.w	objoff_30(a0),d0
 		move.w	d0,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_9926:
+CStom_Type01:
 		tst.w	objoff_36(a0)
 		beq.s	loc_996E
 		tst.w	objoff_38(a0)
 		beq.s	loc_9938
 		subq.w	#1,objoff_38(a0)
 		bra.s	loc_99B2
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_9938:
 		move.b	(v_vint_byte).w,d0
@@ -243,7 +255,7 @@ loc_9938:
 		tst.b	obRender(a0)
 		bpl.s	loc_9952
 		move.w	#sfx_ChainRise,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play rising chain sound
 
 loc_9952:
 		subi.w	#$80,objoff_32(a0)
@@ -252,31 +264,31 @@ loc_9952:
 		move.w	#0,obVelY(a0)
 		move.w	#0,objoff_36(a0)
 		bra.s	loc_99B2
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_996E:
 		move.w	objoff_34(a0),d1
 		cmp.w	objoff_32(a0),d1
 		beq.s	loc_99B2
 		move.w	obVelY(a0),d0
-		addi.w	#$70,obVelY(a0)
+		addi.w	#$70,obVelY(a0)	; make object fall
 		add.w	d0,objoff_32(a0)
 		cmp.w	objoff_32(a0),d1
 		bhi.s	loc_99B2
 		move.w	d1,objoff_32(a0)
-		move.w	#0,obVelY(a0)
+		move.w	#0,obVelY(a0)	; stop object falling
 		move.w	#1,objoff_36(a0)
 		move.w	#$3C,objoff_38(a0)
 		tst.b	obRender(a0)
 		bpl.s	loc_99B2
 		move.w	#sfx_ChainStomp,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play stomping sound
 
 loc_99B2:
-		bra.w	loc_9916
-; ---------------------------------------------------------------------------
+		bra.w	CStom_Restart
+; ===========================================================================
 
-loc_99B6:
+CStom_Type03:
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
 		bcc.s	loc_99C2
@@ -284,8 +296,8 @@ loc_99B6:
 
 loc_99C2:
 		cmpi.w	#$90,d0
-		bcc.s	loc_99CC
+		bhs.s	loc_99CC
 		addq.b	#1,obSubtype(a0)
 
 loc_99CC:
-		bra.w	loc_9916
+		bra.w	CStom_Restart

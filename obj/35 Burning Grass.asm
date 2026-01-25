@@ -1,38 +1,42 @@
 ; ---------------------------------------------------------------------------
+; Object 35 - fireball that sits on the floor (MZ)
+; (appears when you walk on sinking platforms)
+; ---------------------------------------------------------------------------
 
-ObjFloorLavaball:
+GrassFire:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_91F2(pc,d0.w),d1
-		jmp	off_91F2(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	GFire_Index(pc,d0.w),d1
+		jmp	GFire_Index(pc,d1.w)
+; ===========================================================================
+GFire_Index:	dc.w GFire_Main-GFire_Index
+		dc.w loc_9240-GFire_Index
+		dc.w GFire_Move-GFire_Index
 
-off_91F2:	dc.w loc_91F8-off_91F2
-		dc.w loc_9240-off_91F2
-		dc.w loc_92BA-off_91F2
-; ---------------------------------------------------------------------------
+gfire_origX = objoff_2A
+; ===========================================================================
 
-loc_91F8:
+GFire_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Fire,obMap(a0)
 		move.w	#make_art_tile(ArtTile_MZ_Fireball,0,0),obGfx(a0)
-		move.w	obX(a0),objoff_2A(a0)
+		move.w	obX(a0),gfire_origX(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#$8B,obColType(a0)
 		move.b	#8,obActWid(a0)
 		move.w	#sfx_Burning,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	 ; play burning sound
 		tst.b	obSubtype(a0)
 		beq.s	loc_9240
 		addq.b	#2,obRoutine(a0)
-		bra.w	loc_92BA
-; ---------------------------------------------------------------------------
+		bra.w	GFire_Move
+; ===========================================================================
 
-loc_9240:
+loc_9240:	; Routine 2
 		movea.l	objoff_30(a0),a1
 		move.w	obX(a0),d1
-		sub.w	objoff_2A(a0),d1
+		sub.w	gfire_origX(a0),d1
 		addi.w	#$C,d1
 		move.w	d1,d0
 		lsr.w	#1,d0
@@ -62,15 +66,15 @@ loc_9240:
 		bsr.w	sub_90A4
 
 loc_92B8:
-		bra.s	loc_92C6
-; ---------------------------------------------------------------------------
+		bra.s	GFire_Animate
+; ===========================================================================
 
-loc_92BA:
+GFire_Move:	; Routine 4
 		move.w	objoff_2C(a0),d0
 		add.w	objoff_3C(a0),d0
 		move.w	d0,obY(a0)
 
-loc_92C6:
+GFire_Animate:
 		lea	(Ani_GFire).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite

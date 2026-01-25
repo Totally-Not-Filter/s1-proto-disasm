@@ -1,40 +1,41 @@
 ; ---------------------------------------------------------------------------
+; Object 38 - shield and invincibility stars
+; ---------------------------------------------------------------------------
 
-ObjShield:
+ShieldItem:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	ObjShield_Index(pc,d0.w),d1
-		jmp	ObjShield_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
+		move.w	Shi_Index(pc,d0.w),d1
+		jmp	Shi_Index(pc,d1.w)
+; ===========================================================================
+Shi_Index:	dc.w Shi_Main-Shi_Index
+		dc.w Shi_Shield-Shi_Index
+		dc.w Shi_Stars-Shi_Index
+; ===========================================================================
 
-ObjShield_Index:dc.w ObjShield_Init-ObjShield_Index
-		dc.w ObjShield_Shield-ObjShield_Index
-		dc.w ObjShield_Stars-ObjShield_Index
-; ---------------------------------------------------------------------------
-
-ObjShield_Init:
+Shi_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Shield,obMap(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#$10,obActWid(a0)
-		tst.b	obAnim(a0)
-		bne.s	loc_F786
-		move.w	#make_art_tile(ArtTile_Shield,0,0),obGfx(a0)
+		tst.b	obAnim(a0)	; is object a shield?
+		bne.s	.stars		; if not, branch
+		move.w	#make_art_tile(ArtTile_Shield,0,0),obGfx(a0)	; shield specific code
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_F786:
-		addq.b	#2,obRoutine(a0)
+.stars:
+		addq.b	#2,obRoutine(a0) ; goto Shi_Stars next
 		move.w	#make_art_tile(ArtTile_Invincibility,0,0),obGfx(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjShield_Shield:
-		tst.b	(v_invinc).w
-		bne.s	.locret
-		tst.b	(v_shield).w
-		beq.s	.delete
+Shi_Shield:	; Routine 2
+		tst.b	(v_invinc).w	; does Sonic have invincibility?
+		bne.s	.remove		; if yes, branch
+		tst.b	(v_shield).w	; does Sonic have shield?
+		beq.s	.delete		; if not, branch
 		move.w	(v_player+obX).w,obX(a0)
 		move.w	(v_player+obY).w,obY(a0)
 		move.b	(v_player+obStatus).w,obStatus(a0)
@@ -42,51 +43,52 @@ ObjShield_Shield:
 		jsr	(AnimateSprite).l
 		bsr.w	DisplaySprite
 
-.locret:
+.remove:
 		rts
-; ---------------------------------------------------------------------------
 
 .delete:
 		bra.w	DeleteObject
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjShield_Stars:
-		tst.b	(v_invinc).w
-		beq.s	ObjShield_Delete2
-		move.w	(v_trackpos).w,d0
+Shi_Stars:	; Routine 4
+		tst.b	(v_invinc).w	; does Sonic have invincibility?
+		beq.s	Shi_Start_Delete		; if not, branch
+		move.w	(v_trackpos).w,d0 ; get index value for tracking data
 		move.b	obAnim(a0),d1
 		subq.b	#1,d1
-		bra.s	ObjShield_StarTrail
-; ---------------------------------------------------------------------------
-		lsl.b	#4,d1				; Unused code in the final game as well
+		bra.s	.trail
+; ===========================================================================
+
+.trail_unused:	;	unused older trailing code that makes a much shorter trail
+		lsl.b	#4,d1		; multiply animation number by 16
 		addq.b	#4,d1
 		sub.b	d1,d0
 		move.b	objoff_30(a0),d1
-		sub.b	d1,d0
+		sub.b	d1,d0		; use earlier tracking data to create trail
 		addq.b	#4,d1
 		andi.b	#$F,d1
 		move.b	d1,objoff_30(a0)
-		bra.s	ObjShield_StarTrail2a
-; ---------------------------------------------------------------------------
+		bra.s	.b
+; ===========================================================================
 
-ObjShield_StarTrail:
-		lsl.b	#3,d1
+.trail:
+		lsl.b	#3,d1		; multiply animation number by 8
 		move.b	d1,d2
 		add.b	d1,d1
-		add.b	d2,d1
+		add.b	d2,d1		; multiply by 3
 		addq.b	#4,d1
 		sub.b	d1,d0
 		move.b	objoff_30(a0),d1
-		sub.b	d1,d0
+		sub.b	d1,d0		; use earlier tracking data to create trail
 		addq.b	#4,d1
 		cmpi.b	#$18,d1
-		bcs.s	ObjShield_StarTrail2
+		blo.s	.a
 		moveq	#0,d1
 
-ObjShield_StarTrail2:
+.a:
 		move.b	d1,objoff_30(a0)
 
-ObjShield_StarTrail2a:
+.b:
 		lea	(v_tracksonic).w,a1
 		lea	(a1,d0.w),a1
 		move.w	(a1)+,obX(a0)
@@ -95,7 +97,7 @@ ObjShield_StarTrail2a:
 		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjShield_Delete2:
+Shi_Start_Delete:
 		bra.w	DeleteObject
