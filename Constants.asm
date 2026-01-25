@@ -424,7 +424,7 @@ ArtTile_Burrobot:		equ $39C
 ArtTile_Ball_Hog:		equ $400
 ArtTile_Bomb:			equ $400
 ArtTile_Crabmeat:		equ $400
-ArtTile_Cannon_Ball:	equ $418
+ArtTile_Cannonball:		equ $418
 ArtTile_Missile_Disolve:	equ $41C ; Unused
 ArtTile_Buzz_Bomber:	equ $444
 ArtTile_Chopper:		equ $47B

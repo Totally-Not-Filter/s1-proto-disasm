@@ -32,7 +32,7 @@ ptr_Scenery:	dc.l Scenery	; 1C
 ptr_MagicSwitch:	dc.l MagicSwitch	; 1D
 ptr_BallHog:	dc.l BallHog	; 1E
 ptr_Crabmeat:	dc.l Crabmeat	; 1F
-ptr_Cannonball:	dc.l ObjCannonball	; 20
+ptr_Cannonball:	dc.l Cannonball	; 20
 ptr_HUD:	dc.l HUD	; 21
 ptr_BuzzBomber:	dc.l BuzzBomber	; 22
 ptr_Missile:	dc.l Missile	; 23

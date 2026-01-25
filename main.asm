@@ -3550,11 +3550,11 @@ Map_PSB:	include "_maps/Press Start.asm"
 Map_TSon:	include "_maps/Title Screen Sonic.asm"
 
 		include "obj/1E Ball Hog.asm"
-		include "obj/20 Ball Hog's Bomb.asm"
+		include "obj/20 Cannonball.asm"
 		include "obj/24, 27 & 3F Explosions.asm"
 		include "_anim/Ball Hog.asm"
 Map_Hog:	include "_maps/Ball Hog.asm"
-		include "_maps/Ball Hog's Bomb.asm"
+		include "_maps/Cannonball.asm"
 		include "_maps/Ball Hog's Bomb Explosion.asm"
 		include "_maps/Explosions.asm"
 
