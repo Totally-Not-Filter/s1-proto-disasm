@@ -1612,7 +1612,7 @@ loc_25D8:
 		move.w	#0,(v_debuguse).w
 		move.w	#0,(f_demo).w
 		move.w	#0,(v_zone).w
-		bsr.w	LoadLevelBounds
+		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
 		locVRAM ArtTile_Level*tile_size
 		lea	(Nem_GHZ_1st).l,a0
@@ -2087,7 +2087,7 @@ loc_2C92:
 		jsr	(Hud_Base).l
 		moveq	#palid_Sonic,d0
 		bsr.w	PalLoad1
-		bsr.w	LoadLevelBounds
+		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
 		bsr.w	LoadLevelData
 		bsr.w	LoadAnimatedBlocks
