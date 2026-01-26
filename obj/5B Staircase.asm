@@ -1,42 +1,49 @@
 ; ---------------------------------------------------------------------------
+; Object 5B - blocks that form a staircase (SLZ)
+; ---------------------------------------------------------------------------
+
+stair_origX = objoff_30		; original x-axis position
+stair_origY = objoff_32		; original y-axis position
+
+stair_parent = objoff_3C	; address of parent object (4 bytes)
 
 Staircase:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_E358(pc,d0.w),d1
-		jsr	off_E358(pc,d1.w)
-		out_of_range.w	DeleteObject,objoff_30(a0)
+		move.w	Stair_Index(pc,d0.w),d1
+		jsr	Stair_Index(pc,d1.w)
+		out_of_range.w	DeleteObject,stair_origX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Stair_Index:	dc.w Stair_Main-Stair_Index
+		dc.w Stair_Move-Stair_Index
+		dc.w Stair_Solid-Stair_Index
 
-off_E358:	dc.w loc_E35E-off_E358
-		dc.w loc_E3DE-off_E358
-		dc.w loc_E3F2-off_E358
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E35E:
+Stair_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		moveq	#$38,d3
 		moveq	#1,d4
-		btst	#0,obStatus(a0)
-		beq.s	loc_E372
+		btst	#0,obStatus(a0)	; is object flipped?
+		beq.s	.notflipped	; if not, branch
 		moveq	#$3B,d3
 		moveq	#-1,d4
 
-loc_E372:
+.notflipped:
 		move.w	obX(a0),d2
 		movea.l	a0,a1
 		moveq	#3,d1
-		bra.s	loc_E38A
-; ---------------------------------------------------------------------------
+		bra.s	.makeblocks
+; ===========================================================================
 
-loc_E37C:
+.loop:
 		bsr.w	FindNextFreeObj
-		bne.w	loc_E3DE
+		bne.w	.fail
 		move.b	#4,obRoutine(a1)
 
-loc_E38A:
-		_move.b	#id_Staircase,obID(a1)
+.makeblocks:
+		_move.b	#id_Staircase,obID(a1) ; load another block object
 		move.l	#Map_Stair,obMap(a1)
 		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a1)
 		move.b	#4,obRender(a1)
@@ -45,28 +52,30 @@ loc_E38A:
 		move.b	obSubtype(a0),obSubtype(a1)
 		move.w	d2,obX(a1)
 		move.w	obY(a0),obY(a1)
-		move.w	obX(a0),objoff_30(a1)
-		move.w	obY(a1),objoff_32(a1)
+		move.w	obX(a0),stair_origX(a1)
+		move.w	obY(a1),stair_origY(a1)
 		addi.w	#$20,d2
 		move.b	d3,objoff_37(a1)
-		move.l	a0,objoff_3C(a1)
+		move.l	a0,stair_parent(a1)
 		add.b	d4,d3
-		dbf	d1,loc_E37C
+		dbf	d1,.loop	; repeat sequence 3 times
 
-loc_E3DE:
+.fail:
+
+Stair_Move:	; Routine 2
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
-		move.w	off_E43A(pc,d0.w),d1
-		jsr	off_E43A(pc,d1.w)
+		move.w	Stair_TypeIndex(pc,d0.w),d1
+		jsr	Stair_TypeIndex(pc,d1.w)
 
-loc_E3F2:
-		movea.l	objoff_3C(a0),a2
+Stair_Solid:	; Routine 4
+		movea.l	stair_parent(a0),a2
 		moveq	#0,d0
 		move.b	objoff_37(a0),d0
 		move.b	(a2,d0.w),d0
-		add.w	objoff_32(a0),d0
+		add.w	stair_origY(a0),d0
 		move.w	d0,obY(a0)
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
@@ -86,15 +95,14 @@ loc_E42A:
 
 locret_E438:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Stair_TypeIndex:	dc.w Stair_Type00-Stair_TypeIndex
+		dc.w Stair_Type01-Stair_TypeIndex
+		dc.w Stair_Type02-Stair_TypeIndex
+		dc.w Stair_Type01-Stair_TypeIndex
+; ===========================================================================
 
-off_E43A:	dc.w loc_E442-off_E43A
-		dc.w loc_E4A8-off_E43A
-		dc.w loc_E464-off_E43A
-		dc.w loc_E4A8-off_E43A
-; ---------------------------------------------------------------------------
-
-loc_E442:
+Stair_Type00:
 		tst.w	objoff_34(a0)
 		bne.s	loc_E458
 		cmpi.b	#1,objoff_36(a0)
@@ -103,16 +111,16 @@ loc_E442:
 
 locret_E456:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_E458:
 		subq.w	#1,objoff_34(a0)
 		bne.s	locret_E456
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,obSubtype(a0) ; add 1 to type
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E464:
+Stair_Type02:
 		tst.w	objoff_34(a0)
 		bne.s	loc_E478
 		tst.b	objoff_36(a0)
@@ -121,14 +129,14 @@ loc_E464:
 
 locret_E476:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_E478:
 		subq.w	#1,objoff_34(a0)
 		bne.s	loc_E484
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,obSubtype(a0) ; add 1 to type
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_E484:
 		lea	objoff_38(a0),a1
@@ -143,9 +151,9 @@ loc_E484:
 		eori.b	#1,d0
 		move.b	d0,(a1)+
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_E4A8:
+Stair_Type01:
 		lea	objoff_38(a0),a1
 		cmpi.b	#$80,(a1)
 		beq.s	locret_E4D0
