@@ -1,20 +1,27 @@
 ; ---------------------------------------------------------------------------
+; Object 14 - lava balls (MZ)
+; ---------------------------------------------------------------------------
 
 LavaBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C23E(pc,d0.w),d1
-		jsr	off_C23E(pc,d1.w)
+		move.w	LBall_Index(pc,d0.w),d1
+	if FixBugs
+		jmp	LBall_Index(pc,d1.w)
+	else
+		jsr	LBall_Index(pc,d1.w)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
-off_C23E:	dc.w loc_C254-off_C23E
-		dc.w loc_C2C8-off_C23E
-		dc.w j_DeleteObject-off_C23E
+	endif
+; ===========================================================================
+LBall_Index:	dc.w LBall_Main-LBall_Index
+		dc.w LBall_Action-LBall_Index
+		dc.w LBall_Delete-LBall_Index
 
-word_C244:	dc.w -$400, -$500, -$600, -$700, -$200, $200, -$200, $200
-; ---------------------------------------------------------------------------
+LBall_Speeds:	dc.w -$400, -$500, -$600, -$700, -$200
+		dc.w $200, -$200, $200
+; ===========================================================================
 
-loc_C254:
+LBall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.b	#8,obHeight(a0)
 		move.b	#8,obWidth(a0)
@@ -27,50 +34,52 @@ loc_C254:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
-		move.w	word_C244(pc,d0.w),obVelY(a0)
+		move.w	LBall_Speeds(pc,d0.w),obVelY(a0) ; load object speed (vertical)
 		move.b	#8,obActWid(a0)
-		cmpi.b	#6,obSubtype(a0)
-		bcs.s	loc_C2BE
+		cmpi.b	#6,obSubtype(a0) ; is object type below 6?
+		blo.s	.sound		; if yes, branch
+
 		move.b	#$10,obActWid(a0)
-		move.b	#2,obAnim(a0)
-		move.w	obVelY(a0),obVelX(a0)
-		move.w	#0,obVelY(a0)
+		move.b	#2,obAnim(a0)	; use horizontal animation
+		move.w	obVelY(a0),obVelX(a0) ; set horizontal speed
+		move.w	#0,obVelY(a0)	; delete vertical speed
 
-loc_C2BE:
+.sound:
 		move.w	#sfx_Fireball,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play lava ball sound
 
-loc_C2C8:
+LBall_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
-		move.w	off_C306(pc,d0.w),d1
-		jsr	off_C306(pc,d1.w)
+		move.w	LBall_TypeIndex(pc,d0.w),d1
+		jsr	LBall_TypeIndex(pc,d1.w)
 		bsr.w	SpeedToPos
 		lea	(Ani_Fire).l,a1
 		bsr.w	AnimateSprite
 
-loc_C2E6:
+LBall_ChkDel:
 		out_of_range.w	DeleteObject
+	if FixBugs
+		bra.w	DisplaySprite
+	else
 		rts
-; ---------------------------------------------------------------------------
-off_C306:	dc.w loc_C318-off_C306
-		dc.w loc_C318-off_C306
-		dc.w loc_C318-off_C306
-		dc.w loc_C318-off_C306
-		dc.w loc_C340-off_C306
-		dc.w loc_C362-off_C306
-		dc.w loc_C384-off_C306
-		dc.w loc_C3A8-off_C306
-		dc.w locret_C3CC-off_C306
-; ---------------------------------------------------------------------------
+	endif
+; ===========================================================================
+LBall_TypeIndex:	dc.w LBall_Type00-LBall_TypeIndex, LBall_Type00-LBall_TypeIndex
+		dc.w LBall_Type00-LBall_TypeIndex, LBall_Type00-LBall_TypeIndex
+		dc.w LBall_Type04-LBall_TypeIndex, LBall_Type05-LBall_TypeIndex
+		dc.w LBall_Type06-LBall_TypeIndex, LBall_Type07-LBall_TypeIndex
+		dc.w LBall_Type08-LBall_TypeIndex
+; ===========================================================================
+; lavaball types 00-03 fly up and fall back down
 
-loc_C318:
-		addi.w	#$18,obVelY(a0)
+LBall_Type00:
+		addi.w	#$18,obVelY(a0)	; increase object's downward speed
 		move.w	objoff_30(a0),d0
-		cmp.w	obY(a0),d0
-		bcc.s	loc_C32C
-		addq.b	#2,obRoutine(a0)
+		cmp.w	obY(a0),d0	; has object fallen back to its original position?
+		bhs.s	loc_C32C	; if not, branch
+		addq.b	#2,obRoutine(a0)	; goto "LBall_Delete" routine
 
 loc_C32C:
 		bclr	#1,obStatus(a0)
@@ -80,35 +89,38 @@ loc_C32C:
 
 locret_C33E:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
+; lavaball type 04 flies up until it hits the ceiling
 
-loc_C340:
+LBall_Type04:
 		bset	#1,obStatus(a0)
 		bsr.w	ObjHitCeiling
 		tst.w	d1
 		bpl.s	locret_C360
 		move.b	#8,obSubtype(a0)
 		move.b	#1,obAnim(a0)
-		move.w	#0,obVelY(a0)
+		move.w	#0,obVelY(a0)	; stop the object when it touches the ceiling
 
 locret_C360:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
+; lavaball type 05 falls down until it hits the floor
 
-loc_C362:
+LBall_Type05:
 		bclr	#1,obStatus(a0)
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_C382
 		move.b	#8,obSubtype(a0)
 		move.b	#1,obAnim(a0)
-		move.w	#0,obVelY(a0)
+		move.w	#0,obVelY(a0)	; stop the object when it touches the floor
 
 locret_C382:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
+; lavaball types 06-07 move sideways
 
-loc_C384:
+LBall_Type06:
 		bset	#0,obStatus(a0)
 		moveq	#-8,d3
 		bsr.w	ObjHitWallLeft
@@ -116,13 +128,13 @@ loc_C384:
 		bpl.s	locret_C3A6
 		move.b	#8,obSubtype(a0)
 		move.b	#3,obAnim(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#0,obVelX(a0)	; stop object when it touches a wall
 
 locret_C3A6:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C3A8:
+LBall_Type07:
 		bclr	#0,obStatus(a0)
 		moveq	#8,d3
 		bsr.w	ObjHitWallRight
@@ -130,15 +142,15 @@ loc_C3A8:
 		bpl.s	locret_C3CA
 		move.b	#8,obSubtype(a0)
 		move.b	#3,obAnim(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#0,obVelX(a0)	; stop object when it touches a wall
 
 locret_C3CA:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-locret_C3CC:
+LBall_Type08:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-j_DeleteObject:
+LBall_Delete:
 		bra.w	DeleteObject
