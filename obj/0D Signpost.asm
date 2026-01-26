@@ -10,6 +10,8 @@ Signpost:
 		lea	(Ani_Sign).l,a1
 		bsr.w	AnimateSprite
 	if FixBugs
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
 	else

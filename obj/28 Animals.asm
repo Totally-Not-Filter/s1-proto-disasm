@@ -1,27 +1,30 @@
 ; ---------------------------------------------------------------------------
+; Object 28 - animals
+; ---------------------------------------------------------------------------
 
 Animals:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_732C(pc,d0.w),d1
-		jmp	off_732C(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_732C:	dc.w loc_7382-off_732C
-		dc.w loc_7418-off_732C
-		dc.w loc_7472-off_732C
-		dc.w loc_74A8-off_732C
-		dc.w loc_7472-off_732C
-		dc.w loc_7472-off_732C
-		dc.w loc_7472-off_732C
-		dc.w loc_74A8-off_732C
-		dc.w loc_7472-off_732C
+		move.w	Anml_Index(pc,d0.w),d1
+		jmp	Anml_Index(pc,d1.w)
+; ===========================================================================
+Anml_Index:	dc.w Anml_FromEnemy-Anml_Index, loc_7418-Anml_Index
+		dc.w loc_7472-Anml_Index, loc_74A8-Anml_Index
+		dc.w loc_7472-Anml_Index, loc_7472-Anml_Index
+		dc.w loc_7472-Anml_Index, loc_74A8-Anml_Index
+		dc.w loc_7472-Anml_Index
 
-byte_733E:	dc.b 0, 1, 2, 3, 4, 5, 6, 3, 4, 1, 0, 5
+Anml_VarIndex:	dc.b 0, 1 ; Green Hill Zone
+		dc.b 2, 3 ; Labyrinth Zone
+		dc.b 4, 5 ; Marble Zone
+		dc.b 6, 3 ; Star Light Zone
+		dc.b 4, 1 ; Sparkling Zone
+		dc.b 0, 5 ; Clock Work Zone
 
-word_734A:	dc.w -$200, -$400
+Anml_Variables:	dc.w -$200, -$400
 		dc.l Map_Animal1
-		dc.w -$200, -$300
-		dc.l Map_Animal2
+		dc.w -$200, -$300	; horizontal speed, vertical speed
+		dc.l Map_Animal2	; mappings address
 		dc.w -$140, -$200
 		dc.l Map_Animal1
 		dc.w -$100, -$180
@@ -32,9 +35,9 @@ word_734A:	dc.w -$200, -$400
 		dc.l Map_Animal2
 		dc.w -$280, -$380
 		dc.l Map_Animal3
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_7382:
+Anml_FromEnemy:
 		addq.b	#2,obRoutine(a0)
 		bsr.w	RandomNumber
 		andi.w	#1,d0
@@ -42,17 +45,17 @@ loc_7382:
 		move.b	(v_zone).w,d1
 		add.w	d1,d1
 		add.w	d0,d1
-		move.b	byte_733E(pc,d1.w),d0
+		move.b	Anml_VarIndex(pc,d1.w),d0
 		move.b	d0,objoff_30(a0)
 		lsl.w	#3,d0
-		lea	word_734A(pc,d0.w),a1
-		move.w	(a1)+,objoff_32(a0)
-		move.w	(a1)+,objoff_34(a0)
-		move.l	(a1)+,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Animal_1,0,0),obGfx(a0)
-		btst	#0,objoff_30(a0)
-		beq.s	loc_73C6
-		move.w	#make_art_tile(ArtTile_Animal_2,0,0),obGfx(a0)
+		lea	Anml_Variables(pc,d0.w),a1
+		move.w	(a1)+,objoff_32(a0)	; load horizontal speed
+		move.w	(a1)+,objoff_34(a0)	; load vertical speed
+		move.l	(a1)+,obMap(a0)	; load mappings
+		move.w	#make_art_tile(ArtTile_Animal_1,0,0),obGfx(a0)	; VRAM setting for 1st animal
+		btst	#0,objoff_30(a0)	; is 1st animal used?
+		beq.s	loc_73C6	; if yes, branch
+		move.w	#make_art_tile(ArtTile_Animal_2,0,0),obGfx(a0)	; VRAM setting for 2nd animal
 
 loc_73C6:
 		move.b	#$C,obHeight(a0)
@@ -66,14 +69,14 @@ loc_73C6:
 		tst.b	(v_bossstatus).w
 		bne.s	loc_7438
 		bsr.w	FindFreeObj
-		bne.s	loc_7414
-		_move.b	#id_Points,obID(a1)
+		bne.s	Anml_Display
+		_move.b	#id_Points,obID(a1) ; load points object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
-loc_7414:
+Anml_Display:
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_7418:
 		tst.b	obRender(a0)
@@ -103,7 +106,7 @@ loc_7438:
 
 loc_746E:
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_7472:
 		bsr.w	ObjectFall
@@ -121,7 +124,7 @@ loc_749C:
 		tst.b	obRender(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_74A8:
 		bsr.w	SpeedToPos
