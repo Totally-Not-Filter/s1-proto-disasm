@@ -98,7 +98,11 @@ v_debugnumbers1	=	v_objspace+object_size*16	; object variable space for the unus
 v_debugnumxpos	=	v_debugnumbers1+object_size*0	; object variable space for the x position of the unused debug numbers ($100 bytes)
 v_debugnumypos	=	v_debugnumbers1+object_size*4	; object variable space for the y position of the unused debug numbers ($100 bytes)
 v_debugnuminertia	=	v_debugnumbers1+object_size*8	; object variable space for the inertia of the unused debug numbers ($100 bytes)
+
+; This has an issue where it spills into v_lvlobjspace due to how many numbers it loads in (52 numbers).
 v_debugnumbers2	=	v_objspace+object_size*10	; object variable space for the unused debug numbers ($D00 bytes)
+
+v_vanishsonic	=	v_objspace+object_size*7	; object variable space for when sonic is vanishing after interacting with a giant ring ($40 bytes)
 
 v_lvlobjspace:
 			ds.b obj.size*96

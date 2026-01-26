@@ -25,8 +25,7 @@ Debug_Coords_XY_Index:
 		dc.w $160, $98
 		dc.w $168, $98
 		dc.w $170, $98
-Debug_Coords_XY_Index_End:
-		even
+Debug_Coords_XY_Index_End
 ; ---------------------------------------------------------------------------
 ; sub_2F24:
 Debug_Coord_B_Sprites:
@@ -95,5 +94,4 @@ Debug_Coords_B_XY_Index:
 		dc.w $130, $A8
 		dc.w $138, $A8
 		dc.w $140, $A8
-Debug_Coords_B_XY_Index_End:
-		even
+Debug_Coords_B_XY_Index_End

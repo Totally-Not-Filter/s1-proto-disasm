@@ -31,6 +31,8 @@ GRing_Main:	; Routine 0
 GRing_Animate:	; Routine 2
 		move.b	(v_ani1_frame).w,obFrame(a0)
 	if FixBugs
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
 	else
@@ -46,7 +48,7 @@ GRing_Collect:	; Routine 4
 		move.b	#1,obPriority(a0)
 
 GRing_Delete:	; Routine 6
-		move.b	#id_VanishSonic,(v_objslot7).w
+		move.b	#id_VanishSonic,(v_vanishsonic).w
 		moveq	#plcid_Warp,d0
 		bsr.w	AddPLC
 		bra.w	DeleteObject
