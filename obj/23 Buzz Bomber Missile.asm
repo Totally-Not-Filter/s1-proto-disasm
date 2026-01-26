@@ -1,21 +1,25 @@
 ; ---------------------------------------------------------------------------
+; Object 23 - missile that Buzz Bomber throws
+; ---------------------------------------------------------------------------
 
 Missile:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_79FA(pc,d0.w),d1
-		jmp	off_79FA(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_79FA:	dc.w loc_7A04-off_79FA
-		dc.w loc_7A4E-off_79FA
-		dc.w loc_7A6C-off_79FA
-		dc.w loc_7AB2-off_79FA
-		dc.w loc_7AB8-off_79FA
-; ---------------------------------------------------------------------------
+		move.w	Msl_Index(pc,d0.w),d1
+		jmp	Msl_Index(pc,d1.w)
+; ===========================================================================
+Msl_Index:	dc.w Msl_Main-Msl_Index
+		dc.w Msl_Animate-Msl_Index
+		dc.w Msl_FromBuzz-Msl_Index
+		dc.w Msl_Delete-Msl_Index
+		dc.w Msl_FromNewt-Msl_Index
 
-loc_7A04:
+msl_parent = objoff_3C
+; ===========================================================================
+
+Msl_Main:	; Routine 0
 		subq.w	#1,objoff_32(a0)
-		bpl.s	sub_7A5E
+		bpl.s	Msl_ChkCancel
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Missile,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Buzz_Bomber,1,0),obGfx(a0)
@@ -23,71 +27,100 @@ loc_7A04:
 		move.b	#3,obPriority(a0)
 		move.b	#8,obActWid(a0)
 		andi.b	#3,obStatus(a0)
-		tst.b	obSubtype(a0)
-		beq.s	loc_7A4E
-		move.b	#8,obRoutine(a0)
+		tst.b	obSubtype(a0)	; was object created by a Newtron?
+		beq.s	Msl_Animate	; if not, branch
+
+		move.b	#8,obRoutine(a0) ; run "Msl_FromNewt" routine
 		move.b	#$87,obColType(a0)
 		move.b	#1,obAnim(a0)
-		bra.s	loc_7AC2
-; ---------------------------------------------------------------------------
+		bra.s	Msl_Animate2
+; ===========================================================================
 
-loc_7A4E:
-		bsr.s	sub_7A5E
+Msl_Animate:	; Routine 2
+		bsr.s	Msl_ChkCancel
+	if FixBugs
+		; Msl_ChkCancel can call DeleteObject, so we shouldn't queue
+		; this object for display or update the animation state.
+		; Failing to account for this results in a null pointer
+		; dereference, which is harmless in Sonic 1 but will crash
+		; Sonic 2. Fun fact: Sonic 2 REV00 has some leftover debug
+		; code in its BuildSprites function for detecting this type
+		; of bug.
+		beq.s	Msl_ChkCancel.return
+	endif
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
 
-sub_7A5E:
-		movea.l	objoff_3C(a0),a1
-		_cmpi.b	#id_ExplosionItem,obID(a1)
-		beq.s	loc_7AB2
+; ---------------------------------------------------------------------------
+; Subroutine to check if the Buzz Bomber which fired the missile has been
+; destroyed, and if it has, then cancel the missile
+; ---------------------------------------------------------------------------
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+Msl_ChkCancel:
+		movea.l	msl_parent(a0),a1
+		_cmpi.b	#id_ExplosionItem,obID(a1) ; has Buzz Bomber been destroyed?
+	if FixBugs
+		; This adds a return value so that we know if the object has
+		; been freed.
+		bne.s	.return
+		bsr.s	Msl_Delete
+		moveq	#0,d0
+
+.return:
+	else
+		beq.s	Msl_Delete	; if yes, branch
+	endif
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_7A6C:
+Msl_FromBuzz:	; Routine 4
 		btst	#7,obStatus(a0)
-		bne.s	loc_7AA2
+		bne.s	.explode
 		move.b	#$87,obColType(a0)
 		move.b	#1,obAnim(a0)
 		bsr.w	SpeedToPos
-	if FixBugs
+
+	if ~~FixBugs
+		; Object should not call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
+		lea	(Ani_Missile).l,a1
+		bsr.w	AnimateSprite
+		bsr.w	DisplaySprite
+	endif
+
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#224,d0
-		cmp.w	obY(a0),d0
-		bcs.s	loc_7AB2
+		cmp.w	obY(a0),d0	; has object moved below the level boundary?
+		blo.s	Msl_Delete	; if yes, branch
+
+	if FixBugs
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
 	else
-		lea	(Ani_Missile).l,a1
-		bsr.w	AnimateSprite
-		bsr.w	DisplaySprite
-		move.w	(v_limitbtm2).w,d0
-		addi.w	#224,d0
-		cmp.w	obY(a0),d0
-		bcs.s	loc_7AB2
 		rts
 	endif
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_7AA2:
-		_move.b	#id_MissileDissolve,obID(a0)
+.explode:
+		_move.b	#id_MissileDissolve,obID(a0) ; change object to an explosion (Obj24)
 		move.b	#0,obRoutine(a0)
 		bra.w	MissileDissolve
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_7AB2:
+Msl_Delete:	; Routine 6
 		bsr.w	DeleteObject
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_7AB8:
+Msl_FromNewt:	; Routine 8
 		tst.b	obRender(a0)
-		bpl.s	loc_7AB2
+		bpl.s	Msl_Delete
 		bsr.w	SpeedToPos
 
-loc_7AC2:
+Msl_Animate2:
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
