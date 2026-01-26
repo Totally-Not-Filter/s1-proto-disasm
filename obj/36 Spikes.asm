@@ -1,13 +1,15 @@
 ; ---------------------------------------------------------------------------
+; Object 36 - spikes
+; ---------------------------------------------------------------------------
 
 Spikes:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_AB0A(pc,d0.w),d1
-		jmp	off_AB0A(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_AB0A:	dc.w loc_AB1A-off_AB0A
-		dc.w loc_AB64-off_AB0A
+		move.w	Spik_Index(pc,d0.w),d1
+		jmp	Spik_Index(pc,d1.w)
+; ===========================================================================
+Spik_Index:	dc.w Spik_Main-Spik_Index
+		dc.w Spik_Solid-Spik_Index
 
 spik_origX = objoff_30		; start X position
 spik_origY = objoff_32		; start Y position
@@ -18,11 +20,11 @@ Spik_Var:	dc.b 0, $14		; frame number, object width
 		dc.b 3, $1C
 		dc.b 4, $40
 		dc.b 5, $10
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_AB1A:
+Spik_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
-		move.l	#MapSpikes,obMap(a0)
+		move.l	#Map_Spike,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Spikes,0,0),obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
@@ -37,42 +39,46 @@ loc_AB1A:
 		move.w	obX(a0),spik_origX(a0)
 		move.w	obY(a0),spik_origY(a0)
 
-loc_AB64:
-		bsr.w	sub_AC02
+Spik_Solid:	; Routine 2
+		bsr.w	Spik_Type0x	; make the object move
 		move.w	#4,d2
-		cmpi.b	#5,obFrame(a0)
-		beq.s	loc_AB80
-		cmpi.b	#1,obFrame(a0)
-		bne.s	loc_AB9E
+		cmpi.b	#5,obFrame(a0)	; is object type $5x?
+		beq.s	Spik_SideWays	; if yes, branch
+		cmpi.b	#1,obFrame(a0)	; is object type $1x?
+		bne.s	Spik_Upright	; if not, branch
 		move.w	#$14,d2
 
-loc_AB80:
+; Spikes types $1x and $5x face sideways
+
+Spik_SideWays:
 		move.w	#$1B,d1
 		move.w	d2,d3
 		subq.w	#2,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
-		tst.b	ob2ndRout(a0)
-		bne.s	loc_ABDE
+		tst.b	obSolid(a0)
+		bne.s	Spik_Display
 		cmpi.w	#1,d4
-		beq.s	loc_ABBE
-		bra.s	loc_ABDE
-; ---------------------------------------------------------------------------
+		beq.s	Spik_Hurt
+		bra.s	Spik_Display
+; ===========================================================================
 
-loc_AB9E:
+; Spikes types $0x, $2x, $3x and $4x face up or down
+
+Spik_Upright:
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		bsr.w	Obj44_SolidWall
 		tst.w	d4
-		bpl.s	loc_ABDE
+		bpl.s	Spik_Display
 		tst.w	obVelY(a1)
-		beq.s	loc_ABDE
+		beq.s	Spik_Display
 		tst.w	d3
-		bmi.s	loc_ABDE
+		bmi.s	Spik_Display
 
-loc_ABBE:
+Spik_Hurt:
 		move.l	a0,-(sp)
 		movea.l	a0,a2
 		lea	(v_player).w,a0
@@ -85,8 +91,10 @@ loc_ABBE:
 		bsr.w	HurtSonic
 		movea.l	(sp)+,a0
 
-loc_ABDE:
+Spik_Display:
 	if FixBugs
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
 		out_of_range.w	DeleteObject,spik_origX(a0)
 		bra.w	DisplaySprite
 	else
@@ -94,53 +102,53 @@ loc_ABDE:
 		out_of_range.w	DeleteObject,spik_origX(a0)
 		rts
 	endif
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_AC02:
+Spik_Type0x:
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		add.w	d0,d0
-		move.w	off_AC12(pc,d0.w),d1
-		jmp	off_AC12(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_AC12:	dc.w locret_AC18-off_AC12
-		dc.w loc_AC1A-off_AC12
-		dc.w loc_AC2E-off_AC12
-; ---------------------------------------------------------------------------
+		move.w	Spik_TypeIndex(pc,d0.w),d1
+		jmp	Spik_TypeIndex(pc,d1.w)
+; ===========================================================================
+Spik_TypeIndex:	dc.w Spik_Type00-Spik_TypeIndex
+		dc.w Spik_Type01-Spik_TypeIndex
+		dc.w Spik_Type02-Spik_TypeIndex
+; ===========================================================================
 
-locret_AC18:
-		rts
-; ---------------------------------------------------------------------------
+Spik_Type00:
+		rts		; don't move the object
+; ===========================================================================
 
-loc_AC1A:
-		bsr.w	sub_AC42
+Spik_Type01:
+		bsr.w	Spik_Wait
 		moveq	#0,d0
 		move.b	objoff_34(a0),d0
 		add.w	spik_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,obY(a0)	; move the object vertically
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_AC2E:
-		bsr.w	sub_AC42
+Spik_Type02:
+		bsr.w	Spik_Wait
 		moveq	#0,d0
 		move.b	objoff_34(a0),d0
 		add.w	spik_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,obX(a0)	; move the object horizontally
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_AC42:
-		tst.w	objoff_38(a0)
-		beq.s	loc_AC60
-		subq.w	#1,objoff_38(a0)
+Spik_Wait:
+		tst.w	objoff_38(a0)		; is time delay = zero?
+		beq.s	loc_AC60	; if yes, branch
+		subq.w	#1,objoff_38(a0)	; subtract 1 from time delay
 		bne.s	locret_ACA2
 		tst.b	obRender(a0)
 		bpl.s	locret_ACA2
 		move.w	#sfx_SpikesMove,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play "spikes moving" sound
 		bra.s	locret_ACA2
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_AC60:
 		tst.w	objoff_36(a0)
@@ -149,17 +157,17 @@ loc_AC60:
 		bcc.s	locret_ACA2
 		move.w	#0,objoff_34(a0)
 		move.w	#0,objoff_36(a0)
-		move.w	#$3C,objoff_38(a0)
+		move.w	#60,objoff_38(a0)	; set time delay to 1 second
 		bra.s	locret_ACA2
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_AC82:
 		addi.w	#$800,objoff_34(a0)
 		cmpi.w	#$2000,objoff_34(a0)
-		bcs.s	locret_ACA2
+		blo.s	locret_ACA2
 		move.w	#$2000,objoff_34(a0)
 		move.w	#1,objoff_36(a0)
-		move.w	#$3C,objoff_38(a0)
+		move.w	#60,objoff_38(a0)	; set time delay to 1 second
 
 locret_ACA2:
 		rts
