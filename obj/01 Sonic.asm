@@ -1323,9 +1323,9 @@ Sonic_GameOver:
 		subq.b	#1,(v_lives).w	; subtract 1 from number of lives
 		bne.s	loc_F380
 		move.w	#0,objoff_3A(a0)
-		move.b	#id_GameOverCard,(v_objslot2).w ; load GAME object
-		move.b	#id_GameOverCard,(v_objslot3).w ; load OVER object
-		move.b	#1,(v_objslot3+obFrame).w ; set OVER object to correct frame
+		move.b	#id_GameOverCard,(v_gameovertext1).w ; load GAME object
+		move.b	#id_GameOverCard,(v_gameovertext2).w ; load OVER object
+		move.b	#1,(v_gameovertext2+obFrame).w ; set OVER object to correct frame
 		move.w	#bgm_GameOver,d0
 		jsr	(QueueSound2).l	; play game over music
 		moveq	#plcid_GameOver,d0

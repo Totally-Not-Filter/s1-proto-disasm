@@ -27,39 +27,7 @@ v_hscrolltablebuffer:	ds.b $380
 v_hscrolltablebuffer_end
 			ds.b $80
 v_hscrolltablebuffer_end_padded
-v_objspace:				; RAM for object space ($600 bytes)
-v_objslot0:		ds.b obj.size
-v_objslot1:		ds.b obj.size
-v_objslot2:		ds.b obj.size
-v_objslot3:		ds.b obj.size
-v_objslot4:		ds.b obj.size
-v_objslot5:		ds.b obj.size
-v_objslot6:		ds.b obj.size
-v_objslot7:		ds.b obj.size
-v_objslot8:		ds.b obj.size
-v_objslot9:		ds.b obj.size
-v_objslotA:		ds.b obj.size
-v_objslotB:		ds.b obj.size
-v_objslotC:		ds.b obj.size
-v_objslotD:		ds.b obj.size
-v_objslotE:		ds.b obj.size
-v_objslotF:		ds.b obj.size
-v_objslot10:	ds.b obj.size
-v_objslot11:	ds.b obj.size
-v_objslot12:	ds.b obj.size
-v_objslot13:	ds.b obj.size
-v_objslot14:	ds.b obj.size
-v_objslot15:	ds.b obj.size
-v_objslot16:	ds.b obj.size
-v_objslot17:	ds.b obj.size
-v_objslot18:	ds.b obj.size
-v_objslot19:	ds.b obj.size
-v_objslot1A:	ds.b obj.size
-v_objslot1B:	ds.b obj.size
-v_objslot1C:	ds.b obj.size
-v_objslot1D:	ds.b obj.size
-v_objslot1E:	ds.b obj.size
-v_objslot1F:	ds.b obj.size
+v_objspace:		ds.b object_size*32	; RAM for object space ($600 bytes)
 
 ; Title screen objects
 v_titlesonic	= v_objspace+object_size*1	; object variable space for Sonic in the title screen ($40 bytes)
@@ -104,8 +72,7 @@ v_debugnumbers2	=	v_objspace+object_size*10	; object variable space for the unus
 
 v_vanishsonic	=	v_objspace+object_size*7	; object variable space for when sonic is vanishing after interacting with a giant ring ($40 bytes)
 
-v_lvlobjspace:
-			ds.b obj.size*96
+v_lvlobjspace:	ds.b object_size*96
 v_lvlobjend
 v_objspace_end
 ; $FFFFF000

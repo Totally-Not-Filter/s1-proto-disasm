@@ -1657,9 +1657,9 @@ loc_26AE:
 		bsr.w	BuildSprites
 		bsr.w	PalCycTitle
 		bsr.w	RunPLC
-		move.w	(v_objslot0+obX).w,d0
+		move.w	(v_player+obX).w,d0
 		addq.w	#2,d0	; set object scroll right speed
-		move.w	d0,(v_objslot0+obX).w	; move sonic to the right
+		move.w	d0,(v_player+obX).w	; move sonic to the right
 		cmpi.w	#$1C00,d0	; has object passed $1C00?
 		blo.s	loc_26E4	; if not, branch
 		move.b	#id_Sega,(v_gamemode).w	; go to Sega Screen
@@ -1781,9 +1781,9 @@ loc_27FE:
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
-		move.w	(v_objslot0+obX).w,d0
+		move.w	(v_player+obX).w,d0
 		addq.w	#2,d0
-		move.w	d0,(v_objslot0+obX).w
+		move.w	d0,(v_player+obX).w
 		cmpi.w	#$1C00,d0
 		blo.s	loc_282C
 		move.b	#id_Sega,(v_gamemode).w
