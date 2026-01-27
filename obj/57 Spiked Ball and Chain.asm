@@ -1,62 +1,74 @@
 ; ---------------------------------------------------------------------------
+; Object 57 - spiked balls (SZ)
+; ---------------------------------------------------------------------------
 
 SpikeBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	ObjSpikedBalls_Index(pc,d0.w),d1
-		jmp	ObjSpikedBalls_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
-ObjSpikedBalls_Index:dc.w ObjSpikedBalls_Init-ObjSpikedBalls_Index
-		dc.w ObjSpikedBalls_Move-ObjSpikedBalls_Index
-		dc.w ObjSpikedBalls_Display-ObjSpikedBalls_Index
-; ---------------------------------------------------------------------------
+		move.w	SBall_Index(pc,d0.w),d1
+		jmp	SBall_Index(pc,d1.w)
+; ===========================================================================
+SBall_Index:	dc.w SBall_Main-SBall_Index
+		dc.w SBall_Move-SBall_Index
+		dc.w SBall_Display-SBall_Index
 
-ObjSpikedBalls_Init:
+sball_childs = objoff_29	; number of child objects (1 byte)
+		; $30-$37	; object RAM numbers of childs (1 byte each)
+sball_origX = objoff_3A		; centre x-axis position (2 bytes)
+sball_origY = objoff_38		; centre y-axis position (2 bytes)
+sball_radius = objoff_3C	; radius (1 byte)
+sball_speed = objoff_3E		; rate of spin (2 bytes)
+; ===========================================================================
+
+SBall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_SBall,obMap(a0)
 		move.w	#make_art_tile(ArtTile_SZ_Spikeball_Chain,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#8,obActWid(a0)
-		move.w	obX(a0),objoff_3A(a0)
-		move.w	obY(a0),objoff_38(a0)
+		move.w	obX(a0),sball_origX(a0)
+		move.w	obY(a0),sball_origY(a0)
 		move.b	#$98,obColType(a0)
-		move.b	obSubtype(a0),d1
-		andi.b	#$F0,d1
+		move.b	obSubtype(a0),d1 ; get object type
+		andi.b	#$F0,d1		; read only the 1st digit
 		ext.w	d1
-		asl.w	#3,d1
-		move.w	d1,objoff_3E(a0)
+		asl.w	#3,d1		; multiply by 8
+		move.w	d1,sball_speed(a0) ; set object twirl speed
 		move.b	obStatus(a0),d0
 		ror.b	#2,d0
 		andi.b	#$C0,d0
 		move.b	d0,obAngle(a0)
-		lea	objoff_29(a0),a2
-		move.b	obSubtype(a0),d1
-		andi.w	#7,d1
+		lea	sball_childs(a0),a2
+		move.b	obSubtype(a0),d1 ; get object type
+		andi.w	#7,d1		; read only the 2nd digit
 		move.b	#0,(a2)+
 		move.w	d1,d3
 		lsl.w	#4,d3
-		move.b	d3,objoff_3C(a0)
-		subq.w	#1,d1
-		bcs.s	loc_DD5E
+		move.b	d3,sball_radius(a0)
+		subq.w	#1,d1		; set chain length (type-1)
+		bcs.s	.fail
 		btst	#3,obSubtype(a0)
-		beq.s	ObjSpikedBalls_MakeChain
+		beq.s	.makechain
 		subq.w	#1,d1
-		bcs.s	loc_DD5E
+		bcs.s	.fail
 
-ObjSpikedBalls_MakeChain:
+.makechain:
 	if FixBugs
+		; If an object is allocated before the parent object, then
+		; when the child is deleted, it will have already been queued
+		; for display, which is a display-and-delete bug.
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
 	endif
-		bne.s	loc_DD5E
-		addq.b	#1,objoff_29(a0)
-		move.w	a1,d5
-		subi.w	#v_objspace,d5
-		lsr.w	#object_size_bits,d5
+		bne.s	.fail
+		addq.b	#1,sball_childs(a0) ; increment child object counter
+		move.w	a1,d5		; get child object RAM address
+		subi.w	#v_objspace,d5 ; subtract base address
+		lsr.w	#object_size_bits,d5		; divide by $40
 		andi.w	#$7F,d5
-		move.b	d5,(a2)+
+		move.b	d5,(a2)+	; copy child RAM number
 		move.b	#4,obRoutine(a1)
 		_move.b	obID(a0),obID(a1)
 		move.l	obMap(a0),obMap(a1)
@@ -66,40 +78,41 @@ ObjSpikedBalls_MakeChain:
 		move.b	obActWid(a0),obActWid(a1)
 		move.b	obColType(a0),obColType(a1)
 		subi.b	#$10,d3
-		move.b	d3,objoff_3C(a1)
-		dbf	d1,ObjSpikedBalls_MakeChain
+		move.b	d3,sball_radius(a1)
 
-loc_DD5E:
+		dbf	d1,.makechain ; repeat for length of chain
+
+.fail:
 		move.w	a0,d5
 		subi.w	#v_objspace,d5
 		lsr.w	#object_size_bits,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 
-ObjSpikedBalls_Move:
-		bsr.w	ObjSpikedBalls_MoveStub
-		bra.w	ObjSpikedBalls_ChkDelete
-; ---------------------------------------------------------------------------
+SBall_Move:	; Routine 2
+		bsr.w	.movesub
+		bra.w	.chkdel
+; ===========================================================================
 
-ObjSpikedBalls_MoveStub:
-		move.w	objoff_3E(a0),d0
+.movesub:
+		move.w	sball_speed(a0),d0
 		add.w	d0,obAngle(a0)
 		move.b	obAngle(a0),d0
 		jsr	(CalcSine).l
-		move.w	objoff_38(a0),d2
-		move.w	objoff_3A(a0),d3
-		lea	objoff_29(a0),a2
+		move.w	sball_origY(a0),d2
+		move.w	sball_origX(a0),d3
+		lea	sball_childs(a0),a2
 		moveq	#0,d6
 		move.b	(a2)+,d6
 
-ObjSpikedBalls_MoveLoop:
+.loop:
 		moveq	#0,d4
 		move.b	(a2)+,d4
 		lsl.w	#object_size_bits,d4
 		addi.l	#v_objspace&$FFFFFF,d4
 		movea.l	d4,a1
 		moveq	#0,d4
-		move.b	objoff_3C(a1),d4
+		move.b	sball_radius(a1),d4
 		move.l	d4,d5
 		muls.w	d0,d4
 		asr.l	#8,d4
@@ -109,30 +122,30 @@ ObjSpikedBalls_MoveLoop:
 		add.w	d3,d5
 		move.w	d4,obY(a1)
 		move.w	d5,obX(a1)
-		dbf	d6,ObjSpikedBalls_MoveLoop
+		dbf	d6,.loop
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjSpikedBalls_ChkDelete:
-		out_of_range.w	ObjSpikedBalls_Delete,objoff_3A(a0)
+.chkdel:
+		out_of_range.w	.delete,sball_origX(a0)
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjSpikedBalls_Delete:
+.delete:
 		moveq	#0,d2
-		lea	objoff_29(a0),a2
+		lea	sball_childs(a0),a2
 		move.b	(a2)+,d2
 
-ObjSpikedBalls_DeleteLoop:
+.deleteloop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#object_size_bits,d0
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
-		dbf	d2,ObjSpikedBalls_DeleteLoop
+		dbf	d2,.deleteloop ; delete all pieces of chain
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-ObjSpikedBalls_Display:
+SBall_Display:	; Routine 4
 		bra.w	DisplaySprite
