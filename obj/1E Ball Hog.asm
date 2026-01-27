@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Object 1E - Ball Hog enemy (SBZ)
+; Object 1E - Ball Hog enemy
 ; ---------------------------------------------------------------------------
 
 BallHog:
@@ -24,7 +24,7 @@ Hog_Main:	; Routine 0
 		move.b	#5,obColType(a0)
 		move.b	#$C,obActWid(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l
+		jsr	(ObjFloorDist).l	; find floor
 		tst.w	d1
 		bpl.s	.floornotfound
 		add.w	d1,obY(a0)
@@ -38,34 +38,37 @@ Hog_Main:	; Routine 0
 Hog_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_6FB2(pc,d0.w),d1
-		jsr	off_6FB2(pc,d1.w)
+		move.w	Hog_ActIndex(pc,d0.w),d1
+		jsr	Hog_ActIndex(pc,d1.w)
 		lea	(Ani_Hog).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-off_6FB2:	dc.w loc_6FB6-off_6FB2
-		dc.w loc_701C-off_6FB2
+Hog_ActIndex:	dc.w loc_6FB6-Hog_ActIndex
+		dc.w loc_701C-Hog_ActIndex
+
+hog_time = objoff_30
+hog_launchflag = objoff_32		; 0 to launch a cannonball
 ; ===========================================================================
 
 loc_6FB6:
-		subq.w	#1,objoff_30(a0)
-		bpl.s	loc_6FE6
+		subq.w	#1,hog_time(a0)	; subtract 1 from pause time
+		bpl.s	loc_6FE6		; if time remains, branch
 		addq.b	#2,ob2ndRout(a0)
-		move.w	#256-1,objoff_30(a0)
-		move.w	#$40,obVelX(a0)
+		move.w	#255,hog_time(a0)
+		move.w	#$40,obVelX(a0) ; move object to the right
 		move.b	#1,obAnim(a0)
 		bchg	#0,obStatus(a0)
 		bne.s	loc_6FDE
-		neg.w	obVelX(a0)
+		neg.w	obVelX(a0)	; change direction
 
 loc_6FDE:
-		move.b	#0,objoff_32(a0)
+		move.b	#0,hog_launchflag(a0)
 		rts
 ; ===========================================================================
 
 loc_6FE6:
-		tst.b	objoff_32(a0)
+		tst.b	hog_launchflag(a0)
 		bne.s	locret_6FF4
 		cmpi.b	#2,obFrame(a0)
 		beq.s	loc_6FF6
@@ -75,7 +78,7 @@ locret_6FF4:
 ; ===========================================================================
 
 loc_6FF6:
-		move.b	#1,objoff_32(a0)
+		move.b	#1,hog_launchflag(a0)
 		bsr.w	FindFreeObj
 		bne.s	locret_701A
 		_move.b	#id_Cannonball,obID(a1)
@@ -88,7 +91,7 @@ locret_701A:
 ; ===========================================================================
 
 loc_701C:
-		subq.w	#1,objoff_30(a0)
+		subq.w	#1,hog_time(a0)
 		bmi.s	loc_7032
 		bsr.w	SpeedToPos
 		jsr	(ObjFloorDist).l
@@ -98,7 +101,7 @@ loc_701C:
 
 loc_7032:
 		subq.b	#2,ob2ndRout(a0)
-		move.w	#60-1,objoff_30(a0)
+		move.w	#59,hog_time(a0)
 		move.w	#0,obVelX(a0)
 		move.b	#0,obAnim(a0)
 		tst.b	obRender(a0)
