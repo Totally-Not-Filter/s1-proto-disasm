@@ -1,16 +1,18 @@
 ; ---------------------------------------------------------------------------
+; Object 47 - pinball bumper (SZ)
+; ---------------------------------------------------------------------------
 
 Bumper:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_C5FE(pc,d0.w),d1
-		jmp	off_C5FE(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_C5FE:	dc.w loc_C602-off_C5FE
-		dc.w loc_C62C-off_C5FE
-; ---------------------------------------------------------------------------
+		move.w	Bump_Index(pc,d0.w),d1
+		jmp	Bump_Index(pc,d1.w)
+; ===========================================================================
+Bump_Index:	dc.w Bump_Main-Bump_Index
+		dc.w Bump_Hit-Bump_Index
+; ===========================================================================
 
-loc_C602:
+Bump_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Bump,obMap(a0)
 		move.w	#make_art_tile(ArtTile_SZ_Bumper,0,0),obGfx(a0)
@@ -19,9 +21,9 @@ loc_C602:
 		move.b	#1,obPriority(a0)
 		move.b	#$D7,obColType(a0)
 
-loc_C62C:
-		tst.b	obColProp(a0)
-		beq.s	loc_C684
+Bump_Hit:	; Routine 2
+		tst.b	obColProp(a0)	; has Sonic touched the bumper?
+		beq.s	.display	; if not, branch
 		clr.b	obColProp(a0)
 		lea	(v_player).w,a1
 		move.w	obX(a0),d1
@@ -32,17 +34,17 @@ loc_C62C:
 		jsr	(CalcSine).l
 		muls.w	#-$700,d1
 		asr.l	#8,d1
-		move.w	d1,obVelX(a1)
+		move.w	d1,obVelX(a1)	; bounce Sonic away
 		muls.w	#-$700,d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a1)
+		move.w	d0,obVelY(a1)	; bounce Sonic away
 		bset	#1,obStatus(a1)
-		clr.b	objoff_3C(a1)
-		move.b	#1,obAnim(a0)
+		clr.b	jumpflag(a1)
+		move.b	#1,obAnim(a0)	; use "hit" animation
 		move.w	#sfx_Bumper,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play bumper sound
 
-loc_C684:
+.display:
 		lea	(Ani_Bump).l,a1
 		bsr.w	AnimateSprite
 	if FixBugs
