@@ -1,24 +1,26 @@
 ; ---------------------------------------------------------------------------
+; Object 43 - Roller enemy (SZ)
+; ---------------------------------------------------------------------------
 
 Roller:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_BFB8(pc,d0.w),d1
-		jmp	off_BFB8(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_BFB8:	dc.w loc_BFBE-off_BFB8
-		dc.w loc_C00C-off_BFB8
-		dc.w loc_C0B0-off_BFB8
-; ---------------------------------------------------------------------------
+		move.w	Roll_Index(pc,d0.w),d1
+		jmp	Roll_Index(pc,d1.w)
+; ===========================================================================
+Roll_Index:	dc.w Roll_Main-Roll_Index
+		dc.w Roll_Action-Roll_Index
+		dc.w Roll_Delete-Roll_Index
+; ===========================================================================
 
-loc_BFBE:
+Roll_Main:	; Routine 0
 		move.b	#$E,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		bsr.w	ObjectFall
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_C00A
-		add.w	d1,obY(a0)
+		add.w	d1,obY(a0)	; match roller's position with the floor
 		move.w	#0,obVelY(a0)
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Roll,obMap(a0)
@@ -26,87 +28,85 @@ loc_BFBE:
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$10,obActWid(a0)
-		move.b	#$8E,obColType(a0)
+		move.b	#$8E,obColType(a0) ; make Roller invincible
 
 locret_C00A:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C00C:
+Roll_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_C028(pc,d0.w),d1
-		jsr	off_C028(pc,d1.w)
+		move.w	Roll_Index2(pc,d0.w),d1
+		jsr	Roll_Index2(pc,d1.w)
 		lea	(Ani_Roll).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
-; ---------------------------------------------------------------------------
-off_C028:	dc.w loc_C030-off_C028
-		dc.w loc_C052-off_C028
-		dc.w loc_C060-off_C028
-		dc.w loc_C08E-off_C028
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Roll_Index2:	dc.w Roll_RollChk-Roll_Index2
+		dc.w Roll_RollNoChk-Roll_Index2
+		dc.w Roll_ChkJump-Roll_Index2
+		dc.w Roll_MatchFloor-Roll_Index2
+; ===========================================================================
 
-loc_C030:
+Roll_RollChk:
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
-		bcs.s	locret_C050
+		blo.s	locret_C050
 		cmpi.w	#$20,d0
-		bcc.s	locret_C050
+		bhs.s	locret_C050
 		addq.b	#2,ob2ndRout(a0)
 		move.b	#1,obAnim(a0)
-		move.w	#$400,obVelX(a0)
+		move.w	#$400,obVelX(a0) ; move Roller horizontally
 
 locret_C050:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C052:
+Roll_RollNoChk:
 		cmpi.b	#2,obAnim(a0)
 		bne.s	locret_C05E
 		addq.b	#2,ob2ndRout(a0)
 
 locret_C05E:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C060:
+Roll_ChkJump:
 		bsr.w	SpeedToPos
 		bsr.w	ObjFloorDist
 		cmpi.w	#-8,d1
-		blt.s	loc_C07A
+		blt.s	Roll_Jump
 		cmpi.w	#$C,d1
-		bge.s	loc_C07A
+		bge.s	Roll_Jump
 		add.w	d1,obY(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C07A:
+Roll_Jump:
 		addq.b	#2,ob2ndRout(a0)
 		bset	#0,objoff_32(a0)
 		beq.s	locret_C08C
-		move.w	#-$600,obVelY(a0)
+		move.w	#-$600,obVelY(a0)	; move Roller vertically
 
 locret_C08C:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C08E:
+Roll_MatchFloor:
 		bsr.w	ObjectFall
 		tst.w	obVelY(a0)
 		bmi.s	locret_C0AE
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_C0AE
-		add.w	d1,obY(a0)
+		add.w	d1,obY(a0)	; match Roller's position with the floor
 		subq.b	#2,ob2ndRout(a0)
-
-loc_C0A8:
 		move.w	#0,obVelY(a0)
 
 locret_C0AE:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_C0B0:
+Roll_Delete:	; Routine 4
 		bra.w	DeleteObject
