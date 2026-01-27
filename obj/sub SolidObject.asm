@@ -4,7 +4,7 @@ SolidObject:
 		cmpi.b	#6,(v_player+obRoutine).w
 		bcc.w	loc_A2FE
 		tst.b	obSolid(a0)
-		beq.w	loc_A37C
+		beq.w	Solid_ChkEnter
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_player).w,a1
@@ -77,7 +77,7 @@ loc_A346:
 		bra.w	loc_A3CC
 ; ---------------------------------------------------------------------------
 
-loc_A37C:
+Solid_ChkEnter:
 		tst.w	(v_debuguse).w
 		bne.w	loc_A448
 		tst.b	obRender(a0)
