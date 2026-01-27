@@ -1,10 +1,12 @@
 ; ---------------------------------------------------------------------------
+; Object 41 - springs
+; ---------------------------------------------------------------------------
 
 Springs:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_BAA0(pc,d0.w),d1
-		jsr	off_BAA0(pc,d1.w)
+		move.w	Spring_Index(pc,d0.w),d1
+		jsr	Spring_Index(pc,d1.w)
 	if FixBugs
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
@@ -13,22 +15,25 @@ Springs:
 		out_of_range.w	DeleteObject
 		rts
 	endif
-; ---------------------------------------------------------------------------
-off_BAA0:	dc.w loc_BAB8-off_BAA0
-		dc.w sub_BB2E-off_BAA0
-		dc.w loc_BB84-off_BAA0
-		dc.w sub_BB8E-off_BAA0
-		dc.w sub_BB9A-off_BAA0
-		dc.w loc_BC1C-off_BAA0
-		dc.w sub_BC26-off_BAA0
-		dc.w loc_BC32-off_BAA0
-		dc.w loc_BC98-off_BAA0
-		dc.w loc_BCA2-off_BAA0
+; ===========================================================================
+Spring_Index:	dc.w Spring_Main-Spring_Index
+		dc.w Spring_Up-Spring_Index
+		dc.w Spring_AniUp-Spring_Index
+		dc.w Spring_ResetUp-Spring_Index
+		dc.w Spring_LR-Spring_Index
+		dc.w Spring_AniLR-Spring_Index
+		dc.w Spring_ResetLR-Spring_Index
+		dc.w Spring_Dwn-Spring_Index
+		dc.w Spring_AniDwn-Spring_Index
+		dc.w Spring_ResetDwn-Spring_Index
 
-word_BAB4:	dc.w -$1000, -$A00
-; ---------------------------------------------------------------------------
+spring_pow = objoff_30			; power of current spring
 
-loc_BAB8:
+Spring_Powers:	dc.w -$1000		; power of red spring
+		dc.w -$A00		; power of yellow spring
+; ===========================================================================
+
+Spring_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Spring,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Spring_Horizontal,0,0),obGfx(a0)
@@ -36,155 +41,158 @@ loc_BAB8:
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
 		move.b	obSubtype(a0),d0
-		btst	#4,d0
-		beq.s	loc_BB04
-		move.b	#8,obRoutine(a0)
+		btst	#4,d0		; does the spring face left/right?
+		beq.s	Spring_NotLR	; if not, branch
+
+		move.b	#8,obRoutine(a0) ; use "Spring_LR" routine
 		move.b	#1,obAnim(a0)
 		move.b	#3,obFrame(a0)
 		move.w	#make_art_tile(ArtTile_Spring_Vertical,0,0),obGfx(a0)
 		move.b	#8,obActWid(a0)
 
-loc_BB04:
-		btst	#5,d0
-		beq.s	loc_BB16
-		move.b	#$E,obRoutine(a0)
+Spring_NotLR:
+		btst	#5,d0		; does the spring face downwards?
+		beq.s	Spring_NotDwn	; if not, branch
+
+		move.b	#$E,obRoutine(a0) ; use "Spring_Dwn" routine
 		bset	#1,obStatus(a0)
 
-loc_BB16:
+Spring_NotDwn:
 		btst	#1,d0
-		beq.s	loc_BB22
+		beq.s	loc_DB72
 		bset	#5,obGfx(a0)
 
-loc_BB22:
+loc_DB72:
 		andi.w	#$F,d0
-		move.w	word_BAB4(pc,d0.w),objoff_30(a0)
+		move.w	Spring_Powers(pc,d0.w),spring_pow(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_BB2E:
+Spring_Up:	; Routine 2
 		move.w	#$1B,d1
 		move.w	#8,d2
 		move.w	#$10,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
-		tst.b	obSolid(a0)
-		bne.s	loc_BB4A
+		tst.b	obSolid(a0)	; is Sonic on top of the spring?
+		bne.s	Spring_BounceUp	; if yes, branch
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_BB4A:
+Spring_BounceUp:
 		addq.b	#2,obRoutine(a0)
 		addq.w	#8,obY(a1)
-		move.w	objoff_30(a0),obVelY(a1)
+		move.w	spring_pow(a0),obVelY(a1) ; move Sonic upwards
 		bset	#1,obStatus(a1)
 		bclr	#3,obStatus(a1)
-		move.b	#$10,obAnim(a1)
+		move.b	#id_Spring,obAnim(a1) ; use "bouncing" animation
 		move.b	#2,obRoutine(a1)
 		bclr	#3,obStatus(a0)
 		clr.b	obSolid(a0)
 		move.w	#sfx_Spring,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play spring sound
 
-loc_BB84:
+Spring_AniUp:	; Routine 4
 		lea	(Ani_Spring).l,a1
 		bra.w	AnimateSprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_BB8E:
-		move.b	#1,obNextAni(a0)
-		subq.b	#4,obRoutine(a0)
+Spring_ResetUp:	; Routine 6
+		move.b	#1,obPrevAni(a0) ; reset animation
+		subq.b	#4,obRoutine(a0) ; goto "Spring_Up" routine
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_BB9A:
+Spring_LR:	; Routine 8
 		move.w	#$13,d1
 		move.w	#$E,d2
 		move.w	#$F,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 		cmpi.b	#2,obRoutine(a0)
-		bne.s	loc_BBBC
+		bne.s	loc_DC0C
 		move.b	#8,obRoutine(a0)
 
-loc_BBBC:
+loc_DC0C:
 		btst	#5,obStatus(a0)
-		bne.s	loc_BBC6
+		bne.s	Spring_BounceLR
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_BBC6:
+Spring_BounceLR:
 		addq.b	#2,obRoutine(a0)
-		move.w	objoff_30(a0),obVelX(a1)
+		move.w	spring_pow(a0),obVelX(a1) ; move Sonic to the left
 		addq.w	#8,obX(a1)
-		btst	#0,obStatus(a0)
-		bne.s	loc_BBE6
+		btst	#0,obStatus(a0)	; is object flipped?
+		bne.s	Spring_Flipped	; if yes, branch
 		subi.w	#$10,obX(a1)
-		neg.w	obVelX(a1)
+		neg.w	obVelX(a1)	; move Sonic to the right
 
-loc_BBE6:
+Spring_Flipped:
 		move.w	#$F,objoff_3E(a1)
 		move.w	obVelX(a1),obInertia(a1)
 		bchg	#0,obStatus(a1)
 		btst	#2,obStatus(a1)
-		bne.s	loc_BC06
-		move.b	#0,obAnim(a1)
+		bne.s	loc_DC56
+		move.b	#id_Walk,obAnim(a1)	; use walking animation
 
-loc_BC06:
+loc_DC56:
 		bclr	#5,obStatus(a0)
 		bclr	#5,obStatus(a1)
 		move.w	#sfx_Spring,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play spring sound
 
-loc_BC1C:
+Spring_AniLR:	; Routine $A
 		lea	(Ani_Spring).l,a1
 		bra.w	AnimateSprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_BC26:
-		move.b	#2,obNextAni(a0)
-		subq.b	#4,obRoutine(a0)
+Spring_ResetLR:	; Routine $C
+		move.b	#2,obPrevAni(a0) ; reset animation
+		subq.b	#4,obRoutine(a0) ; goto "Spring_LR" routine
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_BC32:
+Spring_Dwn:	; Routine $E
 		move.w	#$1B,d1
 		move.w	#8,d2
 		move.w	#$10,d3
 		move.w	obX(a0),d4
 		bsr.w	SolidObject
 		cmpi.b	#2,obRoutine(a0)
-		bne.s	loc_BC54
+		bne.s	loc_DCA4
 		move.b	#$E,obRoutine(a0)
 
-loc_BC54:
+loc_DCA4:
 		tst.b	obSolid(a0)
-		bne.s	locret_BC5E
+		bne.s	locret_DCAE
 		tst.w	d4
-		bmi.s	loc_BC60
+		bmi.s	Spring_BounceDwn
 
-locret_BC5E:
+locret_DCAE:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_BC60:
+Spring_BounceDwn:
 		addq.b	#2,obRoutine(a0)
 		subq.w	#8,obY(a1)
-		move.w	objoff_30(a0),obVelY(a1)
-		neg.w	obVelY(a1)
+		move.w	spring_pow(a0),obVelY(a1)
+		neg.w	obVelY(a1)	; move Sonic downwards
 		bset	#1,obStatus(a1)
 		bclr	#3,obStatus(a1)
 		move.b	#2,obRoutine(a1)
 		bclr	#3,obStatus(a0)
 		clr.b	obSolid(a0)
 		move.w	#sfx_Spring,d0
-		jsr	(QueueSound2).l
+		jsr	(QueueSound2).l	; play spring sound
 
-loc_BC98:
+Spring_AniDwn:	; Routine $10
 		lea	(Ani_Spring).l,a1
 		bra.w	AnimateSprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_BCA2:
-		move.b	#1,obNextAni(a0)
-		subq.b	#4,obRoutine(a0)
+Spring_ResetDwn:
+		; Routine $12
+		move.b	#1,obPrevAni(a0) ; reset animation
+		subq.b	#4,obRoutine(a0) ; goto "Spring_Dwn" routine
 		rts

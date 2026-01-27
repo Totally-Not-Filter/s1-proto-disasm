@@ -169,6 +169,7 @@ obFrame:	equ obj.Frame
 obAniFrame:	equ obj.AniFrame
 obAnim:		equ obj.Anim
 obNextAni:	equ obj.NextAni
+obPrevAni:	equ obj.NextAni
 obTimeFrame:	equ obj.TimeFrame
 obDelayAni:	equ obj.DelayAni
 obColType:	equ obj.ColType
