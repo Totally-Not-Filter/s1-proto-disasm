@@ -1,110 +1,115 @@
 ; ---------------------------------------------------------------------------
+; Object 40 - Moto Bug enemy (GHZ)
+; ---------------------------------------------------------------------------
 
 MotoBug:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_B890(pc,d0.w),d1
-		jmp	off_B890(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_B890:	dc.w loc_B898-off_B890
-		dc.w loc_B8FA-off_B890
-		dc.w loc_B9D8-off_B890
-		dc.w loc_B9E6-off_B890
-; ---------------------------------------------------------------------------
+		move.w	Moto_Index(pc,d0.w),d1
+		jmp	Moto_Index(pc,d1.w)
+; ===========================================================================
+Moto_Index:	dc.w Moto_Main-Moto_Index
+		dc.w Moto_Action-Moto_Index
+		dc.w Moto_Animate-Moto_Index
+		dc.w Moto_Delete-Moto_Index
+; ===========================================================================
 
-loc_B898:
+Moto_Main:	; Routine 0
 		move.l	#Map_Moto,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Moto_Bug,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$14,obActWid(a0)
-		tst.b	obAnim(a0)
-		bne.s	loc_B8F2
+		tst.b	obAnim(a0)	; is object a smoke trail?
+		bne.s	.smoke		; if yes, branch
 		move.b	#$E,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.b	#$C,obColType(a0)
 		bsr.w	ObjectFall
 		bsr.w	ObjFloorDist
 		tst.w	d1
-		bpl.s	locret_B8F0
-		add.w	d1,obY(a0)
+		bpl.s	.notonfloor
+		add.w	d1,obY(a0)	; match object's position with the floor
 		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,obRoutine(a0) ; goto Moto_Action next
 		bchg	#0,obStatus(a0)
 
-locret_B8F0:
+.notonfloor:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_B8F2:
-		addq.b	#4,obRoutine(a0)
-		bra.w	loc_B9D8
-; ---------------------------------------------------------------------------
+.smoke:
+		addq.b	#4,obRoutine(a0) ; goto Moto_Animate next
+		bra.w	Moto_Animate
+; ===========================================================================
 
-loc_B8FA:
+Moto_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_B94E(pc,d0.w),d1
-		jsr	off_B94E(pc,d1.w)
+		move.w	Moto_ActIndex(pc,d0.w),d1
+		jsr	Moto_ActIndex(pc,d1.w)
 		lea	(Ani_Moto).l,a1
 		bsr.w	AnimateSprite
 
-		include "sub RememberState.asm"
-; ---------------------------------------------------------------------------
-off_B94E:	dc.w loc_B952-off_B94E
-		dc.w loc_B976-off_B94E
-; ---------------------------------------------------------------------------
+		include "sub RememberState.asm" ; Moto_Action terminates in this file
 
-loc_B952:
-		subq.w	#1,objoff_30(a0)
-		bpl.s	locret_B974
+; ===========================================================================
+Moto_ActIndex:	dc.w .move-Moto_ActIndex
+		dc.w .findfloor-Moto_ActIndex
+
+.time = objoff_30
+.smokedelay = objoff_33
+; ===========================================================================
+
+.move:
+		subq.w	#1,.time(a0)	; subtract 1 from pause time
+		bpl.s	.wait		; if time remains, branch
 		addq.b	#2,ob2ndRout(a0)
-		move.w	#-$100,obVelX(a0)
+		move.w	#-$100,obVelX(a0) ; move object to the left
 		move.b	#1,obAnim(a0)
 		bchg	#0,obStatus(a0)
-		bne.s	locret_B974
-		neg.w	obVelX(a0)
+		bne.s	.wait
+		neg.w	obVelX(a0)	; change direction
 
-locret_B974:
+.wait:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_B976:
+.findfloor:
 		bsr.w	SpeedToPos
 		bsr.w	ObjFloorDist
 		cmpi.w	#-8,d1
-		blt.s	loc_B9C0
+		blt.s	.pause
 		cmpi.w	#$C,d1
-		bge.s	loc_B9C0
-		add.w	d1,obY(a0)
-		subq.b	#1,objoff_33(a0)
-		bpl.s	locret_B9BE
-		move.b	#$F,objoff_33(a0)
+		bge.s	.pause
+		add.w	d1,obY(a0)	; match object's position with the floor
+		subq.b	#1,.smokedelay(a0)
+		bpl.s	.nosmoke
+		move.b	#$F,.smokedelay(a0)
 		bsr.w	FindFreeObj
-		bne.s	locret_B9BE
-		_move.b	#id_MotoBug,obID(a1)
+		bne.s	.nosmoke
+		_move.b	#id_MotoBug,obID(a1) ; load exhaust smoke object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obStatus(a0),obStatus(a1)
 		move.b	#2,obAnim(a1)
 
-locret_B9BE:
+.nosmoke:
 		rts
-; ---------------------------------------------------------------------------
 
-loc_B9C0:
+.pause:
 		subq.b	#2,ob2ndRout(a0)
-		move.w	#59,objoff_30(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#59,.time(a0)	; set pause time to 1 second
+		move.w	#0,obVelX(a0)	; stop the object moving
 		move.b	#0,obAnim(a0)
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_B9D8:
+Moto_Animate:	; Routine 4
 		lea	(Ani_Moto).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_B9E6:
+Moto_Delete:	; Routine 6
 		bra.w	DeleteObject
