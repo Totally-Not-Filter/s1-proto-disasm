@@ -1,20 +1,21 @@
 ; ---------------------------------------------------------------------------
+; Object 26 - monitors
+; ---------------------------------------------------------------------------
 
 Monitor:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_8054(pc,d0.w),d1
-		jmp	off_8054(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_8054:
-		dc.w loc_805E-off_8054
-		dc.w loc_80C0-off_8054
-		dc.w sub_81D2-off_8054
-		dc.w loc_81A4-off_8054
-		dc.w loc_81AE-off_8054
-; ---------------------------------------------------------------------------
+		move.w	Mon_Index(pc,d0.w),d1
+		jmp	Mon_Index(pc,d1.w)
+; ===========================================================================
+Mon_Index:	dc.w Mon_Main-Mon_Index
+		dc.w Mon_Solid-Mon_Index
+		dc.w Mon_BreakOpen-Mon_Index
+		dc.w Mon_Animate-Mon_Index
+		dc.w Mon_Display-Mon_Index
+; ===========================================================================
 
-loc_805E:
+Mon_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.b	#$E,obHeight(a0)
 		move.b	#$E,obWidth(a0)
@@ -23,63 +24,65 @@ loc_805E:
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$F,obActWid(a0)
-		lea	(v_regbuffer).w,a2
+		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	obRespawnNo(a0),d0
 		bclr	#7,2(a2,d0.w)
-		btst	#0,2(a2,d0.w)
-		beq.s	loc_80B4
-		move.b	#8,obRoutine(a0)
-		move.b	#$B,obFrame(a0)
+		btst	#0,2(a2,d0.w)	; has monitor been broken?
+		beq.s	.notbroken	; if not, branch
+		move.b	#8,obRoutine(a0) ; run "Mon_Display" routine
+		move.b	#$B,obFrame(a0)	; use broken monitor frame
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_80B4:
+.notbroken:
 		move.b	#$46,obColType(a0)
 		move.b	obSubtype(a0),obAnim(a0)
 
-loc_80C0:
-		move.b	ob2ndRout(a0),d0
-		beq.s	loc_811A
+Mon_Solid:	; Routine 2
+		move.b	ob2ndRout(a0),d0 ; is monitor set to fall?
+		beq.s	.normal		; if not, branch
 		subq.b	#2,d0
-		bne.s	loc_80FA
+		bne.s	.fall
+
+		; 2nd Routine 2
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform
-		btst	#3,obStatus(a1)
-		bne.w	loc_80EA
+		btst	#3,obStatus(a1) ; is Sonic on top of the monitor?
+		bne.w	.ontop		; if yes, branch
 		clr.b	ob2ndRout(a0)
-		bra.w	loc_81A4
-; ---------------------------------------------------------------------------
+		bra.w	Mon_Animate
+; ===========================================================================
 
-loc_80EA:
+.ontop:
 		move.w	#$10,d3
 		move.w	obX(a0),d2
 		bsr.w	MvSonicOnPtfm
-		bra.w	loc_81A4
-; ---------------------------------------------------------------------------
+		bra.w	Mon_Animate
+; ===========================================================================
 
-loc_80FA:
+.fall:	; 2nd Routine 4
 		bsr.w	ObjectFall
 		jsr	(ObjFloorDist).l
 		tst.w	d1
-		bpl.w	loc_81A4
+		bpl.w	Mon_Animate
 		add.w	d1,obY(a0)
 		clr.w	obVelY(a0)
 		clr.b	ob2ndRout(a0)
-		bra.w	loc_81A4
-; ---------------------------------------------------------------------------
+		bra.w	Mon_Animate
+; ===========================================================================
 
-loc_811A:
+.normal:	; 2nd Routine 0
 		move.w	#$1A,d1
 		move.w	#$F,d2
-		bsr.w	sub_83B4
+		bsr.w	Mon_SolidSides
 		beq.w	loc_818A
 		tst.w	obVelY(a1)
 		bmi.s	loc_8138
-		cmpi.b	#id_Roll,obAnim(a1)
-		beq.s	loc_818A
+		cmpi.b	#id_Roll,obAnim(a1) ; is Sonic rolling?
+		beq.s	loc_818A	; if yes, branch
 
 loc_8138:
 		tst.w	d1
@@ -87,8 +90,8 @@ loc_8138:
 		sub.w	d3,obY(a1)
 		bsr.w	loc_4FD4
 		move.b	#2,ob2ndRout(a0)
-		bra.w	loc_81A4
-; ---------------------------------------------------------------------------
+		bra.w	Mon_Animate
+; ===========================================================================
 
 loc_814E:
 		tst.w	d0
@@ -97,7 +100,7 @@ loc_814E:
 		tst.w	obVelX(a1)
 		bmi.s	loc_8174
 		bra.s	loc_8164
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 loc_815E:
 		tst.w	obVelX(a1)
@@ -113,23 +116,23 @@ loc_8174:
 		bne.s	loc_8198
 		bset	#5,obStatus(a1)
 		bset	#5,obStatus(a0)
-		bra.s	loc_81A4
-; ---------------------------------------------------------------------------
+		bra.s	Mon_Animate
+; ===========================================================================
 
 loc_818A:
 		btst	#5,obStatus(a0)
-		beq.s	loc_81A4
-		move.w	#id_Run,obAnim(a1)
+		beq.s	Mon_Animate
+		move.w	#id_Run,obAnim(a1)	; clear obAnim and set obNextAni to 1
 
 loc_8198:
 		bclr	#5,obStatus(a0)
 		bclr	#5,obStatus(a1)
 
-loc_81A4:
+Mon_Animate:	; Routine 6
 		lea	(Ani_Monitor).l,a1
 		bsr.w	AnimateSprite
 
-loc_81AE:
+Mon_Display:	; Routine 8
 	if FixBugs
 		out_of_range.w	DeleteObject
 		bra.w	DisplaySprite
@@ -138,30 +141,30 @@ loc_81AE:
 		out_of_range.w	DeleteObject
 		rts
 	endif
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-sub_81D2:
+Mon_BreakOpen:	; Routine 4
 		addq.b	#2,obRoutine(a0)
 		move.b	#0,obColType(a0)
 		bsr.w	FindFreeObj
-		bne.s	loc_81FA
-		_move.b	#id_PowerUp,obID(a1)
+		bne.s	Mon_Explode
+		_move.b	#id_PowerUp,obID(a1) ; load monitor contents object
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.b	obAnim(a0),obAnim(a1)
 
-loc_81FA:
+Mon_Explode:
 		bsr.w	FindFreeObj
-		bne.s	loc_8216
-		_move.b	#id_ExplosionItem,obID(a1)
-		addq.b	#2,obRoutine(a1)
+		bne.s	.fail
+		_move.b	#id_ExplosionItem,obID(a1) ; load explosion object
+		addq.b	#2,obRoutine(a1) ; don't create an animal
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 
-loc_8216:
-		lea	(v_regbuffer).w,a2
+.fail:
+		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	obRespawnNo(a0),d0
 		bset	#0,2(a2,d0.w)
-		move.b	#9,obAnim(a0)
+		move.b	#9,obAnim(a0)	; set monitor type to broken
 		bra.w	DisplaySprite
