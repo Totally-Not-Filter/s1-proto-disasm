@@ -41,7 +41,7 @@ Pow_Move:	; Routine 2
 
 Pow_Checks:
 		addq.b	#2,obRoutine(a0)
-		move.w	#30-1,obTimeFrame(a0) ; display icon for half a second
+		move.w	#29,obTimeFrame(a0) ; display icon for half a second
 
 Pow_ChkEggman:
 		move.b	obAnim(a0),d0

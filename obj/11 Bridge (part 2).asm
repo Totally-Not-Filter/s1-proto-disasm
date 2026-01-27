@@ -1,14 +1,18 @@
-; ---------------------------------------------------------------------------
 
-loc_50B2:
-		bsr.s	Bridge_ChkExit
+Bri_Platform:	; Routine 4
+		bsr.s	Bri_WalkOff
 	if ~~FixBugs
 		bsr.w	DisplaySprite
 	endif
-		bra.w	Bridge_ChkDelete
+		bra.w	Bri_ChkDel
+
+; ---------------------------------------------------------------------------
+; Subroutine allowing Sonic to walk off a bridge
 ; ---------------------------------------------------------------------------
 
-Bridge_ChkExit:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+Bri_WalkOff:
 		moveq	#0,d1
 		move.b	obSubtype(a0),d1
 		lsl.w	#3,d1
@@ -24,8 +28,9 @@ Bridge_ChkExit:
 		addq.b	#4,objoff_3E(a0)
 
 loc_50E0:
-		bsr.w	Bridge_UpdateBend
-		bsr.w	Bridge_PlayerPos
+		bsr.w	Bri_Bend
+		bsr.w	Bri_MoveSonic
 
 locret_50E8:
 		rts
+; End of function Bri_WalkOff
