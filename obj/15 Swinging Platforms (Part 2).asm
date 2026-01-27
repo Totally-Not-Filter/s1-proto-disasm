@@ -12,7 +12,6 @@ loc_5650:
 		bra.s	Swing_Move2
 ; End of function Swing_Move
 
-
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Obj48_Move:
@@ -41,13 +40,12 @@ loc_568E:
 		move.b	obAngle(a0),d0
 ; End of function Obj48_Move
 
-
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Swing_Move2:
 		bsr.w	CalcSine
-		move.w	objoff_38(a0),d2
-		move.w	objoff_3A(a0),d3
+		move.w	swing_origY(a0),d2
+		move.w	swing_origX(a0),d3
 		lea	obSubtype(a0),a2
 		moveq	#0,d6
 		move.b	(a2)+,d6
@@ -74,7 +72,7 @@ loc_56A6:
 ; ===========================================================================
 
 Swing_ChkDel:
-		out_of_range.w	Swing_DelAll,objoff_3A(a0)
+		out_of_range.w	Swing_DelAll,swing_origX(a0)
 	if FixBugs
 		bra.w	DisplaySprite
 	else
@@ -94,14 +92,14 @@ Swing_DelLoop:
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
-		dbf	d2,Swing_DelLoop
+		dbf	d2,Swing_DelLoop ; repeat for length of chain
 		rts
 ; ===========================================================================
 
-Swing_Delete:
+Swing_Delete:	; Routine 6, 8
 		bsr.w	DeleteObject
 		rts
 ; ===========================================================================
 
-Swing_Display:
+Swing_Display:	; Routine $A
 		bra.w	DisplaySprite

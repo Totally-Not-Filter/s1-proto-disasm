@@ -16,7 +16,7 @@ swing_origX = objoff_3A		; original x-axis position
 swing_origY = objoff_38		; original y-axis position
 ; ===========================================================================
 
-Swing_Main:
+Swing_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Swing_GHZ,obMap(a0)
 		move.w	#make_art_tile(ArtTile_GHZ_MZ_Swing,2,0),obGfx(a0)
@@ -24,21 +24,22 @@ Swing_Main:
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
 		move.b	#8,obHeight(a0)
-		move.w	obY(a0),objoff_38(a0)
-		move.w	obX(a0),objoff_3A(a0)
-		cmpi.b	#id_SLZ,(v_zone).w		; are we on Star Light Zone?
-		bne.s	ObjSwingPtfm_NotSLZ		; if not, branch
-		move.l	#Map_Swing_SLZ,obMap(a0)
+		move.w	obY(a0),swing_origY(a0)
+		move.w	obX(a0),swing_origX(a0)
+		cmpi.b	#id_SLZ,(v_zone).w	; check if level is SLZ
+		bne.s	.notSLZ
+
+		move.l	#Map_Swing_SLZ,obMap(a0) ; SLZ specific code
 		move.w	#make_art_tile(ArtTile_SLZ_Swing,2,0),obGfx(a0)
 		move.b	#$20,obActWid(a0)
 		move.b	#$10,obHeight(a0)
 		move.b	#$99,obColType(a0)
 
-ObjSwingPtfm_NotSLZ:
+.notSLZ:
 		_move.b	obID(a0),d4
 		moveq	#0,d1
-		lea	obSubtype(a0),a2
-		move.b	(a2),d1
+		lea	obSubtype(a0),a2 ; move chain length to a2
+		move.b	(a2),d1		; move a2 to d1
 		move.w	d1,-(sp)
 		andi.w	#$F,d1
 		move.b	#0,(a2)+
@@ -48,25 +49,25 @@ ObjSwingPtfm_NotSLZ:
 		move.b	d3,objoff_3C(a0)
 		subq.b	#8,d3
 		tst.b	obFrame(a0)
-		beq.s	ObjSwingPtfm_LoadLinks
+		beq.s	.makechain
 		addq.b	#8,d3
 		subq.w	#1,d1
 
-ObjSwingPtfm_LoadLinks:
+.makechain:
 	if FixBugs
 		bsr.w	FindNextFreeObj
 	else
 		bsr.w	FindFreeObj
 	endif
-		bne.s	loc_5586
+		bne.s	.fail
 		addq.b	#1,obSubtype(a0)
 		move.w	a1,d5
 		subi.w	#v_objspace,d5
 		lsr.w	#object_size_bits,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	#$A,obRoutine(a1)
-		_move.b	d4,obID(a1)
+		move.b	#$A,obRoutine(a1) ; goto Swing_Display next
+		_move.b	d4,obID(a1)	; load swinging object
 		move.l	obMap(a0),obMap(a1)
 		move.w	obGfx(a0),obGfx(a1)
 		bclr	#6,obGfx(a1)
@@ -76,14 +77,14 @@ ObjSwingPtfm_LoadLinks:
 		move.b	#1,obFrame(a1)
 		move.b	d3,objoff_3C(a1)
 		subi.b	#$10,d3
-		bcc.s	loc_5582
+		bcc.s	.notanchor
 		move.b	#2,obFrame(a1)
 		bset	#6,obGfx(a1)
 
-loc_5582:
-		dbf	d1,ObjSwingPtfm_LoadLinks
+.notanchor:
+		dbf	d1,.makechain ; repeat d1 times (chain length)
 
-loc_5586:
+.fail:
 		move.w	a0,d5
 		subi.w	#v_objspace,d5
 		lsr.w	#object_size_bits,d5
@@ -92,15 +93,15 @@ loc_5586:
 		move.w	#$4080,obAngle(a0)
 		move.w	#-$200,objoff_3E(a0)
 		move.w	(sp)+,d1
-		btst	#4,d1
-		beq.s	Swing_SetSolid
-		move.l	#Map_GBall,obMap(a0)
+		btst	#4,d1		; is object type $1X?
+		beq.s	Swing_SetSolid	; if not, branch
+		move.l	#Map_GBall,obMap(a0) ; use GHZ ball mappings
 		move.w	#make_art_tile(ArtTile_GHZ_Giant_Ball,2,0),obGfx(a0)
 		move.b	#1,obFrame(a0)
 		move.b	#2,obPriority(a0)
-		move.b	#$81,obColType(a0)
+		move.b	#$81,obColType(a0) ; make object hurt when touched
 
-Swing_SetSolid:
+Swing_SetSolid:	; Routine 2
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		moveq	#0,d3
@@ -113,7 +114,7 @@ Swing_SetSolid:
 		bra.w	Swing_ChkDel
 ; ===========================================================================
 
-Swing_Action2:
+Swing_Action2:	; Routine 4
 		moveq	#0,d1
 		move.b	obActWid(a0),d1
 		bsr.w	ExitPlatform
