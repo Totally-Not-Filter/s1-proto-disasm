@@ -98,8 +98,8 @@ Checksum:	dc.w 0					; Checksum
 		dc.b "J               "			; I\O support
 RomStartLoc:	dc.l StartOfROM				; Start address of ROM
 RomEndLoc:		dc.l EndOfROM-1				; End address of ROM
-RamStartLoc:	dc.l v_start&$FFFFFF			; Start address of RAM
-RamEndLoc:		dc.l (v_end-1)&$FFFFFF			; End address of RAM
+RamStartLoc:	dc.l v_ram_start&$FFFFFF	; Start address of RAM
+RamEndLoc:		dc.l (v_ram_end-1)&$FFFFFF	; End address of RAM
 		dc.l $20202020				; SRAM (none)
 		dc.l $20202020				; SRAM start ($200001)
 		dc.l $20202020				; SRAM end ($20xxxx)
@@ -186,7 +186,7 @@ loc_28E:
 		bra.s	SkipSetup
 ; ---------------------------------------------------------------------------
 SetupValues:	dc.l $8000			; VDP register start number
-		dc.l bytesToLcnt(v_end-v_start)		; size of RAM divided by 4
+		dc.l bytesToLcnt(v_ram_end-v_ram_start)		; size of RAM divided by 4
 		dc.l $100					; VDP register diff
 
 		dc.l z80_ram				; start of Z80 RAM
@@ -290,7 +290,7 @@ CheckSumCheck:
 	endif
 		lea	(v_crossresetram).w,a6
 		moveq	#0,d7
-		move.w	#bytesToLcnt(v_end-v_crossresetram),d6
+		move.w	#bytesToLcnt(v_ram_end-v_crossresetram),d6
 
 .clrRAM:
 		move.l	d7,(a6)+
@@ -302,9 +302,9 @@ CheckSumCheck:
 		move.l	#"init",(v_init).w	; set flag so checksum won't run again
 
 GameInit:
-		lea	(v_start&$FFFFFF).l,a6
+		lea	(v_ram_start&$FFFFFF).l,a6
 		moveq	#0,d7
-		move.w	#bytesToLcnt(v_crossresetram-v_start),d6
+		move.w	#bytesToLcnt(v_crossresetram-v_ram_start),d6
 
 .clrRAM:
 		move.l	d7,(a6)+
@@ -1545,12 +1545,12 @@ GM_Sega:
 		locVRAM ArtTile_Sega_Tiles*tile_size
 		lea	(Nem_SegaLogo).l,a0
 		bsr.w	NemDec
-		lea	(v_start&$FFFFFF).l,a1
+		lea	(v_ram_start&$FFFFFF).l,a1
 		lea	(Eni_SegaLogo).l,a0
 		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
 		bsr.w	EniDec
 
-		copyTilemap	v_start&$FFFFFF,vram_fg+$61C,12,4
+		copyTilemap	v_ram_start&$FFFFFF,vram_fg+$61C,12,4
 
 		moveq	#palid_SegaBG,d0
 		bsr.w	PalLoad2
@@ -2604,12 +2604,12 @@ loc_3662:
 ; ---------------------------------------------------------------------------
 
 SS_BGLoad:
-		lea	(v_start&$FFFFFF).l,a1
+		lea	(v_ram_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg1).l,a0
 		move.w	#make_art_tile(ArtTile_SS_Background_Fish,2,FALSE),d0
 		bsr.w	EniDec
 		move.l	#$50000001,d3
-		lea	(v_start&$FFFFFF+$80).l,a2
+		lea	(v_ram_start&$FFFFFF+$80).l,a2
 		moveq	#6,d7
 
 loc_368C:
@@ -2629,7 +2629,7 @@ loc_369C:
 		bne.s	loc_36B0
 		cmpi.w	#6,d7
 		bne.s	loc_36C0
-		lea	(v_start&$FFFFFF).l,a1
+		lea	(v_ram_start&$FFFFFF).l,a1
 
 loc_36B0:
 		movem.l	d0-d4,-(sp)
@@ -2653,12 +2653,12 @@ loc_36C0:
 loc_36EA:
 		adda.w	#$80,a2
 		dbf	d7,loc_368C
-		lea	(v_start&$FFFFFF).l,a1
+		lea	(v_ram_start&$FFFFFF).l,a1
 		lea	(Eni_SSBg2).l,a0
 		move.w	#make_art_tile(ArtTile_SS_Background_Clouds,2,FALSE),d0
 		bsr.w	EniDec
-		copyTilemap	v_start&$FFFFFF,vram_fg,64,32
-		copyTilemap	v_start&$FFFFFF,vram_fg+$1000,64,64
+		copyTilemap	v_ram_start&$FFFFFF,vram_fg,64,32
+		copyTilemap	v_ram_start&$FFFFFF,vram_fg+$1000,64,64
 		rts
 ; ---------------------------------------------------------------------------
 

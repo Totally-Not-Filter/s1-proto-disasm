@@ -1,9 +1,14 @@
 		include	"s1.sounddriver.ram.asm"
 
+; sign-extends a 32-bit integer to 64-bit
+; all RAM addresses are run through this function to allow them to work in both 16-bit and 32-bit addressing modes
+ramaddr function x,(-(x&$80000000)<<1)|x
+
 ; Variables (v) and Flags (f)
 
-	phase $FFFF0000
-v_start:
+	phase ramaddr($FFFF0000)
+v_ram_start:
+
 v_256x256:		ds.b	$52*$200	; 256x256 tile mappings ($A400 bytes)
 v_256x256_end
 
@@ -14,19 +19,26 @@ v_lvllayoutbg:	= v_lvllayout+layout_size
 v_lvllayout_end
 
 v_bgscroll_buffer:	ds.b	$200
+
 v_ngfx_buffer:	ds.b	$200
 v_ngfx_buffer_end
+
 v_spritequeue:	ds.b	$400
+
 v_16x16:		ds.w	4*$300	; 16x16 tile mappings ($1800 bytes)
 v_16x16_end
+
 v_sgfx_buffer:	ds.b	23*tile_size	; sonic graphics ram buffer ($2E0 bytes)
 v_sgfx_buffer_end
+
 			ds.b	$20	; unused
 v_tracksonic:	ds.b	$100	; sonic position table ($100 bytes)
+
 v_hscrolltablebuffer:	ds.b	$380
 v_hscrolltablebuffer_end
 			ds.b	$80
 v_hscrolltablebuffer_end_padded
+
 v_objspace:		ds.b	object_size*32	; RAM for object space ($600 bytes)
 
 ; Title screen objects
@@ -75,30 +87,32 @@ v_vanishsonic	=	v_objspace+object_size*7	; object variable space for when sonic 
 v_lvlobjspace:	ds.b	object_size*96
 v_lvlobjend
 v_objspace_end
+
 ; $FFFFF000
 v_snddriver_ram:	SMPS_RAM	; start of RAM for the sound driver data ($5C0 bytes)
 v_snddriver_ram_end
+
 			ds.b	$40	; unused
 v_gamemode:		ds.b	1
 			ds.b	1		; unused
-v_jpadhold2:		ds.b	1
-v_jpadpress2:		ds.b	1
-v_jpadhold1:		ds.b	1
-v_jpadpress1:		ds.b	1
+v_jpadhold2:	ds.b	1
+v_jpadpress2:	ds.b	1
+v_jpadhold1:	ds.b	1
+v_jpadpress1:	ds.b	1
 			ds.b	6		; unused
-v_vdp_buffer1:		ds.w	1
+v_vdp_buffer1:	ds.w	1
 			ds.b	6		; unused
-v_generictimer:		ds.w	1
-v_scrposy_vdp:		ds.w	1
+v_generictimer:	ds.w	1
+v_scrposy_vdp:	ds.w	1
 v_bgscrposy_vdp:	ds.w	1		; background screen position y (duplicate) (2 bytes)
-v_scrposx_vdp:		ds.w	1
+v_scrposx_vdp:	ds.w	1
 v_bgscrposx_vdp:	ds.w	1		; background screen position x (duplicate) (2 bytes)
 v_bg3scrposy_vdp:	ds.w	1
 v_bg3scrposx_vdp:	ds.w	1
 v_bg3scrposy_vdp_dup:	ds.w	1
-v_hint_hreg:	ds.b	1		; VDP H.interrupt register buffer (8Axx)
+v_hint_hreg:		ds.b	1		; VDP H.interrupt register buffer (8Axx)
 v_hbla_hreg	=	v_hint_hreg
-v_hint_line:	ds.b	1		; screen line where water starts and palette is changed by HBlank
+v_hint_line:		ds.b	1		; screen line where water starts and palette is changed by HBlank
 v_hbla_line	=	v_hint_line
 v_pfade_start:	ds.b	1		; palette fading - start position in bytes
 v_pfade_size:	ds.b	1		; palette fading - number of colouds
@@ -141,8 +155,8 @@ v_plc_framepatternsleft:	ds.w	1
 v_plc_buffer_end
 
 v_misc_variables:
-v_scrposx:	ds.l	1
-v_scrposy:	ds.l	1
+v_scrposx:		ds.l	1
+v_scrposy:		ds.l	1
 v_bgscrposx:	ds.l	1
 v_bgscrposy:	ds.l	1
 v_bg2scrposx:	ds.l	1
@@ -300,6 +314,7 @@ v_ringbonus:	ds.w	1
 f_endactbonus:	ds.b	1
 			ds.b	5		; unused
 v_oscillate:	ds.w	1		; oscillation bitfield
+
 v_timingandscreenvariables:
 			ds.b	$40	; values which oscillate - for swinging platforms, et al
 			ds.b	$20	; unused
@@ -314,6 +329,7 @@ v_ani3_frame:	ds.b	1		; synchronised sprite animation 3 - current frame
 v_ani3_buf:		ds.w	1		; synchronised sprite animation 3 - info buffer (2 bytes)
 			ds.b	$36	; unused
 v_timingandscreenvariables_end
+
 			ds.b	$E0	; unused
 v_unused12:	ds.w	1		; value that's set to 1 during initation, unused otherwise (2 bytes)
 			ds.b	6		; unused
@@ -327,19 +343,19 @@ v_megadrive:	ds.b	1
 f_debugmode:	ds.b	1
 			ds.b	1		; unused
 v_init:			ds.l	1		; 'init' text string (4 bytes)
-v_end
+v_ram_end
 	dephase
 
 ; Special Stage Variables
-v_ssbuffer1		= v_start&$FFFFFF
+v_ssbuffer1		= v_ram_start&$FFFFFF
 v_ssblockbuffer	= v_ssbuffer1+$1020 ; ($2000 bytes)
 v_ssblockbuffer_end	= v_ssblockbuffer+$80*$40
-v_sslayout		= v_start&$FFFFFF+$172E ; ($510 bytes)
-v_ssbuffer2		= v_start&$FFFFFF+$4000
+v_sslayout		= v_ram_start&$FFFFFF+$172E ; ($510 bytes)
+v_ssbuffer2		= v_ram_start&$FFFFFF+$4000
 v_ssblocktypes	= v_ssbuffer2
 v_ssitembuffer	= v_ssbuffer2+$400 ; ($100 bytes)
 v_ssitembuffer_end	= v_ssitembuffer+$100
-v_ssbuffer3		= v_start+$8000
+v_ssbuffer3		= v_ram_start+$8000
 v_ssscroll_buffer	= v_ngfx_buffer+$100
 
 	phase v_objstate
