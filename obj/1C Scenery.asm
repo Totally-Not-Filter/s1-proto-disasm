@@ -51,6 +51,6 @@ Scen_Values:
 		dc.l Map_Scen
 		dc.w make_art_tile(ArtTile_Level,2,0)
 		dc.b 0, $20, 1, 0
-		dc.l MapBridge
+		dc.l Map_Bri
 		dc.w make_art_tile(ArtTile_GHZ_Bridge,2,0)
 		dc.b 1, $10, 1, 0

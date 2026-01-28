@@ -3174,7 +3174,7 @@ locret_511C:
 		rts
 
 		include "obj/11 Bridge (part 3).asm"
-MapBridge:	include "_maps/Bridge.asm"
+Map_Bri:	include "_maps/Bridge.asm"
 
 		include "obj/15 Swinging Platforms (Part 1).asm"
 
