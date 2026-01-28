@@ -1,17 +1,21 @@
 ; ---------------------------------------------------------------------------
+; Object 50 - Yadrin enemy (SZ)
+; ---------------------------------------------------------------------------
 
 Yadrin:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_D334(pc,d0.w),d1
-		jmp	off_D334(pc,d1.w)
-; ---------------------------------------------------------------------------
-off_D334:	dc.w loc_D338-off_D334
-		dc.w loc_D38C-off_D334
-; ---------------------------------------------------------------------------
+		move.w	Yad_Index(pc,d0.w),d1
+		jmp	Yad_Index(pc,d1.w)
+; ===========================================================================
+Yad_Index:	dc.w Yad_Main-Yad_Index
+		dc.w Yad_Action-Yad_Index
 
-loc_D338:
-		move.l	#Map_Yadrin,obMap(a0)
+yad_timedelay = objoff_30
+; ===========================================================================
+
+Yad_Main:	; Routine 0
+		move.l	#Map_Yad,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Yadrin,1,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
@@ -23,58 +27,58 @@ loc_D338:
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_D38A
-		add.w	d1,obY(a0)
+		add.w	d1,obY(a0)	; match object's position with the floor
 		move.w	#0,obVelY(a0)
 		addq.b	#2,obRoutine(a0)
 		bchg	#0,obStatus(a0)
 
 locret_D38A:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_D38C:
+Yad_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	off_D3A8(pc,d0.w),d1
-		jsr	off_D3A8(pc,d1.w)
-		lea	(Ani_Yadrin).l,a1
+		move.w	Yad_Index2(pc,d0.w),d1
+		jsr	Yad_Index2(pc,d1.w)
+		lea	(Ani_Yad).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
-; ---------------------------------------------------------------------------
-off_D3A8:	dc.w loc_D3AC-off_D3A8
-		dc.w loc_D3D0-off_D3A8
-; ---------------------------------------------------------------------------
+; ===========================================================================
+Yad_Index2:	dc.w Yad_Move-Yad_Index2
+		dc.w Yad_FixToFloor-Yad_Index2
+; ===========================================================================
 
-loc_D3AC:
-		subq.w	#1,objoff_30(a0)
-		bpl.s	locret_D3CE
+Yad_Move:
+		subq.w	#1,yad_timedelay(a0) ; subtract 1 from pause time
+		bpl.s	locret_D3CE	; if time remains, branch
 		addq.b	#2,ob2ndRout(a0)
-		move.w	#-$100,obVelX(a0)
+		move.w	#-$100,obVelX(a0) ; move object
 		move.b	#1,obAnim(a0)
 		bchg	#0,obStatus(a0)
 		bne.s	locret_D3CE
-		neg.w	obVelX(a0)
+		neg.w	obVelX(a0)	; change direction
 
 locret_D3CE:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_D3D0:
+Yad_FixToFloor:
 		bsr.w	SpeedToPos
 		bsr.w	ObjFloorDist
 		cmpi.w	#-8,d1
-		blt.s	loc_D3F0
+		blt.s	Yad_Pause
 		cmpi.w	#$C,d1
-		bge.s	loc_D3F0
-		add.w	d1,obY(a0)
+		bge.s	Yad_Pause
+		add.w	d1,obY(a0)	; match object's position to the floor
 		bsr.w	ChkHitLeftRightWall
-		bne.s	loc_D3F0
+		bne.s	Yad_Pause
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
-loc_D3F0:
+Yad_Pause:
 		subq.b	#2,ob2ndRout(a0)
-		move.w	#60-1,objoff_30(a0)
+		move.w	#59,yad_timedelay(a0) ; set pause time to 1 second
 		move.w	#0,obVelX(a0)
 		move.b	#0,obAnim(a0)
 		rts

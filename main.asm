@@ -298,7 +298,7 @@ CheckSumCheck:
 		move.b	(region_ver).l,d0
 		andi.b	#%11000000,d0		; AND the value so it only gets the japanese bit and clock speed bit
 		move.b	d0,(v_megadrive).w	; move the region values into 68K memory for later use
-		move.w	#1,(word_FFFFE0).w	; set an unused flag to 1
+		move.w	#1,(v_unused12).w	; set an unused flag to 1
 		move.l	#"init",(v_init).w	; set flag so checksum won't run again
 
 GameInit:
@@ -2054,7 +2054,7 @@ loc_2C0A:
 		move.w	#$8200+vram_fg>>10,(a6)
 		move.w	#$8400+vram_bg>>13,(a6)
 		move.w	#$8500+vram_sprites>>9,(a6)
-		move.w	#0,(word_FFFFE8).w
+		move.w	#0,(v_unused13).w
 		move.w	#$8A00+175,(v_hint_hreg).w
 		move.w	#$8000+%0100,(a6)
 		move.w	#$8700+%00100000,(a6)
@@ -2138,7 +2138,7 @@ loc_2D54:
 		move.b	d0,(v_shield).w
 		move.b	d0,(v_invinc).w
 		move.b	d0,(v_shoes).w
-		move.b	d0,(byte_FFFE2F).w
+		move.b	d0,(v_unused1).w
 		move.w	d0,(v_debuguse).w
 		move.w	d0,(f_restart).w
 		move.w	d0,(v_framecount).w
@@ -4485,8 +4485,8 @@ Map_LWall:	include "_maps/Wall of Lava.asm"
 Map_Splats:	include "_maps/Splats.asm"
 
 		include "obj/50 Yadrin.asm"
-Ani_Yadrin:	include "_anim/Yadrin.asm"
-Map_Yadrin:	include "_maps/Yadrin.asm"
+Ani_Yad:	include "_anim/Yadrin.asm"
+Map_Yad:	include "_maps/Yadrin.asm"
 
 		include "obj/51 Smashable Green Block.asm"
 

@@ -53,10 +53,10 @@ dbug:	macro map,object,subtype,frame,vram
 	dbug	Map_Push,	id_PushBlock,	0,	0,	make_art_tile(ArtTile_MZ_Block,2,0)
 	dbug	Map_Splats,	id_Splats,	0,	0,	make_art_tile(ArtTile_Splats,0,0)
 	if FixBugs
-	dbug	Map_Yadrin,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,1,0)
+	dbug	Map_Yad,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,1,0)
 	else
 	; Yadrin is using Sonic's palette, when it should be using it's own.
-	dbug	Map_Yadrin,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,0,0)
+	dbug	Map_Yad,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,0,0)
 	endif
 	dbug	Map_Smab,	id_SmashBlock,	0,	0,	make_art_tile(ArtTile_MZ_Block,2,0)
 	if FixBugs
@@ -103,10 +103,10 @@ dbug:	macro map,object,subtype,frame,vram
 	dbug	Map_Crab,	id_Crabmeat,	0,	0,	make_art_tile(ArtTile_Crabmeat,0,0)
 	dbug	Map_Buzz,	id_BuzzBomber,	0,	0,	make_art_tile(ArtTile_Buzz_Bomber,0,0)
 	if FixBugs
-	dbug	Map_Yadrin,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,1,0)
+	dbug	Map_Yad,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,1,0)
 	else
 	; Yadrin is using Sonic's palette, when it should be using it's own.
-	dbug	Map_Yadrin,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,0,0)
+	dbug	Map_Yad,	id_Yadrin,	0,	0,	make_art_tile(ArtTile_Yadrin,0,0)
 	endif
 	dbug	Map_Plat_SZ,	id_BasicPlatform,	0,	0,	make_art_tile(ArtTile_Level,2,0)
 	dbug	Map_FBlock,	id_FloatingBlock,	0,	0,	make_art_tile(ArtTile_Level,2,0)
