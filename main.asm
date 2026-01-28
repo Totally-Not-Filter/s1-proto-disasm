@@ -5281,7 +5281,6 @@ SS_AniRingSparks:
 locret_10B32:
 		rts
 ; ---------------------------------------------------------------------------
-
 byte_10B34:	dc.b $17, $18, $19, $1A, 0, 0
 		even
 ; ---------------------------------------------------------------------------
@@ -5388,33 +5387,33 @@ loc_10CA8:
 
 		include "obj/21 HUD.asm"
 Map_HUD:	include "_maps/HUD.asm"
+
 ; ---------------------------------------------------------------------------
 ; Add points subroutine
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 AddPoints:
-		move.b	#1,(f_scorecount).w
+		move.b	#1,(f_scorecount).w ; set score counter to update
+
 		lea	(v_scorecopy).w,a2
 		lea	(v_score).w,a3
-		add.l	d0,(a3)
+		add.l	d0,(a3)		; add d0*10 to the score
 		move.l	#999999,d1
-		cmp.l	(a3),d1
-		bhi.w	loc_1166E
-		move.l	d1,(a3)
+		cmp.l	(a3),d1		; is score below 999999?
+		bhi.w	.belowmax	; if yes, branch
+		move.l	d1,(a3)		; reset score to 999999
 		move.l	d1,(a2)
 
-loc_1166E:
+.belowmax:
 		move.l	(a3),d0
 		cmp.l	(a2),d0
-		blo.w	locret_11678
+		blo.w	.locret_11678
 		move.l	d0,(a2)
 
-locret_11678:
+.locret_11678:
 		rts
-; ---------------------------------------------------------------------------
 
 		include	"_include/HUD_Update.asm"
 
