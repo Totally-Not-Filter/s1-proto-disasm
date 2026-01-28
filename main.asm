@@ -5515,13 +5515,13 @@ Nem_Seesaw:	binclude "artnem/SLZ Seesaw.nem"
 		even
 Nem_Fan:	binclude "artnem/SLZ Fan.nem"
 		even
-byte_294DA:	binclude "artnem/SLZ Breakable Wall.nem"
+Nem_SlzWall:	binclude "artnem/SLZ Breakable Wall.nem"
 		even
 Nem_Pylon:	binclude "artnem/SLZ Pylon.nem"
 		even
 Nem_SlzSwing:	binclude "artnem/SLZ Swinging Platform.nem"
 		even
-Nem_SLZ_Platfm:	binclude "artnem/SLZ Platforms.nem"
+Nem_SlzPlatfm:	binclude "artnem/SLZ Platforms.nem"
 		even
 Nem_SlzBlock:	binclude "artnem/SLZ 32x32 Block.nem"
 		even
@@ -5748,7 +5748,7 @@ Col_SLZ:	binclude "collide/SLZ.bin"
 Col_SZ:	binclude "collide/SZ.bin"
 Col_CWZ:	binclude "collide/CWZ.bin"
 ; ---------------------------------------------------------------------------
-; Special Stage layout (uncompressed)
+; Special Stage layout
 ; ---------------------------------------------------------------------------
 SS_1:	binclude "sslayout/1.bin"
 SS_1_End:

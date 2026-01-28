@@ -133,10 +133,10 @@ PLC_SLZ:	dc.w ((PLC_SLZ2-PLC_SLZ-2)/6)-1
 		plcm    Nem_MzFire, ArtTile_SLZ_Fireball
 		plcm    Nem_Crabmeat, ArtTile_Crabmeat
 		plcm    Nem_Buzz, ArtTile_Buzz_Bomber
-		plcm    Nem_SLZ_Platfm, ArtTile_SLZ_Platform
+		plcm    Nem_SlzPlatfm, ArtTile_SLZ_Platform
 		plcm    Nem_SlzBlock, ArtTile_SLZ_Smashable_Wall
 		plcm    Nem_Motobug, ArtTile_Moto_Bug
-		plcm    byte_294DA, ArtTile_SLZ_Fireball_Launcher
+		plcm    Nem_SlzWall, ArtTile_SLZ_Fireball_Launcher
 		plcm    Nem_Spikes, ArtTile_Spikes
 		plcm    Nem_HSpring, ArtTile_Spring_Horizontal
 		plcm    Nem_VSpring, ArtTile_Spring_Vertical
