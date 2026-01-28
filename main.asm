@@ -4489,13 +4489,6 @@ Ani_Yad:	include "_anim/Yadrin.asm"
 Map_Yad:	include "_maps/Yadrin.asm"
 
 		include "obj/51 Smashable Green Block.asm"
-
-ObjSmashBlock_Frag:
-		dc.w -$200, -$200
-		dc.w -$100, -$100
-		dc.w $200, -$200
-		dc.w $100, -$100
-
 Map_Smab:	include "_maps/Smashable Green Block.asm"
 
 		include "obj/52 Moving Blocks.asm"
