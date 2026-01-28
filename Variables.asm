@@ -237,13 +237,25 @@ f_switch:		ds.w	1
 v_scroll_block_size:	ds.w	1
 			ds.b	$E		; unused
 v_misc_variables_end
+
 v_spritetablebuffer:	ds.b	$280
 v_spritetablebuffer_end
 			ds.b	$80	; unused
-v_palette:		ds.b	palette_size
+
+v_palette:	; main palette
+v_palette_line_1:		ds.b $20
+v_palette_line_2:		ds.b $20
+v_palette_line_3:		ds.b $20
+v_palette_line_4:		ds.b $20
 v_palette_end
-v_palette_fading:	ds.b	palette_size
+
+v_palette_fading:	; duplicate palette, used for transitions
+v_palette_fading_line_1:		ds.b $20
+v_palette_fading_line_2:		ds.b $20
+v_palette_fading_line_3:		ds.b $20
+v_palette_fading_line_4:		ds.b $20
 v_palette_fading_end
+
 v_objstate:		ds.b	$C0	; object state list
 v_objstate_end
 			ds.b	$140	; stack

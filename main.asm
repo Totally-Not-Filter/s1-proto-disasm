@@ -1355,7 +1355,7 @@ Cyc_Sega:	binclude "palette/Cycle - Sega.bin"
 ; ---------------------------------------------------------------------------
 
 PalLoad1:
-		lea	(PalPointers).l,a1
+		lea	(Pal_Index).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
 		movea.l	(a1)+,a2
@@ -1370,7 +1370,7 @@ PalLoad1:
 ; ---------------------------------------------------------------------------
 
 PalLoad2:
-		lea	(PalPointers).l,a1
+		lea	(Pal_Index).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
 		movea.l	(a1)+,a2
@@ -1382,7 +1382,7 @@ PalLoad2:
 		dbf	d7,.loop
 		rts
 
-		include "_include/Palette Pointers.asm"
+		include "_include/Palette Index.asm"
 
 Pal_SegaBG:	binclude "palette/Sega Screen.bin"
 Pal_Title:	binclude "palette/Title Screen.bin"
