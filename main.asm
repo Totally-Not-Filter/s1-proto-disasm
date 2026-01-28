@@ -4131,38 +4131,8 @@ loc_8B66:
 
 locret_8B70:
 		rts
-; ---------------------------------------------------------------------------
 
-FindFreeObj:
-		lea	(v_lvlobjspace).w,a1
-		move.w	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d0
-
-loc_8B7A:
-		tst.b	obID(a1)
-		beq.s	locret_8B86
-		lea	object_size(a1),a1
-		dbf	d0,loc_8B7A
-
-locret_8B86:
-		rts
-; ---------------------------------------------------------------------------
-
-FindNextFreeObj:
-		movea.l	a0,a1
-		move.w	#v_lvlobjend,d0
-		sub.w	a0,d0
-		lsr.w	#object_size_bits,d0
-		subq.w	#1,d0
-		blo.s	locret_8BA2
-
-loc_8B96:
-		tst.b	obID(a1)
-		beq.s	locret_8BA2
-		lea	object_size(a1),a1
-		dbf	d0,loc_8B96
-
-locret_8BA2:
-		rts
+		include	"obj/sub FindFreeObj.asm"
 
 		include "obj/2B Chopper.asm"
 		include "_anim/Chopper.asm"
