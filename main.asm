@@ -3929,18 +3929,26 @@ BuildSpr_FlipXY:
 		rts
 
 		include	"obj/sub ChkObjectVisible.asm"
+
 ; ---------------------------------------------------------------------------
+; Subroutine to load a level's objects
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ObjPosLoad:
 		moveq	#0,d0
 		move.b	(v_opl_routine).w,d0
-		move.w	off_89FC(pc,d0.w),d0
-		jmp	off_89FC(pc,d0.w)
+		move.w	OPL_Index(pc,d0.w),d0
+		jmp	OPL_Index(pc,d0.w)
+; End of function ObjPosLoad
+
 ; ---------------------------------------------------------------------------
-off_89FC:	dc.w loc_8A00-off_89FC, loc_8A44-off_89FC
+OPL_Index:	dc.w OPL_Main-OPL_Index
+		dc.w OPL_Next-OPL_Index
 ; ---------------------------------------------------------------------------
 
-loc_8A00:
+OPL_Main:
 		addq.b	#2,(v_opl_routine).w
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
@@ -3974,7 +3982,7 @@ loc_8A38:
 	endif
 		move.w	#-1,(v_opl_screen).w
 
-loc_8A44:
+OPL_Next:
 		lea	(v_objstate).w,a2
 		moveq	#0,d2
 		move.w	(v_scrposx).w,d6
