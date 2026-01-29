@@ -31,10 +31,20 @@ loc_3E18:
 		add.w	d0,d0
 		move.w	Deform_Index(pc,d0.w),d0
 		jmp	Deform_Index(pc,d0.w)
+; End of function DeformLayers
+
 ; ===========================================================================
-Deform_Index:	dc.w Deform_GHZ-Deform_Index, Deform_LZ-Deform_Index, Deform_MZ-Deform_Index
-		dc.w Deform_SLZ-Deform_Index, Deform_SZ-Deform_Index, Deform_CWZ-Deform_Index
-; ===========================================================================
+; ---------------------------------------------------------------------------
+; Offset index for background layer deformation code
+; ---------------------------------------------------------------------------
+Deform_Index:	dc.w Deform_GHZ-Deform_Index, Deform_LZ-Deform_Index
+		dc.w Deform_MZ-Deform_Index, Deform_SLZ-Deform_Index
+		dc.w Deform_SZ-Deform_Index, Deform_CWZ-Deform_Index
+; ---------------------------------------------------------------------------
+; Green Hill Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_GHZ:
 		move.w	(v_scrshiftx).w,d4
@@ -103,7 +113,13 @@ loc_3EF0:
 		swap	d3
 		dbf	d1,loc_3EF0
 		rts
-; ===========================================================================
+; End of function Deform_GHZ
+
+; ---------------------------------------------------------------------------
+; Labyrinth Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_LZ:
 		lea	(v_hscrolltablebuffer).w,a1
@@ -119,7 +135,13 @@ loc_3F1C:
 		move.l	d0,(a1)+
 		dbf	d1,loc_3F1C
 		rts
-; ===========================================================================
+; End of function Deform_LZ
+
+; ---------------------------------------------------------------------------
+; Marble Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_MZ:
 		move.w	(v_scrshiftx).w,d4
@@ -156,7 +178,13 @@ loc_3F74:
 		move.l	d0,(a1)+
 		dbf	d1,loc_3F74
 		rts
-; ===========================================================================
+; End of function Deform_MZ
+
+; ---------------------------------------------------------------------------
+; Star Light Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_SLZ:
 		move.w	(v_scrshiftx).w,d4
@@ -208,7 +236,9 @@ loc_3FD0:
 		move.l	d0,(a1)+
 		dbf	d1,loc_3FCE
 		rts
-; ===========================================================================
+; End of function Deform_SLZ
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_SLZ_2:
 		lea	(v_bgscroll_buffer).w,a1
@@ -255,7 +285,13 @@ loc_404C:
 		move.w	d0,(a1)+
 		dbf	d1,loc_404C
 		rts
-; ===========================================================================
+; End of function Deform_SLZ_2
+
+; ---------------------------------------------------------------------------
+; Sparkling Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_SZ:
 		move.w	(v_scrshiftx).w,d4
@@ -281,7 +317,13 @@ loc_408A:
 		move.l	d0,(a1)+
 		dbf	d1,loc_408A
 		rts
-; ===========================================================================
+; End of function Deform_SZ
+
+; ---------------------------------------------------------------------------
+; Clock Work Zone background layer deformation code
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_CWZ:
 		lea	(v_hscrolltablebuffer).w,a1
@@ -297,11 +339,17 @@ loc_40AC:
 		move.l	d0,(a1)+
 		dbf	d1,loc_40AC
 		rts
-; ===========================================================================
+; End of function Deform_CWZ
+
+; ---------------------------------------------------------------------------
+; Subroutine to scroll the level horizontally as Sonic moves
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollHoriz:
-		move.w	(v_scrposx).w,d4
-		bsr.s	sub_40E8
+		move.w	(v_scrposx).w,d4 ; save old screen position
+		bsr.s	MoveScreenHoriz
 		move.w	(v_scrposx).w,d0
 		andi.w	#16,d0
 		move.b	(v_fg_xblock).w,d1
@@ -309,79 +357,88 @@ ScrollHoriz:
 		bne.s	locret_40E6
 		eori.b	#16,(v_fg_xblock).w
 		move.w	(v_scrposx).w,d0
-		sub.w	d4,d0
-		bpl.s	loc_40E0
-		bset	#2,(v_fg_scroll_flags).w
-		rts
-; ===========================================================================
+		sub.w	d4,d0		; compare new with old screen position
+		bpl.s	SH_Forward
 
-loc_40E0:
-		bset	#3,(v_fg_scroll_flags).w
+		bset	#2,(v_fg_scroll_flags).w ; screen moves backward
+		rts
+
+SH_Forward:
+		bset	#3,(v_fg_scroll_flags).w ; screen moves forward
 
 locret_40E6:
 		rts
-; ===========================================================================
+; End of function ScrollHoriz
 
-sub_40E8:
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+MoveScreenHoriz:
 		move.w	(v_player+obX).w,d0
-		sub.w	(v_scrposx).w,d0
-		subi.w	#320/2-16,d0
-		bcs.s	loc_412C
-		subi.w	#16,d0
-		bcc.s	loc_4102
+		sub.w	(v_scrposx).w,d0 ; Sonic's distance from left edge of screen
+		subi.w	#320/2-16,d0		; is distance less than 144px?
+		bcs.s	SH_BehindMid	; if yes, branch
+		subi.w	#16,d0		; is distance more than 160px?
+		bcc.s	SH_AheadOfMid	; if yes, branch
 		clr.w	(v_scrshiftx).w
 		rts
 ; ===========================================================================
 
-loc_4102:
-		cmpi.w	#16,d0
-		bcs.s	loc_410C
-		move.w	#16,d0
+SH_AheadOfMid:
+		cmpi.w	#16,d0		; is Sonic within 16px of middle area?
+		blo.s	SH_Ahead16	; if yes, branch
+		move.w	#16,d0		; set to 16 if greater
 
-loc_410C:
+SH_Ahead16:
 		add.w	(v_scrposx).w,d0
 		cmp.w	(v_limitright2).w,d0
-		blt.s	loc_411A
+		blt.s	SH_SetScreen
 		move.w	(v_limitright2).w,d0
 
-loc_411A:
+SH_SetScreen:
 		move.w	d0,d1
 		sub.w	(v_scrposx).w,d1
 		asl.w	#8,d1
-		move.w	d0,(v_scrposx).w
-		move.w	d1,(v_scrshiftx).w
+		move.w	d0,(v_scrposx).w ; set new screen position
+		move.w	d1,(v_scrshiftx).w ; set distance for screen movement
 		rts
 ; ===========================================================================
 
-loc_412C:
+SH_BehindMid:
 		add.w	(v_scrposx).w,d0
 		cmp.w	(v_limitleft2).w,d0
-		bgt.s	loc_411A
+		bgt.s	SH_SetScreen
 		move.w	(v_limitleft2).w,d0
-		bra.s	loc_411A
+		bra.s	SH_SetScreen
+; End of function MoveScreenHoriz
+
 ; ===========================================================================
 		tst.w	d0
 		bpl.s	loc_4146
 		move.w	#-2,d0
-		bra.s	loc_412C
-; ===========================================================================
+		bra.s	SH_BehindMid
 
 loc_4146:
 		move.w	#2,d0
-		bra.s	loc_4102
-; ===========================================================================
+		bra.s	SH_AheadOfMid
+
+; ---------------------------------------------------------------------------
+; Subroutine to scroll the level vertically as Sonic moves
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollVertical:
 		moveq	#0,d1
 		move.w	(v_player+obY).w,d0
-		sub.w	(v_scrposy).w,d0
-		btst	#2,(v_player+obStatus).w
-		beq.s	loc_4160
+		sub.w	(v_scrposy).w,d0 ; Sonic's distance from top of screen
+		btst	#2,(v_player+obStatus).w ; is Sonic rolling?
+		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
 
-loc_4160:
-		btst	#1,(v_player+obStatus).w
-		beq.s	loc_4180
+SV_NotRolling:
+		btst	#1,(v_player+obStatus).w ; is Sonic jumping?
+		beq.s	loc_4180	; if not, branch
+
 		addi.w	#32,d0
 		sub.w	(v_lookshift).w,d0
 		bcs.s	loc_41BE
@@ -408,7 +465,6 @@ loc_4192:
 		bne.s	loc_41AC
 	if ~~FixBugs
 		; Bug: The camera delays when rolling down or up a slope very quickly
-		; Uncomment the lines below to apply the final's fix
 	else
 		move.w	(v_player+obInertia).w,d1
 		bpl.s	loc_666C
@@ -533,7 +589,9 @@ loc_4250:
 
 locret_4256:
 		rts
-; ===========================================================================
+; End of function ScrollVertical
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 loc_4258:
 		move.w	(v_limitleft2).w,d0
@@ -568,7 +626,8 @@ loc_428A:
 loc_4290:
 		move.w	d0,(v_scrshifty).w
 		bra.w	loc_3E14
-; ===========================================================================
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollBlock1:
 		move.l	(v_bgscrposx).w,d2
@@ -614,7 +673,9 @@ loc_42FA:
 
 locret_4300:
 		rts
-; ===========================================================================
+; End of function ScrollBlock1
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollBlock2:
 		move.l	(v_bgscrposx).w,d2
@@ -643,7 +704,9 @@ loc_433C:
 
 locret_4342:
 		rts
-; ===========================================================================
+; End of function ScrollBlock2
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollBlock3:
 		move.w	(v_bgscrposy).w,d3
@@ -665,7 +728,9 @@ loc_436C:
 
 locret_4372:
 		rts
-; ===========================================================================
+; End of function ScrollBlock3
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollBlock4:
 		move.w	(v_bg2scrposx).w,d2
@@ -692,3 +757,4 @@ loc_43AE:
 
 locret_43B4:
 		rts
+; End of function ScrollBlock4
