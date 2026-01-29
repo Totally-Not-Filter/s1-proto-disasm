@@ -1672,9 +1672,12 @@ loc_26E4:
 		beq.w	Tit_MainLoop	; if not, branch
 		btst	#bitA,(v_jpadhold1).w	; is A held?
 		beq.w	PlayLevel	; if so, start level
+
 		moveq	#palid_LevelSel,d0
-		bsr.w	PalLoad2
+		bsr.w	PalLoad2	; load level select palette
+
 		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end
+
 		move.l	d0,(v_scrposy_vdp).w
 		disable_ints
 		lea	(vdp_data_port).l,a6
@@ -1683,8 +1686,13 @@ loc_26E4:
 
 Tit_ClrScroll:
 		move.l	d0,(a6)
-		dbf	d1,Tit_ClrScroll
+		dbf	d1,Tit_ClrScroll ; clear scroll data (in VRAM)
+
 		bsr.w	LevSelTextLoad
+
+; ---------------------------------------------------------------------------
+; Level Select
+; ---------------------------------------------------------------------------
 
 LevelSelect:
 		move.b	#id_VInt_04,(v_vint_routine).w
@@ -1771,6 +1779,10 @@ LevSelOrder:
 		dc.w $8000
 ; ---------------------------------------------------------------------------
 
+; ---------------------------------------------------------------------------
+; Demo mode
+; ---------------------------------------------------------------------------
+
 GotoDemo:
 		move.w	#30,(v_generictimer).w
 
@@ -1793,46 +1805,51 @@ loc_282C:
 		tst.w	(v_generictimer).w
 		bne.w	loc_27FE
 		move.b	#bgm_Fade,d0
-		bsr.w	QueueSound2
-		move.w	(v_demonum).w,d0
+		bsr.w	QueueSound2 ; fade out music
+		move.w	(v_demonum).w,d0 ; load demo number
 		andi.w	#7,d0
 		add.w	d0,d0
-		move.w	DemoLevels(pc,d0.w),d0
+		move.w	Demo_Levels(pc,d0.w),d0	; load level number for demo
 		move.w	d0,(v_zone).w
-		addq.w	#1,(v_demonum).w
-		cmpi.w	#6,(v_demonum).w
-		blo.s	loc_2860
-		move.w	#0,(v_demonum).w
+		addq.w	#1,(v_demonum).w ; add 1 to demo number
+		cmpi.w	#6,(v_demonum).w ; is demo number less than 6?
+		blo.s	loc_2860	; if yes, branch
+		move.w	#0,(v_demonum).w ; reset demo number to 0
 
 loc_2860:
-		move.w	#1,(f_demo).w
-		move.b	#id_Demo,(v_gamemode).w
-		cmpi.w	#(id_SS-1)<<8,d0
-		bne.s	loc_2878
-		move.b	#id_Special,(v_gamemode).w
+		move.w	#1,(f_demo).w	; turn demo mode on
+		move.b	#id_Demo,(v_gamemode).w ; set screen mode to 08 (demo)
+		cmpi.w	#(id_SS-1)<<8,d0	; is level number 0600 (special stage)?
+		bne.s	Demo_Level	; if not, branch
+		move.b	#id_Special,(v_gamemode).w ; set screen mode to $10 (Special Stage)
 
-loc_2878:
-		move.b	#3,(v_lives).w
+Demo_Level:
+		move.b	#3,(v_lives).w	; set lives to 3
 		moveq	#0,d0
-		move.w	d0,(v_rings).w
-		move.l	d0,(v_time).w
-		move.l	d0,(v_score).w
+		move.w	d0,(v_rings).w	; clear rings
+		move.l	d0,(v_time).w	; clear time
+		move.l	d0,(v_score).w	; clear score
 		rts
+; ===========================================================================
 ; ---------------------------------------------------------------------------
+; Levels used in demos
+; ---------------------------------------------------------------------------
+Demo_Levels:
+		;	Format: ZONE,ACT
+		dc.b	id_GHZ,0	; 1
+		dc.b	(id_SS-1),0	; 2
+		dc.b	id_MZ,0		; 3
+		dc.b	(id_SS-1),0	; 4
+		dc.b	id_SZ,0		; 5
+		dc.b	(id_SS-1),0	; 6
+		; The demo levels below are unused
+		dc.b	id_SLZ,0	; 7
+		dc.b	(id_SS-1),0	; 8
+		dc.b	id_MZ,0		; 9
+		dc.b	(id_SS-1),0	; 10
+		dc.b	id_SZ,0		; 11
+		dc.b	(id_SS-1),0	; 12
 
-DemoLevels:
-		dc.b	id_GHZ,0
-		dc.b	(id_SS-1),0
-		dc.b	id_MZ,0
-		dc.b	(id_SS-1),0
-		dc.b	id_SZ,0
-		dc.b	(id_SS-1),0
-		dc.b	id_SLZ,0
-		dc.b	(id_SS-1),0
-		dc.b	id_MZ,0
-		dc.b	(id_SS-1),0
-		dc.b	id_SZ,0
-		dc.b	(id_SS-1),0
 ; ---------------------------------------------------------------------------
 ; Subroutine to change what you're selecting in the level select
 ; ---------------------------------------------------------------------------
