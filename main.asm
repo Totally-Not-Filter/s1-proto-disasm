@@ -1648,7 +1648,7 @@ loc_25D8:
 		enable_display
 		bsr.w	PaletteWhiteIn
 
-loc_26AE:
+Tit_MainLoop:
 		move.b	#id_VInt_04,(v_vint_routine).w
 		bsr.w	WaitForVInt
 		bsr.w	ExecuteObjects
@@ -1666,10 +1666,10 @@ loc_26AE:
 ; ---------------------------------------------------------------------------
 
 loc_26E4:
-		tst.w	(v_generictimer).w
-		beq.w	loc_27F8
-		andi.b	#btnStart,(v_jpadpress1).w
-		beq.w	loc_26AE
+		tst.w	(v_generictimer).w	; has timer reached zero?
+		beq.w	GotoDemo	; if so, branch
+		andi.b	#btnStart,(v_jpadpress1).w	; is Start pressed?
+		beq.w	Tit_MainLoop	; if not, branch
 		btst	#bitA,(v_jpadhold1).w	; is A held?
 		beq.w	PlayLevel	; if so, start level
 		moveq	#palid_LevelSel,d0
@@ -1696,7 +1696,7 @@ LevelSelect:
 		andi.b	#btnABC+btnStart,(v_jpadpress1).w
 		beq.s	LevelSelect
 		move.w	(v_levselitem).w,d0
-		cmpi.w	#$13,d0	; are we on the sound select?
+		cmpi.w	#$13,d0	; are we on sound select?
 		bne.s	LevSel_Level	; if not, branch
 		move.w	(v_levselsound).w,d0
 		addi.w	#$80,d0
@@ -1706,7 +1706,7 @@ LevelSelect:
 		bls.s	.notBGM	; if lower than or same, branch
 	else
 		; Bug: There's no pointers for BGM ids $92 or $93, so the game crashes when it tries to play them
-		cmpi.w	#bgm__Last+2,d0	; compare the last BGM+2 with the level select sound
+		cmpi.w	#bgm__Last+2,d0	; compare the last BGM+2 ($93) with the level select sound
 		blo.s	.notBGM	; if lower than $93, branch
 	endif
 		cmpi.w	#sfx__First,d0	; compare the first SFX with the level select sound
@@ -1771,7 +1771,7 @@ LevSelOrder:
 		dc.w $8000
 ; ---------------------------------------------------------------------------
 
-loc_27F8:
+GotoDemo:
 		move.w	#30,(v_generictimer).w
 
 loc_27FE:
