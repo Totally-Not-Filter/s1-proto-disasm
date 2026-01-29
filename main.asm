@@ -924,7 +924,6 @@ QueueSound3:
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 TilemapToVRAM:
 		lea	(vdp_data_port).l,a6
 		move.l	#$800000,d4
@@ -941,8 +940,8 @@ Tilemap_Cell:
 		rts
 ; End of function TilemapToVRAM
 
-; ---------------------------------------------------------------------------
 		include "_include/Nemesis Decompression.asm"
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to load pattern load cues (aka to queue pattern load requests)
 ; ---------------------------------------------------------------------------
@@ -1179,7 +1178,6 @@ Qplc_Loop:
 		bsr.w	NemDec
 		dbf	d1,Qplc_Loop
 		rts
-; ---------------------------------------------------------------------------
 
 		include "_include/Enigma Decompression.asm"
 		include "_include/Kosinski Decompression.asm"
@@ -1334,7 +1332,7 @@ FadeOut_DecColour:
 PalCycSega:
 		subq.w	#1,(v_pcyc_time).w
 		bpl.s	.return
-		move.w	#4-1,(v_pcyc_time).w
+		move.w	#3,(v_pcyc_time).w
 		move.w	(v_pcyc_num).w,d0	; get cycle number
 		bmi.s	.return	; if negative, return
 		subq.w	#2,(v_pcyc_num).w	; subtract 2 from cycle number
@@ -1350,8 +1348,9 @@ PalCycSega:
 
 .return:
 		rts
-; ---------------------------------------------------------------------------
+
 Cyc_Sega:	binclude "palette/Cycle - Sega.bin"
+
 ; ---------------------------------------------------------------------------
 
 PalLoad1:
@@ -1435,7 +1434,7 @@ CalcSine:
 		subi.w	#$80,d0
 		move.w	SineTable(pc,d0.w),d0
 		rts
-; ---------------------------------------------------------------------------
+
 SineTable:	binclude "misc/sinewave.bin"
 ; ---------------------------------------------------------------------------
 
@@ -5140,9 +5139,9 @@ loc_109C2:
 
 		subq.b	#1,(v_ani1_time).w
 		bpl.s	loc_109E0
-		move.b	#8-1,(v_ani1_time).w
+		move.b	#7,(v_ani1_time).w
 		addq.b	#1,(v_ani1_frame).w
-		andi.b	#4-1,(v_ani1_frame).w
+		andi.b	#3,(v_ani1_frame).w
 
 loc_109E0:
 		move.b	(v_ani1_frame).w,1(a1)
@@ -5150,12 +5149,12 @@ loc_109E0:
 		addq.w	#8,a1
 		subq.b	#1,(v_ani2_time).w
 		bpl.s	loc_10A02
-		move.b	#8-1,(v_ani2_time).w
+		move.b	#7,(v_ani2_time).w
 		bra.s	loc_10A02
 ; ---------------------------------------------------------------------------
 ; unused
-		addq.b	#1,(v_ani2_frame).w		; the GOAL blocks were meant to flash yellow
-		andi.b	#2-1,(v_ani2_frame).w
+		addq.b	#1,(v_ani2_frame).w		; this code makes the GOAL blocks flash yellow
+		andi.b	#1,(v_ani2_frame).w
 
 loc_10A02:
 		move.b	(v_ani2_frame).w,1(a1)
@@ -5163,9 +5162,9 @@ loc_10A02:
 		move.b	(v_ani2_frame).w,1(a1)
 		subq.b	#1,(v_ani0_time).w
 		bpl.s	loc_10A26
-		move.b	#8-1,(v_ani0_time).w
+		move.b	#7,(v_ani0_time).w
 		subq.b	#1,(v_ani0_frame).w
-		andi.b	#4-1,(v_ani0_frame).w
+		andi.b	#3,(v_ani0_frame).w
 
 loc_10A26:
 		lea	(v_ssblocktypes+$2E).l,a1
@@ -5267,7 +5266,7 @@ SS_AniIndex:	dc.l SS_AniRingSparks
 SS_AniRingSparks:
 		subq.b	#1,2(a0)
 		bpl.s	locret_10B32
-		move.b	#6-1,2(a0)
+		move.b	#5,2(a0)
 		moveq	#0,d0
 		move.b	3(a0),d0
 		addq.b	#1,3(a0)
@@ -5288,7 +5287,7 @@ byte_10B34:	dc.b $17, $18, $19, $1A, 0, 0
 SS_AniBumper:
 		subq.b	#1,2(a0)
 		bpl.s	locret_10B68
-		move.b	#8-1,2(a0)
+		move.b	#7,2(a0)
 		moveq	#0,d0
 		move.b	3(a0),d0
 		addq.b	#1,3(a0)
@@ -5461,10 +5460,9 @@ Nem_Shield:	binclude "artnem/Shield.nem"
 		even
 Nem_Stars:	binclude "artnem/Stars.nem"
 		even
-Nem_Flash:	binclude "artnem/Flash.nem"
+Nem_Warp:	binclude "artnem/Flash.nem"
 		even
-;Nem_Goggles:
-		binclude "artnem/Unused - Goggles.nem"
+Nem_Goggle:	binclude "artnem/Unused - Goggles.nem"
 		even
 
 		align	$400
@@ -5498,7 +5496,7 @@ Nem_MzSwitch:	binclude "artnem/MZ Switch.nem"
 		even
 Nem_MzGlass:	binclude "artnem/MZ Green Glass Block.nem"
 		even
-		binclude "artnem/Unused - Grass.nem"
+Nem_UnkGrass:	binclude "artnem/Unused - Grass.nem"
 		even
 Nem_MzFire:	binclude "artnem/Fireballs.nem"
 		even
@@ -5506,7 +5504,7 @@ Nem_Lava:	binclude "artnem/MZ Lava.nem"
 		even
 Nem_MzBlock:	binclude "artnem/MZ Green Pushable Block.nem"
 		even
-		binclude "artnem/Unused - MZ Background.nem"
+Nem_MzUnkBlock:	binclude "artnem/Unused - MZ Background.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff

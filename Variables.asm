@@ -156,13 +156,21 @@ v_plc_buffer_end
 
 v_misc_variables:
 v_scrposx:		ds.l	1
+v_screenposx	=	v_scrposx
 v_scrposy:		ds.l	1
+v_screenposy	=	v_scrposy
 v_bgscrposx:	ds.l	1
+v_bgscreenposx	=	v_bgscrposx
 v_bgscrposy:	ds.l	1
+v_bgscreenposy	=	v_bgscrposy
 v_bg2scrposx:	ds.l	1
+v_bg2screenposx	=	v_bg2scrposx
 v_bg2scrposy:	ds.l	1
+v_bg2screenposy	=	v_bg2scrposy
 v_bg3scrposx:	ds.l	1
+v_bg3screenposx	=	v_bg3scrposx
 v_bg3scrposy:	ds.l	1
+v_bg3screenposy	=	v_bg3scrposy
 v_limitleft1:	ds.w	1
 v_limitright1:	ds.w	1		; unused
 v_limittop1:	ds.w	1

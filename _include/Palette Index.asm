@@ -6,7 +6,7 @@ paletteIndexEntry:	macro paletteLabel,paletteRAMaddress,paletteSize,{GLOBALSYMBO
 
 ptr_paletteLabel:
 	dc.l paletteLabel
-	dc.w paletteRAMaddress,(paletteSize)/2-1
+	dc.w paletteRAMaddress,bytesToWcnt(paletteSize)
 	endm
 
 Pal_Index:

@@ -199,7 +199,7 @@ PLC_Signpostend:
 ; Pattern load cues - special stage warp effect
 ; ---------------------------------------------------------------------------
 PLC_Warp:	dc.w ((PLC_Warpend-PLC_Warp-2)/6)-1
-		plcm    Nem_Flash, ArtTile_Warp
+		plcm    Nem_Warp, ArtTile_Warp
 PLC_Warpend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - special stage
