@@ -1700,7 +1700,7 @@ LevelSelect:
 		bne.s	LevSel_Level	; if not, branch
 		move.w	(v_levselsound).w,d0
 		addi.w	#$80,d0
-		; What follows below are workarounds for bugs within the Sound Driver, these can be removed if FixBugs is enabled.
+		; What follows below are workarounds for bugs within the Sound Driver, these can be removed if FixBugs is enabled, but these are kept here for documentation.
 	if FixBugs
 		cmpi.w	#bgm__Last,d0	; compare the last BGM with the level select sound
 		bls.s	.notBGM	; if lower than or same, branch
