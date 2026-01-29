@@ -1,6 +1,5 @@
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 FindWall:
 		bsr.w	FindNearestTile
 		move.w	(a1),d0
@@ -78,9 +77,7 @@ loc_10396:
 		rts
 ; End of function FindWall
 
-
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 
 FindWall2:
 		bsr.w	FindNearestTile

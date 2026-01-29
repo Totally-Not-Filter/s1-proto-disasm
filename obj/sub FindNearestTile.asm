@@ -12,7 +12,6 @@
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 FindNearestTile:
 		move.w	d2,d0		; get y-pos. of bottom edge of object
 		lsr.w	#1,d0

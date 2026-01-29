@@ -64,7 +64,7 @@ Smash_Solid:	; Routine 2
 		bclr	#5,obStatus(a1)
 		moveq	#7,d1		; load 8 fragments
 		move.w	#$70,d2
-		bsr.s	ObjectFragment
+		bsr.s	SmashObject
 
 Smash_FragMove:	; Routine 4
 	if FixBugs

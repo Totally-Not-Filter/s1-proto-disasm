@@ -57,7 +57,7 @@ sonicAniFrame = objoff_32		; Sonic's current animation number
 		lea	(Smab_Speeds).l,a4 ; load broken fragment speed data
 		moveq	#3,d1		; set number of fragments to 4
 		move.w	#$38,d2
-		bsr.w	ObjectFragment
+		bsr.w	SmashObject
 
 Smab_Points:	; Routine 4
 	if FixBugs
