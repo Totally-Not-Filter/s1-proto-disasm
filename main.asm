@@ -1678,12 +1678,12 @@ loc_26E4:
 		move.l	d0,(v_scrposy_vdp).w
 		disable_ints
 		lea	(vdp_data_port).l,a6
-		move.l	#$60000003,(vdp_control_port).l
-		move.w	#bytesToLcnt($1000),d1
+		locVRAM	vram_bg
+		move.w	#bytesToLcnt(plane_size_64x32),d1
 
-loc_2732:
+Tit_ClrScroll:
 		move.l	d0,(a6)
-		dbf	d1,loc_2732
+		dbf	d1,Tit_ClrScroll
 		bsr.w	LevSelTextLoad
 
 LevelSelect:
