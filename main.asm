@@ -2033,6 +2033,9 @@ LevelSelectText:
 
 		charset
 
+; ---------------------------------------------------------------------------
+; Music playlist
+; ---------------------------------------------------------------------------
 MusicList:
 		dc.b bgm_GHZ
 		dc.b bgm_LZ
@@ -2041,6 +2044,10 @@ MusicList:
 		dc.b bgm_SZ
 		dc.b bgm_CWZ
 		even
+; ===========================================================================
+
+; ---------------------------------------------------------------------------
+; Level
 ; ---------------------------------------------------------------------------
 
 GM_Level:
@@ -2088,7 +2095,7 @@ loc_2C0A:
 		bsr.w	QueueSound1
 		move.b	#id_TitleCard,(v_titlecard).w	; load title card object
 
-loc_2C92:
+Level_TtlCardLoop:
 		move.b	#id_VInt_0C,(v_vint_routine).w
 		bsr.w	WaitForVInt
 		bsr.w	ExecuteObjects
@@ -2096,9 +2103,9 @@ loc_2C92:
 		bsr.w	RunPLC
 		move.w	(v_ttlcardact+obX).w,d0
 		cmp.w	(v_ttlcardact+card_mainX).w,d0
-		bne.s	loc_2C92
+		bne.s	Level_TtlCardLoop
 		tst.l	(v_plc_buffer).w
-		bne.s	loc_2C92
+		bne.s	Level_TtlCardLoop
 		bsr.w	DebugPosLoadArt
 		jsr	(Hud_Base).l
 		moveq	#palid_Sonic,d0
@@ -2111,30 +2118,30 @@ loc_2C92:
 		jsr	(ConvertCollisionArray).l
 		move.l	#Col_GHZ,(v_collindex).w	; Load Green Hill's collision - what follows are some C style conditional statements, really unnecessary and replaced with a table in the final game
 		cmpi.b	#id_LZ,(v_zone).w		; Is the current zone Labyrinth?
-		bne.s	loc_2CFA			; If not, go to the next condition
+		bne.s	.notLZ			; If not, go to the next condition
 		move.l	#Col_LZ,(v_collindex).w		; Load Labyrinth's collision
 
-loc_2CFA:
+.notLZ:
 		cmpi.b	#id_MZ,(v_zone).w		; Is the current zone Marble?
-		bne.s	loc_2D0A			; If not, go to the next condition
+		bne.s	.notMZ			; If not, go to the next condition
 		move.l	#Col_MZ,(v_collindex).w		; Load Marble's collision
 
-loc_2D0A:
+.notMZ:
 		cmpi.b	#id_SLZ,(v_zone).w		; Is the current zone Star Light?
-		bne.s	loc_2D1A			; If not, go to the next condition
+		bne.s	.notSLZ			; If not, go to the next condition
 		move.l	#Col_SLZ,(v_collindex).w	; Load Star Light's collision
 
-loc_2D1A:
+.notSLZ:
 		cmpi.b	#id_SZ,(v_zone).w		; Is the current zone Sparkling?
-		bne.s	loc_2D2A			; If not, go to the last condition
+		bne.s	.notSZ			; If not, go to the last condition
 		move.l	#Col_SZ,(v_collindex).w		; Load Sparkling's collision
 
-loc_2D2A:
+.notSZ:
 		cmpi.b	#id_CWZ,(v_zone).w		; Is the current zone Clock Work?
-		bne.s	loc_2D3A			; If not, then just skip loading collision
+		bne.s	.notCWZ			; If not, then just skip loading collision
 		move.l	#Col_CWZ,(v_collindex).w	; Load Clock Work's collision
 
-loc_2D3A:
+.notCWZ:
 		move.b	#id_SonicPlayer,(v_player).w
 		move.b	#id_HUD,(v_hud).w
 		btst	#bitA,(v_jpadhold1).w

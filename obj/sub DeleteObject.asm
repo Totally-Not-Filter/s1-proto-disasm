@@ -4,7 +4,6 @@
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
 DeleteObject:
 		movea.l	a0,a1		; move object RAM address to (a1)
 
@@ -16,5 +15,4 @@ DeleteChild:				; child objects are already in (a1)
 		move.l	d1,(a1)+	; clear the object RAM
 		dbf	d0,.clrRAM	; repeat for length of object RAM
 		rts
-
 ; End of function DeleteObject
