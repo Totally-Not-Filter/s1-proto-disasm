@@ -141,7 +141,12 @@ UpdateMusic:
 		jsr	DoFadeIn(pc)
 
 .nofadein:
+	if FixBugs
+		tst.l	SMPS_RAM.v_soundqueue0(a6)
+	else
+		; DANGER! The following line only checks v_soundqueue0 and v_soundqueue1, breaking v_soundqueue2.
 		tst.w	SMPS_RAM.v_soundqueue0(a6)
+	endif
 		beq.s	.noqueue
 		jsr	CycleSoundQueue(pc)
 
