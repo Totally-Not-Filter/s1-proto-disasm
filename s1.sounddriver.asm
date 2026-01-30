@@ -697,7 +697,7 @@ CycleSoundQueue:
 		move.b	d0,d1
 		clr.b	(a1)+				; Clear entry
 		subi.b	#bgm__First,d0			; Make it into 0-based index
-		bcs.s	.nextinput			; If negative (i.e., it was $80 or lower), branch
+		blo.s	.nextinput			; If negative (i.e., it was $80 or lower), branch
 		andi.w	#$7F,d0				; Clear high byte and sign bit
 		move.b	(a0,d0.w),d2			; Get sound type
 		cmp.b	d3,d2				; Is it a lower priority sound?
@@ -718,7 +718,7 @@ PlaySoundID:
 		move.b	#$80,SMPS_RAM.v_sound_id(a6)
 		cmpi.b	#$80,d7	; is sound id negative?
 		beq.s	.nosound	; if equal to negative, branch
-		bcs.w	StopAllSound	; if lower than negative, stop all sound
+		blo.w	StopAllSound	; if lower than negative, stop all sound
 	if FixBugs
 		cmpi.b	#bgm__Last,d7	; is this music?
 	else
@@ -728,20 +728,20 @@ PlaySoundID:
 	endif
 		bls.w	PlaySnd_Music	; if so, branch
 		cmpi.b	#sfx__First,d7	; is this between music and sfx?
-		bcs.w	.nosound	; if so, branch
+		blo.w	.nosound	; if so, branch
 		cmpi.b	#sfx__Last,d7	; is this sfx?
 		bls.w	PlaySnd_SFX	; if so, branch
 		cmpi.b	#spec__First,d7	; is this between sfx and special sfx?
-		bcs.w	.nosound	; if so, branch
+		blo.w	.nosound	; if so, branch
 	if FixBugs
 		cmpi.b	#spec__Last,d7	; is this special sfx?
 	else
 		; Bug: Should not include +5
 		cmpi.b	#spec__Last+5,d7	; is this special sfx?
 	endif
-		bcs.w	PlaySnd_SpecSFX	; if so, branch
+		blo.w	PlaySnd_SpecSFX	; if so, branch
 		cmpi.b	#flg__First,d7	; is this between special sfx and sound commands?
-		bcs.s	PlaySnd_DAC	; if so, branch
+		blo.s	PlaySnd_DAC	; if so, branch
 	if FixBugs
 		cmpi.b	#flg__Last,d7	; is this sound commands?
 	else

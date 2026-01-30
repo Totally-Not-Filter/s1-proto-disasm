@@ -295,6 +295,7 @@ CheckSumCheck:
 .clrRAM:
 		move.l	d7,(a6)+
 		dbf	d6,.clrRAM
+
 		move.b	(region_ver).l,d0
 		andi.b	#%11000000,d0		; AND the value so it only gets the japanese bit and clock speed bit
 		move.b	d0,(v_megadrive).w	; move the region values into 68K memory for later use
@@ -309,6 +310,7 @@ GameInit:
 .clrRAM:
 		move.l	d7,(a6)+
 		dbf	d6,.clrRAM
+
 		bsr.w	VDPSetupGame
 		bsr.w	DACDriverLoad
 		bsr.w	InitJoypads
@@ -1556,20 +1558,20 @@ GM_Sega:
 		move.w	#40,(v_pcyc_num).w	; set cycle number to 40
 		move.w	#0,(v_pal_buffer+$12).w
 		move.w	#0,(v_pal_buffer+$10).w
-		move.w	#180,(v_generictimer).w
+		move.w	#180,(v_generictimer).w	; run sega screen for 3 seconds
 		enable_display
 
-loc_2528:
+Sega_MainLoop:
 		move.b	#id_VInt_02,(v_vint_routine).w
 		bsr.w	WaitForVInt
 		bsr.w	PalCycSega
-		tst.w	(v_generictimer).w
-		beq.s	loc_2544
-		andi.b	#btnStart,(v_jpadpress1).w	; is start pressed?
-		beq.s	loc_2528	; if not, loop
+		tst.w	(v_generictimer).w	; has timer reached zero?
+		beq.s	loc_2544	; if so, branch
+		andi.b	#btnStart,(v_jpadpress1).w	; is Start button pressed?
+		beq.s	Sega_MainLoop	; if not, loop
 
 loc_2544:
-		move.b	#id_Title,(v_gamemode).w
+		move.b	#id_Title,(v_gamemode).w	; go to Title gamemode
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -2258,7 +2260,7 @@ loc_2EC8:
 		bne.s	loc_2E9E
 		rts
 ; ---------------------------------------------------------------------------
-		include "leftovers/obj/Debug Coordinate Sprites.asm"
+		include "leftovers/routines/Debug Coordinate Sprites.asm"
 ; ---------------------------------------------------------------------------
 ; Unused, Speculated to have been for a window plane wavy masking effect
 ; involving writes during H_Int. It writes its tables in the Nemesis GFX

@@ -230,6 +230,7 @@ loc_45DC:
 
 locret_4606:
 		rts
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; Don't be fooled by the name: this function's for drawing from left to right
