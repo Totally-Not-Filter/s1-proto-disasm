@@ -101,7 +101,7 @@ PLC_LZ:		dc.w ((PLC_LZ2-PLC_LZ-2)/6)-1
 		plcm    Nem_LZ, ArtTile_Level
 
 PLC_LZ2:	dc.w ((PLC_LZ2end-PLC_LZ2-2)/6)-1
-		plcm    Nem_Jaws, $4CE
+		plcm    Nem_Jaws, ArtTile_Jaws_2
 PLC_LZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Marble
@@ -173,7 +173,7 @@ PLC_CWZ:	dc.w ((PLC_CWZ2-PLC_CWZ-2)/6)-1
 		plcm    Nem_CWZ, ArtTile_Level
 
 PLC_CWZ2:	dc.w ((PLC_CWZ2end-PLC_CWZ2-2)/6)-1
-		plcm    Nem_Jaws, $4CE
+		plcm    Nem_Jaws, ArtTile_Jaws_2
 PLC_CWZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - title card
