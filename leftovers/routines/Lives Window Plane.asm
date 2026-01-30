@@ -6,13 +6,13 @@
 Lives_Window_Plane:
 		moveq	#0,d0
 		move.b	(v_lives).w,d1
-		cmpi.b	#2,d1
-		blo.s	.lower
-		move.b	d1,d0
-		subq.b	#1,d0
-		cmpi.b	#5,d0
-		blo.s	.lower
-		move.b	#4,d0
+		cmpi.b	#2,d1	; do you have less than 2 lives?
+		blo.s	.lower	; if so, branch
+		move.b	d1,d0	; move lives to d0
+		subq.b	#1,d0	; subtract 1 from lives
+		cmpi.b	#5,d0	; do you have less than 5 lives?
+		blo.s	.lower	; if so, branch
+		move.b	#4,d0	; force lives to be set to 4
 
 .lower:
 		lea	(vdp_data_port).l,a6

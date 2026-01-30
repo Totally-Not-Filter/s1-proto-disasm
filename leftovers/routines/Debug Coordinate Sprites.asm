@@ -18,6 +18,7 @@ Debug_Coord_Sprites:
 		dbf	d1,.loop	; loop until all digits have been loaded
 		rts
 ; ---------------------------------------------------------------------------
+
 Debug_Coords_XY_Index:
 		dc.w $158, $148
 		dc.w $160, $148
@@ -32,6 +33,7 @@ Debug_Coords_XY_Index:
 		dc.w $168, $98
 		dc.w $170, $98
 Debug_Coords_XY_Index_End
+
 ; ---------------------------------------------------------------------------
 ; sub_2F24:
 Debug_Coord_B_Sprites:
@@ -47,6 +49,7 @@ Debug_Coord_B_Sprites:
 		dbf	d1,.loop	; loop until all digits have been loaded
 		rts
 ; ---------------------------------------------------------------------------
+
 Debug_Coords_B_XY_Index:
 		dc.w $158, $90
 		dc.w $160, $90
