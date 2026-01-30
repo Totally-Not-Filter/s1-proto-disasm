@@ -948,12 +948,22 @@ PlaySnd_Music:
 		adda.w	d6,a1
 		dbf	d7,.sfxloop
 
+	if FixBugs
+		tst.b	SMPS_RAM.v_spcsfx_fm4_track+SMPS_Track.PlaybackControl(a6)
+	else
+		; Bug: This checks for both PlaybackControl and VoiceControl, when it should only be doing PlaybackControl.
 		tst.w	SMPS_RAM.v_spcsfx_fm4_track+SMPS_Track.PlaybackControl(a6)
+	endif
 		bpl.s	.checkspecialpsg
 		bset	#2,SMPS_RAM.v_music_fm4_track+SMPS_Track.PlaybackControl(a6)
 
 .checkspecialpsg:
+	if FixBugs
+		tst.b	SMPS_RAM.v_spcsfx_psg3_track+SMPS_Track.PlaybackControl(a6)
+	else
+		; Bug: This checks for both PlaybackControl and VoiceControl, when it should only be doing PlaybackControl.
 		tst.w	SMPS_RAM.v_spcsfx_psg3_track+SMPS_Track.PlaybackControl(a6)
+	endif
 		bpl.s	.sendfmnoteoff
 		bset	#2,SMPS_RAM.v_music_psg3_track+SMPS_Track.PlaybackControl(a6)
 
