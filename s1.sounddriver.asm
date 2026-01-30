@@ -226,7 +226,7 @@ DACUpdateTrack:
 		moveq	#0,d5
 		move.b	(a4)+,d5
 		cmpi.b	#$E0,d5
-		bcs.s	.notcommand
+		blo.s	.notcommand
 		jsr	CoordFlag(pc)
 		bra.s	.command
 ; ---------------------------------------------------------------------------
@@ -306,7 +306,7 @@ FMDoNext:
 		moveq	#0,d5
 		move.b	(a4)+,d5
 		cmpi.b	#$E0,d5
-		bcs.s	.notcommand
+		blo.s	.notcommand
 		jsr	CoordFlag(pc)
 		bra.s	.command
 ; ---------------------------------------------------------------------------
@@ -348,7 +348,6 @@ SetDuration:
 		beq.s	.save
 		add.b	d5,d0
 		bra.s	.loop
-; ---------------------------------------------------------------------------
 
 .save:
 		move.b	d0,SMPS_Track.SavedDuration(a5)	; Save duration
@@ -706,7 +705,7 @@ CycleSoundQueue:
 		andi.w	#$7F,d0				; Clear high byte and sign bit
 		move.b	(a0,d0.w),d2			; Get sound type
 		cmp.b	d3,d2				; Is it a lower priority sound?
-		bcs.s	.nextinput
+		blo.s	.nextinput
 		move.b	d2,d3				; Store new priority
 		move.b	d1,SMPS_RAM.v_sound_id(a6)	; Queue sound for playing
 
@@ -1744,7 +1743,7 @@ PSGDoNext:
 		moveq	#0,d5
 		move.b	(a4)+,d5
 		cmpi.b	#$E0,d5
-		bcs.s	.gotnote
+		blo.s	.gotnote
 		jsr	CoordFlag(pc)
 		bra.s	.command
 ; ---------------------------------------------------------------------------
@@ -1767,7 +1766,7 @@ PSGDoNext:
 
 PSGSetFreq:
 		subi.b	#$81,d5
-		bcs.s	.restpsg
+		blo.s	.restpsg
 		add.b	SMPS_Track.Transpose(a5),d5
 		andi.w	#$7F,d5
 		lsl.w	#1,d5
@@ -1846,7 +1845,7 @@ PSGDoVolFX:
 .gotflutter:
 		add.w	d0,d6
 		cmpi.b	#$10,d6
-		bcs.s	SetPSGVolume
+		blo.s	SetPSGVolume
 		moveq	#$F,d6
 
 SetPSGVolume:
@@ -2288,7 +2287,7 @@ SetVoice:
 		move.b	(a2)+,d0
 		move.b	(a1)+,d1
 		lsr.b	#1,d4				; Is bit set for this operator in the mask?
-		bcc.s	.sendtl				; Branch if not
+		bhs.s	.sendtl				; Branch if not
 		add.b	d3,d1				; Include additional attenuation
 
 .sendtl:
@@ -2343,9 +2342,9 @@ SendVoiceTL:
 		move.b	(a2)+,d0
 		move.b	(a1)+,d1
 		lsr.b	#1,d4				; Is bit set for this operator in the mask?
-		bcc.s	.senttl				; Branch if not
+		bhs.s	.senttl				; Branch if not
 		add.b	d3,d1				; Include additional attenuation
-		bcs.s	.senttl				; Branch on overflow
+		blo.s	.senttl				; Branch on overflow
 		jsr	WriteFMIorII(pc)
 
 .senttl:
