@@ -2748,8 +2748,8 @@ ptr_sndend:
 ; ---------------------------------------------------------------------------
 SpecSoundIndex:
 ptr_sndD0:	dc.l SoundD0
-ptr_sndD1:	dc.l SoundD1				; leftover from Michael Jackson's Moonwalker
-ptr_sndD2:	dc.l SoundD2				; leftover from Michael Jackson's Moonwalker
+ptr_sndD1:	dc.l SoundD1
+ptr_sndD2:	dc.l SoundD2
 ptr_specend:
 
 SoundA0:	include "sound/sfx/SndA0 - Jump.asm"
@@ -2850,6 +2850,7 @@ SoundCF:	include "sound/sfx/SndCF - Signpost.asm"
 		even
 SoundD0:	include "sound/sfx/SndD0 - Waterfall.asm"
 		even
+; Leftovers from Michael Jackson's Moonwalker begin here.
 SoundD1:	include "sound/sfx/SndD1.asm"
 		even
 SoundD2:	include "sound/sfx/SndD2.asm"
