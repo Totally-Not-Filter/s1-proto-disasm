@@ -267,6 +267,11 @@ ctrl_port_2_ctrl:	equ $A1000A
 ctrl_port_2_ctrl_b:	equ $A1000B
 ctrl_expansion_ctrl:	equ $A1000C
 ctrl_expansion_ctrl_b:	equ $A1000D
+z80_version		= region_ver
+z80_port_1_data	= ctrl_port_1_data
+z80_port_1_control	= ctrl_port_1_ctrl
+z80_port_2_control	= ctrl_port_2_ctrl
+z80_expansion_control	= ctrl_expansion_ctrl
 z80_bus_request:	equ $A11100
 z80_reset:		equ $A11200
 
