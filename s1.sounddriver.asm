@@ -1481,15 +1481,14 @@ StopAllSound:
 InitMusicPlayback:
 		movea.l	a6,a0
 		; Save several values
-	if ~~FixBugs
-		; Bug: v_soundqueue0 and the other queues are not saved
-	endif
 		_move.b	SMPS_RAM.v_sndprio(a6),d1
 		move.b	SMPS_RAM.f_1up_playing(a6),d2
 		move.b	SMPS_RAM.f_speedup(a6),d3
 		move.b	SMPS_RAM.v_fadein_counter(a6),d4
 	if FixBugs
 		move.l	SMPS_RAM.v_soundqueue0(a6),d5
+	else
+		; Bug: v_soundqueue0 and the other queues are not saved
 	endif
 		move.w	#bytesToLcnt(SMPS_RAM.v_1up_ram_end-SMPS_RAM.v_1up_ram),d0
 
@@ -1498,15 +1497,14 @@ InitMusicPlayback:
 		dbf	d0,.clearramloop
 
 		; Restore the values saved above
-	if ~~FixBugs
-		; Bug: Like above, v_soundqueue0 and the other queues are not restored either
-	endif
 		_move.b	d1,SMPS_RAM.v_sndprio(a6)
 		move.b	d2,SMPS_RAM.f_1up_playing(a6)
 		move.b	d3,SMPS_RAM.f_speedup(a6)
 		move.b	d4,SMPS_RAM.v_fadein_counter(a6)
 	if FixBugs
 		move.l	d5,SMPS_RAM.v_soundqueue0(a6)
+	else
+		; Bug: Like above, v_soundqueue0 and the other queues are not restored either
 	endif
 		move.b	#$80,SMPS_RAM.v_sound_id(a6)
 	if FixBugs
