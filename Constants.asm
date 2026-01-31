@@ -379,7 +379,6 @@ TBBAK:	equ	$85		; table pointer set next data
 
 ; Shared
 ArtTile_GHZ_MZ_Swing:	equ $380
-ArtTile_MZ_SYZ_Caterkiller:	equ $4FF
 ArtTile_GHZ_SLZ_Smashable_Wall:	equ $50F
 
 ; Green Hill Zone
