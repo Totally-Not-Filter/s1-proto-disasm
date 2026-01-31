@@ -29,9 +29,16 @@ Scen_Main:	; Routine 0
 		move.b	(a1)+,obColType(a0)
 
 Scen_ChkDel:	; Routine 2
+	if FixBugs
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
+		out_of_range.w	Scen_Delete
+		bra.w	DisplaySprite
+	else
 		bsr.w	DisplaySprite
 		out_of_range.w	Scen_Delete
 		rts
+	endif
 ; ===========================================================================
 
 Scen_Delete:	; Routine 4, 6
