@@ -43,7 +43,7 @@ plcm:	macro gfx,vram
 ; Pattern load cues - standard block 1
 ; ---------------------------------------------------------------------------
 PLC_Main:	dc.w ((PLC_Mainend-PLC_Main-2)/6)-1
-		plcm	Nem_Smoke,  ArtTile_Lamppost      ; smoke
+		plcm	Nem_Smoke,  ArtTile_Smoke         ; smoke
 		plcm	Nem_HUD,    ArtTile_HUD           ; HUD
 		plcm	Nem_Lives,  ArtTile_Lives_Counter ; lives counter
 		plcm	Nem_Ring,   ArtTile_Ring          ; rings
