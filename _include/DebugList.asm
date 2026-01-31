@@ -128,7 +128,7 @@ dbug:	macro map,object,subtype,frame,vram
 	if FixBugs
 	dbug	Map_Burro,	id_Burrobot,	0,	0,	make_art_tile(ArtTile_Burrobot,1,0)
 	else
-	; This will use Jaws's art instead of Burrobot's art.
+	; This uses Jaws's art tile instead of Burrobot's art tile.
 	dbug	Map_Burro,	id_Burrobot,	0,	0,	make_art_tile(ArtTile_Jaws,1,0)
 	endif
 ;.DebugUnkend:
