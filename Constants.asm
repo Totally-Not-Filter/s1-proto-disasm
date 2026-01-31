@@ -466,7 +466,6 @@ ArtTile_Eggman_Weapons:	equ $46C
 
 ; End of Level
 ArtTile_Prison_Capsule:	equ $49D
-ArtTile_Hidden_Points:	equ $4B6
 ArtTile_Giant_Ring:		equ $4EC
 ArtTile_Warp:			equ $541
 ArtTile_Bonuses:		equ $570
