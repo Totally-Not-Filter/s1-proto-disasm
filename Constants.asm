@@ -464,10 +464,6 @@ ArtTile_Lives_Counter:	equ $7D4
 ; Eggman
 ArtTile_Eggman:			equ $400
 ArtTile_Eggman_Weapons:	equ $46C
-ArtTile_Eggman_Button:	equ $4A4
-ArtTile_Eggman_Spikeball:	equ $518
-ArtTile_Eggman_Trap_Floor:	equ $518
-ArtTile_Eggman_Exhaust:	equ ArtTile_Eggman+$12A
 
 ; End of Level
 ArtTile_Prison_Capsule:	equ $49D
