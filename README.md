@@ -1,2 +1,2 @@
 # Sonic 1 Prototype Disassembly
-This branch of the Mega Drive Developer's Collective disassembly of the Sonic 1 Prototype is a multi-assembler disassembly.
+This reworked version of the Mega Drive Developer's Collective disassembly of the Sonic 1 Prototype is a multi-assembler targeted disassembly. You can choose the assembler that you prefer by checking the branches on this repository.
