@@ -1444,7 +1444,7 @@ FadeOutMusic:
 		clr.b	SMPS_RAM.f_speedup(a6)			; Disable speed shoes tempo
 		rts
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 DoFadeOut:
 		move.b	SMPS_RAM.v_fadeout_delay(a6),d0		; Has fadeout delay expired?
@@ -1744,8 +1744,7 @@ FMNoteOn:
 
 .return:
 		rts
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMNoteOff:
 		btst	#4,SMPS_Track.PlaybackControl(a5)	; Is 'do not attack next note' set?
@@ -1773,8 +1772,7 @@ WriteFMIorIIMain:
 
 .return:
 		rts
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 WriteFMIorII:
 		btst	#2,SMPS_Track.VoiceControl(a5)	; Is this bound for part I or II?
@@ -2053,8 +2051,7 @@ VolEnvCmd_Back:
 VolEnvCmd_Rept:
 		clr.b	SMPS_Track.VolEnvIndex(a5)
 		bra.w	PSGDoVolFX
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGNoteOff:
 		btst	#2,SMPS_Track.PlaybackControl(a5)	; Is SFX overriding?
@@ -2441,7 +2438,7 @@ cfSetVoice:
 		bmi.s	SetVoice				; If yes, branch
 		movea.l	SMPS_RAM.v_special_voice_ptr(a6),a1	; Special SFX voice pointer
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 SetVoice:
 		subq.w	#1,d0

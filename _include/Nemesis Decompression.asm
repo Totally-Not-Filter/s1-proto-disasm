@@ -6,8 +6,6 @@
 ; For format explanation see http://info.sonicretro.org/Nemesis_compression
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ; Nemesis decompression to VRAM
 NemDec:
 		movem.l	d0-a1/a3-a5,-(sp)
@@ -15,7 +13,7 @@ NemDec:
 		lea	(vdp_data_port).l,a4		; specifically, to the VDP data port
 		bra.s	NemDecMain
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Nemesis decompression subroutine, decompresses art to RAM
 ; Inputs:
@@ -52,8 +50,6 @@ loc_146A:
 ; Part of the Nemesis decompressor, processes the actual compressed data
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 NemDec_ProcessCompressedData:
 		move.w	d6,d7
 		subq.w	#8,d7				; get shift value
@@ -89,7 +85,7 @@ NemPCD_WritePixel:
 		jmp	(a3)				; otherwise, write the row to its destination, by doing a dynamic jump to NemPCD_WriteRowToVDP, NemDec_WriteAndAdvance, NemPCD_WriteRowToVDP_XOR, or NemDec_WriteAndAdvance_XOR
 ; End of function NemDec_ProcessCompressedData
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 NemPCD_NewRow:
 		moveq	#0,d4				; reset row
@@ -132,6 +128,7 @@ NemPCD_WriteRowToVDP:
 		bne.s	NemPCD_NewRow			; if not, branch
 		rts					; otherwise the decompression is finished
 ; ===========================================================================
+
 NemPCD_WriteRowToVDP_XOR:
 		eor.l	d4,d2				; XOR the previous row by the current row
 		move.l	d2,(a4)				; and write the result
@@ -148,6 +145,7 @@ NemPCD_WriteRowToRAM:
 		bne.s	NemPCD_NewRow
 		rts	
 ; ===========================================================================
+
 NemPCD_WriteRowToRAM_XOR:
 		eor.l	d4,d2
 		move.l	d2,(a4)+
@@ -156,7 +154,6 @@ NemPCD_WriteRowToRAM_XOR:
 		bne.s	NemPCD_NewRow
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 ; ---------------------------------------------------------------------------
 ; Part of the Nemesis decompressor, builds the code table (in RAM)
 ; ---------------------------------------------------------------------------

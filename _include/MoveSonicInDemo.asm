@@ -2,8 +2,6 @@
 ; Subroutine to move Sonic in demo mode
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 MoveSonicInDemo:
 		tst.w	(f_demo).w	; is demo mode on?
 		bne.s	MDemo_On	; if yes, branch

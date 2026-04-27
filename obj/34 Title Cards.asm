@@ -115,7 +115,9 @@ Card_ChangeArt:
 Card_Delete:
 		bra.w	DeleteObject
 ; ===========================================================================
-Card_ItemData:	dc.w $D0	; y-axis position
+
+Card_ItemData:
+		dc.w $D0	; y-axis position
 		dc.b 2, 0	; routine number, frame number (changes)
 		dc.w $E4
 		dc.b 2, 6
@@ -129,7 +131,8 @@ Card_ItemData:	dc.w $D0	; y-axis position
 ; 4 bytes per item (YYYY XXXX)
 ; 4 items per level (GREEN HILL, ZONE, ACT X, oval)
 ; ---------------------------------------------------------------------------
-Card_ConData:	dc.w 0, $120, $FEFC, $13C, $414, $154, $214, $154 ; GHZ
+Card_ConData:
+		dc.w 0, $120, $FEFC, $13C, $414, $154, $214, $154 ; GHZ
 		dc.w 0, $120, $FEF4, $134, $40C, $14C, $20C, $14C ; LZ
 		dc.w 0, $120, $FEE0, $120, $3F8, $138, $1F8, $138 ; MZ
 		dc.w 0, $120, $FEFC, $13C, $414, $154, $214, $154 ; SLZ

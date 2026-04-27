@@ -2,8 +2,6 @@
 ; Subroutine to make the sides of a monitor solid
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Mon_SolidSides:
 		tst.w	(v_debuguse).w
 		bne.w	loc_8400

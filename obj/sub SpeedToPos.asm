@@ -2,8 +2,6 @@
 ; Subroutine translating object speed to update object position
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 SpeedToPos:
 		move.l	obX(a0),d2
 		move.l	obY(a0),d3

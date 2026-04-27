@@ -220,7 +220,7 @@ out_of_range:	macro exit,pos
 ; input: location to jump to if out of range, x-axis pos (obX(a0) by default)
 ; ---------------------------------------------------------------------------
 
-out_of_range_rememberstate:	macro exit,pos
+out_of_range_2:	macro exit,pos
 		if ("pos"<>"")
 		move.w	pos,d0				; get object position (if specified as not obX)
 		else

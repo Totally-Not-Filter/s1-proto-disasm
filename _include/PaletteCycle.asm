@@ -2,8 +2,6 @@
 ; Palette cycling routine loading subroutine
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 PaletteCycle:
 		moveq	#0,d2
 		moveq	#0,d0
@@ -25,7 +23,7 @@ PalCycle_Index:	dc.w PalCycle_GHZ-PalCycle_Index
 		dc.w PalCycle_CWZ-PalCycle_Index
 		dc.w PalCycle_06-PalCycle_Index
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PalCycle_Title:
 		lea	(Pal_TitleCyc).l,a0
@@ -52,11 +50,12 @@ PCycGHZ_Skip:
 		rts
 ; End of function PalCycle_GHZ
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PalCycle_LZ:
 		rts
 ; ===========================================================================
+
 		subq.w	#1,(v_pcyc_time).w ; decrement timer
 		bpl.s	PCycLZ_Skip	; if time remains, branch
 
@@ -77,10 +76,13 @@ PCycLZ_Skip:
 		rts
 ; End of function PalCycle_LZ
 
+; ===========================================================================
+
 PalCycle_MZ:
 		rts
+; End of function PalCycle_MZ
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PalCycle_SLZ:
 		subq.w	#1,(v_pcyc_time).w
@@ -107,7 +109,7 @@ locret_17F6:
 		rts
 ; End of function PalCycle_SLZ
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PalCycle_SZ:
 		subq.w	#1,(v_pcyc_time).w
@@ -136,8 +138,14 @@ locret_1846:
 		rts
 ; End of function PalCycle_SZ
 
+; ===========================================================================
+
 PalCycle_CWZ:
 		rts
+; End of function PalCycle_CWZ
+
+; ===========================================================================
 
 PalCycle_06:
 		rts
+; End of function PalCycle_06

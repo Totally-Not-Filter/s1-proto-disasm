@@ -54,9 +54,6 @@ Swi_Delete:	; Routine 4
 ; Subroutine to check if Sonic touches the object
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-
 Swi_ChkTouch:
 		lea	(v_player).w,a1
 		move.w	obX(a1),d0

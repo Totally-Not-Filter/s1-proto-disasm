@@ -2,8 +2,6 @@
 ; Subroutine to make an object fall downwards, increasingly fast
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ObjectFall:
 		move.l	obX(a0),d2
 		move.l	obY(a0),d3

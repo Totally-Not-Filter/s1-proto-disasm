@@ -2,8 +2,6 @@
 ; Subroutine to smash a block (GHZ walls and MZ blocks)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 SmashObject:
 		moveq	#0,d0
 		move.b	obFrame(a0),d0

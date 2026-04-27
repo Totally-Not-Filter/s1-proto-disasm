@@ -2,8 +2,6 @@
 ; Background layer deformation subroutines
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 DeformLayers:
 		tst.b	(f_nobgscroll).w
 		bne.s	loc_3E18
@@ -37,14 +35,16 @@ loc_3E18:
 ; ---------------------------------------------------------------------------
 ; Offset index for background layer deformation code
 ; ---------------------------------------------------------------------------
-Deform_Index:	dc.w Deform_GHZ-Deform_Index, Deform_LZ-Deform_Index
-		dc.w Deform_MZ-Deform_Index, Deform_SLZ-Deform_Index
-		dc.w Deform_SZ-Deform_Index, Deform_CWZ-Deform_Index
+Deform_Index:
+		dc.w Deform_GHZ-Deform_Index
+		dc.w Deform_LZ-Deform_Index
+		dc.w Deform_MZ-Deform_Index
+		dc.w Deform_SLZ-Deform_Index
+		dc.w Deform_SZ-Deform_Index
+		dc.w Deform_CWZ-Deform_Index
 ; ---------------------------------------------------------------------------
 ; Green Hill Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_GHZ:
 		move.w	(v_scrshiftx).w,d4
@@ -119,8 +119,6 @@ loc_3EF0:
 ; Labyrinth Zone background layer deformation code
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Deform_LZ:
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	#224-1,d1
@@ -140,8 +138,6 @@ loc_3F1C:
 ; ---------------------------------------------------------------------------
 ; Marble Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_MZ:
 		move.w	(v_scrshiftx).w,d4
@@ -183,8 +179,6 @@ loc_3F74:
 ; ---------------------------------------------------------------------------
 ; Star Light Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Deform_SLZ:
 		move.w	(v_scrshiftx).w,d4
@@ -238,8 +232,6 @@ loc_3FD0:
 		rts
 ; End of function Deform_SLZ
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Deform_SLZ_2:
 		lea	(v_bgscroll_buffer).w,a1
 		move.w	(v_scrposx).w,d2
@@ -291,8 +283,6 @@ loc_404C:
 ; Sparkling Zone background layer deformation code
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Deform_SZ:
 		move.w	(v_scrshiftx).w,d4
 		ext.l	d4
@@ -323,8 +313,6 @@ loc_408A:
 ; Clock Work Zone background layer deformation code
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Deform_CWZ:
 		lea	(v_hscrolltablebuffer).w,a1
 		move.w	#224-1,d1
@@ -344,8 +332,6 @@ loc_40AC:
 ; ---------------------------------------------------------------------------
 ; Subroutine to scroll the level horizontally as Sonic moves
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollHoriz:
 		move.w	(v_scrposx).w,d4 ; save old screen position
@@ -370,7 +356,7 @@ locret_40E6:
 		rts
 ; End of function ScrollHoriz
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 MoveScreenHoriz:
 		move.w	(v_player+obX).w,d0
@@ -442,8 +428,6 @@ loc_4146:
 ; ---------------------------------------------------------------------------
 ; Subroutine to scroll the level vertically as Sonic moves
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ScrollVertical:
 		moveq	#0,d1
@@ -609,7 +593,7 @@ locret_4256:
 		rts
 ; End of function ScrollVertical
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 loc_4258:
 		move.w	(v_limitleft2).w,d0
@@ -645,7 +629,7 @@ loc_4290:
 		move.w	d0,(v_scrshifty).w
 		bra.w	loc_3E14
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ScrollBlock1:
 		move.l	(v_bgscrposx).w,d2
@@ -693,7 +677,7 @@ locret_4300:
 		rts
 ; End of function ScrollBlock1
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ScrollBlock2:
 		move.l	(v_bgscrposx).w,d2
@@ -724,7 +708,7 @@ locret_4342:
 		rts
 ; End of function ScrollBlock2
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ScrollBlock3:
 		move.w	(v_bgscrposy).w,d3
@@ -748,7 +732,7 @@ locret_4372:
 		rts
 ; End of function ScrollBlock3
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ScrollBlock4:
 		move.w	(v_bg2scrposx).w,d2

@@ -2,8 +2,6 @@
 ; Subroutine to load level boundaries and start locations
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 LevelSizeLoad:
 		moveq	#0,d0
 		move.b	d0,(f_rst_hscroll).w
@@ -202,8 +200,6 @@ BGScrollBlockSizes:
 ; Subroutine to set scroll speed of some backgrounds
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 BgScrollSpeed:
 		move.w	d0,(v_bgscrposy).w
 		move.w	d0,(v_bg2scrposy).w
@@ -217,9 +213,13 @@ BgScrollSpeed:
 		move.w	BgScroll_Index(pc,d2.w),d2
 		jmp	BgScroll_Index(pc,d2.w)
 ; ===========================================================================
-BgScroll_Index:	dc.w BgScroll_GHZ-BgScroll_Index, BgScroll_LZ-BgScroll_Index
-		dc.w BgScroll_MZ-BgScroll_Index, BgScroll_SLZ-BgScroll_Index
-		dc.w BgScroll_SZ-BgScroll_Index, BgScroll_CWZ-BgScroll_Index
+BgScroll_Index:
+		dc.w BgScroll_GHZ-BgScroll_Index
+		dc.w BgScroll_LZ-BgScroll_Index
+		dc.w BgScroll_MZ-BgScroll_Index
+		dc.w BgScroll_SLZ-BgScroll_Index
+		dc.w BgScroll_SZ-BgScroll_Index
+		dc.w BgScroll_CWZ-BgScroll_Index
 ; ===========================================================================
 
 BgScroll_GHZ:

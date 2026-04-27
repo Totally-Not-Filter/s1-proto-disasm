@@ -2,8 +2,6 @@
 ; Subroutine to	update the HUD
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 UpdateHUD:
 		tst.w	(f_debugmode).w
 		bne.w	HudDebug

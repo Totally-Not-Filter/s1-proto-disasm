@@ -129,8 +129,7 @@ Glass_Reflect34:
 		move.w	glass_dist(a1),glass_dist(a0)
 		move.w	obY(a1),objoff_30(a0)
 		bra.w	Glass_Types
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 Glass_Types:
 		moveq	#0,d0

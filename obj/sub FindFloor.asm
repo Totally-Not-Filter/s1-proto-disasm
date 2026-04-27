@@ -13,8 +13,6 @@
 ;	(a4) = floor angle
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 FindFloor:
 		bsr.s	FindNearestTile
 		move.w	(a1),d0		; get value for solidness, orientation and 16x16 tile number
@@ -92,7 +90,7 @@ FindFloor:
 		rts
 ; End of function FindFloor
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FindFloor2:
 		bsr.w	FindNearestTile

@@ -5,8 +5,6 @@
 ;	d0 = flag set if object is off screen
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ChkObjectVisible:
 		move.w	obX(a0),d0	; get object x-position
 		sub.w	(v_scrposx).w,d0 ; subtract screen x-position

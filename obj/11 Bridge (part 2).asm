@@ -10,8 +10,6 @@ Bri_Platform:	; Routine 4
 ; Subroutine allowing Sonic to walk off a bridge
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Bri_WalkOff:
 		moveq	#0,d1
 		move.b	obSubtype(a0),d1

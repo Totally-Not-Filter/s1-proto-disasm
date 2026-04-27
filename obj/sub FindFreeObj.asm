@@ -5,8 +5,6 @@
 ;	a1 = free position in object RAM
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 FindFreeObj:
 		lea	(v_lvlobjspace).w,a1 ; start address for object RAM
 		move.w	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d0
@@ -27,8 +25,6 @@ FFree_Found:
 ; output:
 ;	a1 = free position in object RAM
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 FindNextFreeObj:
 		movea.l	a0,a1

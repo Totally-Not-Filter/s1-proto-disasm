@@ -62,7 +62,7 @@ CFlo_Collapse:	; Routine 4
 		move.b	#1,cflo_collapse_flag(a0)	; set object as "touched"
 		subq.b	#1,cflo_timedelay(a0)
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 CFlo_WalkOff:	; Routine $A
 		move.w	#$20,d1

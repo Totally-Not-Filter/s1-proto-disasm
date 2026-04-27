@@ -15,7 +15,7 @@ Obj2A:
 
 .init:	; Routine 0
 		addq.b	#2,obRoutine(a0)
-		move.l	#Map_2A,obMap(a0)
+		move.l	#Map_Switch_Door,obMap(a0)
 		move.w	#make_art_tile(ArtTile_Level,0,0),obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.w	obY(a0),d0

@@ -42,15 +42,7 @@ LTag_ChkDel:	; Routine 2
 
 .playerdead:
 	endif
-		move.w	obX(a0),d0
-		andi.w	#-$80,d0
-		move.w	(v_scrposx).w,d1
-		subi.w	#$80,d1
-		andi.w	#-$80,d1
-		sub.w	d1,d0
-		bmi.w	DeleteObject
-		cmpi.w	#$280,d0
-		bhi.w	DeleteObject
+		out_of_range_2.w	DeleteObject
 
 	if FixBugs
 		cmpi.b	#6,(v_player+obRoutine).w	; has sonic died?

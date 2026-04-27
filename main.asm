@@ -3369,7 +3369,8 @@ loc_6A28:
 		moveq	#0,d4
 		rts
 ; ===========================================================================
-Map_2A:	include "_maps/2A.asm"
+
+Map_Switch_Door:	include "_maps/Switch Door.asm"
 
 		include "obj/0E Title Screen Sonic.asm"
 		include "obj/0F Press Start.asm"
@@ -3450,6 +3451,7 @@ loc_6BCC:
 locret_6BDA:
 		rts
 ; ===========================================================================
+
 Map_PSB:	include "_maps/Press Start.asm"
 Map_TSon:	include "_maps/Title Screen Sonic.asm"
 
@@ -4437,14 +4439,16 @@ Map_Fan:	include "_maps/Fan.asm"
 
 		include "obj/5E Seesaw.asm"
 
-See_DataSlope:dc.b $24, $24, $26, $28, $2A, $2C, $2A, $28, $26, $24
+See_DataSlope:
+		dc.b $24, $24, $26, $28, $2A, $2C, $2A, $28, $26, $24
 		dc.b $23, $22, $21, $20, $1F, $1E, $1D, $1C, $1B, $1A
 		dc.b $19, $18, $17, $16, $15, $14, $13, $12, $11, $10
 		dc.b $F, $E, $D, $C, $B, $A, 9, 8, 7, 6, 5, 4, 3, 2, 2
 		dc.b 2, 2, 2
 		even
 
-See_DataFlat:dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
+See_DataFlat:
+		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
 		dc.b $15, $15, $15, $15, $15, $15, $15, $15, $15, $15
@@ -4471,6 +4475,7 @@ Map_Vanish:	include "_maps/Special Stage Entry (Unused).asm"
 		include "obj/sub FindNearestTile.asm"
 		include "obj/sub FindFloor.asm"
 		include "obj/sub FindWall.asm"
+
 ; ---------------------------------------------------------------------------
 ; This subroutine takes 'raw' bitmap-like collision block data as input and
 ; converts it into the proper collision arrays (ColArray and ColArray2).
@@ -4574,6 +4579,7 @@ ConvertCollisionArray:
 		dbf	d3,.processLoop
 		rts
 ; End of function ConvertCollisionArray
+
 ; ===========================================================================
 
 Sonic_WalkSpeed:
@@ -5122,6 +5128,7 @@ loc_10A26:
 		move.w	6(a0),$18(a1)
 		rts
 ; ===========================================================================
+
 SS_WaRiVramSet:
 		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
 		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
@@ -5190,7 +5197,9 @@ loc_10AFC:
 		dbf	d7,loc_10AEC
 		rts
 ; ===========================================================================
-SS_AniIndex:	dc.l SS_AniRingSparks
+
+SS_AniIndex:
+		dc.l SS_AniRingSparks
 		dc.l SS_AniBumper
 ; ===========================================================================
 

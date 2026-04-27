@@ -2,8 +2,6 @@
 ; Subroutine to delete an object
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 DeleteObject:
 		movea.l	a0,a1		; move object RAM address to (a1)
 

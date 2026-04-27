@@ -2,8 +2,6 @@
 ; Subroutine to	animate	level graphics
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 AnimateLevelGfx:
 		tst.w	(f_pause).w			; is the game paused?
 		bmi.s	.ispaused			; if yes, branch
@@ -18,10 +16,14 @@ AnimateLevelGfx:
 		rts
 
 ; ===========================================================================
-AniArt_Index:	dc.w AniArt_GHZ-AniArt_Index, AniArt_none-AniArt_Index
-		dc.w AniArt_MZ-AniArt_Index, AniArt_none-AniArt_Index
-		dc.w AniArt_none-AniArt_Index, AniArt_none-AniArt_Index
-		dc.w AniArt_none-AniArt_Index
+AniArt_Index:
+		dc.w AniArt_GHZ-AniArt_Index	; GHZ
+		dc.w AniArt_none-AniArt_Index	; LZ
+		dc.w AniArt_MZ-AniArt_Index		; MZ
+		dc.w AniArt_none-AniArt_Index	; SLZ
+		dc.w AniArt_none-AniArt_Index	; SZ
+		dc.w AniArt_none-AniArt_Index	; CWZ
+		dc.w AniArt_none-AniArt_Index	; 06
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Animated pattern routine - Green Hill
@@ -206,8 +208,6 @@ AniArt_none:
 ;	d1 = number of tiles to load (minus one)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 LoadTiles:
 		move.l	(a1)+,(a6)
 		move.l	(a1)+,(a6)
@@ -225,7 +225,8 @@ LoadTiles:
 ; ---------------------------------------------------------------------------
 ; Animated pattern routine - more Marble Zone
 ; ---------------------------------------------------------------------------
-AniArt_MZextra:	dc.w loc_114BA-AniArt_MZextra, loc_114C6-AniArt_MZextra
+AniArt_MZextra:
+		dc.w loc_114BA-AniArt_MZextra, loc_114C6-AniArt_MZextra
 		dc.w loc_114DC-AniArt_MZextra, loc_114EA-AniArt_MZextra
 		dc.w loc_11500-AniArt_MZextra, loc_1150E-AniArt_MZextra
 		dc.w loc_11524-AniArt_MZextra, loc_11532-AniArt_MZextra

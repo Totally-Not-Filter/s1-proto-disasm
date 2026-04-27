@@ -34,7 +34,7 @@ zLoopSizeLow:	equ	8		; loop size low byte
 zLoopSizeHigh:	equ	9		; loop size high byte
 zSampleRate:	equ	11		; sample rate
 
-; =============== S U B R O U T I N E =======================================
+; ===========================================================================
 
 StartOfZ80:
 		di	; disable interrupts
@@ -127,69 +127,69 @@ loc_8F:
 		exx
 
 zPlayPCMLoop:
-		ld	hl,zDAC_Sample	; 10
-		ld	a,(de)	; 7
-		and	0F0h	; 7
-		rrca	; 4
-		rrca	; 4
-		rrca	; 4
-		rrca	; 4
+		ld	hl,zDAC_Sample			; 10
+		ld	a,(de)					; 7
+		and	0F0h					; 7
+		rrca						; 4
+		rrca						; 4
+		rrca						; 4
+		rrca						; 4
 		add	a,zDACDecodeTbl&0FFh	; 7
-		exx	; 4
-		ld	e,a	; 4
-		ld	a,(de)	; 7
-		add	a,c	; 4
-		ld	c,a	; 4
-		ld	a,80h	; 7
-		ld	(zDAC_Status),a	; 13
-		ld	b,(iy+zSampleRate)	; 19
+		exx							; 4
+		ld	e,a						; 4
+		ld	a,(de)					; 7
+		add	a,c						; 4
+		ld	c,a						; 4
+		ld	a,80h					; 7
+		ld	(zDAC_Status),a			; 13
+		ld	b,(iy+zSampleRate)		; 19
 
 .loop1:
-		bit	7,(hl)	; 12
-		jr	nz,.loop1	; 12
-		ld	(hl),2Ah	; 10
-		inc	hl	; 6
-		xor	a	; 4
-		ld	(hl),c	; 7
-		ld	(zDAC_Status),a	; 13
-		dec	hl	; 6
-		djnz	$	; 8
-		exx	; 4
-		ld	a,(de)	; 7
-		and	0Fh	; 7
+		bit	7,(hl)					; 12
+		jr	nz,.loop1				; 12
+		ld	(hl),2Ah				; 10
+		inc	hl						; 6
+		xor	a						; 4
+		ld	(hl),c					; 7
+		ld	(zDAC_Status),a			; 13
+		dec	hl						; 6
+		djnz	$					; 8
+		exx							; 4
+		ld	a,(de)					; 7
+		and	0Fh						; 7
 		add	a,zDACDecodeTbl&0FFh	; 7
-		exx	; 4
-		ld	e,a	; 4
-		ld	a,(de)	; 7
-		add	a,c	; 4
-		ld	c,a	; 4
-		ld	a,80h	; 7
-		ld	(zDAC_Status),a	; 13
-		ld	b,(iy+zSampleRate)	; 19
+		exx							; 4
+		ld	e,a						; 4
+		ld	a,(de)					; 7
+		add	a,c						; 4
+		ld	c,a						; 4
+		ld	a,80h					; 7
+		ld	(zDAC_Status),a			; 13
+		ld	b,(iy+zSampleRate)		; 19
 
 .loop2:
-		bit	7,(hl)	; 12
-		jr	nz,.loop2	; 12
-		ld	(hl),2Ah	; 10
-		inc	hl	; 6
-		xor	a	; 4
-		ld	(hl),c	; 7
-		ld	(zDAC_Status),a	; 13
-		dec	hl	; 6
-		djnz	$	; 8
-		exx	; 4
-		bit	7,(iy+zPriority)	; 20
-		jr	nz,loc_F5	; 12
-		bit	7,(hl)	; 12
-		jp	nz,loc_31	; 10
+		bit	7,(hl)					; 12
+		jr	nz,.loop2				; 12
+		ld	(hl),2Ah				; 10
+		inc	hl						; 6
+		xor	a						; 4
+		ld	(hl),c					; 7
+		ld	(zDAC_Status),a			; 13
+		dec	hl						; 6
+		djnz	$					; 8
+		exx							; 4
+		bit	7,(iy+zPriority)		; 20
+		jr	nz,loc_F5				; 12
+		bit	7,(hl)					; 12
+		jp	nz,loc_31				; 10
 
 loc_F5:
-		inc	de	; 6
-		dec	bc	; 6
-		ld	a,c	; 4
-		or	b	; 4
-		jp	nz,zPlayPCMLoop	; 10
-							; 420 cycles in total
+		inc	de						; 6
+		dec	bc						; 6
+		ld	a,c						; 4
+		or	b						; 4
+		jp	nz,zPlayPCMLoop			; 10
+									; 420 cycles in total
 		ld	a,(zRepeatFlag)
 		or	a
 		jp	z,loc_153

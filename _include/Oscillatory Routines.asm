@@ -2,8 +2,6 @@
 ; Oscillating number subroutines
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 ; Initialise the values
 
 OscillateNumInit:
@@ -16,7 +14,9 @@ OscillateNumInit:
 		dbf	d1,.loop
 		rts
 ; ===========================================================================
-.baselines:	dc.w %0000000001111100	; oscillation direction bitfield
+
+.baselines:
+		dc.w %0000000001111100	; oscillation direction bitfield
 		dc.w $80, 0
 		dc.w $80, 0
 		dc.w $80, 0
@@ -35,7 +35,7 @@ OscillateNumInit:
 		dc.w $80, 0
 		even
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Oscillate values
 
@@ -80,7 +80,9 @@ OscillateNumDo:
 .end:
 		rts
 ; ===========================================================================
-.settings:	dc.w 2,	$10	; frequency, amplitude
+
+.settings:
+		dc.w 2,	$10	; frequency, amplitude
 		dc.w 2,	$18
 		dc.w 2,	$20
 		dc.w 2,	$30

@@ -111,8 +111,6 @@ Sign_GotThrough:	; Routine 6
 ; Subroutine to set up bonuses at the end of an act
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 GotThroughAct:
 		tst.b	(v_endcard).w
 		bne.s	locret_C880
@@ -147,5 +145,25 @@ GotThroughAct:
 locret_C880:
 		rts
 ; ===========================================================================
-TimeBonuses:	dc.w 5000, 1000, 500, 400, 300, 300, 200, 200
-		dc.w 100, 100, 100, 100, 50, 50, 50, 50, 10, 10, 10, 10, 0
+TimeBonuses:
+		dc.w 5000
+		dc.w 1000
+		dc.w 500
+		dc.w 400
+		dc.w 300
+		dc.w 300
+		dc.w 200
+		dc.w 200
+		dc.w 100
+		dc.w 100
+		dc.w 100
+		dc.w 100
+		dc.w 50
+		dc.w 50
+		dc.w 50
+		dc.w 50
+		dc.w 10
+		dc.w 10
+		dc.w 10
+		dc.w 10
+		dc.w 0

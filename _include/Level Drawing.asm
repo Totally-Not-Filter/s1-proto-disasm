@@ -231,7 +231,7 @@ loc_45DC:
 locret_4606:
 		rts
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Don't be fooled by the name: this function's for drawing from left to right
 ; when the camera's moving up or down
@@ -256,7 +256,7 @@ DrawBlocks_LR_2:
 		rts
 ; End of function DrawBlocks_LR
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Don't be fooled by the name: this function's for drawing from top to bottom
 ; when the camera's moving left or right
@@ -281,7 +281,7 @@ DrawBlocks_TB_2:
 		rts
 ; End of function DrawBlocks_TB_2
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Draws a block's worth of tiles
 ; Parameters:
@@ -378,7 +378,7 @@ DrawFlipXY:
 		move.w	d4,(a6)
 		rts
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Gets address of block at a certain coordinate
 ; Parameters:
@@ -431,7 +431,7 @@ locret_4750:
 		rts
 ; End of function GetBlockData
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Produces a VRAM plane access command from coordinates
 ; Parameters:
@@ -456,7 +456,7 @@ Calc_VRAM_Pos:
 		rts	
 ; End of function Calc_VRAM_Pos
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 ; not used
 
 ; This is just like Calc_VRAM_Pos, but seemingly for an earlier
@@ -483,9 +483,6 @@ Calc_VRAM_Pos_Unknown:
 ; Subroutine to	load tiles as soon as the level	appears
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
@@ -498,7 +495,7 @@ LoadTilesFromStart:
 		move.w	#$6000,d2
 ; End of function LoadTilesFromStart
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 DrawChunks:
 		moveq	#-16,d4
@@ -518,7 +515,8 @@ DrawChunks:
 		dbf	d6,.loop
 		rts
 ; ===========================================================================
-;loc_47D8:
+
+loc_47D8:
 		lea	(v_bg3scrposx).w,a3
 		move.w	#$6000,d2
 		move.w	#(320/2)+16,d4

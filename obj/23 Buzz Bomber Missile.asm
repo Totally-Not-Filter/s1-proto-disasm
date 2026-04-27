@@ -56,7 +56,6 @@ Msl_Animate:	; Routine 2
 ; Subroutine to check if the Buzz Bomber which fired the missile has been
 ; destroyed, and if it has, then cancel the missile
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 Msl_ChkCancel:
 		movea.l	msl_parent(a0),a1

@@ -46,7 +46,7 @@ Ledge_Collapse:	; Routine 4
 		move.b	#1,ledge_collapse_flag(a0)
 		subq.b	#1,ledge_timedelay(a0)
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 Ledge_WalkOff:	; Routine $A
 		move.w	#$30,d1

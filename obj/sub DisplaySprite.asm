@@ -2,8 +2,6 @@
 ; Subroutine to display a sprite/object, when a0 is the object RAM
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 DisplaySprite:
 		lea	(v_spritequeue).w,a1
 		move.b	obPriority(a0),d0 ; get sprite priority
@@ -23,8 +21,6 @@ DSpr_Full:
 ; ---------------------------------------------------------------------------
 ; Subroutine to display a 2nd sprite/object, when a1 is the object RAM
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 DisplaySprite1:
 		lea	(v_spritequeue).w,a2

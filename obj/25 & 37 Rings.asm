@@ -131,8 +131,7 @@ Ring_Sparkle:	; Routine 6
 
 Ring_Delete:	; Routine 8
 		bra.w	DeleteObject
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 CollectRing:
 		addq.w	#1,(v_rings).w	; add 1 to rings

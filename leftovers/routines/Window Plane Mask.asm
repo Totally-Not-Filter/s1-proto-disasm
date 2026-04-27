@@ -4,6 +4,7 @@
 ; buffer, only seemingly needing to be called once.
 ; Discovered by Filter, reconstructed by KatKuriN, Rivet, and ProjectFM
 ; ---------------------------------------------------------------------------
+
 ;sub_3018:
 		lea	(v_ngfx_buffer).w,a0
 		move.w	(f_water).w,d2

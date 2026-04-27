@@ -2,8 +2,6 @@
 ; Subroutine to pause the game
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 PauseGame:
 		nop
 		tst.b	(v_lives).w	; do you have any lives left?

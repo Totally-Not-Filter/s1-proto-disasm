@@ -152,8 +152,6 @@ loc_7728:
 ; Subroutine to set the correct animation for a Crabmeat
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 Crab_SetAni:
 		moveq	#0,d0
 		move.b	obAngle(a0),d3
