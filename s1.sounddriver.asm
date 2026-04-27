@@ -110,8 +110,6 @@ SoundPriorities:
 ; (Called by horizontal & vert. interrupts)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 UpdateMusic:
 		stopZ80
 		waitZ80
@@ -225,7 +223,7 @@ DoStartZ80:
 		rts
 ; End of function UpdateMusic
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; UpdateDAC:
 DACUpdateTrack:
@@ -297,7 +295,7 @@ DAC_sample_rate:
 		dc.b $FF, $FF, $FF, $FF
 		even
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMUpdateTrack:
 		subq.b	#1,SMPS_Track.DurationTimeout(a5)	; Update duration timeout
@@ -315,7 +313,7 @@ FMUpdateTrack:
 		bra.w	FMUpdateFreq
 ; End of function FMUpdateTrack
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMDoNext:
 		movea.l	SMPS_Track.DataPointer(a5),a4		; Track data pointer
@@ -346,7 +344,7 @@ FMDoNext:
 		bra.w	FinishTrackUpdate
 ; End of function FMDoNext
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMSetFreq:
 		subi.b	#$80,d5				; Make it a zero-based index
@@ -360,7 +358,7 @@ FMSetFreq:
 		rts
 ; End of function FMSetFreq
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 SetDuration:
 		move.b	d5,d0
@@ -385,7 +383,7 @@ TrackSetRest:
 		bset	#1,SMPS_Track.PlaybackControl(a5)	; Set 'track at rest' bit
 		clr.w	SMPS_Track.Freq(a5)			; Clear frequency
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FinishTrackUpdate:
 		move.l	a4,SMPS_Track.DataPointer(a5)	; Store new track position
@@ -409,7 +407,7 @@ FinishTrackUpdate:
 		rts
 ; End of function FinishTrackUpdate
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; NoteFillUpdate
 NoteTimeoutUpdate:
@@ -433,7 +431,7 @@ NoteTimeoutUpdate:
 		rts
 ; End of function NoteTimeoutUpdate
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 DoModulation:
 	if FixBugs=0
@@ -493,7 +491,7 @@ DoModulation:
 		rts
 ; End of function DoModulation
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMPrepareNote:
 		btst	#1,SMPS_Track.PlaybackControl(a5)	; Is track resting?
@@ -642,9 +640,12 @@ FMPan_Table:
 		dc.l FMPan_1_Data
 		dc.l FMPan_2_Data
 		dc.l FMPan_3_Data
-FMPan_1_Data:	dc.b $40, $80
-FMPan_2_Data:	dc.b $40, $C0, $80
-FMPan_3_Data:	dc.b $C0, $80, $C0, $40
+FMPan_1_Data:
+		dc.b $40, $80
+FMPan_2_Data:
+		dc.b $40, $C0, $80
+FMPan_3_Data:
+		dc.b $C0, $80, $C0, $40
 		even
 ; ===========================================================================
 
@@ -728,8 +729,6 @@ PauseMusic:
 ; Subroutine to play a sound or music track
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ; Sound_Play:
 CycleSoundQueue:
 		movea.l	(Go_SoundPriorities).l,a0
@@ -758,7 +757,7 @@ CycleSoundQueue:
 		_move.b	d3,SMPS_RAM.v_sndprio(a6)	; Set new sound priority
 ; End of function CycleSoundQueue
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Sound_ChkValue:
 PlaySoundID:
@@ -1048,6 +1047,7 @@ Sound_PlayBGM:
 		addq.w	#4,sp	; Tamper with return value to not return to caller
 		rts
 ; ===========================================================================
+
 FMDACInitBytes:	dc.b 6, 0, 1, 2, 4, 5, 6	; first byte is for DAC; then notice the 0, 1, 2 then 4, 5, 6; this is the gap between parts I and II for YM2612 port writes
 		even
 PSGInitBytes:	dc.b $80, $A0, $C0	; Specifically, these configure writes to the PSG port for each channel
@@ -1291,7 +1291,7 @@ Sound_PlaySpecial:
 		dc.l (v_snddriver_ram.v_spcsfx_fm4_track)&$FFFFFF
 		dc.l (v_snddriver_ram.v_spcsfx_psg3_track)&$FFFFFF
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Snd_FadeOut1: Snd_FadeOutSFX: FadeOutSFX:
 StopSFX:
@@ -1382,7 +1382,7 @@ StopSFX:
 		rts
 ; End of function StopSFX
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; Snd_FadeOut2: FadeOutSFX2: FadeOutSpecialSFX:
 StopSpecialSFX:
@@ -1499,7 +1499,7 @@ DoFadeOut:
 		rts
 ; End of function DoFadeOut
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMSilenceAll_Special:
 		moveq	#3,d4
@@ -1525,7 +1525,7 @@ FMSilenceAll_Special:
 		rts
 ; End of function FMSilenceAll_Special
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 FMSilenceAll:
 		moveq	#2,d2		; 3 FM channels for each YM2612 parts
@@ -1782,7 +1782,7 @@ WriteFMIorII:
 		add.b	SMPS_Track.VoiceControl(a5),d0	; Add in voice control bits
 ; End of function WriteFMIorII
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ; These are what are in the default SMPS 68k Type 1b driver
 ; Why the final chose the ones from the Type 1a driver is a mystery
@@ -1809,7 +1809,7 @@ WriteFMIIPart:
 		bclr	#2,d2				; Clear chip toggle
 		add.b	d2,d0				; Add in to destination register
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 WriteFMII:
 		lea	(ym2612_a0).l,a0
@@ -1866,7 +1866,7 @@ FMFrequencies:
 		MakeFMFrequenciesOctave 6
 		MakeFMFrequenciesOctave 7
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGUpdateTrack:
 		subq.b	#1,SMPS_Track.DurationTimeout(a5)	; Update note timeout
@@ -1885,7 +1885,7 @@ PSGUpdateTrack:
 		rts
 ; End of function PSGUpdateTrack
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGDoNext:
 		bclr	#1,SMPS_Track.PlaybackControl(a5)	; Clear 'track at rest' bit
@@ -1916,7 +1916,7 @@ PSGDoNext:
 		bra.w	FinishTrackUpdate
 ; End of function PSGDoNext
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGSetFreq:
 		subi.b	#$81,d5				; Convert to 0-based index
@@ -1936,14 +1936,14 @@ PSGSetFreq:
 		bra.w	PSGNoteOff
 ; End of function PSGSetFreq
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGDoNoteOn:
 		move.w	SMPS_Track.Freq(a5),d6	; Get note frequency
 		bmi.s	PSGSetRest		; If invalid, branch
 ; End of function PSGDoNoteOn
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGUpdateFreq:
 		move.b	SMPS_Track.Detune(a5),d0		; Get detune value
@@ -1977,7 +1977,7 @@ PSGSetRest:
 		bset	#1,SMPS_Track.PlaybackControl(a5)	; Set 'track at rest' bit
 		rts
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGUpdateVolFX:
 		tst.b	SMPS_Track.VoiceIndex(a5)	; Test PSG tone
@@ -2011,7 +2011,7 @@ PSGDoVolFX:
 		moveq	#$F,d6		; Limit to silence and fall through
 ; End of function PSGUpdateVolFX
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 SetPSGVolume:
 		btst	#1,SMPS_Track.PlaybackControl(a5)	; Is track at rest?
@@ -2079,7 +2079,7 @@ locret_750DE:
 		rts
 ; End of function PSGNoteOff
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PSGSilenceAll:
 		lea	(psg_input).l,a0
@@ -2122,7 +2122,7 @@ PSGFrequencies:
 		MakePSGFrequencies 2071.49,   2193.34,   2330.42,   2485.78,   2601.40,   2796.51,   2943.69,   3107.23,   3290.01,   3495.64,   3608.40,   3857.25
 		MakePSGFrequencies 4142.98,   4302.32,   4660.85,   4863.50,   5084.56,   5326.69,   5887.39,   6214.47,   6580.02, 223721.56
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 CoordFlag:
 		subi.w	#$E0,d5
@@ -2394,7 +2394,8 @@ cfSetLFO:
 		bra.w	WriteFMIorIIMain
 ; ===========================================================================
 
-LFO_Reg_Table:	dc.b $60, $68, $64, $6C
+LFO_Reg_Table:
+		dc.b $60, $68, $64, $6C
 LFO_Reg_Table_End:
 ; ===========================================================================
 
@@ -2490,7 +2491,8 @@ locret_75454:
 		rts
 ; ===========================================================================
 
-FMSlotMask:	dc.b 8,	8, 8, 8, $A, $E, $E, $F
+FMSlotMask:
+		dc.b 8,	8, 8, 8, $A, $E, $E, $F
 FMSlotMask_End:
 ; ===========================================================================
 
@@ -2823,7 +2825,8 @@ cfSSG_Reg:
 		rts
 ; ===========================================================================
 
-SSG_Reg_Table:	dc.b $90, $50
+SSG_Reg_Table:
+		dc.b $90, $50
 		dc.b $98, $58
 		dc.b $94, $54
 		dc.b $9C, $5C

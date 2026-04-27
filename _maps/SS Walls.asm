@@ -1,8 +1,8 @@
-Map_SSWalls:
-		dc.w byte_63020-Map_SSWalls, byte_63026-Map_SSWalls, byte_6302C-Map_SSWalls, byte_63032-Map_SSWalls
-		dc.w byte_63038-Map_SSWalls, byte_6303E-Map_SSWalls, byte_63044-Map_SSWalls, byte_6304A-Map_SSWalls
-		dc.w byte_63050-Map_SSWalls, byte_63056-Map_SSWalls, byte_6305C-Map_SSWalls, byte_63062-Map_SSWalls
-		dc.w byte_63068-Map_SSWalls, byte_6306E-Map_SSWalls, byte_63074-Map_SSWalls, byte_6307A-Map_SSWalls
+Map_SSWalls_internal:
+		dc.w byte_63020-Map_SSWalls_internal, byte_63026-Map_SSWalls_internal, byte_6302C-Map_SSWalls_internal, byte_63032-Map_SSWalls_internal
+		dc.w byte_63038-Map_SSWalls_internal, byte_6303E-Map_SSWalls_internal, byte_63044-Map_SSWalls_internal, byte_6304A-Map_SSWalls_internal
+		dc.w byte_63050-Map_SSWalls_internal, byte_63056-Map_SSWalls_internal, byte_6305C-Map_SSWalls_internal, byte_63062-Map_SSWalls_internal
+		dc.w byte_63068-Map_SSWalls_internal, byte_6306E-Map_SSWalls_internal, byte_63074-Map_SSWalls_internal, byte_6307A-Map_SSWalls_internal
 byte_63020:	dc.b 1
 		dc.b $F4, $A, 0, 0, $F4
 byte_63026:	dc.b 1

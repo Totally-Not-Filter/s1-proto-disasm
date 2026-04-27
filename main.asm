@@ -464,7 +464,7 @@ loc_472:
 		enable_ints
 		rte
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 ShowErrorMessage:
 		lea	(vdp_data_port).l,a6
@@ -493,6 +493,7 @@ ShowErrorMessage:
 ; End of function ShowErrorMessage
 
 ; ===========================================================================
+
 ErrorText:
 		dc.w .exception-ErrorText
 		dc.w .bus-ErrorText
@@ -505,6 +506,7 @@ ErrorText:
 		dc.w .trace-ErrorText
 		dc.w .line1010-ErrorText
 		dc.w .line1111-ErrorText
+
 .exception:	dc.b "ERROR EXCEPTION    "
 .bus:		dc.b "BUS ERROR          "
 .address:	dc.b "ADDRESS ERROR      "
@@ -528,6 +530,7 @@ ShowErrorValue:
 		bsr.s	.shownumber	; display 8 numbers
 		dbf	d2,.loop
 		rts
+; ===========================================================================
 
 .shownumber:
 		move.w	d0,d1
@@ -763,8 +766,6 @@ VInt_12:
 ; Subroutine to perform standard VRAM transfers (palette, sprites, H-scroll)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 VInt_StandardTransfers:
 		bsr.w	ReadJoypads
 		stopZ80
@@ -779,10 +780,8 @@ VInt_StandardTransfers:
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Horizontal interrupt (unused)
-; DMA Transfer fading palette to CRAM.
+; Transfer 68K fading palette to CRAM.
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 HInt:
 		tst.w	(f_hint).w
@@ -800,8 +799,6 @@ HInt:
 ; Initializes window plane and sprite locations, loads sprites into VRAM,
 ; Transfers sprite table into sprite VRAM.
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 HInt2:
 		tst.w	(f_hint).w
@@ -827,8 +824,6 @@ HInt2:
 ; Subroutine to initialise joypads
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 JoypadInit:
 		stopZ80
 		waitZ80
@@ -843,8 +838,6 @@ JoypadInit:
 ; ---------------------------------------------------------------------------
 ; Subroutine to read joypad input, and send it to the RAM
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ReadJoypads:
 		stopZ80
@@ -930,8 +923,6 @@ VDPSetupArray_End:
 ; Subroutine to clear the screen
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ClearScreen:
 		fillVRAM	0, vram_fg, vram_fg+plane_size_64x32		; clear foreground namespace
 		fillVRAM	0, vram_bg, vram_bg+plane_size_64x32		; clear background namespace
@@ -953,8 +944,6 @@ ClearScreen:
 ; ---------------------------------------------------------------------------
 ; Subroutine to load the DAC driver
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ; SoundDriverLoad:
 DACDriverLoad:
@@ -1014,8 +1003,6 @@ DACDriverLoad:
 ;	d2 = height (cells)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 TilemapToVRAM:
 		lea	(vdp_data_port).l,a6
 		move.l	#$800000,d4
@@ -1041,8 +1028,6 @@ Tilemap_Cell:
 ; ARGUMENTS
 ; d0 = index of PLC list
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ; LoadPLC:
 AddPLC:
@@ -1074,7 +1059,6 @@ AddPLC:
 		rts
 ; End of function AddPLC
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 ; Queue pattern load requests, but clear the PLQ first
 
 ; ARGUMENTS
@@ -1108,8 +1092,6 @@ NewPLC:
 		rts
 ; End of function NewPLC
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 ; ---------------------------------------------------------------------------
 ; Subroutine to	clear the pattern load cues
 ; ---------------------------------------------------------------------------
@@ -1129,8 +1111,6 @@ ClearPLC:
 ; ---------------------------------------------------------------------------
 ; Subroutine to use graphics listed in a pattern load cue
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 RunPLC:
 		tst.l	(v_plc_buffer).w
@@ -1288,11 +1268,10 @@ Pal_MZCyc:	binclude "palette/Cycle - MZ (Unused).bin"
 Pal_SLZCyc:	binclude "palette/Cycle - SLZ.bin"
 Pal_SZ1Cyc:	binclude "palette/Cycle - SZ1.bin"
 Pal_SZ2Cyc:	binclude "palette/Cycle - SZ2.bin"
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to fade in from black
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 PaletteFadeIn:
 		move.w	#$3F,(v_pfade_start).w ; set start position = 0; size = $40
@@ -1427,7 +1406,7 @@ FadeOut_DecColour:
 		rts
 ; End of function FadeOut_DecColour
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 PalCycle_Sega:
 		subq.w	#1,(v_pcyc_time).w	; decrement timer
@@ -1482,6 +1461,7 @@ PalLoad2:
 		move.l	(a2)+,(a3)+
 		dbf	d7,.loop
 		rts
+; ===========================================================================
 
 		include "_include/Palette Index.asm"
 
@@ -1497,6 +1477,7 @@ Pal_SLZ:		binclude "palette/Star Light Zone.bin"
 Pal_SZ:			binclude "palette/Sparkling Zone.bin"
 Pal_CWZ:		binclude "palette/Clock Work Zone.bin"
 Pal_Special:	binclude "palette/Special Stage.bin"
+
 ; ===========================================================================
 
 WaitForVInt:
@@ -1511,6 +1492,7 @@ WaitForVInt:
 		include	"obj/sub CalcSine.asm"
 		include	"obj/sub CalcSqrt.asm"
 		include	"obj/sub CalcAngle.asm"
+
 ; ===========================================================================
 
 GM_Sega:
@@ -1549,11 +1531,11 @@ Sega_MainLoop:
 		bsr.w	WaitForVInt
 		bsr.w	PalCycle_Sega
 		tst.w	(v_generictimer).w	; has generic timer reached zero?
-		beq.s	loc_2544	; if so, branch
+		beq.s	.timerfinished	; if so, branch
 		andi.b	#btnStart,(v_jpadpress1).w	; check if Start is pressed
 		beq.s	Sega_MainLoop	; if not, branch
 
-loc_2544:
+.timerfinished:
 		move.b	#id_Title,(v_gamemode).w	; go to Title screen
 		rts
 ; ===========================================================================
@@ -1585,9 +1567,9 @@ GM_Title:
 		lea	(Art_Text).l,a5
 		move.w	#bytesToWcnt(Art_Text_End-Art_Text),d1
 
-loc_25D8:
+.loadtext:
 		move.w	(a5)+,(a6)
-		dbf	d1,loc_25D8
+		dbf	d1,.loadtext
 
 		lea	(Unc_Title).l,a1
 
@@ -1851,8 +1833,6 @@ Demo_Levels:
 ; ---------------------------------------------------------------------------
 ; Subroutine to change what you're selecting in the level select
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 LevSelControls:
 		move.b	(v_jpadpress1).w,d1
@@ -2256,12 +2236,15 @@ loc_2EC8:
 		bne.s	loc_2E9E
 		rts
 ; ===========================================================================
+
 		include "leftovers/routines/Debug Coordinate Sprites.asm"
 		include	"leftovers/routines/Window Plane Mask.asm"
 
 		include "_include/LZWaterFeatures.asm"
 		include	"_include/MoveSonicInDemo.asm"
+
 ; ===========================================================================
+
 ;sub_314C:
 		cmpi.b	#id_06,(v_zone).w	; are we on Zone 6?
 		bne.s	locret_3176	; if not, branch
@@ -2293,9 +2276,12 @@ sub_3178:
 		dbf	d1,.loadchunks2
 		rts
 ; ===========================================================================
-Anim256Unk1:	binclude "level/map256/Anim Unknown 1.bin"
+Anim256Unk1:
+		binclude "level/map256/Anim Unknown 1.bin"
 Anim256Unk1_End:
-Anim256Unk2:	binclude "level/map256/Anim Unknown 2.bin"
+
+Anim256Unk2:
+		binclude "level/map256/Anim Unknown 2.bin"
 Anim256Unk2_End:
 ; ===========================================================================
 
@@ -2330,15 +2316,19 @@ LoadAnimatedBlocks:
 		dbf	d1,.loadmz
 		rts
 ; ===========================================================================
-Anim16GHZ:	binclude "level/map16/Anim GHZ.bin"
+Anim16GHZ:
+		binclude "level/map16/Anim GHZ.bin"
 Anim16GHZ_End:
-Anim16MZ:	binclude "level/map16/Anim MZ.bin"
+
+Anim16MZ:
+		binclude "level/map16/Anim MZ.bin"
 Anim16MZ_End:
 ; ===========================================================================
 
 DebugPosLoadArt:
 		rts
 ; ===========================================================================
+
 		locVRAM ArtTile_Debug_Numbers*tile_size
 		lea	(Art_Text).l,a0
 		move.w	#bytesToWcnt(Art_Text_End-Art_Text-tile_size*$1F),d1
@@ -2352,6 +2342,7 @@ DebugPosLoadArt:
 		dbf	d1,.loadtext
 		rts
 ; ===========================================================================
+
 ;1bppConvert:
 		moveq	#0,d0	; this code converts palette indices from 1 to 6
 		move.b	(a0)+,d0	; for example, $11 will be turned into $66
@@ -2370,15 +2361,15 @@ DebugPosLoadArt:
 		dbf	d1,.loadtext
 		rts
 ; ===========================================================================
-.1bpp:	dc.b 0, 6, $60, $66
+
+.1bpp:
+		dc.b 0, 6, $60, $66
 
 		include "_include/Oscillatory Routines.asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to change synchronised animation variables (rings)
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 SynchroAnimate:
 
@@ -2428,8 +2419,6 @@ SyncEnd:
 ; ---------------------------------------------------------------------------
 ; End-of-act signpost pattern loading subroutine
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 SignpostArtLoad:
 		tst.w	(v_debuguse).w
@@ -2877,8 +2866,6 @@ LoadLevelData:
 ; Level layout loading subroutine
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 LevelLayoutLoad:
 		lea	(v_lvllayout).w,a3
 	if FixBugs
@@ -2904,8 +2891,6 @@ LevLoad_ClrRam:
 
 ; "LevelLayoutLoad2" is run twice - for the level and the background
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 LevelLayoutLoad2:
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
@@ -2914,7 +2899,7 @@ LevelLayoutLoad2:
 		add.w	d0,d0
 		add.w	d2,d0
 		add.w	d1,d0
-		lea	(LayoutArray).l,a1
+		lea	(Level_Index).l,a1
 		move.w	(a1,d0.w),d0
 		lea	(a1,d0.w),a1
 		moveq	#0,d1
@@ -3030,8 +3015,6 @@ Plat_Exit:
 ; Sloped platform subroutine (GHZ collapsing ledges and SLZ seesaws)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 SlopeObject:
 		lea	(v_player).w,a1
 		tst.w	obVelY(a1)
@@ -3107,8 +3090,6 @@ Map_Bri:	include "_maps/Bridge.asm"
 ; Subroutine to change Sonic's position with a platform
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 MvSonicOnPtfm:
 		lea	(v_player).w,a1
 		move.w	obY(a0),d0
@@ -3119,8 +3100,6 @@ MvSonicOnPtfm:
 ; ---------------------------------------------------------------------------
 ; Subroutine to change Sonic's position with a platform
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 MvSonicOnPtfm2:
 		lea	(v_player).w,a1
@@ -3145,7 +3124,7 @@ Map_Swing_SLZ:	include "_maps/Swinging Platforms (SLZ).asm"
 Map_Hel:	include "_maps/Spiked Pole Helix.asm"
 
 		include "obj/18 Platforms.asm"
-		include "_maps/Platforms (unused).asm"
+Map_Plat_Unused:	include "_maps/Platforms (unused).asm"
 Map_Plat_GHZ:	include "_maps/Platforms (GHZ).asm"
 Map_Plat_SZ:	include "_maps/Platforms (SZ).asm"
 Map_Plat_SLZ:	include "_maps/Platforms (SLZ).asm"
@@ -3254,7 +3233,7 @@ Ledge_SlopeData:dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
 		dc.b $30, $30, $30, $30, $30, $30, $30, $30
 		even
 
-		include "_maps/Collapsing Ledge (Unused).asm"
+Map_Ledge_Unused:	include "_maps/Collapsing Ledge (Unused).asm"
 Map_Ledge:	include "_maps/Collapsing Ledge.asm"
 Map_CFlo:	include "_maps/Collapsing Floors.asm"
 
@@ -3517,8 +3496,6 @@ Map_Monitor:	include "_maps/Monitor.asm"
 ; Object code execution subroutine
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ExecuteObjects:
 		lea	(v_objspace).w,a0 ; set address for object RAM
 		moveq	#bytesToXcnt(v_objspace_end-v_objspace,object_size),d7
@@ -3580,8 +3557,6 @@ BldSpr_ScrPos:	dc.l 0				; blank
 ; ---------------------------------------------------------------------------
 ; Subroutine to convert mappings (etc) to proper Megadrive sprites
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 BuildSprites:
 		lea	(v_spritetablebuffer).w,a2 ; set address for sprite table
@@ -3689,7 +3664,7 @@ BuildSprites:
 		rts
 ; End of function BuildSprites
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 BuildSpr_Draw:
 		movea.w	obGfx(a0),a3
@@ -3699,7 +3674,7 @@ BuildSpr_Draw:
 		bne.w	BuildSpr_FlipY
 ; End of function BuildSpr_Draw
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ===========================================================================
 
 BuildSpr_Normal:
 		cmpi.b	#80,d5		; check sprite limit
@@ -3858,8 +3833,6 @@ BuildSpr_FlipXY:
 ; ---------------------------------------------------------------------------
 ; Subroutine to load a level's objects
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ObjPosLoad:
 		moveq	#0,d0
@@ -4508,8 +4481,6 @@ Map_Vanish:	include "_maps/Special Stage Entry (Unused).asm"
 
 RawColBlocks		equ CollArray1
 ConvRowColBlocks	equ CollArray1
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 
 ConvertCollisionArray:
@@ -5336,8 +5307,6 @@ Map_HUD:	include "_maps/HUD.asm"
 ; Add points subroutine
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 AddPoints:
 		move.b	#1,(f_scorecount).w ; set score counter to update
 
@@ -5372,11 +5341,13 @@ Art_LivesNums:	binclude "artunc/Lives Counter Numbers.bin"
 	if PaddingOptimization=0
 		align	$8000
 	endif
+
 ; ===========================================================================
 ; Unused 8x8 ASCII Art
 ; ===========================================================================
 byte_18000:	binclude "leftovers/artnem/8x8 ASCII.nem"
 		even
+
 ; ===========================================================================
 ; Sega Screen/Title Screen Art and Mappings
 ; ===========================================================================
@@ -5385,6 +5356,7 @@ Nem_SegaLogo:	binclude "artnem/Sega Logo.nem"
 Eni_SegaLogo:	binclude "tilemaps/Sega Logo.eni"
 		even
 Unc_Title:	binclude "tilemaps/Title Screen.bin"
+		even
 Nem_TitleFg:	binclude "artnem/Title Screen Foreground.nem"
 		even
 Nem_TitleSonic:	binclude "artnem/Title Screen Sonic.nem"
@@ -5393,12 +5365,17 @@ Nem_TitleSonic:	binclude "artnem/Title Screen Sonic.nem"
 	if PaddingOptimization=0
 		align	$4000
 	endif
+
 Map_Sonic:	include "_maps/Sonic.asm"
+
 SonicDynPLC:	include "_maps/Sonic - Dynamic Gfx Script.asm"
+
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
 ; ---------------------------------------------------------------------------
 Art_Sonic:	binclude "artunc/Sonic.bin"
+		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
@@ -5425,9 +5402,13 @@ Nem_Swing:	binclude "artnem/GHZ Swinging Platform.nem"
 		even
 Nem_Bridge:	binclude "artnem/GHZ Bridge.nem"
 		even
+Nem_GhzMovingBlock:	binclude	"artnem/Unused - GHZ Block.nem"
+		even
 Nem_Ball:	binclude "artnem/GHZ Giant Ball.nem"
 		even
 Nem_Spikes:	binclude "artnem/Spikes.nem"
+		even
+Nem_GhzLog:	binclude	"artnem/Unused - GHZ Log.nem"
 		even
 Nem_SpikePole:	binclude "artnem/GHZ Spiked Log.nem"
 		even
@@ -5437,6 +5418,7 @@ Nem_GhzWall1:	binclude "artnem/GHZ Breakable Wall.nem"
 		even
 Nem_GhzWall2:	binclude "artnem/GHZ Edge Wall.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
@@ -5456,6 +5438,7 @@ Nem_MzBlock:	binclude "artnem/MZ Green Pushable Block.nem"
 		even
 Nem_MzUnkBlock:	binclude "artnem/Unused - MZ Background.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff
 ; ---------------------------------------------------------------------------
@@ -5473,6 +5456,7 @@ Nem_SlzPlatfm:	binclude "artnem/SLZ Platforms.nem"
 		even
 Nem_SlzBlock:	binclude "artnem/SLZ 32x32 Block.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SZ stuff
 ; ---------------------------------------------------------------------------
@@ -5484,6 +5468,7 @@ Nem_Switch:	binclude "artnem/Switch.nem"
 		even
 Nem_SyzSpike1:	binclude "artnem/SZ Large Spikeball.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies
 ; ---------------------------------------------------------------------------
@@ -5515,6 +5500,7 @@ Nem_Basaran:	binclude "artnem/Enemy Basaran.nem"
 		even
 Nem_Splats:	binclude "artnem/Enemy Splats.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
@@ -5540,6 +5526,7 @@ Nem_VSpring:	binclude "artnem/Spring Vertical.nem"
 		even
 Nem_SignPost:	binclude "artnem/Signpost.nem"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - animals
 ; ---------------------------------------------------------------------------
@@ -5561,51 +5548,67 @@ Nem_Squirrel:	binclude "artnem/Animal Squirrel.nem"
 	if PaddingOptimization=0
 		align	$1000
 	endif
+
 ; ---------------------------------------------------------------------------
 ; Level Data
 ; ---------------------------------------------------------------------------
 Blk16_GHZ:	binclude "level/map16/GHZ.bin"
+		even
 Nem_GHZ_1st:	binclude "artnem/8x8 - GHZ1.nem"
 		even
 Nem_GHZ_2nd:	binclude "artnem/8x8 - GHZ2.nem"
 		even
 Blk256_GHZ:	binclude "level/map256/GHZ.kos"
 		even
+
 Blk16_LZ:	binclude "level/map16/LZ.bin"
+		even
 Nem_LZ:	binclude "artnem/8x8 - LZ.nem"
 		even
 Blk256_LZ:	binclude "level/map256/LZ.kos"
 		even
+
 Blk16_MZ:	binclude "level/map16/MZ.bin"
+		even
 Nem_MZ:	binclude "artnem/8x8 - MZ.nem"
 		even
 Blk256_MZ:	binclude "level/map256/MZ.kos"
 		even
+
 ;0x3DA48
 ; Duplicate cut-off chunk data from MZ.
 		dc.w $F0, 0, 0, 0, 0, 0, 0, 0
+
 ;0x3DA58
 ; Cut-off chunk data.
 		binclude "leftovers/level/map256/Chunk Data.kos"
 		even
+
 ;0x3DB78
 		binclude "unknown/3DB78.dat"
 		even
+
 Blk16_SLZ:	binclude "level/map16/SLZ.bin"
+		even
 Nem_SLZ:	binclude "artnem/8x8 - SLZ.nem"
 		even
 Blk256_SLZ:	binclude "level/map256/SLZ.kos"
 		even
+
 Blk16_SZ:	binclude "level/map16/SZ.bin"
+		even
 Nem_SZ:	binclude "artnem/8x8 - SZ.nem"
 		even
 Blk256_SZ:	binclude "level/map256/SZ.kos"
 		even
+
 Blk16_CWZ:	binclude "level/map16/CWZ.bin"
+		even
 Nem_CWZ:	binclude "artnem/8x8 - CWZ.nem"
 		even
 Blk256_CWZ:	binclude "level/map256/CWZ.kos"
 		even
+
 ;0x570DC
 ; Duplicate cut-off chunk data from CWZ.
 		dc.w $FFF8, $FCAA, $AAFF, $F8FC, $FFF8, $FCFF, $F8FC, $FFF8
@@ -5617,6 +5620,7 @@ Blk256_CWZ:	binclude "level/map256/CWZ.kos"
 ;0x5711C
 		binclude "unknown/5711C.dat"
 		even
+
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses
 ; ---------------------------------------------------------------------------
@@ -5626,6 +5630,7 @@ Nem_Weapons:	binclude "artnem/Boss - Weapons.nem"
 		even
 Nem_Prison:	binclude "artnem/Prison Capsule.nem"
 		even
+
 ; ===========================================================================
 ; Demos
 ; ===========================================================================
@@ -5638,10 +5643,11 @@ Demo_SS:	include "demodata/Intro - Special Stage.asm" ; Special stage demo
 		align	$3000
 	endif
 
-		include "_maps/SS Walls.asm"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
+Map_SSWalls:	include "_maps/SS Walls.asm"
+
 Nem_SSWalls:	binclude "artnem/Special Walls.nem"
 		even
 Eni_SSBg1:	binclude "tilemaps/SS Background 1.eni"
@@ -5690,126 +5696,185 @@ Nem_SSEmerald:	binclude "artnem/Special Emeralds.nem"
 ; Collision data
 ; ---------------------------------------------------------------------------
 AngleMap:	binclude "collide/Angle Map.bin"
+		even
 CollArray1:	binclude "collide/Collision Array (Normal).bin"
+		even
 CollArray2:	binclude "collide/Collision Array (Rotated).bin"
+		even
 Col_GHZ:	binclude "collide/GHZ.bin"
+		even
 Col_LZ:	binclude "collide/LZ.bin"
+		even
 Col_MZ:	binclude "collide/MZ.bin"
+		even
 Col_SLZ:	binclude "collide/SLZ.bin"
+		even
 Col_SZ:	binclude "collide/SZ.bin"
+		even
 Col_CWZ:	binclude "collide/CWZ.bin"
+		even
+
 ; ---------------------------------------------------------------------------
 ; Special Stage layout
 ; ---------------------------------------------------------------------------
 SS_1:	binclude "sslayout/1.bin"
 SS_1_End:
+		even
+
 ; ---------------------------------------------------------------------------
 ; Animated uncompressed graphics
 ; ---------------------------------------------------------------------------
 Art_GhzWater:	binclude "artunc/GHZ Waterfall.bin"
+		even
 Art_GhzFlower1:	binclude "artunc/GHZ Flower Large.bin"
+		even
 Art_GhzFlower2:	binclude "artunc/GHZ Flower Small.bin"
+		even
 Art_MzLava1:	binclude "artunc/MZ Lava Surface.bin"
+		even
 Art_MzLava2:	binclude "artunc/MZ Lava.bin"
+		even
 Art_MzSaturns:	binclude "artunc/MZ Saturns.bin"
+		even
 Art_MzTorch:	binclude "artunc/MZ Background Torch.bin"
+		even
+
 ; ---------------------------------------------------------------------------
 ; Level	layout index
+; Format: foreground, background, leftover/unused
 ; ---------------------------------------------------------------------------
-LayoutArray:	; GHZ
-		dc.w LayoutGHZ1FG-LayoutArray, LayoutGHZ1BG-LayoutArray, byte_6CE54-LayoutArray
-		dc.w LayoutGHZ2FG-LayoutArray, LayoutGHZ2BG-LayoutArray, byte_6CF3C-LayoutArray
-		dc.w LayoutGHZ3FG-LayoutArray, LayoutGHZ3BG-LayoutArray, byte_6D084-LayoutArray
-		dc.w byte_6D088-LayoutArray, byte_6D088-LayoutArray, byte_6D088-LayoutArray
+Level_Index:
+		; GHZ
+		dc.w Level_GHZ1-Level_Index, Level_GHZ1BG-Level_Index, Level_GHZ1Unk-Level_Index
+		dc.w Level_GHZ2-Level_Index, Level_GHZ2BG-Level_Index, Level_GHZ2Unk-Level_Index
+		dc.w Level_GHZ3-Level_Index, Level_GHZ3BG-Level_Index, Level_GHZ3Unk-Level_Index
+		dc.w Level_GHZ4Unk-Level_Index, Level_GHZ4Unk-Level_Index, Level_GHZ4Unk-Level_Index
 		; LZ
-		dc.w LayoutLZ1FG-LayoutArray, LayoutLZBG-LayoutArray, byte_6D190-LayoutArray
-		dc.w LayoutLZ2FG-LayoutArray, LayoutLZBG-LayoutArray, byte_6D216-LayoutArray
-		dc.w LayoutLZ3FG-LayoutArray, LayoutLZBG-LayoutArray, byte_6D31C-LayoutArray
-		dc.w byte_6D320-LayoutArray, byte_6D320-LayoutArray, byte_6D320-LayoutArray
+		dc.w Level_LZ1-Level_Index, Level_LZBG-Level_Index, Level_LZ1Unk-Level_Index
+		dc.w Level_LZ2-Level_Index, Level_LZBG-Level_Index, Level_LZ2Unk-Level_Index
+		dc.w Level_LZ3-Level_Index, Level_LZBG-Level_Index, Level_LZ3Unk-Level_Index
+		dc.w Level_LZ4Unk-Level_Index, Level_LZ4Unk-Level_Index, Level_LZ4Unk-Level_Index
 		; MZ
-		dc.w LayoutMZ1FG-LayoutArray, LayoutMZ1BG-LayoutArray, LayoutMZ1FG-LayoutArray
-		dc.w LayoutMZ2FG-LayoutArray, LayoutMZ2BG-LayoutArray, byte_6D614-LayoutArray
-		dc.w LayoutMZ3FG-LayoutArray, LayoutMZ3BG-LayoutArray, byte_6D7DC-LayoutArray
-		dc.w byte_6D7E0-LayoutArray, byte_6D7E0-LayoutArray, byte_6D7E0-LayoutArray
+		dc.w Level_MZ1-Level_Index, Level_MZ1BG-Level_Index, Level_MZ1-Level_Index
+		dc.w Level_MZ2-Level_Index, Level_MZ2BG-Level_Index, Level_MZ2Unk-Level_Index
+		dc.w Level_MZ3-Level_Index, Level_MZ3BG-Level_Index, Level_MZ3Unk-Level_Index
+		dc.w Level_MZ4Unk-Level_Index, Level_MZ4Unk-Level_Index, Level_MZ4Unk-Level_Index
 		; SLZ
-		dc.w LayoutSLZ1FG-LayoutArray, LayoutSLZBG-LayoutArray, byte_6DBE4-LayoutArray
-		dc.w LayoutSLZ2FG-LayoutArray, LayoutSLZBG-LayoutArray, byte_6DBE4-LayoutArray
-		dc.w LayoutSLZ3FG-LayoutArray, LayoutSLZBG-LayoutArray, byte_6DBE4-LayoutArray
-		dc.w byte_6DBE4-LayoutArray, byte_6DBE4-LayoutArray, byte_6DBE4-LayoutArray
+		dc.w Level_SLZ1-Level_Index, Level_SLZBG-Level_Index, Level_SLZUnk-Level_Index
+		dc.w Level_SLZ2-Level_Index, Level_SLZBG-Level_Index, Level_SLZUnk-Level_Index
+		dc.w Level_SLZ3-Level_Index, Level_SLZBG-Level_Index, Level_SLZUnk-Level_Index
+		dc.w Level_SLZUnk-Level_Index, Level_SLZUnk-Level_Index, Level_SLZUnk-Level_Index
 		; SZ
-		dc.w LayoutSZ1FG-LayoutArray, LayoutSZBG-LayoutArray, byte_6DCD8-LayoutArray
-		dc.w LayoutSZ2FG-LayoutArray, LayoutSZBG-LayoutArray, byte_6DDDA-LayoutArray
-		dc.w LayoutSZ3FG-LayoutArray, LayoutSZBG-LayoutArray, byte_6DF30-LayoutArray
-		dc.w byte_6DF34-LayoutArray, byte_6DF34-LayoutArray, byte_6DF34-LayoutArray
+		dc.w Level_SZ1-Level_Index, Level_SZBG-Level_Index, Level_SZ1Unk-Level_Index
+		dc.w Level_SZ2-Level_Index, Level_SZBG-Level_Index, Level_SZ2Unk-Level_Index
+		dc.w Level_SZ3-Level_Index, Level_SZBG-Level_Index, Level_SZ3Unk-Level_Index
+		dc.w Level_SZ4Unk-Level_Index, Level_SZ4Unk-Level_Index, Level_SZ4Unk-Level_Index
 		; CWZ
-		dc.w LayoutCWZ1-LayoutArray, LayoutCWZ2-LayoutArray, LayoutCWZ2-LayoutArray
-		dc.w LayoutCWZ2-LayoutArray, byte_6E33C-LayoutArray, byte_6E33C-LayoutArray
-		dc.w LayoutCWZ3-LayoutArray, LayoutCWZ3-LayoutArray, LayoutCWZ3-LayoutArray
-		dc.w byte_6E344-LayoutArray, byte_6E344-LayoutArray, byte_6E344-LayoutArray
+		dc.w Level_CWZ1-Level_Index, Level_CWZ2-Level_Index, Level_CWZ2-Level_Index
+		dc.w Level_CWZ2-Level_Index, Level_CWZ2BG-Level_Index, Level_CWZ2BG-Level_Index
+		dc.w Level_CWZ3-Level_Index, Level_CWZ3-Level_Index, Level_CWZ3-Level_Index
+		dc.w Level_CWZ4-Level_Index, Level_CWZ4-Level_Index, Level_CWZ4-Level_Index
 		; Zone 6
-		dc.w LayoutTest-LayoutArray, byte_6E3CA-LayoutArray, byte_6E3CA-LayoutArray
-		dc.w byte_6E3CE-LayoutArray, byte_6E3CE-LayoutArray, byte_6E3CE-LayoutArray
-		dc.w byte_6E3D2-LayoutArray, byte_6E3D2-LayoutArray, byte_6E3D2-LayoutArray
-		dc.w byte_6E3D6-LayoutArray, byte_6E3D6-LayoutArray, byte_6E3D6-LayoutArray
+		dc.w Level_0601-Level_Index, Level_06BG-Level_Index, Level_06BG-Level_Index
+		dc.w Level_0602-Level_Index, Level_0602-Level_Index, Level_0602-Level_Index
+		dc.w Level_0603-Level_Index, Level_0603-Level_Index, Level_0603-Level_Index
+		dc.w Level_0604-Level_Index, Level_0604-Level_Index, Level_0604-Level_Index
 
-LayoutGHZ1FG:	binclude "level/layout/ghz1.bin"
-LayoutGHZ1BG:	binclude "level/layout/ghzbg1.bin"
-byte_6CE54:	dc.l 0
-LayoutGHZ2FG:	binclude "level/layout/ghz2.bin"
-LayoutGHZ2BG:	binclude "level/layout/ghzbg2.bin"
-byte_6CF3C:	dc.l 0
-LayoutGHZ3FG:	binclude "level/layout/ghz3.bin"
-LayoutGHZ3BG:	binclude "level/layout/ghzbg3.bin"
-byte_6D084:	dc.l 0
-byte_6D088:	dc.l 0
-LayoutLZ1FG:	binclude "level/layout/lz1.bin"
-LayoutLZBG:	binclude "level/layout/lzbg.bin"
-byte_6D190:	dc.l 0
-LayoutLZ2FG:	binclude "level/layout/lz2.bin"
-byte_6D216:	dc.l 0
-LayoutLZ3FG:	binclude "level/layout/lz3.bin"
-byte_6D31C:	dc.l 0
-byte_6D320:	dc.l 0
-LayoutMZ1FG:	binclude "level/layout/mz1.bin"
-LayoutMZ1BG:	binclude "level/layout/mzbg1.bin"
-LayoutMZ2FG:	binclude "level/layout/mz2.bin"
-LayoutMZ2BG:	binclude "level/layout/mzbg2.bin"
-byte_6D614:	dc.l 0
-LayoutMZ3FG:	binclude "level/layout/mz3.bin"
-LayoutMZ3BG:	binclude "level/layout/mzbg3.bin"
-byte_6D7DC:	dc.l 0
-byte_6D7E0:	dc.l 0
-LayoutSLZ1FG:	binclude "level/layout/slz1.bin"
-LayoutSLZBG:	binclude "level/layout/slzbg.bin"
-LayoutSLZ2FG:	binclude "level/layout/slz2.bin"
-LayoutSLZ3FG:	binclude "level/layout/slz3.bin"
-byte_6DBE4:	dc.l 0
-LayoutSZ1FG:	binclude "level/layout/sz1.bin"
-LayoutSZBG:	binclude "level/layout/szbg.bin"
-byte_6DCD8:	dc.l 0
-LayoutSZ2FG:	binclude "level/layout/sz2.bin"
-byte_6DDDA:	dc.l 0
-LayoutSZ3FG:	binclude "level/layout/sz3.bin"
-byte_6DF30:	dc.l 0
-byte_6DF34:	dc.l 0
-LayoutCWZ1:	binclude "level/layout/cwz1.bin"
-LayoutCWZ2:	binclude "level/layout/cwz2.bin"
-byte_6E33C:	binclude "level/layout/cwz2bg.bin"
-LayoutCWZ3:	binclude "level/layout/cwz3.bin"
-byte_6E344:	dc.l 0
-LayoutTest:	binclude "leftovers/level/layout/test.bin"
-byte_6E3CA:	dc.l 0
-byte_6E3CE:	dc.l 0
-byte_6E3D2:	dc.l 0
-byte_6E3D6:	dc.l 0
+Level_GHZ1:	binclude "level/layout/ghz1.bin"
+		even
+Level_GHZ1BG:	binclude "level/layout/ghzbg1.bin"
+		even
+Level_GHZ1Unk:	dc.l 0
+Level_GHZ2:	binclude "level/layout/ghz2.bin"
+		even
+Level_GHZ2BG:	binclude "level/layout/ghzbg2.bin"
+		even
+Level_GHZ2Unk:	dc.l 0
+Level_GHZ3:	binclude "level/layout/ghz3.bin"
+		even
+Level_GHZ3BG:	binclude "level/layout/ghzbg3.bin"
+		even
+Level_GHZ3Unk:	dc.l 0
+Level_GHZ4Unk:	dc.l 0
+
+Level_LZ1:	binclude "level/layout/lz1.bin"
+		even
+Level_LZBG:	binclude "level/layout/lzbg.bin"
+		even
+Level_LZ1Unk:	dc.l 0
+Level_LZ2:	binclude "level/layout/lz2.bin"
+		even
+Level_LZ2Unk:	dc.l 0
+Level_LZ3:	binclude "level/layout/lz3.bin"
+		even
+Level_LZ3Unk:	dc.l 0
+Level_LZ4Unk:	dc.l 0
+
+Level_MZ1:	binclude "level/layout/mz1.bin"
+		even
+Level_MZ1BG:	binclude "level/layout/mzbg1.bin"
+		even
+Level_MZ2:	binclude "level/layout/mz2.bin"
+		even
+Level_MZ2BG:	binclude "level/layout/mzbg2.bin"
+		even
+Level_MZ2Unk:	dc.l 0
+Level_MZ3:	binclude "level/layout/mz3.bin"
+		even
+Level_MZ3BG:	binclude "level/layout/mzbg3.bin"
+		even
+Level_MZ3Unk:	dc.l 0
+Level_MZ4Unk:	dc.l 0
+
+Level_SLZ1:	binclude "level/layout/slz1.bin"
+		even
+Level_SLZBG:	binclude "level/layout/slzbg.bin"
+		even
+Level_SLZ2:	binclude "level/layout/slz2.bin"
+		even
+Level_SLZ3:	binclude "level/layout/slz3.bin"
+		even
+Level_SLZUnk:	dc.l 0
+
+Level_SZ1:	binclude "level/layout/sz1.bin"
+		even
+Level_SZBG:	binclude "level/layout/szbg.bin"
+		even
+Level_SZ1Unk:	dc.l 0
+Level_SZ2:	binclude "level/layout/sz2.bin"
+		even
+Level_SZ2Unk:	dc.l 0
+Level_SZ3:	binclude "level/layout/sz3.bin"
+		even
+Level_SZ3Unk:	dc.l 0
+Level_SZ4Unk:	dc.l 0
+
+Level_CWZ1:	binclude "level/layout/cwz1.bin"
+		even
+Level_CWZ2:	binclude "level/layout/cwz2.bin"
+		even
+Level_CWZ2BG:	binclude "level/layout/cwz2bg.bin"
+		even
+Level_CWZ3:	binclude "level/layout/cwz3.bin"
+		even
+Level_CWZ4:	dc.l 0
+
+Level_0601:	binclude "leftovers/level/layout/test.bin"
+		even
+Level_06BG:	dc.l 0
+Level_0602:	dc.l 0
+Level_0603:	dc.l 0
+Level_0604:	dc.l 0
 
 	if PaddingOptimization=0
 		align	$2000
 	endif
-; ===========================================================================
-; Object Layout Index
-; ===========================================================================
-ObjPos_Index:	; GHZ
+
+; ---------------------------------------------------------------------------
+; Object locations index
+; ---------------------------------------------------------------------------
+ObjPos_Index:
+		; GHZ
 		dc.w ObjPos_GHZ1-ObjPos_Index, ObjPos_Null-ObjPos_Index
 		dc.w ObjPos_GHZ2-ObjPos_Index, ObjPos_Null-ObjPos_Index
 		dc.w ObjPos_GHZ3-ObjPos_Index, ObjPos_Null-ObjPos_Index
@@ -5839,28 +5904,53 @@ ObjPos_Index:	; GHZ
 		dc.w ObjPos_CWZ2-ObjPos_Index, ObjPos_Null-ObjPos_Index
 		dc.w ObjPos_CWZ3-ObjPos_Index, ObjPos_Null-ObjPos_Index
 		dc.w ObjPos_CWZ1-ObjPos_Index, ObjPos_Null-ObjPos_Index
+		; No entries for Zone 6
 		dc.w $FFFF, 0, 0
 
 ObjPos_GHZ1:	binclude "level/objpos/ghz1.bin"
+		even
 ObjPos_GHZ2:	binclude "level/objpos/ghz2.bin"
+		even
 ObjPos_GHZ3:	binclude "level/objpos/ghz3.bin"
-ObjPos_LZ1:	binclude "level/objpos/lz1.bin"
-ObjPos_LZ2:	binclude "level/objpos/lz2.bin"
-ObjPos_LZ3:	binclude "level/objpos/lz3.bin"
-ObjPos_MZ1:	binclude "level/objpos/mz1.bin"
-ObjPos_MZ2:	binclude "level/objpos/mz2.bin"
-ObjPos_MZ3:	binclude "level/objpos/mz3.bin"
+		even
+
+ObjPos_LZ1:		binclude "level/objpos/lz1.bin"
+		even
+ObjPos_LZ2:		binclude "level/objpos/lz2.bin"
+		even
+ObjPos_LZ3:		binclude "level/objpos/lz3.bin"
+		even
+
+ObjPos_MZ1:		binclude "level/objpos/mz1.bin"
+		even
+ObjPos_MZ2:		binclude "level/objpos/mz2.bin"
+		even
+ObjPos_MZ3:		binclude "level/objpos/mz3.bin"
+		even
+
 ObjPos_SLZ1:	binclude "level/objpos/slz1.bin"
+		even
 ObjPos_SLZ2:	binclude "level/objpos/slz2.bin"
+		even
 ObjPos_SLZ3:	binclude "level/objpos/slz3.bin"
-ObjPos_SZ1:	binclude "level/objpos/sz1.bin"
-ObjPos_SZ2:	binclude "level/objpos/sz2.bin"
-;0x729CA
-		binclude "leftovers/level/objpos/sz1.bin"
-ObjPos_SZ3:	binclude "level/objpos/sz3.bin"
+		even
+
+ObjPos_SZ1:		binclude "level/objpos/sz1.bin"
+		even
+ObjPos_SZ2:		binclude "level/objpos/sz2.bin"
+		even
+ObjPos_SZ1_PB:	binclude "leftovers/level/objpos/sz1.bin"
+		even
+ObjPos_SZ3:		binclude "level/objpos/sz3.bin"
+		even
+
 ObjPos_CWZ1:	binclude "level/objpos/cwz1.bin"
+		even
 ObjPos_CWZ2:	binclude "level/objpos/cwz2.bin"
+		even
 ObjPos_CWZ3:	binclude "level/objpos/cwz3.bin"
+		even
+
 ObjPos_Null:	dc.w $FFFF, 0, 0
 
 	if PaddingOptimization=0
