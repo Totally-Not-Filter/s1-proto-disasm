@@ -4099,84 +4099,111 @@ Map_Push:	include "_maps/Pushable Blocks.asm"
 		include "obj/39 Game Over.asm"
 		include "obj/3A Got Through Act.asm"
 
-Map_TitleCard:	dc.w byte_A8A4-Map_TitleCard, byte_A8D2-Map_TitleCard, byte_A900-Map_TitleCard
-		dc.w byte_A920-Map_TitleCard, byte_A94E-Map_TitleCard, byte_A97C-Map_TitleCard
-		dc.w byte_A9A6-Map_TitleCard, byte_A9BC-Map_TitleCard, byte_A9C7-Map_TitleCard
-		dc.w byte_A9D2-Map_TitleCard, byte_A9DD-Map_TitleCard
-byte_A8A4:	dc.b 9
-		dc.b $F8, 5, 0, $18, $B4
-		dc.b $F8, 5, 0, $3A, $C4
-		dc.b $F8, 5, 0, $10, $D4
-		dc.b $F8, 5, 0, $10, $E4
-		dc.b $F8, 5, 0, $2E, $F4
-		dc.b $F8, 5, 0, $1C, $14
-		dc.b $F8, 1, 0, $20, $24
-		dc.b $F8, 5, 0, $26, $2C
-		dc.b $F8, 5, 0, $26, $3C
-byte_A8D2:	dc.b 9
-		dc.b $F8, 5, 0, $26, $BC
-		dc.b $F8, 5, 0, 0, $CC
-		dc.b $F8, 5, 0, 4, $DC
-		dc.b $F8, 5, 0, $4A, $EC
-		dc.b $F8, 5, 0, $3A, $FC
-		dc.b $F8, 1, 0, $20, $C
-		dc.b $F8, 5, 0, $2E, $14
-		dc.b $F8, 5, 0, $42, $24
-		dc.b $F8, 5, 0, $1C, $34
-byte_A900:	dc.b 6
-		dc.b $F8, 5, 0, $2A, $CF
-		dc.b $F8, 5, 0, 0, $E0
-		dc.b $F8, 5, 0, $3A, $F0
-		dc.b $F8, 5, 0, 4, 0
-		dc.b $F8, 5, 0, $26, $10
-		dc.b $F8, 5, 0, $10, $20
+; ---------------------------------------------------------------------------
+; Sprite mappings - zone title cards
+; ---------------------------------------------------------------------------
+Map_Card:
+		dc.w M_Card_GHZ-Map_Card	; Green Hill Zone
+		dc.w M_Card_LZ-Map_Card		; Labyrinth Zone
+		dc.w M_Card_MZ-Map_Card		; Marble Zone
+		dc.w M_Card_SLZ-Map_Card	; Star Light Zone
+		dc.w M_Card_SZ-Map_Card		; Sparkling Zone
+		dc.w M_Card_CWZ-Map_Card	; Clock Work Zone
+
+		dc.w M_Card_Zone-Map_Card
+		dc.w M_Card_Act1-Map_Card	; Act number 1
+		dc.w M_Card_Act2-Map_Card	; Act number 2
+		dc.w M_Card_Act3-Map_Card	; Act number 3
+		dc.w M_Card_Oval-Map_Card	; Blue oval
+
+M_Card_GHZ:	dc.b 9	; GREEN HILL
+		dc.b $F8, 5, 0, $18, $B4	; G
+		dc.b $F8, 5, 0, $3A, $C4	; R
+		dc.b $F8, 5, 0, $10, $D4	; E
+		dc.b $F8, 5, 0, $10, $E4	; E
+		dc.b $F8, 5, 0, $2E, $F4	; N
+
+		dc.b $F8, 5, 0, $1C, $14	; H
+		dc.b $F8, 1, 0, $20, $24	; I
+		dc.b $F8, 5, 0, $26, $2C	; L
+		dc.b $F8, 5, 0, $26, $3C	; L
+
+M_Card_LZ:	dc.b 9	; LABYRINTH
+		dc.b $F8, 5, 0, $26, $BC	; L
+		dc.b $F8, 5, 0, 0, $CC		; A
+		dc.b $F8, 5, 0, 4, $DC		; B
+		dc.b $F8, 5, 0, $4A, $EC	; Y
+		dc.b $F8, 5, 0, $3A, $FC	; R
+		dc.b $F8, 1, 0, $20, $C		; I
+		dc.b $F8, 5, 0, $2E, $14	; N
+		dc.b $F8, 5, 0, $42, $24	; T
+		dc.b $F8, 5, 0, $1C, $34	; H
+
+M_Card_MZ:	dc.b 6	; MARBLE
+		dc.b $F8, 5, 0, $2A, $CF	; M
+		dc.b $F8, 5, 0, 0, $E0		; A
+		dc.b $F8, 5, 0, $3A, $F0	; R
+		dc.b $F8, 5, 0, 4, 0		; B
+		dc.b $F8, 5, 0, $26, $10	; L
+		dc.b $F8, 5, 0, $10, $20	; E
 		even
-byte_A920:	dc.b 9
-		dc.b $F8, 5, 0, $3E, $B4
-		dc.b $F8, 5, 0, $42, $C4
-		dc.b $F8, 5, 0, 0, $D4
-		dc.b $F8, 5, 0, $3A, $E4
-		dc.b $F8, 5, 0, $26, 4
-		dc.b $F8, 1, 0, $20, $14
-		dc.b $F8, 5, 0, $18, $1C
-		dc.b $F8, 5, 0, $1C, $2C
-		dc.b $F8, 5, 0, $42, $3C
-byte_A94E:	dc.b 9
-		dc.b $F8, 5, 0, $3E, $BC
-		dc.b $F8, 5, 0, $36, $CC
-		dc.b $F8, 5, 0, 0, $DC
-		dc.b $F8, 5, 0, $3A, $EC
-		dc.b $F8, 5, 0, $22, $FC
-		dc.b $F8, 5, 0, $26, $C
-		dc.b $F8, 1, 0, $20, $1C
-		dc.b $F8, 5, 0, $2E, $24
-		dc.b $F8, 5, 0, $18, $34
-byte_A97C:	dc.b 8
-		dc.b $F8, 5, 0, 8, $B0
-		dc.b $F8, 5, 0, $26, $C0
-		dc.b $F8, 5, 0, $32, $D0
-		dc.b $F8, 5, 0, 8, $E0
-		dc.b $F8, 5, 0, $22, $F0
-		dc.b $F8, 5, 0, $32, $20
-		dc.b $F8, 5, 0, $3A, $30
-		dc.b $F8, 5, 0, $22, $40
+
+M_Card_SLZ:	dc.b 9	; STAR LIGHT
+		dc.b $F8, 5, 0, $3E, $B4	; S
+		dc.b $F8, 5, 0, $42, $C4	; T
+		dc.b $F8, 5, 0, 0, $D4		; A
+		dc.b $F8, 5, 0, $3A, $E4	; R
+
+		dc.b $F8, 5, 0, $26, 4		; L
+		dc.b $F8, 1, 0, $20, $14	; I
+		dc.b $F8, 5, 0, $18, $1C	; G
+		dc.b $F8, 5, 0, $1C, $2C	; H
+		dc.b $F8, 5, 0, $42, $3C	; T
+
+M_Card_SZ:	dc.b 9	; SPARKLING
+		dc.b $F8, 5, 0, $3E, $BC	; S
+		dc.b $F8, 5, 0, $36, $CC	; P
+		dc.b $F8, 5, 0, 0, $DC		; A
+		dc.b $F8, 5, 0, $3A, $EC	; R
+		dc.b $F8, 5, 0, $22, $FC	; K
+		dc.b $F8, 5, 0, $26, $C		; L
+		dc.b $F8, 1, 0, $20, $1C	; I
+		dc.b $F8, 5, 0, $2E, $24	; N
+		dc.b $F8, 5, 0, $18, $34	; G
+
+M_Card_CWZ:	dc.b 8	; CLOCK  ORK
+		dc.b $F8, 5, 0, 8, $B0		; C
+		dc.b $F8, 5, 0, $26, $C0	; L
+		dc.b $F8, 5, 0, $32, $D0	; O
+		dc.b $F8, 5, 0, 8, $E0		; C
+		dc.b $F8, 5, 0, $22, $F0	; K
+
+		; There is a missing entry here for a W, but no W title card graphic exists...
+		dc.b $F8, 5, 0, $32, $20	; O
+		dc.b $F8, 5, 0, $3A, $30	; R
+		dc.b $F8, 5, 0, $22, $40	; K
 		even
-byte_A9A6:	dc.b 4
-		dc.b $F8, 5, 0, $4E, $E0
-		dc.b $F8, 5, 0, $32, $F0
-		dc.b $F8, 5, 0, $2E, 0
-		dc.b $F8, 5, 0, $10, $10
+
+M_Card_Zone:	dc.b 4	; ZONE
+		dc.b $F8, 5, 0, $4E, $E0	; Z
+		dc.b $F8, 5, 0, $32, $F0	; O
+		dc.b $F8, 5, 0, $2E, 0		; N
+		dc.b $F8, 5, 0, $10, $10	; E
 		even
-byte_A9BC:	dc.b 2
-		dc.b 4, $C, 0, $53, $EC
-		dc.b $F4, 2, 0, $57, $C
-byte_A9C7:	dc.b 2
-		dc.b 4, $C, 0, $53, $EC
-		dc.b $F4, 6, 0, $5A, 8
-byte_A9D2:	dc.b 2
-		dc.b 4, $C, 0, $53, $EC
-		dc.b $F4, 6, 0, $60, 8
-byte_A9DD:	dc.b $D
+
+M_Card_Act1:	dc.b 2	; Act number 1
+		dc.b 4, $C, 0, $53, $EC		; "ACT."
+		dc.b $F4, 2, 0, $57, $C		; 1
+
+M_Card_Act2:	dc.b 2	; Act number 2
+		dc.b 4, $C, 0, $53, $EC		; "ACT."
+		dc.b $F4, 6, 0, $5A, 8		; 2
+
+M_Card_Act3:	dc.b 2	; Act number 3
+		dc.b 4, $C, 0, $53, $EC		; "ACT."
+		dc.b $F4, 6, 0, $60, 8		; 3
+
+M_Card_Oval:	dc.b $D	; Blue oval
 		dc.b $E4, $C, 0, $70, $F4
 		dc.b $E4, 2, 0, $74, $14
 		dc.b $EC, 4, 0, $77, $EC
@@ -4197,54 +4224,63 @@ Map_Over:	include "_maps/Game Over.asm"
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
-Map_Got:	dc.w M_Got_SonicHas-Map_Got
-		dc.w byte_AA75-Map_Got
-		dc.w byte_AA94-Map_Got
-		dc.w byte_AAB3-Map_Got
-		dc.w byte_AAD7-Map_Got
-		dc.w byte_A9DD-Map_Got
-		dc.w byte_A9BC-Map_Got
-		dc.w byte_A9C7-Map_Got
-		dc.w byte_A9D2-Map_Got
-M_Got_SonicHas:	dc.b 8
-		dc.b $F8, 5, 0, $3E, $B8
-		dc.b $F8, 5, 0, $32, $C8
-		dc.b $F8, 5, 0, $2E, $D8
-		dc.b $F8, 1, 0, $20, $E8
-		dc.b $F8, 5, 0, 8, $F0
-		dc.b $F8, 5, 0, $1C, $10
-		dc.b $F8, 5, 0, 0, $20
-		dc.b $F8, 5, 0, $3E, $30
-byte_AA75:	dc.b 6
-		dc.b $F8, 5, 0, $36, $D0
-		dc.b $F8, 5, 0, 0, $E0
-		dc.b $F8, 5, 0, $3E, $F0
-		dc.b $F8, 5, 0, $3E, 0
-		dc.b $F8, 5, 0, $10, $10
-		dc.b $F8, 5, 0, $C, $20
-byte_AA94:	dc.b 6
-		dc.b $F8, $D, 1, $4A, $B0
-		dc.b $F8, 1, 1, $62, $D0
-		dc.b $F8, 9, 1, $64, $18
-		dc.b $F8, $D, 1, $6A, $30
-		dc.b $F7, 4, 0, $6E, $CD
-		dc.b $FF, 4, $18, $6E, $CD
-byte_AAB3:	dc.b 7
-		dc.b $F8, $D, 1, $5A, $B0
-		dc.b $F8, $D, 0, $66, $D9
-		dc.b $F8, 1, 1, $4A, $F9
-		dc.b $F7, 4, 0, $6E, $F6
-		dc.b $FF, 4, $18, $6E, $F6
-		dc.b $F8, $D, $FF, $F0, $28
-		dc.b $F8, 1, 1, $70, $48
-byte_AAD7:	dc.b 7
-		dc.b $F8, $D, 1, $52, $B0
-		dc.b $F8, $D, 0, $66, $D9
-		dc.b $F8, 1, 1, $4A, $F9
-		dc.b $F7, 4, 0, $6E, $F6
-		dc.b $FF, 4, $18, $6E, $F6
-		dc.b $F8, $D, $FF, $F8, $28
-		dc.b $F8, 1, 1, $70, $48
+Map_Got:
+		dc.w M_Got_SonicHas-Map_Got	; "SONIC HAS" text
+		dc.w M_Got_Passed-Map_Got	; "PASSED" text
+		dc.w M_Got_Score-Map_Got	; Score tally
+		dc.w M_Got_TBonus-Map_Got	; Time Bonus tally
+		dc.w M_Got_RBonus-Map_Got	; Ring Bonus tally
+
+		; These elements are cross-referenced from the regular title card mappings!
+		dc.w M_Card_Oval-Map_Got	; Blue oval
+		dc.w M_Card_Act1-Map_Got	; Act number 1
+		dc.w M_Card_Act2-Map_Got	; Act number 2
+		dc.w M_Card_Act3-Map_Got	; Act number 3
+
+M_Got_SonicHas:	dc.b 8	; SONIC HAS
+		dc.b $F8, 5, 0, $3E, $B8	; S
+		dc.b $F8, 5, 0, $32, $C8	; O
+		dc.b $F8, 5, 0, $2E, $D8	; N
+		dc.b $F8, 1, 0, $20, $E8	; I
+		dc.b $F8, 5, 0, 8, $F0		; C
+
+		dc.b $F8, 5, 0, $1C, $10	; H
+		dc.b $F8, 5, 0, 0, $20		; A
+		dc.b $F8, 5, 0, $3E, $30	; S
+
+M_Got_Passed:	dc.b 6	; PASSED
+		dc.b $F8, 5, 0, $36, $D0	; P
+		dc.b $F8, 5, 0, 0, $E0		; A
+		dc.b $F8, 5, 0, $3E, $F0	; S
+		dc.b $F8, 5, 0, $3E, 0		; S
+		dc.b $F8, 5, 0, $10, $10	; E
+		dc.b $F8, 5, 0, $C, $20		; D
+
+M_Got_Score:	dc.b 6	; Score tally
+		dc.b $F8, $D, 1, $4A, $B0	; "SCOR"
+		dc.b $F8, 1, 1, $62, $D0	; "E"
+		dc.b $F8, 9, 1, $64, $18	; Tally (first four digits)
+		dc.b $F8, $D, 1, $6A, $30	; Tally (second four digits)
+		dc.b $F7, 4, 0, $6E, $CD	; Small oval (upper half)
+		dc.b $FF, 4, $18, $6E, $CD	; Small oval (lower half)
+
+M_Got_TBonus:	dc.b 7	; Time Bonus tally
+		dc.b $F8, $D, 1, $5A, $B0	; "TIME"
+		dc.b $F8, $D, 0, $66, $D9	; "BONU"
+		dc.b $F8, 1, 1, $4A, $F9	; "S"
+		dc.b $F7, 4, 0, $6E, $F6	; Small oval (upper half)
+		dc.b $FF, 4, $18, $6E, $F6	; Small oval (lower half)
+		dc.b $F8, $D, $FF, $F0, $28	; Tally (first four digits)
+		dc.b $F8, 1, 1, $70, $48	; Tally (second four digits)
+
+M_Got_RBonus:	dc.b 7	; Ring Bonus tally
+		dc.b $F8, $D, 1, $52, $B0	; "RING"
+		dc.b $F8, $D, 0, $66, $D9	; "BONU"
+		dc.b $F8, 1, 1, $4A, $F9	; "S"
+		dc.b $F7, 4, 0, $6E, $F6	; Small oval (upper half)
+		dc.b $FF, 4, $18, $6E, $F6	; Small oval (lower half)
+		dc.b $F8, $D, $FF, $F8, $28	; Tally (first four digits)
+		dc.b $F8, 1, 1, $70, $48	; Tally (second four digits)
 		even
 
 		include "obj/36 Spikes.asm"
