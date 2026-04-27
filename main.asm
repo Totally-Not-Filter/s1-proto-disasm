@@ -4110,7 +4110,7 @@ Map_Card:
 		dc.w M_Card_SZ-Map_Card		; Sparkling Zone
 		dc.w M_Card_CWZ-Map_Card	; Clock Work Zone
 
-		dc.w M_Card_Zone-Map_Card
+		dc.w M_Card_Zone-Map_Card	; "ZONE" text
 		dc.w M_Card_Act1-Map_Card	; Act number 1
 		dc.w M_Card_Act2-Map_Card	; Act number 2
 		dc.w M_Card_Act3-Map_Card	; Act number 3
