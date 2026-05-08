@@ -1285,7 +1285,6 @@ Sonic_Death:	; Routine 6
 		bsr.w	Sonic_Animate
 		bsr.w	Sonic_LoadGfx
 		bra.w	DisplaySprite
-
 ; ===========================================================================
 
 Sonic_GameOver:
