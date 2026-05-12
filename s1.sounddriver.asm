@@ -556,7 +556,6 @@ FM3SpcUpdateFreq:
 		dc.b $AE, $AA
 		dc.b $A6, $A2
 .fm3freqs_end:
-		even
 ; ===========================================================================
 
 FMPan_Set:
@@ -2438,7 +2437,7 @@ cfSetVoice:
 		tst.b	SMPS_RAM.f_voice_selector(a6)		; Are we updating a SFX track?
 		bmi.s	SetVoice				; If yes, branch
 		movea.l	SMPS_RAM.v_special_voice_ptr(a6),a1	; Special SFX voice pointer
-
+		; Fall into SetVoice
 ; ===========================================================================
 
 SetVoice:
