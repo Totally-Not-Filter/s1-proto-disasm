@@ -5340,13 +5340,18 @@ AddPoints:
 		include	"_include/HUD Update.asm"
 
 Art_Hud:	binclude "artunc/HUD Numbers.bin"
+		even
 Art_LivesNums:	binclude "artunc/Lives Counter Numbers.bin"
+		even
 
 		include "obj/DebugMode.asm"
 		include "_include/DebugList.asm"
 		include "_include/LevelHeaders.asm"
 		include "_include/Pattern Load Cues.asm"
 
+		; Unused ASCII art starts at $30000 in this prototype, which amounts
+		; to $5A90 bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$8000
 	endif
@@ -5371,6 +5376,9 @@ Nem_TitleFg:	binclude "artnem/Title Screen Foreground.nem"
 Nem_TitleSonic:	binclude "artnem/Title Screen Sonic.nem"
 		even
 
+		; Sonic's data starts at $1C000 in this prototype, which amounts
+		; to $5EC bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$4000
 	endif
@@ -5399,6 +5407,9 @@ Nem_Warp:	binclude "artnem/Flash.nem"
 Nem_Goggle:	binclude "artnem/Unused - Goggles.nem"
 		even
 
+		; GHZ compressed graphics start at $27400 in this prototype, which amounts
+		; to $3EA bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$400
 	endif
@@ -5554,12 +5565,15 @@ Nem_Flicky:	binclude "artnem/Animal Flicky.nem"
 Nem_Squirrel:	binclude "artnem/Animal Squirrel.nem"
 		even
 
+		; Level data starts at $30000 in this prototype, which amounts
+		; to $3B2 bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$1000
 	endif
 
 ; ---------------------------------------------------------------------------
-; Level Data
+; Level data
 ; ---------------------------------------------------------------------------
 Blk16_GHZ:	binclude "level/map16/GHZ.bin"
 		even
@@ -5648,6 +5662,9 @@ Demo_MZ:	include "demodata/Intro - MZ.asm"	; Marble's demo
 Demo_SZ:	include "demodata/Intro - SZ.asm"	; Sparkling's demo (?)
 Demo_SS:	include "demodata/Intro - Special Stage.asm" ; Special stage demo
 
+		; Special stage data starts at $63000 in this prototype, which amounts
+		; to $1972 bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$3000
 	endif
@@ -5698,6 +5715,9 @@ Nem_SSUpDown:	binclude "artnem/Special UP-DOWN.nem"
 Nem_SSEmerald:	binclude "artnem/Special Emeralds.nem"
 		even
 
+		; Collision data starts at $68000 in this prototype, which amounts
+		; to $241A bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$4000
 	endif
@@ -5875,6 +5895,9 @@ Level_0602:	dc.l 0
 Level_0603:	dc.l 0
 Level_0604:	dc.l 0
 
+		; ObjPos_Index starts at $70000 in this prototype, which amounts
+		; to $1C26 bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$2000
 	endif
@@ -5962,10 +5985,14 @@ ObjPos_CWZ3:	binclude "level/objpos/cwz3.bin"
 
 ObjPos_Null:	dc.w $FFFF, 0, 0
 
+		; SoundDriver starts at $74000 in this prototype, which amounts
+		; to $12DC bytes of padding.
+		; From a technical standpoint, this padding serves no purpose.
 	if PaddingOptimization=0
 		align	$2000
 	endif
 
+SoundDriver:
 		include "s1.sounddriver.asm"
 
 	if PaddingOptimization=0
