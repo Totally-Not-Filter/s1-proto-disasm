@@ -296,6 +296,7 @@ Z80StartupCodeEnd:
 PSGInitValues:
 		dc.b $9F,$BF,$DF,$FF		; values for PSG channel volumes
 PSGInitValues_End:
+		even
 ; ===========================================================================
 
 GameProgram:
@@ -554,6 +555,7 @@ ErrorWaitForC:
 
 Art_Text:	binclude "artunc/menutext.bin"
 Art_Text_End:
+		even
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -1059,6 +1061,7 @@ AddPLC:
 		rts
 ; End of function AddPLC
 
+; ---------------------------------------------------------------------------
 ; Queue pattern load requests, but clear the PLQ first
 
 ; ARGUMENTS
@@ -1829,6 +1832,7 @@ Demo_Levels:
 		dc.b	(id_SS-1),0	; 10
 		dc.b	id_SZ,0		; 11
 		dc.b	(id_SS-1),0	; 12
+		even
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to change what you're selecting in the level select
@@ -2279,10 +2283,12 @@ sub_3178:
 Anim256Unk1:
 		binclude "level/map256/Anim Unknown 1.bin"
 Anim256Unk1_End:
+		even
 
 Anim256Unk2:
 		binclude "level/map256/Anim Unknown 2.bin"
 Anim256Unk2_End:
+		even
 ; ===========================================================================
 
 LoadAnimatedBlocks:
@@ -2319,10 +2325,12 @@ LoadAnimatedBlocks:
 Anim16GHZ:
 		binclude "level/map16/Anim GHZ.bin"
 Anim16GHZ_End:
+		even
 
 Anim16MZ:
 		binclude "level/map16/Anim MZ.bin"
 Anim16MZ_End:
+		even
 ; ===========================================================================
 
 DebugPosLoadArt:
@@ -2364,6 +2372,7 @@ DebugPosLoadArt:
 
 .1bpp:
 		dc.b 0, 6, $60, $66
+		even
 
 		include "_include/Oscillatory Routines.asm"
 
@@ -2722,7 +2731,9 @@ byte_388A:
 		even
 
 Pal_SSCyc1:	binclude "palette/Cycle - Special Stage 1.bin"
+		even
 Pal_SSCyc2:	binclude "palette/Cycle - Special Stage 2.bin"
+		even
 ; ===========================================================================
 
 SS_AnimateBG:
@@ -3226,7 +3237,7 @@ locret_6224:
 		rts
 ; ===========================================================================
 
-Ledge_SlopeData:dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
+Ledge_SlopeData: dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
 		dc.b $22, $22, $23, $23, $24, $24, $25, $25, $26, $26
 		dc.b $27, $27, $28, $28, $29, $29, $2A, $2A, $2B, $2B
 		dc.b $2C, $2C, $2D, $2D, $2E, $2E, $2F, $2F, $30, $30
