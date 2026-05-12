@@ -382,7 +382,7 @@ SetDuration:
 TrackSetRest:
 		bset	#1,SMPS_Track.PlaybackControl(a5)	; Set 'track at rest' bit
 		clr.w	SMPS_Track.Freq(a5)			; Clear frequency
-
+		; Fall into FinishTrackUpdate
 ; ===========================================================================
 
 FinishTrackUpdate:
@@ -556,6 +556,7 @@ FM3SpcUpdateFreq:
 		dc.b $AE, $AA
 		dc.b $A6, $A2
 .fm3freqs_end:
+		even
 ; ===========================================================================
 
 FMPan_Set:
