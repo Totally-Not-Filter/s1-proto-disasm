@@ -130,7 +130,7 @@ loc_FC2E:
 ; ===========================================================================
 
 loc_FC58:
-		cmpi.b	#2,obAnim(a0)
+		cmpi.b	#id_Roll,obAnim(a0)
 		bne.s	locret_FC68
 		neg.w	obVelY(a0)
 		addq.b	#2,obRoutine(a1)
@@ -142,7 +142,7 @@ locret_FC68:
 loc_FC6A:
 		tst.b	(v_invinc).w
 		bne.s	loc_FC78
-		cmpi.b	#2,obAnim(a0)
+		cmpi.b	#id_Roll,obAnim(a0)
 		bne.s	loc_FCE0
 
 loc_FC78:
