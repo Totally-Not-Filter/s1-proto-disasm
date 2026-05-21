@@ -1,29 +1,39 @@
-Map02:
-		dc.w byte_4BFA-Map02
-		dc.w byte_4C00-Map02
-		dc.w byte_4C06-Map02
-		dc.w byte_4C30-Map02
-byte_4BFA:	dc.b 1
-		dc.b $F0, $F, $80, 0, $F0
-byte_4C00:	dc.b 1
-		dc.b $F0, $F, $80, $10, $F0
-byte_4C06:	dc.b 8
-		dc.b $80, $F, $80, $10, $F0
-		dc.b $60, $F, $80, $10, $F0
-		dc.b $40, $F, $80, $10, $F0
-		dc.b $20, $F, $80, $10, $F0
-		dc.b 0, $F, $80, $10, $F0
-		dc.b $E0, $F, $80, $10, $F0
-		dc.b $C0, $F, $80, $10, $F0
-		dc.b $A0, $F, $80, $10, $F0
-		even
-byte_4C30:	dc.b 8
-		dc.b $80, $F, $80, 0, $F0
-		dc.b $60, $F, $80, 0, $F0
-		dc.b $40, $F, $80, 0, $F0
-		dc.b $20, $F, $80, 0, $F0
-		dc.b 0, $F, $80, 0, $F0
-		dc.b $E0, $F, $80, 0, $F0
-		dc.b $C0, $F, $80, 0, $F0
-		dc.b $A0, $F, $80, 0, $F0
-		even
+Map02:	mappingsTable
+	mappingsTableEntry.w	byte_4BFA
+	mappingsTableEntry.w	byte_4C00
+	mappingsTableEntry.w	byte_4C06
+	mappingsTableEntry.w	byte_4C30
+
+byte_4BFA:	spriteHeader
+	spritePiece	-$10, -$10, 4, 4, 0, 0, 0, 0, 1
+byte_4BFA_End
+
+byte_4C00:	spriteHeader
+	spritePiece	-$10, -$10, 4, 4, $10, 0, 0, 0, 1
+byte_4C00_End
+
+byte_4C06:	spriteHeader
+	spritePiece	-$10, -$80, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, $60, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, $40, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, $20, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, 0, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, -$20, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, -$40, 4, 4, $10, 0, 0, 0, 1
+	spritePiece	-$10, -$60, 4, 4, $10, 0, 0, 0, 1
+byte_4C06_End
+
+	even
+
+byte_4C30:	spriteHeader
+	spritePiece	-$10, -$80, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, $60, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, $40, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, $20, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, 0, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, -$20, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, -$40, 4, 4, 0, 0, 0, 0, 1
+	spritePiece	-$10, -$60, 4, 4, 0, 0, 0, 0, 1
+byte_4C30_End
+
+	even

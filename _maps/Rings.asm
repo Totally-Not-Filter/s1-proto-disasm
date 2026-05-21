@@ -1,21 +1,46 @@
-MapRing:
-		dc.w byte_7F74-MapRing, byte_7F7A-MapRing, byte_7F80-MapRing
-		dc.w byte_7F86-MapRing, byte_7F8C-MapRing, byte_7F92-MapRing
-		dc.w byte_7F98-MapRing, byte_7F9E-MapRing
-byte_7F74:	dc.b 1
-		dc.b $F8, 5, 0, 0, $F8
-byte_7F7A:	dc.b 1
-		dc.b $F8, 5, 0, 4, $F8
-byte_7F80:	dc.b 1
-		dc.b $F8, 1, 0, 8, $FC
-byte_7F86:	dc.b 1
-		dc.b $F8, 5, 8, 4, $F8
-byte_7F8C:	dc.b 1
-		dc.b $F8, 5, 0, $A, $F8
-byte_7F92:	dc.b 1
-		dc.b $F8, 5, $18, $A, $F8
-byte_7F98:	dc.b 1
-		dc.b $F8, 5, 8, $A, $F8
-byte_7F9E:	dc.b 1
-		dc.b $F8, 5, $10, $A, $F8
-		even
+; ---------------------------------------------------------------------------
+; Sprite mappings - rings
+; ---------------------------------------------------------------------------
+Map_Ring_internal:	mappingsTable
+	mappingsTableEntry.w	.front
+	mappingsTableEntry.w	.angle1
+	mappingsTableEntry.w	.edge
+	mappingsTableEntry.w	.angle2
+	mappingsTableEntry.w	.sparkle1
+	mappingsTableEntry.w	.sparkle2
+	mappingsTableEntry.w	.sparkle3
+	mappingsTableEntry.w	.sparkle4
+
+.front:	spriteHeader
+	spritePiece	-8, -8, 2, 2, 0, 0, 0, 0, 0	; ring front
+.front_End
+
+.angle1:	spriteHeader
+	spritePiece	-8, -8, 2, 2, 4, 0, 0, 0, 0	; ring angle
+.angle1_End
+
+.edge:	spriteHeader
+	spritePiece	-4, -8, 1, 2, 8, 0, 0, 0, 0	; ring perpendicular
+.edge_End
+
+.angle2:	spriteHeader
+	spritePiece	-8, -8, 2, 2, 4, 1, 0, 0, 0	; ring angle
+.angle2_End
+
+.sparkle1:	spriteHeader
+	spritePiece	-8, -8, 2, 2, $A, 0, 0, 0, 0	; sparkle
+.sparkle1_End
+
+.sparkle2:	spriteHeader
+	spritePiece	-8, -8, 2, 2, $A, 1, 1, 0, 0	; sparkle
+.sparkle2_End
+
+.sparkle3:	spriteHeader
+	spritePiece	-8, -8, 2, 2, $A, 1, 0, 0, 0	; sparkle
+.sparkle3_End
+
+.sparkle4:	spriteHeader
+	spritePiece	-8, -8, 2, 2, $A, 0, 1, 0, 0	; sparkle
+.sparkle4_End
+
+	even

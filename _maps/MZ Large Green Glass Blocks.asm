@@ -1,37 +1,46 @@
 ; ---------------------------------------------------------------------------
-; Sprite mappings - large green	glassy blocks (MZ)
+; Sprite mappings - large green glassy blocks (MZ)
 ; ---------------------------------------------------------------------------
-Map_Glass_internal:
-		dc.w byte_9638-Map_Glass_internal
-		dc.w byte_9657-Map_Glass_internal
-		dc.w byte_9676-Map_Glass_internal
-		dc.w byte_9681-Map_Glass_internal
-byte_9638:	dc.b 6
-		dc.b $DC, $C, 0, 0, $E0
-		dc.b $DC, $C, 8, 0, 0
-		dc.b $E4, $F, 0, 4, $E0
-		dc.b $E4, $F, 8, 4, 0
-		dc.b 4, $F, 0, 4, $E0
-		dc.b 4, $F, 8, 4, 0
-byte_9657:	dc.b 6
-		dc.b $DC, $F, 0, 4, $E0
-		dc.b $DC, $F, 8, 4, 0
-		dc.b $FC, $F, 0, 4, $E0
-		dc.b $FC, $F, 8, 4, 0
-		dc.b $1C, $C, $10, 0, $E0
-		dc.b $1C, $C, $18, 0, 0
-byte_9676:	dc.b 2
-		dc.b 8,	6, 0, $14, $F0			; reflected shine on block
-		dc.b 0,	6, 0, $14, 0
-byte_9681:	dc.b $A
-		dc.b $C8, $C, 0, 0, $E0			; short block
-		dc.b $C8, $C, 8, 0, 0
-		dc.b $D0, $F, 0, 4, $E0
-		dc.b $D0, $F, 8, 4, 0
-		dc.b $F0, $F, 0, 4, $E0
-		dc.b $F0, $F, 8, 4, 0
-		dc.b $10, $F, 0, 4, $E0
-		dc.b $10, $F, 8, 4, 0
-		dc.b $30, $C, $10, 0, $E0
-		dc.b $30, $C, $18, 0, 0
-		even
+Map_Glass_internal:	mappingsTable
+	mappingsTableEntry.w	.unk
+	mappingsTableEntry.w	.tall
+	mappingsTableEntry.w	.shine
+	mappingsTableEntry.w	.short
+
+.unk:	spriteHeader
+	spritePiece	-$20, -$24, 4, 1, 0, 0, 0, 0, 0
+	spritePiece	0, -$24, 4, 1, 0, 1, 0, 0, 0
+	spritePiece	-$20, -$1C, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, -$1C, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, 4, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, 4, 4, 4, 4, 1, 0, 0, 0
+.unk_End
+
+.tall:	spriteHeader
+	spritePiece	-$20, -$24, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, -$24, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, -4, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, -4, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, $1C, 4, 1, 0, 0, 1, 0, 0
+	spritePiece	0, $1C, 4, 1, 0, 1, 1, 0, 0
+.tall_End
+
+.shine:	spriteHeader
+	spritePiece	-$10, 8, 2, 3, $14, 0, 0, 0, 0	; reflected shine on block
+	spritePiece	0, 0, 2, 3, $14, 0, 0, 0, 0
+.shine_End
+
+.short:	spriteHeader
+	spritePiece	-$20, -$38, 4, 1, 0, 0, 0, 0, 0	; short block
+	spritePiece	0, -$38, 4, 1, 0, 1, 0, 0, 0
+	spritePiece	-$20, -$30, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, -$30, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, -$10, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, -$10, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, $10, 4, 4, 4, 0, 0, 0, 0
+	spritePiece	0, $10, 4, 4, 4, 1, 0, 0, 0
+	spritePiece	-$20, $30, 4, 1, 0, 0, 1, 0, 0
+	spritePiece	0, $30, 4, 1, 0, 1, 1, 0, 0
+.short_End
+
+	even

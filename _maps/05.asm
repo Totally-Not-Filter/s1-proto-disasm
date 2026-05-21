@@ -1,50 +1,86 @@
-Map05:
-		dc.w byte_4D8E-Map05
-		dc.w byte_4D94-Map05
-		dc.w byte_4D9A-Map05
-		dc.w byte_4DA0-Map05
-		dc.w byte_4DA6-Map05
-		dc.w byte_4DAC-Map05
-		dc.w byte_4DB2-Map05
-		dc.w byte_4DB8-Map05
-		dc.w byte_4DBE-Map05
-		dc.w byte_4DC4-Map05
-		dc.w byte_4DCA-Map05
-		dc.w byte_4DD0-Map05
-		dc.w byte_4DD6-Map05
-		dc.w byte_4DDC-Map05
-		dc.w byte_4DE2-Map05
-		dc.w byte_4DE8-Map05
-byte_4D8E:	dc.b 1
-		dc.b 0, 0, 0, 0, 0
-byte_4D94:	dc.b 1
-		dc.b 0, 0, 0, 1, 0
-byte_4D9A:	dc.b 1
-		dc.b 0, 0, 0, 2, 0
-byte_4DA0:	dc.b 1
-		dc.b 0, 0, 0, 3, 0
-byte_4DA6:	dc.b 1
-		dc.b 0, 0, 0, 4, 0
-byte_4DAC:	dc.b 1
-		dc.b 0, 0, 0, 5, 0
-byte_4DB2:	dc.b 1
-		dc.b 0, 0, 0, 6, 0
-byte_4DB8:	dc.b 1
-		dc.b 0, 0, 0, 7, 0
-byte_4DBE:	dc.b 1
-		dc.b 0, 0, 0, 8, 0
-byte_4DC4:	dc.b 1
-		dc.b 0, 0, 0, 9, 0
-byte_4DCA:	dc.b 1
-		dc.b 0, 0, 0, $A, 0
-byte_4DD0:	dc.b 1
-		dc.b 0, 0, 0, $B, 0
-byte_4DD6:	dc.b 1
-		dc.b 0, 0, 0, $C, 0
-byte_4DDC:	dc.b 1
-		dc.b 0, 0, 0, $D, 0
-byte_4DE2:	dc.b 1
-		dc.b 0, 0, 0, $E, 0
-byte_4DE8:	dc.b 1
-		dc.b 0, 0, 0, $F, 0
-		even
+; ---------------------------------------------------------------------------
+; Sprite mappings - Object 05
+; ---------------------------------------------------------------------------
+Map_05_internal:	mappingsTable
+		mappingsTableEntry.w M05_Hex0
+		mappingsTableEntry.w M05_Hex1
+		mappingsTableEntry.w M05_Hex2
+		mappingsTableEntry.w M05_Hex3
+		mappingsTableEntry.w M05_Hex4
+		mappingsTableEntry.w M05_Hex5
+		mappingsTableEntry.w M05_Hex6
+		mappingsTableEntry.w M05_Hex7
+		mappingsTableEntry.w M05_Hex8
+		mappingsTableEntry.w M05_Hex9
+		mappingsTableEntry.w M05_HexA
+		mappingsTableEntry.w M05_HexB
+		mappingsTableEntry.w M05_HexC
+		mappingsTableEntry.w M05_HexD
+		mappingsTableEntry.w M05_HexE
+		mappingsTableEntry.w M05_HexF
+
+M05_Hex0:	spriteHeader
+	spritePiece	0, 0, 1, 1, 0, 0, 0, 0, 0
+M05_Hex0_End:
+
+M05_Hex1:	spriteHeader
+	spritePiece	0, 0, 1, 1, 1, 0, 0, 0, 0
+M05_Hex1_End:
+
+M05_Hex2:	spriteHeader
+	spritePiece	0, 0, 1, 1, 2, 0, 0, 0, 0
+M05_Hex2_End:
+
+M05_Hex3:	spriteHeader
+	spritePiece	0, 0, 1, 1, 3, 0, 0, 0, 0
+M05_Hex3_End:
+
+M05_Hex4:	spriteHeader
+	spritePiece	0, 0, 1, 1, 4, 0, 0, 0, 0
+M05_Hex4_End:
+
+M05_Hex5:	spriteHeader
+	spritePiece	0, 0, 1, 1, 5, 0, 0, 0, 0
+M05_Hex5_End:
+
+M05_Hex6:	spriteHeader
+	spritePiece	0, 0, 1, 1, 6, 0, 0, 0, 0
+M05_Hex6_End:
+
+M05_Hex7:	spriteHeader
+	spritePiece	0, 0, 1, 1, 7, 0, 0, 0, 0
+M05_Hex7_End:
+
+M05_Hex8:	spriteHeader
+	spritePiece	0, 0, 1, 1, 8, 0, 0, 0, 0
+M05_Hex8_End:
+
+M05_Hex9:	spriteHeader
+	spritePiece	0, 0, 1, 1, 9, 0, 0, 0, 0
+M05_Hex9_End:
+
+M05_HexA:	spriteHeader
+	spritePiece	0, 0, 1, 1, $A, 0, 0, 0, 0
+M05_HexA_End:
+
+M05_HexB:	spriteHeader
+	spritePiece	0, 0, 1, 1, $B, 0, 0, 0, 0
+M05_HexB_End:
+
+M05_HexC:	spriteHeader
+	spritePiece	0, 0, 1, 1, $C, 0, 0, 0, 0
+M05_HexC_End:
+
+M05_HexD:	spriteHeader
+	spritePiece	0, 0, 1, 1, $D, 0, 0, 0, 0
+M05_HexD_End:
+
+M05_HexE:	spriteHeader
+	spritePiece	0, 0, 1, 1, $E, 0, 0, 0, 0
+M05_HexE_End:
+
+M05_HexF:	spriteHeader
+	spritePiece	0, 0, 1, 1, $F, 0, 0, 0, 0
+M05_HexF_End:
+
+	even

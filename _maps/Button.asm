@@ -1,16 +1,26 @@
-MapSwitch:
-		dc.w byte_9EDC-MapSwitch
-		dc.w byte_9EE7-MapSwitch
-		dc.w byte_9EF2-MapSwitch
-		dc.w byte_9EE7-MapSwitch
-byte_9EDC:	dc.b 2
-		dc.b $F5, 5, 0, 0, $F0
-		dc.b $F5, 5, 8, 0, 0
-byte_9EE7:	dc.b 2
-		dc.b $F5, 5, 0, 4, $F0
-		dc.b $F5, 5, 8, 4, 0
-byte_9EF2:	dc.b 2
-		dc.b $F5, 5, $FF, $FC, $F0
-		dc.b $F5, 5, 7, $FC, 0
-		dc.b $F8, 5, 0, 0, $F8
-		even
+; ---------------------------------------------------------------------------
+; Sprite mappings - switches (MZ, SYZ, LZ, SBZ)
+; ---------------------------------------------------------------------------
+Map_But_internal:	mappingsTable
+	mappingsTableEntry.w	.up
+	mappingsTableEntry.w	.down
+	mappingsTableEntry.w	.unused
+	mappingsTableEntry.w	.down
+
+.up:	spriteHeader
+	spritePiece	-$10, -$B, 2, 2, 0, 0, 0, 0, 0
+	spritePiece	0, -$B, 2, 2, 0, 1, 0, 0, 0
+.up_End
+
+.down:	spriteHeader
+	spritePiece	-$10, -$B, 2, 2, 4, 0, 0, 0, 0
+	spritePiece	0, -$B, 2, 2, 4, 1, 0, 0, 0
+.down_End
+
+.unused:	spriteHeader
+	spritePiece	-$10, -$B, 2, 2, $7FC, 1, 1, 3, 1
+	spritePiece	0, -$B, 2, 2, $7FC, 0, 0, 0, 0
+.unused_End
+	spritePiece	-8, -8, 2, 2, 0, 0, 0, 0, 0
+
+	even

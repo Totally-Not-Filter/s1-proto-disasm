@@ -1,32 +1,42 @@
-; ---------------------------------------------------------------------------
-; Sprite mappings - moving blocks (SZ/SLZ)
-; ---------------------------------------------------------------------------
-Map_FBlock_internal:
-		dc.w .sz1x1-Map_FBlock_internal
-		dc.w .sz2x2-Map_FBlock_internal
-		dc.w .sz1x2-Map_FBlock_internal
-		dc.w .szrect2x2-Map_FBlock_internal
-		dc.w .szrect1x3-Map_FBlock_internal
-		dc.w .slz-Map_FBlock_internal
-.sz1x1:	dc.b 1
-		dc.b $F0, $F, 0, $61, $F0		; SZ - 1x1 square block
-.sz2x2:	dc.b 4
-		dc.b $E0, $F, 0, $61, $E0		; SZ - 2x2 square blocks
-		dc.b $E0, $F, 0, $61, 0
-		dc.b 0,	$F, 0, $61, $E0
-		dc.b 0,	$F, 0, $61, 0
-.sz1x2:	dc.b 2
-		dc.b $E0, $F, 0, $61, $F0		; SZ - 1x2 square blocks
-		dc.b 0,	$F, 0, $61, $F0
-.szrect2x2:	dc.b 4
-		dc.b $E6, $F, 0, $81, $E0		; SZ - 2x2 rectangular blocks
-		dc.b $E6, $F, 0, $81, 0
-		dc.b 0,	$F, 0, $81, $E0
-		dc.b 0,	$F, 0, $81, 0
-.szrect1x3:	dc.b 3
-		dc.b $D9, $F, 0, $81, $F0		; SZ - 1x3 rectangular blocks
-		dc.b $F3, $F, 0, $81, $F0
-		dc.b $D, $F, 0,	$81, $F0
-.slz:	dc.b 1
-		dc.b $F0, $F, 0, $21, $F0		; SLZ - 1x1 square block
-		even
+Map_FBlock_internal:	mappingsTable
+	mappingsTableEntry.w	.sz1x1
+	mappingsTableEntry.w	.sz2x2
+	mappingsTableEntry.w	.sz1x2
+	mappingsTableEntry.w	.szrect2x2
+	mappingsTableEntry.w	.szrect1x3
+	mappingsTableEntry.w	.slz
+
+.sz1x1:	spriteHeader
+	spritePiece	-$10, -$10, 4, 4, $61, 0, 0, 0, 0
+.sz1x1_End
+
+.sz2x2:	spriteHeader
+	spritePiece	-$20, -$20, 4, 4, $61, 0, 0, 0, 0
+	spritePiece	0, -$20, 4, 4, $61, 0, 0, 0, 0
+	spritePiece	-$20, 0, 4, 4, $61, 0, 0, 0, 0
+	spritePiece	0, 0, 4, 4, $61, 0, 0, 0, 0
+.sz2x2_End
+
+.sz1x2:	spriteHeader
+	spritePiece	-$10, -$20, 4, 4, $61, 0, 0, 0, 0
+	spritePiece	-$10, 0, 4, 4, $61, 0, 0, 0, 0
+.sz1x2_End
+
+.szrect2x2:	spriteHeader
+	spritePiece	-$20, -$1A, 4, 4, $81, 0, 0, 0, 0
+	spritePiece	0, -$1A, 4, 4, $81, 0, 0, 0, 0
+	spritePiece	-$20, 0, 4, 4, $81, 0, 0, 0, 0
+	spritePiece	0, 0, 4, 4, $81, 0, 0, 0, 0
+.szrect2x2_End
+
+.szrect1x3:	spriteHeader
+	spritePiece	-$10, -$27, 4, 4, $81, 0, 0, 0, 0
+	spritePiece	-$10, -$D, 4, 4, $81, 0, 0, 0, 0
+	spritePiece	-$10, $D, 4, 4, $81, 0, 0, 0, 0
+.szrect1x3_End
+
+.slz:	spriteHeader
+	spritePiece	-$10, -$10, 4, 4, $21, 0, 0, 0, 0
+.slz_End
+
+	even

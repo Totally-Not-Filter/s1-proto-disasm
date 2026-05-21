@@ -1,9 +1,13 @@
-; ---------------------------------------------------------------------------
-; Sprite mappings - special stage "UP" and "GOAL" block
-; ---------------------------------------------------------------------------
-off_10C78:	dc.w byte_10C7C-off_10C78, byte_10C82-off_10C78
-byte_10C7C:	dc.b 1
-		dc.b $F4, $A, 0, 0, $F4
-byte_10C82:	dc.b 1
-		dc.b $F4, $A, $20, 0, $F4
-		even
+off_10C78:	mappingsTable
+	mappingsTableEntry.w	byte_10C7C
+	mappingsTableEntry.w	byte_10C82
+
+byte_10C7C:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, 0, 0, 0, 0, 0
+byte_10C7C_End
+
+byte_10C82:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, 0, 0, 0, 1, 0
+byte_10C82_End
+
+	even

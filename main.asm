@@ -38,6 +38,12 @@ PaddingOptimization = 0|AllOptimizations
 	include "Variables.asm"
 
 ; ===========================================================================
+; Expressing sprite mappings and DPLCs in a portable and human-readable form
+SonicMappingsVer = 1
+SonicDplcVer = 1
+	include	"_maps/_MapMacros.asm"
+
+; ===========================================================================
 ; start of ROM
 
 StartOfROM:
@@ -4473,8 +4479,8 @@ Map_Seesaw:	include "_maps/Seesaw.asm"
 		include "obj/38 Shield and Invincibility.asm"
 		include "obj/4A Special Stage Entry (Unused).asm"
 
-		include "_anim/Shield.asm"
-Map_Shield:	include "_maps/Shield.asm"
+		include "_anim/Shield and Invincibility.asm"
+Map_Shield:	include "_maps/Shield and Invincibility.asm"
 
 		include "_anim/Special Stage Entry (Unused).asm"
 Map_Vanish:	include "_maps/Special Stage Entry (Unused).asm"

@@ -1,6 +1,12 @@
-MapPRock:
-		dc.w byte_ADCC-MapPRock
-byte_ADCC:	dc.b 2
-		dc.b $F0, $B, 0, 0, $E8
-		dc.b $F0, $B, 0, $C, 0
-		even
+; ---------------------------------------------------------------------------
+; Sprite mappings - purple rock (GHZ)
+; ---------------------------------------------------------------------------
+Map_PRock_internal:	mappingsTable
+	mappingsTableEntry.w	.rock
+
+.rock:	spriteHeader
+	spritePiece	-$18, -$10, 3, 4, 0, 0, 0, 0, 0
+	spritePiece	0, -$10, 3, 4, $C, 0, 0, 0, 0
+.rock_End
+
+	even

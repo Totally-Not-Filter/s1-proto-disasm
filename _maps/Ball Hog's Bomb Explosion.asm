@@ -1,14 +1,23 @@
-MapCannonballExplode:
-		dc.w byte_72AA-MapCannonballExplode
-		dc.w byte_72B0-MapCannonballExplode
-		dc.w byte_72B6-MapCannonballExplode
-		dc.w byte_72BC-MapCannonballExplode
-byte_72AA:	dc.b 1
-		dc.b $F4, $A, 0, 0, $F4
-byte_72B0:	dc.b 1
-		dc.b $F4, $A, 0, 9, $F4
-byte_72B6:	dc.b 1
-		dc.b $F4, $A, 0, $12, $F4
-byte_72BC:	dc.b 1
-		dc.b $F4, $A, 0, $1B, $F4
-		even
+MapCannonballExplode:	mappingsTable
+	mappingsTableEntry.w	byte_72AA
+	mappingsTableEntry.w	byte_72B0
+	mappingsTableEntry.w	byte_72B6
+	mappingsTableEntry.w	byte_72BC
+
+byte_72AA:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, 0, 0, 0, 0, 0
+byte_72AA_End
+
+byte_72B0:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, 9, 0, 0, 0, 0
+byte_72B0_End
+
+byte_72B6:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, $12, 0, 0, 0, 0
+byte_72B6_End
+
+byte_72BC:	spriteHeader
+	spritePiece	-$C, -$C, 3, 3, $1B, 0, 0, 0, 0
+byte_72BC_End
+
+	even

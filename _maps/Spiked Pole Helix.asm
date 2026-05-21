@@ -1,29 +1,42 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - helix of spikes on a pole (GHZ)
 ; ---------------------------------------------------------------------------
-Map_Hel_internal:
-		dc.w byte_7E08-Map_Hel_internal
-		dc.w byte_7E0E-Map_Hel_internal
-		dc.w byte_7E14-Map_Hel_internal
-		dc.w byte_7E1A-Map_Hel_internal
-		dc.w byte_7E20-Map_Hel_internal
-		dc.w byte_7E26-Map_Hel_internal
-		dc.w byte_7E2E-Map_Hel_internal
-		dc.w byte_7E2C-Map_Hel_internal
-byte_7E08:	dc.b 1
-		dc.b $F0, 1, 0,	0, $FC			; points straight up (harmful)
-byte_7E0E:	dc.b 1
-		dc.b $F5, 5, 0,	2, $F8			; 45 degree
-byte_7E14:	dc.b 1
-		dc.b $F8, 5, 0,	6, $F8			; 90 degree
-byte_7E1A:	dc.b 1
-		dc.b $FB, 5, 0,	$A, $F8			; 45 degree
-byte_7E20:	dc.b 1
-		dc.b 0,	1, 0, $E, $FC			; straight down
-byte_7E26:	dc.b 1
-		dc.b 4,	0, 0, $10, $FD			; 45 degree
-byte_7E2C:	dc.b 1
-		dc.b $F4
-byte_7E2E:	; reads the 0 below	; not visible
-		dc.b 0, 0,	$11, $FD		; 45 degree
-		even
+Map_Hel_internal:	mappingsTable
+	mappingsTableEntry.w	.up
+	mappingsTableEntry.w	.up45
+	mappingsTableEntry.w	.up90
+	mappingsTableEntry.w	.down45
+	mappingsTableEntry.w	.down
+	mappingsTableEntry.w	.down45bg
+	mappingsTableEntry.w	.up45bg+2 ; This is a nasty hack to render the sprite invisible by pointing at a random 00 byte.
+	mappingsTableEntry.w	.up45bg
+
+.up:	spriteHeader
+	spritePiece	-4, -$10, 1, 2, 0, 0, 0, 0, 0	; points straight up (harmful)
+.up_End
+
+.up45:	spriteHeader
+	spritePiece	-8, -$B, 2, 2, 2, 0, 0, 0, 0	; 45 degree
+.up45_End
+
+.up90:	spriteHeader
+	spritePiece	-8, -8, 2, 2, 6, 0, 0, 0, 0	; 90 degree
+.up90_End
+
+.down45:	spriteHeader
+	spritePiece	-8, -5, 2, 2, $A, 0, 0, 0, 0	; 45 degree
+.down45_End
+
+.down:	spriteHeader
+	spritePiece	-4, 0, 1, 2, $E, 0, 0, 0, 0	; straight down
+.down_End
+
+.down45bg:	spriteHeader
+	spritePiece	-3, 4, 1, 1, $10, 0, 0, 0, 0	; 45 degree
+.down45bg_End
+
+.up45bg:	spriteHeader
+	spritePiece	-3, -$C, 1, 1, $11, 0, 0, 0, 0 ; 45 degree
+.up45bg_End
+
+	even

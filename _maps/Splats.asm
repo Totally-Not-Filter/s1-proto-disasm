@@ -1,9 +1,15 @@
-Map4F:
-		dc.w byte_D310-Map4F, byte_D31B-Map4F
-byte_D310:	dc.b 2
-		dc.b $EC, $B, 0, 0, $F4
-		dc.b $C, 8, 0, $C, $F4
-byte_D31B:	dc.b 2
-		dc.b $EC, $B, 0, $F, $F4
-		dc.b $C, 4, 0, $1B, $FB
-		even
+Map4F:	mappingsTable
+	mappingsTableEntry.w	byte_D310
+	mappingsTableEntry.w	byte_D31B
+
+byte_D310:	spriteHeader
+	spritePiece	-$C, -$14, 3, 4, 0, 0, 0, 0, 0
+	spritePiece	-$C, $C, 3, 1, $C, 0, 0, 0, 0
+byte_D310_End
+
+byte_D31B:	spriteHeader
+	spritePiece	-$C, -$14, 3, 4, $F, 0, 0, 0, 0
+	spritePiece	-5, $C, 2, 1, $1B, 0, 0, 0, 0
+byte_D31B_End
+
+	even

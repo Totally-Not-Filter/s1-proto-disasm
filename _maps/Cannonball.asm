@@ -1,5 +1,8 @@
-MapCannonball:
-		dc.w byte_729C-MapCannonball
-byte_729C:	dc.b 1
-		dc.b $F8, 5, 0, 0, $F8
-		even
+MapCannonball:	mappingsTable
+	mappingsTableEntry.w	byte_729C
+
+byte_729C:	spriteHeader
+	spritePiece	-8, -8, 2, 2, 0, 0, 0, 0, 0
+byte_729C_End
+
+	even
