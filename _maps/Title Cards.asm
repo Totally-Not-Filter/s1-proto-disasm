@@ -4,9 +4,9 @@
 ;
 ; If you wish to edit them through such an editor, create separate files
 ; for the zone title cards, "SONIC HAS PASSED", and special stage results.
-; The labels Map_Card, Map_Over, Map_Got, and Map_SSR must be migrated to
+; The labels Map_Card, Map_Over, and Map_Got must be migrated to
 ; new includes in the main source so that it won't cause any assembly errors.
-; Then make duplicates of M_Card_Oval for Map_Got and Map_SSR, and also of
+; Then make duplicates of M_Card_Oval for Map_Got, and also of
 ; M_Card_Act1/2/3 for Map_Got, so that they are no longer cross-referenced.
 ; Also, beware of the Game Over mappings sandwiched in between here!
 ; ---------------------------------------------------------------------------
@@ -19,15 +19,14 @@ Map_Card:	mappingsTable
 	mappingsTableEntry.w	M_Card_LZ	; Labyrinth Zone
 	mappingsTableEntry.w	M_Card_MZ	; Marble Zone
 	mappingsTableEntry.w	M_Card_SLZ	; Star Light Zone
-	mappingsTableEntry.w	M_Card_SYZ	; Spring Yard Zone
-	mappingsTableEntry.w	M_Card_SBZ	; Scrap Brain Zone
-	zonewarning Map_Card,2
+	mappingsTableEntry.w	M_Card_SZ	; Sparkling Zone
+	mappingsTableEntry.w	M_Card_CWZ	; Clock Work Zone
+
 	mappingsTableEntry.w	M_Card_Zone	; "ZONE" text
 	mappingsTableEntry.w	M_Card_Act1	; Act number 1
 	mappingsTableEntry.w	M_Card_Act2	; Act number 2
 	mappingsTableEntry.w	M_Card_Act3	; Act number 3
 	mappingsTableEntry.w	M_Card_Oval	; Blue oval
-	mappingsTableEntry.w	M_Card_FZ	; Final Zone
 
 M_Card_GHZ:	spriteHeader	; GREEN HILL
 	spritePiece	-$4C, -8, 2, 2, $18, 0, 0, 0, 0	; G
@@ -80,34 +79,31 @@ M_Card_SLZ:	spriteHeader	; STAR LIGHT
 M_Card_SLZ_End
 	even
 
-M_Card_SYZ:	spriteHeader	; SPRING YARD
-	spritePiece	-$54, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-	spritePiece	-$44, -8, 2, 2, $36, 0, 0, 0, 0	; P
-	spritePiece	-$34, -8, 2, 2, $3A, 0, 0, 0, 0	; R
-	spritePiece	-$24, -8, 1, 2, $20, 0, 0, 0, 0	; I
-	spritePiece	-$1C, -8, 2, 2, $2E, 0, 0, 0, 0	; N
-	spritePiece	-$C, -8, 2, 2, $18, 0, 0, 0, 0	; G
-
-	spritePiece	$14, -8, 2, 2, $4A, 0, 0, 0, 0	; Y
-	spritePiece	$24, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$34, -8, 2, 2, $3A, 0, 0, 0, 0	; R
-	spritePiece	$44, -8, 2, 2, $C, 0, 0, 0, 0	; D
-M_Card_SYZ_End
+M_Card_SZ:	spriteHeader	; SPARKLING
+	spritePiece	-$44, -8, 2, 2, $3E, 0, 0, 0, 0	; S
+	spritePiece	-$34, -8, 2, 2, $36, 0, 0, 0, 0	; P
+	spritePiece	-$24, -8, 2, 2, 0, 0, 0, 0, 0	; A
+	spritePiece	-$14, -8, 2, 2, $3A, 0, 0, 0, 0	; R
+	spritePiece	-4, -8, 2, 2, $22, 0, 0, 0, 0	; K
+	spritePiece	$C, -8, 2, 2, $26, 0, 0, 0, 0	; L
+	spritePiece	$1C, -8, 1, 2, $20, 0, 0, 0, 0	; I
+	spritePiece	$24, -8, 2, 2, $2E, 0, 0, 0, 0	; N
+	spritePiece	$34, -8, 2, 2, $18, 0, 0, 0, 0	; G
+M_Card_SZ_End
 	even
 
-M_Card_SBZ:	spriteHeader	; SCRAP BRAIN
-	spritePiece	-$54, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-	spritePiece	-$44, -8, 2, 2, 8, 0, 0, 0, 0	; C
-	spritePiece	-$34, -8, 2, 2, $3A, 0, 0, 0, 0	; R
-	spritePiece	-$24, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	-$14, -8, 2, 2, $36, 0, 0, 0, 0	; P
+M_Card_CWZ:	spriteHeader	; CLOCK  ORK
+	spritePiece	-$50, -8, 2, 2, 8, 0, 0, 0, 0	; C
+	spritePiece	-$40, -8, 2, 2, $26, 0, 0, 0, 0	; L
+	spritePiece	-$30, -8, 2, 2, $32, 0, 0, 0, 0	; O
+	spritePiece	-$20, -8, 2, 2, 8, 0, 0, 0, 0	; C
+	spritePiece	-$10, -8, 2, 2, $22, 0, 0, 0, 0	; K
 
-	spritePiece	$C, -8, 2, 2, 4, 0, 0, 0, 0	; B
-	spritePiece	$1C, -8, 2, 2, $3A, 0, 0, 0, 0	; R
-	spritePiece	$2C, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$3C, -8, 1, 2, $20, 0, 0, 0, 0	; I
-	spritePiece	$44, -8, 2, 2, $2E, 0, 0, 0, 0	; N
-M_Card_SBZ_End
+	; There is a missing entry here for a W, but no W title card graphic exists...
+	spritePiece	$20, -8, 2, 2, $32, 0, 0, 0, 0	; O
+	spritePiece	$30, -8, 2, 2, $3A, 0, 0, 0, 0	; R
+	spritePiece	$40, -8, 2, 2, $22, 0, 0, 0, 0	; K
+M_Card_CWZ_End
 	even
 
 M_Card_Zone:	spriteHeader	; ZONE
@@ -150,17 +146,8 @@ M_Card_Oval:	spriteHeader	; Blue oval
 M_Card_Oval_End
 	even
 
-M_Card_FZ:	spriteHeader	; FINAL
-	spritePiece	-$24, -8, 2, 2, $14, 0, 0, 0, 0	; F
-	spritePiece	-$14, -8, 1, 2, $20, 0, 0, 0, 0	; I
-	spritePiece	-$C, -8, 2, 2, $2E, 0, 0, 0, 0	; N
-	spritePiece	4, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$14, -8, 2, 2, $26, 0, 0, 0, 0	; L
-M_Card_FZ_End
-	even
-
 ; ---------------------------------------------------------------------------
-; Sprite mappings - "GAME OVER" and "TIME OVER"
+; Sprite mappings - "GAME OVER"
 ; These are sandwiched between the other title card mappings, despite
 ; actually using a unique format...
 ; ---------------------------------------------------------------------------
@@ -231,112 +218,4 @@ M_Got_RBonus:	spriteHeader	; Ring Bonus tally
 	spritePiece	$28, -8, 4, 2, -8, 0, 0, 0, 0	; Tally (first four digits)
 	spritePiece	$48, -8, 1, 2, $170, 0, 0, 0, 0	; Tally (second four digits)
 M_Got_RBonus_End
-	even
-
-; ---------------------------------------------------------------------------
-; Sprite mappings - special stage results screen
-; ---------------------------------------------------------------------------
-Map_SSR:	mappingsTable
-	mappingsTableEntry.w	M_SSR_Chaos	; "CHAOS EMERLADS" text
-	mappingsTableEntry.w	M_SSR_Score	; Score tally
-	mappingsTableEntry.w	M_SSR_Ring	; Ring Bonus tally
-	mappingsTableEntry.w	M_Card_Oval	; Blue oval (cross-referended from the regular title card mappings)
-	mappingsTableEntry.w	M_SSR_ContSon1	; Continue tally with mini Sonic (foot down)
-	mappingsTableEntry.w	M_SSR_ContSon2	; Continue tally with mini Sonic (foot up)
-	mappingsTableEntry.w	M_SSR_Continue	; Continue tally without mini Sonic
-	mappingsTableEntry.w	M_SSR_SpeStage	; "SPECIAL STAGE" text
-	mappingsTableEntry.w	M_SSR_GotAll	; "SONIC GOT THEM ALL" text
-
-M_SSR_Chaos:	spriteHeader	; CHAOS EMERALDS
-	spritePiece	-$70, -8, 2, 2, 8, 0, 0, 0, 0	; C
-	spritePiece	-$60, -8, 2, 2, $1C, 0, 0, 0, 0	; H
-	spritePiece	-$50, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	-$40, -8, 2, 2, $32, 0, 0, 0, 0	; O
-	spritePiece	-$30, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-
-	spritePiece	-$10, -8, 2, 2, $10, 0, 0, 0, 0	; E
-	spritePiece	0, -8, 2, 2, $2A, 0, 0, 0, 0	; M
-	spritePiece	$10, -8, 2, 2, $10, 0, 0, 0, 0	; E
-	spritePiece	$20, -8, 2, 2, $3A, 0, 0, 0, 0	; R
-	spritePiece	$30, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$40, -8, 2, 2, $26, 0, 0, 0, 0	; L
-	spritePiece	$50, -8, 2, 2, $C, 0, 0, 0, 0	; D
-	spritePiece	$60, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-M_SSR_Chaos_End
-
-M_SSR_Score:	spriteHeader	; Score tally
-	spritePiece	-$50, -8, 4, 2, $14A, 0, 0, 0, 0; "SCOR"
-	spritePiece	-$30, -8, 1, 2, $162, 0, 0, 0, 0; "E"
-	spritePiece	$18, -8, 3, 2, $164, 0, 0, 0, 0	; Tally (first four digits)
-	spritePiece	$30, -8, 4, 2, $16A, 0, 0, 0, 0	; Tally (second four digits)
-	spritePiece	-$33, -9, 2, 1, $6E, 0, 0, 0, 0	; Small oval (upper half)
-	spritePiece	-$33, -1, 2, 1, $6E, 1, 1, 0, 0	; Small oval (lower half)
-M_SSR_Score_End
-
-M_SSR_Ring:	spriteHeader	; Ring Bonus tally
-	spritePiece	-$50, -8, 4, 2, $152, 0, 0, 0, 0; "RING"
-	spritePiece	-$27, -8, 4, 2, $66, 0, 0, 0, 0	; "BONU"
-	spritePiece	-7, -8, 1, 2, $14A, 0, 0, 0, 0	; "S"
-	spritePiece	-$A, -9, 2, 1, $6E, 0, 0, 0, 0	; Small oval (upper half)
-	spritePiece	-$A, -1, 2, 1, $6E, 1, 1, 0, 0	; Small oval (lower half)
-	spritePiece	$28, -8, 4, 2, -8, 0, 0, 0, 0	; Tally (first four digits)
-	spritePiece	$48, -8, 1, 2, $170, 0, 0, 0, 0	; Tally (second four digits)
-M_SSR_Ring_End
-
-M_SSR_ContSon1:	spriteHeader	; Continue tally with mini Sonic (foot down)
-	spritePiece	-$50, -8, 4, 2, -$2F, 0, 0, 0, 0; "CONT"
-	spritePiece	-$30, -8, 4, 2, -$27, 0, 0, 0, 0; "INUE" and small oval (left half)
-	spritePiece	-$10, -8, 1, 2, -$1F, 0, 0, 0, 0; Small oval (right half)
-	spritePiece	$40, -8, 2, 3, -$1D, 0, 0, 1, 0	; Mini Sonic (foot down)
-M_SSR_ContSon1_End
-
-M_SSR_ContSon2:	spriteHeader	; Continue tally with mini Sonic (foot up)
-	spritePiece	-$50, -8, 4, 2, -$2F, 0, 0, 0, 0; "CONT"
-	spritePiece	-$30, -8, 4, 2, -$27, 0, 0, 0, 0; "INUE" and small oval (left half)
-	spritePiece	-$10, -8, 1, 2, -$1F, 0, 0, 0, 0; Small oval (right half)
-	spritePiece	$40, -8, 2, 3, -$17, 0, 0, 1, 0	; Mini Sonic (foot up)
-M_SSR_ContSon2_End
-
-M_SSR_Continue:	spriteHeader	; Continue tally without mini Sonic
-	spritePiece	-$50, -8, 4, 2, -$2F, 0, 0, 0, 0; "CONT"
-	spritePiece	-$30, -8, 4, 2, -$27, 0, 0, 0, 0; "INUE" and small oval (left half)
-	spritePiece	-$10, -8, 1, 2, -$1F, 0, 0, 0, 0; Small oval (right half)
-M_SSR_Continue_End
-
-M_SSR_SpeStage:	spriteHeader	; SPECIAL STAGE
-	spritePiece	-$64, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-	spritePiece	-$54, -8, 2, 2, $36, 0, 0, 0, 0	; P
-	spritePiece	-$44, -8, 2, 2, $10, 0, 0, 0, 0	; E
-	spritePiece	-$34, -8, 2, 2, 8, 0, 0, 0, 0	; C
-	spritePiece	-$24, -8, 1, 2, $20, 0, 0, 0, 0	; I
-	spritePiece	-$1C, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	-$C, -8, 2, 2, $26, 0, 0, 0, 0	; L
-
-	spritePiece	$14, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-	spritePiece	$24, -8, 2, 2, $42, 0, 0, 0, 0	; T
-	spritePiece	$34, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$44, -8, 2, 2, $18, 0, 0, 0, 0	; G
-	spritePiece	$54, -8, 2, 2, $10, 0, 0, 0, 0	; E
-M_SSR_SpeStage_End
-
-M_SSR_GotAll:	spriteHeader	; SONIC GOT THEM ALL
-	spritePiece	-$78, -8, 2, 2, $3E, 0, 0, 0, 0	; S
-	spritePiece	-$68, -8, 2, 2, $32, 0, 0, 0, 0	; O
-	spritePiece	-$58, -8, 2, 2, $2E, 0, 0, 0, 0	; N
-	spritePiece	-$48, -8, 1, 2, $20, 0, 0, 0, 0	; I
-	spritePiece	-$40, -8, 2, 2, 8, 0, 0, 0, 0	; C
-
-	spritePiece	-$28, -8, 2, 2, $18, 0, 0, 0, 0	; G
-	spritePiece	-$18, -8, 2, 2, $32, 0, 0, 0, 0	; O
-	spritePiece	-8, -8, 2, 2, $42, 0, 0, 0, 0	; T
-
-	spritePiece	$10, -8, 2, 2, $42, 0, 0, 0, 0	; T
-	spritePiece	$20, -8, 2, 2, $1C, 0, 0, 0, 0	; H
-	spritePiece	$30, -8, 2, 2, $10, 0, 0, 0, 0	; E
-	spritePiece	$40, -8, 2, 2, $2A, 0, 0, 0, 0	; M
-
-	spritePiece	$58, -8, 2, 2, 0, 0, 0, 0, 0	; A
-	spritePiece	$68, -8, 2, 2, $26, 0, 0, 0, 0	; L
-	spritePiece	$78, -8, 2, 2, $26, 0, 0, 0, 0	; L
-M_SSR_GotAll_End
 	even
