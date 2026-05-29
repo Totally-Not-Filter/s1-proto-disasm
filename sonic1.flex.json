@@ -7,7 +7,7 @@
             "name": "Common",
             "children": [
                 {
-                    "format": "Sonic 1.js",
+                    "format": "Sonic 2.js",
                     "name": "Sonic",
                     "palettes": [
                         {
