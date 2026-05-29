@@ -1,4 +1,4 @@
-MapCannonballExplode:	mappingsTable
+Map_MisDissolve_internal:	mappingsTable
 	mappingsTableEntry.w	byte_72AA
 	mappingsTableEntry.w	byte_72B0
 	mappingsTableEntry.w	byte_72B6

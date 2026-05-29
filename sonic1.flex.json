@@ -1,8 +1,391 @@
 {
     "Flex": 2,
     "name": "",
-    "node": "a114933f-e59f-4b3d-bea7-c8c46beaa41d",
+    "node": "a05b00b7-9236-499e-bb88-db28a5a93af3",
     "objects": [
+        {
+            "name": "Enemies",
+            "children": [
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Ball Hog",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Unused - Enemy Ball Hog.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Ball Hog.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "ef9c7335-3e6c-4258-9b57-104c4e1bb4b2"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Basaran",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Basaran.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Basaran.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "73353e6c-3258-4b57-904c-4e1bb4b25405"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Burrobot",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Burrobot.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Burrobot.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "353e6c32-58db-4710-8c4e-1bb4b25405a0"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Buzz Bomber",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Buzz Bomber.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Buzz Bomber.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "5b00b792-36d9-4ebb-88db-28a5a93af377"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Buzz Bomber Missile",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Buzz Bomber.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Buzz Bomber Missile.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "00b79236-d99e-4b88-9b28-a5a93af377b0"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Cannonball",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Unused - Ball Hog's Ball.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Cannonball.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "9c73353e-6c32-48db-9710-4c4e1bb4b254"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Chopper",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Chopper.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Chopper.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "3e6c3258-db57-404c-8e1b-b4b25405a0b8"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Crabmeat",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Crabmeat.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Crabmeat.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "6c3258db-5710-4c4e-9bb4-b25405a0b8b8"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Jaws",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Jaws.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Jaws.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "3258db57-104c-4e1b-b4b2-5405a0b8b89b"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Missile Dissolve",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Unused - Ball Hog's Ball Explosion.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Missile Dissolve.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "62ef9c73-353e-4c32-98db-57104c4e1bb4"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Motobug",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Motobug.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Moto Bug.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "58db5710-4c4e-4bb4-b254-05a0b8b89bec"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Newtron",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Newtron.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Newtron.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "db57104c-4e1b-44b2-9405-a0b8b89bec68"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Roller",
+                    "palettes": [
+                        {
+                            "path": "palette\\Sonic.bin",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Roller.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Roller.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "57104c4e-1bb4-4254-85a0-b8b89bec68de"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Splats",
+                    "palettes": [
+                        {
+                            "path": "palette\\Marble Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Splats.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Splats.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "104c4e1b-b4b2-4405-a0b8-b89bec68de12"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Yadrin",
+                    "palettes": [
+                        {
+                            "path": "palette\\Marble Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\Enemy Yadrin.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Yadrin.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "16e065a0-5b00-4792-b6d9-9ebb88db28a5"
+                }
+            ],
+            "isDirectory": true,
+            "expanded": false,
+            "uuid": "be2e62ef-9c73-453e-ac32-58db57104c4e"
+        },
         {
             "name": "Common",
             "children": [
@@ -33,8 +416,141 @@
                 }
             ],
             "isDirectory": true,
-            "expanded": true,
+            "expanded": false,
             "uuid": "cbf6da53-36c4-4717-ae7b-3598cf3e0a57"
+        },
+        {
+            "name": "Green Hill Zone",
+            "children": [
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Door",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\8x8 - GHZ1.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Switch Door.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "e065a05b-00b7-4236-999e-bb88db28a5a9"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Hidden Button",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\8x8 - GHZ2.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Unused Switch.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "65a05b00-b792-46d9-9ebb-88db28a5a93a"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Collapsing Ledge",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\8x8 - GHZ1.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Collapsing Ledge.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "4c4e1bb4-b254-45a0-b8b8-9bec68de127c"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Giant Ball",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\GHZ Giant Ball.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\GHZ Ball.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "4e1bb4b2-5405-40b8-b89b-ec68de127c2a"
+                },
+                {
+                    "format": "Sonic 1.js",
+                    "name": "Bridge",
+                    "palettes": [
+                        {
+                            "path": "palette\\Green Hill Zone.bin",
+                            "length": 3
+                        }
+                    ],
+                    "art": {
+                        "path": "artnem\\GHZ Bridge.nem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "_maps\\Bridge.asm",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "a05b00b7-9236-499e-bb88-db28a5a93af3"
+                }
+            ],
+            "isDirectory": true,
+            "expanded": false,
+            "uuid": "2e62ef9c-7335-4e6c-b258-db57104c4e1b"
         }
     ]
 }
