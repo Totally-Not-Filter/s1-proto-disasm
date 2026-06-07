@@ -158,7 +158,7 @@ SkipSetup:
 		lea	SetupValues(pc),a5
 		movem.l	(a5)+,d5-a4
 		move.w	console_version-1-z80_bus_request(a1),d0	; get hardware version (from $A10001)
-		andi.w	#$F00,d0
+		andi.w	#$F<<8,d0
 		beq.s	SkipSecurity
 		move.l	#"SEGA",security_addr-z80_bus_request(a1)
 
@@ -1027,7 +1027,7 @@ Tilemap_Cell:
 		rts
 ; End of function TilemapToVRAM
 
-		include "_include/Nemesis Decompression.asm"
+		include "_include/Decompression/Nemesis Decompression.asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to load pattern load cues (aka to queue pattern load requests)
@@ -1266,8 +1266,8 @@ Qplc_Loop:
 		dbf	d1,Qplc_Loop
 		rts
 
-		include "_include/Enigma Decompression.asm"
-		include "_include/Kosinski Decompression.asm"
+		include "_include/Decompression/Enigma Decompression.asm"
+		include "_include/Decompression/Kosinski Decompression.asm"
 		include "_include/PaletteCycle.asm"
 
 Pal_TitleCyc:	binclude "palette/Cycle - Title.bin"

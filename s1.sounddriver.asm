@@ -762,14 +762,9 @@ PlaySoundID:
 		bls.w	Sound_PlaySFX	; if so, branch
 		cmpi.b	#spec__First,d7	; is this between sfx and special sfx?
 		blo.w	.nosound	; if so, branch
-	if FixBugs
-		cmpi.b	#spec__Last,d7	; is this special sfx?
-	else
-		; Bug: Should not include +5
-		cmpi.b	#spec__Last+5,d7	; is this special sfx?
-	endif
+		cmpi.b	#dac__First,d7	; is this between special sfx and dac?
 		blo.w	Sound_PlaySpecial	; if so, branch
-		cmpi.b	#flg__First,d7	; is this between special sfx and sound commands?
+		cmpi.b	#flg__First,d7	; is this between dac and sound commands?
 		blo.s	Sound_PlayDAC	; if so, branch
 	if FixBugs
 		cmpi.b	#flg__Last,d7	; is this sound commands?
@@ -798,7 +793,7 @@ ptr_flgend:
 ; ===========================================================================
 
 Sound_PlayDAC:
-		addi.b	#$B1,d7
+		addi.b	#$88-dac__First,d7
 		move.b	d7,(z80_dac_sample).l
 		nop
 		nop

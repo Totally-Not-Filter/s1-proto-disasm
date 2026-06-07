@@ -373,6 +373,9 @@ sfx_Loud_Waterfall:	equ ((ptr_sndD1-SpecSoundIndex)/4)+spec__First
 sfx_Pounding:	equ ((ptr_sndD2-SpecSoundIndex)/4)+spec__First
 spec__Last:	equ ((ptr_specend-SpecSoundIndex-4)/4)+spec__First
 
+; DAC samples
+dac__First:	equ	$D7
+
 flg__First:	equ $E0
 bgm_Fade:	equ ((ptr_flgE0-Sound_ExIndex)/4)+flg__First
 bgm_Stop:	equ ((ptr_flgE1-Sound_ExIndex)/4)+flg__First
