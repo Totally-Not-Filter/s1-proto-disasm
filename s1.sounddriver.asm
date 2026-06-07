@@ -434,32 +434,18 @@ NoteTimeoutUpdate:
 ; ===========================================================================
 
 DoModulation:
-	if FixBugs=0
 		addq.w	#4,sp		; Do not return to caller (but see below)
-	endif
 		btst	#3,SMPS_Track.PlaybackControl(a5)	; Is modulation active?
-	if FixBugs
-		beq.s	.nomodnoreturn			; Return if not
-	else
 		beq.s	.nomod					; Return if not
-	endif
 		tst.b	SMPS_Track.ModulationWait(a5)		; Has modulation wait expired?
 		beq.s	.waitdone				; If yes, branch
 		subq.b	#1,SMPS_Track.ModulationWait(a5)	; Update wait timeout
-
-	if FixBugs
-.nomodnoreturn:
-		addq.w	#4,sp		; Do not return to caller
-	endif
 		rts
 ; ===========================================================================
 
 .waitdone:
 		subq.b	#1,SMPS_Track.ModulationSpeed(a5)	; Update speed
 		beq.s	.updatemodulation			; If it expired, want to update modulation
-	if FixBugs
-		addq.w	#4,sp		; Do not return to caller
-	endif
 		rts
 ; ===========================================================================
 
@@ -470,9 +456,6 @@ DoModulation:
 		bne.s	.calcfreq
 		move.b	3(a0),SMPS_Track.ModulationSteps(a5)
 		neg.b	SMPS_Track.ModulationDelta(a5)
-	if FixBugs
-		addq.w	#4,sp		; Do not return to caller
-	endif
 		rts
 ; ===========================================================================
 
@@ -483,9 +466,7 @@ DoModulation:
 		add.w	SMPS_Track.ModulationVal(a5),d6		; Add cumulative modulation change
 		move.w	d6,SMPS_Track.ModulationVal(a5)		; Store it
 		add.w	SMPS_Track.Freq(a5),d6			; Add note frequency to it
-	if FixBugs=0
 		subq.w	#4,sp					; In this case, we want to return to caller after all
-	endif
 
 .nomod:
 		rts
