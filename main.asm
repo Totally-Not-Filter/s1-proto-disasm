@@ -1580,14 +1580,12 @@ GM_Title:
 		move.w	(a5)+,(a6)
 		dbf	d1,.loadtext
 
-		lea	(Unc_Title).l,a1
-
 	if FixBugs
 		; Fix title screen position
 		; https://info.sonicretro.org/SCHG_How-to:Fix_the_Title_Screen_position_in_Sonic_1
-		copyUncTilemap	vram_fg+$208,34,22
+		copyTilemap	Unc_Title,vram_fg+$208,34,22
 	else
-		copyUncTilemap	vram_fg+$206,34,22
+		copyTilemap	Unc_Title,vram_fg+$206,34,22
 	endif
 
 		move.w	#0,(v_debuguse).w
