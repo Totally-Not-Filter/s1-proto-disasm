@@ -35,7 +35,7 @@ BGHZ_LoadBoss:
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.l	#Map_Eggman,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Eggman,0,0),obGfx(a1)
+		move.w	#ArtTile_Eggman,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#$20,obActWid(a1)
 		move.b	#3,obPriority(a1)
@@ -73,7 +73,7 @@ BGHZ_ShipIndex:	dc.w BGHZ_ShipStart-BGHZ_ShipIndex
 BGHZ_ShipStart:
 		move.w	#$100,obVelY(a0) ; move ship down
 		bsr.w	BossMove
-		cmpi.w	#$338,obBossY(a0)
+		cmpi.w	#boss_ghz_y+$38,obBossY(a0)
 		bne.s	loc_B0D2
 		move.w	#0,obVelY(a0)	; stop ship
 		addq.b	#2,ob2ndRout(a0) ; goto next routine

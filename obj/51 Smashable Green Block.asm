@@ -17,7 +17,7 @@ Smab_Index:	dc.w Smab_Main-Smab_Index
 Smab_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Smab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_MZ_Block,2,0),obGfx(a0)
+		move.w	#ArtTile_MZ_Block|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)

@@ -25,7 +25,7 @@ LGrass_Data:	dc.w LGrass_Data1-LGrass_Data 	; collision angle data
 LGrass_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_LGrass,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,1),obGfx(a0)
+		move.w	#ArtTile_Level|Tile_Pal3|Tile_Prio,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#5,obPriority(a0)
 		move.w	obY(a0),lgrass_origY(a0)
@@ -82,7 +82,7 @@ loc_8F96:
 		bsr.w	SolidObject2F
 
 LGrass_Display:
-	if ~~FixBugs
+	if FixBugs=0
 		; This has been moved to prevent a display-after-free bug.
 		bsr.w	DisplaySprite
 	endif

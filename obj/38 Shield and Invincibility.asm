@@ -21,13 +21,13 @@ Shi_Main:	; Routine 0
 		move.b	#$10,obActWid(a0)
 		tst.b	obAnim(a0)	; is object a shield?
 		bne.s	.stars		; if not, branch
-		move.w	#make_art_tile(ArtTile_Shield,0,0),obGfx(a0)	; shield specific code
+		move.w	#ArtTile_Shield,obGfx(a0)	; shield specific code
 		rts
 ; ===========================================================================
 
 .stars:
 		addq.b	#2,obRoutine(a0) ; goto Shi_Stars next
-		move.w	#make_art_tile(ArtTile_Invincibility,0,0),obGfx(a0)
+		move.w	#ArtTile_Invincibility,obGfx(a0)
 		rts
 ; ===========================================================================
 

@@ -29,7 +29,7 @@ Crab_Main:	; Routine 0
 		move.b	#$10,obHeight(a0)
 		move.b	#8,obWidth(a0)
 		move.l	#Map_Crab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Crabmeat,0,0),obGfx(a0)
+		move.w	#ArtTile_Crabmeat,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#6,obColType(a0)
@@ -56,7 +56,7 @@ Crab_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:	dc.w .waittofire-.index
+.index:		dc.w .waittofire-.index
 		dc.w .walkonfloor-.index
 ; ===========================================================================
 
@@ -192,7 +192,7 @@ Crab_Delete:	; Routine 4
 Crab_BallMain:	; Routine 6
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Crab,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Crabmeat,0,0),obGfx(a0)
+		move.w	#ArtTile_Crabmeat,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$87,obColType(a0)
@@ -204,7 +204,7 @@ Crab_BallMove:	; Routine 8
 		lea	(Ani_Crab).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	ObjectFall
-	if ~~FixBugs
+	if FixBugs=0
 		; Another bug where an object is queued for display and then
 		; deleted, causing a null-pointer dereference.
 		bsr.w	DisplaySprite

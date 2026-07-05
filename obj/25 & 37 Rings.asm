@@ -81,7 +81,7 @@ loc_7C74:
 		move.w	obX(a0),objoff_32(a1)
 		move.w	d3,obY(a1)	; set y-axis position based on d3
 		move.l	#Map_Ring,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
+		move.w	#ArtTile_Ring|Tile_Pal2,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#$47,obColType(a1)
@@ -200,12 +200,12 @@ RLoss_Count:	; Routine 0
 		move.w	obX(a0),obX(a1)
 		move.w	obY(a0),obY(a1)
 		move.l	#Map_Ring,obMap(a1)
-		move.w	#make_art_tile(ArtTile_Ring,1,0),obGfx(a1)
+		move.w	#ArtTile_Ring|Tile_Pal2,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#2,obPriority(a1)
 		move.b	#$47,obColType(a1)
 		move.b	#8,obActWid(a1)
-	if ~~FixBugs
+	if FixBugs=0
 		; This resets the timer for all spilled rings,
 		; even if they were already close to getting deleted
 		; https://info.sonicretro.org/SCHG_How-to:Fix_Ring_Timers

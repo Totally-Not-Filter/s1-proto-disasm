@@ -36,7 +36,7 @@ Spring_Powers:	dc.w -$1000		; power of red spring
 Spring_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Spring,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Spring_Horizontal,0,0),obGfx(a0)
+		move.w	#ArtTile_Spring_Horizontal,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)
@@ -47,7 +47,7 @@ Spring_Main:	; Routine 0
 		move.b	#8,obRoutine(a0) ; use "Spring_LR" routine
 		move.b	#1,obAnim(a0)
 		move.b	#3,obFrame(a0)
-		move.w	#make_art_tile(ArtTile_Spring_Vertical,0,0),obGfx(a0)
+		move.w	#ArtTile_Spring_Vertical,obGfx(a0)
 		move.b	#8,obActWid(a0)
 
 Spring_NotLR:

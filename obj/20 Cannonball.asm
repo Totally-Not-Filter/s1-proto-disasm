@@ -18,7 +18,7 @@ cbal_time = objoff_30		; time until the cannonball explodes (2 bytes)
 Cbal_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Cannonball,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Cannonball,1,0),obGfx(a0)
+		move.w	#ArtTile_Cannonball|Tile_Pal2,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$87,obColType(a0)
@@ -46,7 +46,7 @@ Cbal_DecreaseTime:
 
 Cbal_Fall:
 		bsr.w	ObjectFall
-	if ~~FixBugs
+	if FixBugs=0
 		; Moved to prevent a display-and-delete bug.
 		bsr.w	DisplaySprite
 	endif

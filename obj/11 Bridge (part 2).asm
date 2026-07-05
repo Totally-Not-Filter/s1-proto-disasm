@@ -1,7 +1,7 @@
 
 Bri_Platform:	; Routine 4
 		bsr.s	Bri_WalkOff
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Bri_ChkDel

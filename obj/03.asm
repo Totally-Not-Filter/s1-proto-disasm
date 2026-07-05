@@ -20,7 +20,7 @@ Obj03_Main:	; Routine 0
 		move.w	#$100,obX(a0)
 		move.w	#$40,obY(a0)
 		move.l	#Map_02,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Debug_Numbers,3,0),obGfx(a0)
+		move.w	#ArtTile_Debug_Numbers|Tile_Pal4,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obColProp(a0)
 		move.b	#3,obFrame(a0)

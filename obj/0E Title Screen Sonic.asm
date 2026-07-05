@@ -25,7 +25,7 @@ TSon_Main:	; Routine 0
 	endif
 		move.w	#$DE,obScreenY(a0) ; position is fixed to screen
 		move.l	#Map_TSon,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Title_Sonic,1,0),obGfx(a0)
+		move.w	#ArtTile_Title_Sonic|Tile_Pal2,obGfx(a0)
 		move.b	#1,obPriority(a0)
 		move.b	#30-1,obDelayAni(a0) ; set time delay to 0.5 seconds
 		lea	(Ani_TSon).l,a1

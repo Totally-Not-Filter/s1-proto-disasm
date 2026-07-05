@@ -19,7 +19,7 @@ swing_origY = objoff_38		; original y-axis position
 Swing_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Swing_GHZ,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_MZ_Swing,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_MZ_Swing|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -30,7 +30,7 @@ Swing_Main:	; Routine 0
 		bne.s	.notSLZ
 
 		move.l	#Map_Swing_SLZ,obMap(a0) ; SLZ specific code
-		move.w	#make_art_tile(ArtTile_SLZ_Swing,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Swing|Tile_Pal3,obGfx(a0)
 		move.b	#$20,obActWid(a0)
 		move.b	#$10,obHeight(a0)
 		move.b	#$99,obColType(a0)
@@ -96,7 +96,7 @@ Swing_Main:	; Routine 0
 		btst	#4,d1		; is object type $1X?
 		beq.s	Swing_SetSolid	; if not, branch
 		move.l	#Map_GBall,obMap(a0) ; use GHZ ball mappings
-		move.w	#make_art_tile(ArtTile_GHZ_Giant_Ball,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball|Tile_Pal3,obGfx(a0)
 		move.b	#1,obFrame(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$81,obColType(a0) ; make object hurt when touched
@@ -108,7 +108,7 @@ Swing_SetSolid:	; Routine 2
 		move.b	obHeight(a0),d3
 		bsr.w	Swing_Solid
 		bsr.w	Swing_Move
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Swing_ChkDel
@@ -125,7 +125,7 @@ Swing_Action2:	; Routine 4
 		move.b	obHeight(a0),d3
 		addq.b	#1,d3
 		bsr.w	MvSonicOnPtfm
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Swing_ChkDel

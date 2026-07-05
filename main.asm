@@ -113,17 +113,16 @@ Vectors:
 		dc.l ErrorTrap			; Unused (reserved)
 		dc.l ErrorTrap			; Unused (reserved)
 		dc.l ErrorTrap			; Unused (reserved)
-		dc.b "SEGA MEGA DRIVE "		; Hardware system ID (Console name)
-		dc.b "(C)SEGA 1989.JAN"		; Copyright holder and release date (generally year)
-		dc.b "                " 	; Domestic name (blank)
+		dc.b "SEGA MEGA DRIVE "		; Hardware system ID (Console name.)
+		dc.b "(C)SEGA 1989.JAN"		; Copyright holder and release date (Year and month.)
+	rept 2
+		dc.b "                " 	; Domestic/International name (Blank, both are identical.)
 		dc.b "                "
 		dc.b "                "
-		dc.b "                " 	; International name (blank)
-		dc.b "                "
-		dc.b "                "
-		dc.b "GM 00000000-00"		; Serial/version number
+	endr
+		dc.b "GM 00000000-00"		; Serial/version number (Has not been set yet aside from being classed as game.)
 Checksum:	dc.w 0				; Checksum
-		dc.b "J               "		; I\O support
+		dc.b "J               "		; I/O support (Only supports 3 button controllers.)
 ROMStartLoc:	dc.l StartOfROM			; Start address of ROM
 ROMEndLoc:	dc.l EndOfROM-1			; End address of ROM
 RAMStartLoc:	dc.l v_ram_start		; Start address of RAM
@@ -131,8 +130,8 @@ RAMEndLoc:	dc.l (v_ram_end-1)&$FFFFFF	; End address of RAM
 		dc.l $20202020			; SRAM (none)
 		dc.l $20202020			; SRAM start ($200001)
 		dc.l $20202020			; SRAM end ($20xxxx)
-Notes:		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
-		dc.b "JU              "		; Region (Country code)
+Notes:		dc.b "                                                    " ; Notes (Unused, anything can be put in this space, but it has to be 52 bytes.)
+		dc.b "JU              "		; Region (Country code. Oddly, there's no European region set, although, it can still be played in those regions.)
 EndOfHeader:
 
 ; ===========================================================================
@@ -390,8 +389,7 @@ ChecksumError:
 		move.w	#cRed,(vdp_data_port).l ; fill palette with red
 		dbf	d7,.fillred	; repeat until CRAM is filled
 
-.endlessloop:
-		bra.s	.endlessloop
+		bra.s	*
 ; ===========================================================================
 
 BusError:
@@ -563,7 +561,7 @@ Art_Text_End:
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Vertical interrupt
+; Vertical interrupts
 ; ---------------------------------------------------------------------------
 
 VInt:
@@ -679,7 +677,7 @@ VInt_08:
 		writeVRAM	v_spritetablebuffer,vram_sprites
 		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
 		beq.s	.nochg		; if not, branch
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,ArtTile_Sonic*tile_size ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -719,7 +717,7 @@ VInt_0A:
 		bsr.w	SS_PalCycle
 		tst.b	(f_sonframechg).w
 		beq.s	.nochg
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,ArtTile_Sonic*tile_size ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -743,7 +741,7 @@ VInt_0C:
 		writeVRAM	v_hscrolltablebuffer,vram_hscroll
 		tst.b	(f_sonframechg).w
 		beq.s	.nochg
-		writeVRAM	v_sgfx_buffer,vram_sonic ; load new Sonic gfx
+		writeVRAM	v_sgfx_buffer,ArtTile_Sonic*tile_size ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 .nochg:
@@ -1228,9 +1226,9 @@ ShiftPLC:
 		lea	(v_plc_buffer).w,a0
 		moveq	#bytesToLcnt(v_plc_buffer_only_end-v_plc_buffer-6),d0
 
-loc_14D8:
+.loop:
 		move.l	6(a0),(a0)+
-		dbf	d0,loc_14D8
+		dbf	d0,.loop
 
 	if FixBugs
 		; The above code does not properly 'pop' the 16th PLC entry.
@@ -1527,7 +1525,7 @@ GM_Sega:
 		bsr.w	NemDec
 		lea	(v_ram_start).l,a1
 		lea	(Eni_SegaLogo).l,a0
-		move.w	#make_art_tile(ArtTile_Sega_Tiles,0,FALSE),d0
+		move.w	#ArtTile_Sega_Tiles,d0
 		bsr.w	EniDec
 
 		copyTilemap	v_ram_start,vram_fg+$61C,12,4
@@ -2537,7 +2535,7 @@ loc_3662:
 SS_BGLoad:
 		lea	(v_ram_start).l,a1
 		lea	(Eni_SSBg1).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Fish,2,FALSE),d0
+		move.w	#ArtTile_SS_Background_Fish|Tile_Pal3,d0
 		bsr.w	EniDec
 		move.l	#$50000001,d3
 		lea	(v_ram_start+$80).l,a2
@@ -2586,7 +2584,7 @@ loc_36EA:
 		dbf	d7,loc_368C
 		lea	(v_ram_start).l,a1
 		lea	(Eni_SSBg2).l,a0
-		move.w	#make_art_tile(ArtTile_SS_Background_Clouds,2,FALSE),d0
+		move.w	#ArtTile_SS_Background_Clouds|Tile_Pal3,d0
 		bsr.w	EniDec
 		copyTilemap	v_ram_start,vram_fg,64,32
 		copyTilemap	v_ram_start,vram_fg+$1000,64,64
@@ -4968,38 +4966,38 @@ loc_10A26:
 ; ===========================================================================
 
 SS_WaRiVramSet:
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,0,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,2,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,1,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
-		dc.w make_art_tile(ArtTile_SS_Wall,3,0)
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal1
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal3
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal2
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal4
+		dc.w ArtTile_SS_Wall|Tile_Pal4
 ; ===========================================================================
 
 SS_RemoveCollectedItem:

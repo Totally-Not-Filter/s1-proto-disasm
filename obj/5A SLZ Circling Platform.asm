@@ -21,7 +21,7 @@ Circ_Index:	dc.w Circ_Main-Circ_Index
 Circ_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Circ,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -53,7 +53,7 @@ Circ_Types:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:	dc.w .type00-.index
+.index:		dc.w .type00-.index
 		dc.w .type04-.index
 ; ===========================================================================
 

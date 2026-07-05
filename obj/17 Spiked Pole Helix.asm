@@ -22,7 +22,7 @@ hel_frame = objoff_3E		; start frame (different for each spike)
 Hel_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Hel,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Spike_Pole,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Spike_Pole|Tile_Pal3,obGfx(a0)
 		move.b	#7,obStatus(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
@@ -60,7 +60,7 @@ Hel_Build:
 		move.w	d2,obY(a1)
 		move.w	d3,obX(a1)
 		move.l	obMap(a0),obMap(a1)
-		move.w	#make_art_tile(ArtTile_GHZ_Spike_Pole,2,0),obGfx(a1)
+		move.w	#ArtTile_GHZ_Spike_Pole|Tile_Pal3,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#8,obActWid(a1)
@@ -82,7 +82,7 @@ Hel_NotCentre:
 
 Hel_Action:	; Routine 2, 4
 		bsr.w	Hel_RotateSpikes
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Hel_ChkDel

@@ -20,7 +20,7 @@ bball_speed = objoff_3E		; speed
 BBall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_BBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SZ_Big_Spikeball,0,0),obGfx(a0)
+		move.w	#ArtTile_SZ_Big_Spikeball,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -48,7 +48,7 @@ BBall_Move:	; Routine 2
 		out_of_range.w	DeleteObject,bball_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-.index:	dc.w .type00-.index
+.index:		dc.w .type00-.index
 		dc.w .type01-.index
 		dc.w .type02-.index
 		dc.w .type03-.index

@@ -18,7 +18,7 @@ fan_switch = objoff_32		; on/off switch
 Fan_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Fan,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Fan,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Fan|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$10,obActWid(a0)
 		move.b	#4,obPriority(a0)

@@ -28,10 +28,10 @@ FBlock_Var:	; width/2, height/2
 FBlock_Main:
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_FBlock,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level|Tile_Pal3,obGfx(a0)
 		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
 		bne.s	.notSLZ
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0) ; SLZ specific code
+		move.w	#ArtTile_SLZ_Platform|Tile_Pal3,obGfx(a0) ; SLZ specific code
 
 .notSLZ:
 		move.b	#4,obRender(a0)
@@ -109,7 +109,7 @@ FBlock_Action:	; Routine 2
 		rts
 	endif
 ; ===========================================================================
-.index:	dc.w .type00-.index, .type01-.index
+.index:		dc.w .type00-.index, .type01-.index
 		dc.w .type02-.index, .type03-.index
 		dc.w .type04-.index, .type05-.index
 		dc.w .type06-.index, .type07-.index

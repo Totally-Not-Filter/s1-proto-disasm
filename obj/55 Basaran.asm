@@ -15,7 +15,7 @@ Bas_Index:	dc.w Bas_Main-Bas_Index
 Bas_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Bas,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Basaran,0,1),obGfx(a0)
+		move.w	#ArtTile_Basaran|Tile_Prio,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$C,obHeight(a0)
 		move.b	#2,obPriority(a0)
@@ -31,7 +31,7 @@ Bas_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:	dc.w .dropcheck-.index
+.index:		dc.w .dropcheck-.index
 		dc.w .dropfly-.index
 		dc.w .flapsound-.index
 		dc.w .flyup-.index

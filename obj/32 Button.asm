@@ -15,11 +15,11 @@ But_Index:	dc.w But_Main-But_Index
 But_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_But,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Button+4,2,0),obGfx(a0) ; MZ specific code
+		move.w	#ArtTile_Button+4|Tile_Pal3,obGfx(a0) ; MZ specific code
 		cmpi.b	#id_MZ,(v_zone).w ; is level Marble Zone?
 		beq.s	But_IsMZ	; if yes, branch
 
-		move.w	#make_art_tile(ArtTile_Button+4,0,0),obGfx(a0)
+		move.w	#ArtTile_Button+4,obGfx(a0)
 
 But_IsMZ:
 		move.b	#4,obRender(a0)

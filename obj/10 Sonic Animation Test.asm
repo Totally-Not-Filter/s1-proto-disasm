@@ -21,7 +21,7 @@ Obj10_Init:	; Routine 0
 		move.b	#$12,obHeight(a0)	; The height defined here is 1 pixel shorter than what the Sonic object actually uses.
 		move.b	#9,obWidth(a0)
 		move.l	#Map_Sonic,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Sonic,0,0),obGfx(a0)
+		move.w	#ArtTile_Sonic,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 

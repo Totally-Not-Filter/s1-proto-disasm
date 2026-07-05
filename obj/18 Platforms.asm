@@ -17,7 +17,7 @@ Plat_Index:	dc.w Plat_Main-Plat_Index
 
 Plat_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level|Tile_Pal3,obGfx(a0)
 		move.l	#Map_Plat_GHZ,obMap(a0)
 		move.b	#$20,obActWid(a0)
 		cmpi.b	#id_SZ,(v_zone).w ; check if level is SZ
@@ -31,7 +31,7 @@ Plat_Main:	; Routine 0
 		bne.s	.notSLZ
 		move.l	#Map_Plat_SLZ,obMap(a0) ; SLZ specific code
 		move.b	#$20,obActWid(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform|Tile_Pal3,obGfx(a0)
 		move.b	#3,obSubtype(a0)
 
 .notSLZ:
@@ -64,7 +64,7 @@ loc_59B8:
 Plat_Action:	; Routine 8
 		bsr.w	Plat_Move
 		bsr.w	Plat_Nudge
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Plat_ChkDel
@@ -84,7 +84,7 @@ loc_59DE:
 		bsr.w	Plat_Nudge
 		move.w	(sp)+,d2
 		bsr.w	MvSonicOnPtfm2
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	Plat_ChkDel

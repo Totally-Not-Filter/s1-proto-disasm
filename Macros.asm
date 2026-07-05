@@ -228,12 +228,6 @@ out_of_range_2:	macro exit,pos
 		cmpi.w	#128+320+192,d0
 		bhi.ATTRIBUTE	exit
 		endm
-
-; ---------------------------------------------------------------------------
-; produce a packed art-tile
-; ---------------------------------------------------------------------------
-
-make_art_tile function addr,pal,pri,((pri&1)<<15)|((pal&3)<<13)|addr
 		
 ; ---------------------------------------------------------------------------
 ; turn a sample rate into a djnz loop counter

@@ -73,7 +73,7 @@ CStom_MakeStomper:
 		add.w	obY(a0),d0
 		move.w	d0,obY(a1)
 		move.l	#Map_CStom,obMap(a1)
-		move.w	#make_art_tile(ArtTile_MZ_Spike_Stomper,0,0),obGfx(a1)
+		move.w	#ArtTile_MZ_Spike_Stomper,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.w	obY(a1),objoff_30(a1)
 		move.b	obSubtype(a0),obSubtype(a1)
@@ -133,7 +133,7 @@ loc_97D0:	; Routine 2
 		movea.l	a2,a0
 
 CStom_Display:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	CStom_ChkDel
@@ -156,7 +156,7 @@ loc_9834:	; Routine 4
 		move.w	d0,obY(a0)
 
 CStom_Display2:	; Routine 6
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 

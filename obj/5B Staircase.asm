@@ -45,7 +45,7 @@ Stair_Main:	; Routine 0
 .makeblocks:
 		_move.b	#id_Staircase,obID(a1) ; load another block object
 		move.l	#Map_Stair,obMap(a1)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a1)
+		move.w	#ArtTile_SLZ_Platform|Tile_Pal3,obGfx(a1)
 		move.b	#4,obRender(a1)
 		move.b	#3,obPriority(a1)
 		move.b	#$10,obActWid(a1)
@@ -175,4 +175,5 @@ Stair_Type01:
 
 locret_E4D0:
 		rts
+
 		rts

@@ -52,10 +52,10 @@ Anml_FromEnemy:
 		move.w	(a1)+,objoff_32(a0)	; load horizontal speed
 		move.w	(a1)+,objoff_34(a0)	; load vertical speed
 		move.l	(a1)+,obMap(a0)	; load mappings
-		move.w	#make_art_tile(ArtTile_Animal_1,0,0),obGfx(a0)	; VRAM setting for 1st animal
+		move.w	#ArtTile_Animal_1,obGfx(a0)	; VRAM setting for 1st animal
 		btst	#0,objoff_30(a0)	; is 1st animal used?
 		beq.s	loc_73C6	; if yes, branch
-		move.w	#make_art_tile(ArtTile_Animal_2,0,0),obGfx(a0)	; VRAM setting for 2nd animal
+		move.w	#ArtTile_Animal_2,obGfx(a0)	; VRAM setting for 2nd animal
 
 loc_73C6:
 		move.b	#$C,obHeight(a0)

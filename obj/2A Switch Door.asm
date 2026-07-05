@@ -8,7 +8,7 @@ Obj2A:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:	dc.w .init-.index
+.index:		dc.w .init-.index
 		dc.w .chkpress-.index
 		dc.w .display-.index
 ; ===========================================================================
@@ -16,7 +16,7 @@ Obj2A:
 .init:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Switch_Door,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Level,0,0),obGfx(a0)
+		move.w	#ArtTile_Level,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.w	obY(a0),d0
 		subi.w	#32,d0
@@ -26,7 +26,7 @@ Obj2A:
 		tst.b	obSubtype(a0)
 		beq.s	.chkpress
 		move.b	#1,obFrame(a0)
-		move.w	#make_art_tile(ArtTile_Level,2,0),obGfx(a0)
+		move.w	#ArtTile_Level|Tile_Pal3,obGfx(a0)
 		move.b	#4,obPriority(a0)
 		addq.b	#2,obRoutine(a0)
 

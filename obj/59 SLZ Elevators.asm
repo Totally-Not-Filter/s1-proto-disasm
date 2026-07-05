@@ -85,7 +85,7 @@ Elev_Main:	; Routine 0
 		move.w	d0,elev_dist(a0)	; set distance to move
 		move.b	(a2)+,obSubtype(a0)	; set type
 		move.l	#Map_Elev,obMap(a0)
-		move.w	#make_art_tile(ArtTile_SLZ_Platform,2,0),obGfx(a0)
+		move.w	#ArtTile_SLZ_Platform|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#4,obPriority(a0)
 		move.w	obX(a0),elev_origX(a0)
@@ -126,7 +126,7 @@ Elev_Types:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:	dc.w .type00-.index, .type01-.index
+.index:		dc.w .type00-.index, .type01-.index
 		dc.w .type02-.index, .type01-.index
 		dc.w .type04-.index, .type01-.index
 		dc.w .type06-.index, .type01-.index

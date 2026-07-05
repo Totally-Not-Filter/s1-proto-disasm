@@ -8,7 +8,7 @@ GBall:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:	dc.w .main-.index
+.index:		dc.w .main-.index
 		dc.w GBall_Roll-.index
 		dc.w GBall_InAir-.index
 		dc.w GBall_Delete-.index
@@ -26,7 +26,7 @@ GBall:
 		move.w	#0,obVelY(a0)
 		move.b	#8,obRoutine(a0)
 		move.l	#Map_GBall,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Giant_Ball,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Giant_Ball|Tile_Pal3,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$18,obActWid(a0)
@@ -55,7 +55,7 @@ GBall_ChkPush:	; Routine 8
 
 .notouch:
 		bsr.w	GBall_Animate
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	GBall_ChkDel
@@ -84,7 +84,7 @@ GBall_Roll:	; Routine 2
 		move.w	#-$400,obVelY(a0)	; set ball to bounce upwards
 
 .notinair:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	GBall_ChkDel
@@ -111,7 +111,7 @@ GBall_InAir:	; Routine 4
 		nop
 
 .display:
-	if ~~FixBugs
+	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
 		bra.w	GBall_ChkDel

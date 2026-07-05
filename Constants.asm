@@ -77,7 +77,6 @@ window_plane:	equ $A000	; window plane
 vram_fg:	equ $C000	; plane A (foreground namespace)
 vram_special:	equ $D000	; plane A (foreground namespace)
 vram_bg:	equ $E000	; plane B (background namespace)
-vram_sonic:	equ $F000	; Sonic graphics
 vram_sprites:	equ $F800	; sprite table
 vram_hscroll:	equ $FC00	; horizontal scroll table
 
@@ -375,24 +374,39 @@ TBADD:	equ	$84		; after this command
 				; data=([table data]-0)*[add data]
 TBBAK:	equ	$85		; table pointer set next data
 
-; Tile VRAM Locations
+; Boss locations
+; The main values are based on where the camera boundaries mainly lie
+; The end values are where the camera scrolls towards after defeat
+boss_ghz_x:	equ $2960		; Green Hill Zone
+boss_ghz_y:	equ $300
+boss_ghz_end:	equ boss_ghz_x+$160
+
+; Tile flags (replaces the old "make_art_tile" function)
+Tile_Prio:	equ	1<<15
+Tile_Pal1:	equ	0<<13
+Tile_Pal2:	equ	1<<13
+Tile_Pal3:	equ	2<<13
+Tile_Pal4:	equ	3<<13
+
+; VRAM ArtTile definitions
+; Multiply by $20 (tile_size) to get the actual location in VRAM
 
 ; Shared
-ArtTile_GHZ_MZ_Swing:	equ $380
+ArtTile_GHZ_MZ_Swing:		equ $380
 ArtTile_GHZ_SLZ_Smashable_Wall:	equ $50F
 
 ; Green Hill Zone
-ArtTile_GHZ_Flower_4:	equ ArtTile_Level+$340
-ArtTile_GHZ_Edge_Wall:	equ $34C
+ArtTile_GHZ_Flower_4:		equ ArtTile_Level+$340
+ArtTile_GHZ_Edge_Wall:		equ $34C
 ArtTile_GHZ_Flower_Stalk:	equ ArtTile_Level+$358
 ArtTile_GHZ_Big_Flower_1:	equ ArtTile_Level+$35C
 ArtTile_GHZ_Small_Flower:	equ ArtTile_Level+$36C
-ArtTile_GHZ_Waterfall:	equ ArtTile_Level+$378
-ArtTile_GHZ_Flower_3:	equ ArtTile_Level+$380
+ArtTile_GHZ_Waterfall:		equ ArtTile_Level+$378
+ArtTile_GHZ_Flower_3:		equ ArtTile_Level+$380
 ArtTile_GHZ_Bridge:		equ $38E
 ArtTile_GHZ_Big_Flower_2:	equ ArtTile_Level+$390
-ArtTile_GHZ_Spike_Pole:	equ $398
-ArtTile_GHZ_Giant_Ball:	equ $3AA
+ArtTile_GHZ_Spike_Pole:		equ $398
+ArtTile_GHZ_Giant_Ball:		equ $3AA
 ArtTile_GHZ_Purple_Rock:	equ $3D0
 
 ; Marble Zone
@@ -402,7 +416,7 @@ ArtTile_MZ_Animated_Lava:	equ ArtTile_Level+$2E2
 ArtTile_MZ_Saturns:		equ ArtTile_Level+$2EA
 ArtTile_MZ_Torch:		equ ArtTile_Level+$2F2
 ArtTile_MZ_Spike_Stomper:	equ $300
-ArtTile_MZ_Fireball:	equ $345
+ArtTile_MZ_Fireball:		equ $345
 ArtTile_MZ_Glass_Pillar:	equ $38E
 ArtTile_MZ_Lava:		equ $3A8
 
@@ -419,8 +433,8 @@ ArtTile_SLZ_Swing:		equ $3DC
 ArtTile_SLZ_Orbinaut:		equ $429
 ArtTile_SLZ_Fireball:		equ $345
 ArtTile_SLZ_Fireball_Launcher:	equ $513
-ArtTile_SLZ_Platform:	equ $480
-ArtTile_SLZ_Smashable_Wall:	equ	$4E0
+ArtTile_SLZ_Platform:		equ $480
+ArtTile_SLZ_Smashable_Wall:	equ $4E0
 ArtTile_SLZ_Spikeball:		equ $4F0
 
 ; General Level Art
@@ -431,7 +445,7 @@ ArtTile_Bomb:			equ $400
 ArtTile_Crabmeat:		equ $400
 ArtTile_Cannonball:		equ $418
 ArtTile_Missile_Disolve:	equ $41C ; Unused
-ArtTile_Buzz_Bomber:	equ $444
+ArtTile_Buzz_Bomber:		equ $444
 ArtTile_Chopper:		equ $47B
 ArtTile_Yadrin:			equ $47B
 ArtTile_Jaws:			equ $47B
@@ -446,7 +460,7 @@ ArtTile_Spikes:			equ $51B
 ArtTile_Spring_Horizontal:	equ $523
 ArtTile_Spring_Vertical:	equ $533
 ArtTile_Shield:			equ $541
-ArtTile_Invincibility:	equ $55C
+ArtTile_Invincibility:		equ $55C
 ArtTile_Game_Over:		equ $580
 ArtTile_Title_Card:		equ $580
 ArtTile_Animal_1:		equ $580
@@ -458,14 +472,14 @@ ArtTile_Sonic:			equ $780
 ArtTile_Points:			equ $797
 ArtTile_Smoke:			equ $7A0
 ArtTile_Ring:			equ $7B2
-ArtTile_Lives_Counter:	equ $7D4
+ArtTile_Lives_Counter:		equ $7D4
 
 ; Eggman
 ArtTile_Eggman:			equ $400
-ArtTile_Eggman_Weapons:	equ $46C
+ArtTile_Eggman_Weapons:		equ $46C
 
 ; End of Level
-ArtTile_Prison_Capsule:	equ $49D
+ArtTile_Prison_Capsule:		equ $49D
 ArtTile_Giant_Ring:		equ $4EC
 ArtTile_Warp:			equ $541
 ArtTile_Bonuses:		equ $570
@@ -476,7 +490,7 @@ ArtTile_Sega_Tiles:		equ $000
 
 ; Title Screen
 ArtTile_Title_Foreground:	equ $200
-ArtTile_Title_Sonic:	equ $300
+ArtTile_Title_Sonic:		equ $300
 ArtTile_Level_Select_Font:	equ $680
 
 ; Special Stage
@@ -489,11 +503,11 @@ ArtTile_SS_Goal:		equ $251
 ArtTile_SS_Up_Down:		equ $263
 ArtTile_SS_R_Block:		equ $2F0
 ArtTile_SS_Plane_2:		equ $300
-ArtTile_SS_Extra_Life:	equ $370
+ArtTile_SS_Extra_Life:		equ $370
 ArtTile_SS_Emerald_Sparkle:	equ $3F0
 ArtTile_SS_Plane_3:		equ $400
 ArtTile_SS_Red_White_Block:	equ $470
-ArtTile_SS_Skull_Block:	equ $4F0
+ArtTile_SS_Skull_Block:		equ $4F0
 ArtTile_SS_Plane_4:		equ $500
 ArtTile_SS_U_Block:		equ $570
 ArtTile_SS_Plane_5:		equ $600
@@ -503,6 +517,7 @@ ArtTile_SS_Plane_6:		equ $700
 ArtTile_Error_Handler_Font:	equ $7C0
 
 ; Early VRAM locations
-ArtTile_Debug_Numbers:	equ $4F0	; Note: This overwrites the Moto Bug graphics.
+ArtTile_Obj06:			equ $470
+ArtTile_Debug_Numbers:		equ $4F0	; Note: This overwrites the Moto Bug graphics.
 
-ArtTile_Early_Lives_Icon:	equ	$579
+ArtTile_Early_Lives_Icon:	equ $579

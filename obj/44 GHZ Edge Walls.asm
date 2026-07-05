@@ -16,7 +16,7 @@ Edge_Index:	dc.w Edge_Main-Edge_Index
 Edge_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Edge,obMap(a0)
-		move.w	#make_art_tile(ArtTile_GHZ_Edge_Wall,2,0),obGfx(a0)
+		move.w	#ArtTile_GHZ_Edge_Wall|Tile_Pal3,obGfx(a0)
 		ori.b	#4,obRender(a0)
 		move.b	#8,obActWid(a0)
 		move.b	#6,obPriority(a0)

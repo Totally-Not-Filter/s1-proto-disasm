@@ -20,7 +20,7 @@ Mon_Main:	; Routine 0
 		move.b	#$E,obHeight(a0)
 		move.b	#$E,obWidth(a0)
 		move.l	#Map_Monitor,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Monitor,0,0),obGfx(a0)
+		move.w	#ArtTile_Monitor,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#3,obPriority(a0)
 		move.b	#$F,obActWid(a0)

@@ -50,14 +50,14 @@ Scen_Delete:	; Routine 4, 6
 ; ---------------------------------------------------------------------------
 Scen_Values:
 		dc.l Map_Scen
-		dc.w make_art_tile(ArtTile_GHZ_Spike_Pole,0,0)
+		dc.w ArtTile_GHZ_Spike_Pole
 		dc.b 0, $10, 4, $82
 		dc.l Map_Scen
-		dc.w make_art_tile(ArtTile_GHZ_Spike_Pole,0,0)
+		dc.w ArtTile_GHZ_Spike_Pole
 		dc.b 1, $14, 4, $83
 		dc.l Map_Scen
-		dc.w make_art_tile(ArtTile_Level,2,0)
+		dc.w ArtTile_Level|Tile_Pal3
 		dc.b 0, $20, 1, 0
 		dc.l Map_Bri
-		dc.w make_art_tile(ArtTile_GHZ_Bridge,2,0)
+		dc.w ArtTile_GHZ_Bridge|Tile_Pal3
 		dc.b 1, $10, 1, 0

@@ -19,7 +19,7 @@ Obj04_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.w	#$40,obY(a0)
 		move.l	#Map_02,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Monitor,1,0),obGfx(a0)
+		move.w	#ArtTile_Monitor|Tile_Pal2,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#1,obColProp(a0)
 		move.b	#2,obFrame(a0)

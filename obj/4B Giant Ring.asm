@@ -22,7 +22,7 @@ GRing_Main:	; Routine 0
 		bclr	#7,(a2)
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_GRing,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Giant_Ring,1,0),obGfx(a0)
+		move.w	#ArtTile_Giant_Ring|Tile_Pal2,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#2,obPriority(a0)
 		move.b	#$52,obColType(a0)

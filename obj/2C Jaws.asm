@@ -16,7 +16,7 @@ Jaws_Index:	dc.w Jaws_Main-Jaws_Index
 Jaws_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		move.l	#Map_Jaws,obMap(a0)
-		move.w	#make_art_tile(ArtTile_Jaws,0,0),obGfx(a0)
+		move.w	#ArtTile_Jaws,obGfx(a0)
 		move.b	#4,obRender(a0)
 		move.b	#$A,obColType(a0)
 		move.b	#4,obPriority(a0)
