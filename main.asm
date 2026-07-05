@@ -4203,8 +4203,7 @@ Map_Roll:	include "_maps/Roller.asm"
 		include "obj/44 GHZ Edge Walls.asm"
 Map_Edge:	include "_maps/GHZ Edge Walls.asm"
 
-		include "obj/13 Lava Ball Maker.asm"
-		include "obj/14 Lava Ball.asm"
+		include "obj/13, 14 MZ Fire Balls and Maker.asm"
 		include "_anim/Fireballs.asm"
 
 		include "obj/46 MZ Bricks.asm"
