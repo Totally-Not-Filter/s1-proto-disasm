@@ -1,8 +1,5 @@
-; +-----------------------------------------------------+
-; | Sonic the Hedgehog (Prototype)						|
-; | Split/Text Disassembly.								|
-; | Originally done by Mega Drive Developers Collective.|
-; +-----------------------------------------------------+
+; Sonic the Hedgehog (Prototype)
+; Split/Text Disassembly.
 
 ; Intended for tab width of 8
 
@@ -61,7 +58,7 @@ Vectors:
 		dc.l ChkInstr			; CHK exception
 		dc.l TrapvInstr			; TRAPV exception (8)
 		dc.l PrivilegeViol		; Privilege violation
-		dc.l Trace				; TRACE exception
+		dc.l Trace			; TRACE exception
 		dc.l Line1010Emu		; Line-A emulator
 		dc.l Line1111Emu		; Line-F emulator (12)
 		dc.l ErrorExcept		; Unused (reserved)
@@ -80,9 +77,9 @@ Vectors:
 		dc.l ErrorTrap			; IRQ level 1
 		dc.l ErrorTrap			; IRQ level 2
 		dc.l ErrorTrap			; IRQ level 3 (28)
-		dc.l HInt				; IRQ level 4 (horizontal retrace interrupt)
+		dc.l HInt			; IRQ level 4 (horizontal retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 5
-		dc.l VInt				; IRQ level 6 (vertical retrace interrupt)
+		dc.l VInt			; IRQ level 6 (vertical retrace interrupt)
 		dc.l ErrorTrap			; IRQ level 7 (32)
 		dc.l ErrorTrap			; TRAP #00 exception
 		dc.l ErrorTrap			; TRAP #01 exception
@@ -125,16 +122,16 @@ Vectors:
 		dc.b "                "
 		dc.b "                "
 		dc.b "GM 00000000-00"		; Serial/version number
-Checksum:	dc.w 0					; Checksum
+Checksum:	dc.w 0				; Checksum
 		dc.b "J               "		; I\O support
-ROMStartLoc:	dc.l StartOfROM		; Start address of ROM
-ROMEndLoc:		dc.l EndOfROM-1		; End address of ROM
-RAMStartLoc:	dc.l v_ram_start	; Start address of RAM
-RAMEndLoc:		dc.l (v_ram_end-1)&$FFFFFF	; End address of RAM
-		dc.l $20202020				; SRAM (none)
-		dc.l $20202020				; SRAM start ($200001)
-		dc.l $20202020				; SRAM end ($20xxxx)
-Notes:	dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
+ROMStartLoc:	dc.l StartOfROM			; Start address of ROM
+ROMEndLoc:	dc.l EndOfROM-1			; End address of ROM
+RAMStartLoc:	dc.l v_ram_start		; Start address of RAM
+RAMEndLoc:	dc.l (v_ram_end-1)&$FFFFFF	; End address of RAM
+		dc.l $20202020			; SRAM (none)
+		dc.l $20202020			; SRAM start ($200001)
+		dc.l $20202020			; SRAM end ($20xxxx)
+Notes:		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
 		dc.b "JU              "		; Region (Country code)
 EndOfHeader:
 
@@ -225,38 +222,38 @@ PSGInitLoop:
 		bra.s	GameProgram
 ; ===========================================================================
 SetupValues:	dc.l $8000			; VDP register start number
-		dc.l bytesToLcnt(v_ram_end-v_ram_start_def)		; size of RAM divided by 4
-		dc.l $100					; VDP register diff
+		dc.l bytesToLcnt(v_ram_end-v_ram_start_def)	; size of RAM divided by 4
+		dc.l $100			; VDP register diff
 
-		dc.l z80_ram				; start of Z80 RAM
+		dc.l z80_ram			; start of Z80 RAM
 		dc.l z80_bus_request		; Z80 bus request
-		dc.l z80_reset				; Z80 reset
-		dc.l vdp_data_port			; VDP data
+		dc.l z80_reset			; Z80 reset
+		dc.l vdp_data_port		; VDP data
 		dc.l vdp_control_port		; VDP control
 
 VDPInitValues:
-		dc.b %0100					; VDP $80 - 8-colour mode
-		dc.b %00010100				; VDP $81 - Megadrive mode, DMA enable
-		dc.b vram_fg>>10			; VDP $82 - foreground nametable address
+		dc.b %0100			; VDP $80 - 8-colour mode
+		dc.b %00010100			; VDP $81 - Megadrive mode, DMA enable
+		dc.b vram_fg>>10		; VDP $82 - foreground nametable address
 		dc.b window_plane_prev>>10	; VDP $83 - window nametable address
-		dc.b vram_bg>>13			; VDP $84 - background nametable address
+		dc.b vram_bg>>13		; VDP $84 - background nametable address
 		dc.b vram_sprites_prev>>9	; VDP $85 - sprite table address
-		dc.b 0						; VDP $86 - unused
-		dc.b 0						; VDP $87 - background colour
-		dc.b 0						; VDP $88 - unused
-		dc.b 0						; VDP $89 - unused
-		dc.b 255					; VDP $8A - H_Int register
-		dc.b 0						; VDP $8B - full screen scroll
-		dc.b %10000001				; VDP $8C - 40 cell display
+		dc.b 0				; VDP $86 - unused
+		dc.b 0				; VDP $87 - background colour
+		dc.b 0				; VDP $88 - unused
+		dc.b 0				; VDP $89 - unused
+		dc.b 255			; VDP $8A - H_Int register
+		dc.b 0				; VDP $8B - full screen scroll
+		dc.b %10000001			; VDP $8C - 40 cell display
 		dc.b vram_hscroll_prev>>10	; VDP $8D - hscroll table address
-		dc.b 0						; VDP $8E - unused
-		dc.b 1						; VDP $8F - VDP increment
-		dc.b 1						; VDP $90 - 64 cell hscroll size
-		dc.b 0						; VDP $91 - window h position
-		dc.b 0						; VDP $92 - window v position
-		dc.w $FFFF					; VDP $93/94 - DMA length
-		dc.w 0						; VDP $95/96 - DMA source
-		dc.b %10000000				; VDP $97 - DMA fill VRAM
+		dc.b 0				; VDP $8E - unused
+		dc.b 1				; VDP $8F - VDP increment
+		dc.b 1				; VDP $90 - 64 cell hscroll size
+		dc.b 0				; VDP $91 - window h position
+		dc.b 0				; VDP $92 - window v position
+		dc.w $FFFF			; VDP $93/94 - DMA length
+		dc.w 0				; VDP $95/96 - DMA source
+		dc.b %10000000			; VDP $97 - DMA fill VRAM
 VDPInitValues_End:
 
 ; Z80 initalization
@@ -369,15 +366,16 @@ MainGameLoop:
 
 GameModeArray:
 
-ptr_GM_Sega:	bra.w	GM_Sega		; Sega Screen ($00)
+gmptr:		macro gamemode,{INTLABEL}
+__LABEL__:	label	*-GameModeArray
+		bra.w	gamemode
+		endm
 
-ptr_GM_Title:	bra.w	GM_Title	; Title Screen ($04)
-
-ptr_GM_Demo:	bra.w	GM_Level	; Demo Mode ($08)
-
-ptr_GM_Level:	bra.w	GM_Level	; Normal Level ($0C)
-
-ptr_GM_Special:	bra.w	GM_Special	; Special Stage ($10)
+id_Sega:	gmptr	GM_Sega		; Sega Screen ($00)
+id_Title:	gmptr	GM_Title	; Title Screen ($04)
+id_Demo:	gmptr	GM_Level	; Demo Mode ($08)
+id_Level:	gmptr	GM_Level	; Normal Level ($0C)
+id_Special:	gmptr	GM_Special	; Special Stage ($10)
 
 		rts
 ; ===========================================================================
@@ -604,16 +602,22 @@ VInt_00:
 		rts
 ; ===========================================================================
 VInt_Index:
-ptr_VInt_00:	dc.w VInt_00-VInt_Index	; Return to caller
-ptr_VInt_02:	dc.w VInt_02-VInt_Index	; Sega Screen
-ptr_VInt_04:	dc.w VInt_04-VInt_Index	; Title Screen
-ptr_VInt_06:	dc.w VInt_06-VInt_Index	; (unused)
-ptr_VInt_08:	dc.w VInt_08-VInt_Index	; Levels
-ptr_VInt_0A:	dc.w VInt_0A-VInt_Index	; Special Stage
-ptr_VInt_0C:	dc.w VInt_0C-VInt_Index ; Title Cards
-ptr_VInt_0E:	dc.w VInt_0E-VInt_Index ; (unused)
-ptr_VInt_10:	dc.w VInt_10-VInt_Index ; Paused
-ptr_VInt_12:	dc.w VInt_12-VInt_Index ; Palette Fade
+
+vintptr:	macro vintmode,{INTLABEL}
+__LABEL__:	label	*-VInt_Index
+		dc.w	vintmode-VInt_Index
+		endm
+
+id_VInt_00:	vintptr	VInt_00	; $00 - Return
+id_VInt_02:	vintptr	VInt_02	; $02 - Sega Screen
+id_VInt_04:	vintptr	VInt_04	; $04 - Title Screen
+id_VInt_06:	vintptr	VInt_06	; $06 - (unused)
+id_VInt_08:	vintptr	VInt_08	; $08 - Levels, Demos
+id_VInt_0A:	vintptr	VInt_0A	; $0A - Special Stage
+id_VInt_0C:	vintptr	VInt_0C	; $0C - Title Cards
+id_VInt_0E:	vintptr	VInt_0E	; $0E - (unused)
+id_VInt_10:	vintptr	VInt_10	; $10 - Paused
+id_VInt_12:	vintptr	VInt_12	; $12 - Palette Fade
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; VInt 02 - Sega Screen
@@ -1253,7 +1257,7 @@ QuickPLC:
 		lea	(a1,d0.w),a1
 		move.w	(a1)+,d1
 
-Qplc_Loop:
+.loop:
 		movea.l	(a1)+,a0
 		moveq	#0,d0
 		move.w	(a1)+,d0
@@ -1263,7 +1267,7 @@ Qplc_Loop:
 		swap	d0
 		move.l	d0,(vdp_control_port).l
 		bsr.w	NemDec
-		dbf	d1,Qplc_Loop
+		dbf	d1,.loop
 		rts
 
 		include "_include/Decompression/Enigma Decompression.asm"
@@ -1474,17 +1478,17 @@ PalLoad2:
 
 		include "_include/Palette Index.asm"
 
-Pal_SegaBG:		binclude "palette/Sega Screen.bin"
-Pal_Title:		binclude "palette/Title Screen.bin"
+Pal_SegaBG:	binclude "palette/Sega Screen.bin"
+Pal_Title:	binclude "palette/Title Screen.bin"
 Pal_LevelSel:	binclude "palette/Level Select.bin"
-Pal_Sonic:		binclude "palette/Sonic.bin"
-Pal_GHZ:		binclude "palette/Green Hill Zone.bin"
-Pal_LZ:			binclude "palette/Labyrinth Zone.bin"
-Pal_Unused:		binclude "palette/Unused.bin"
-Pal_MZ:			binclude "palette/Marble Zone.bin"
-Pal_SLZ:		binclude "palette/Star Light Zone.bin"
-Pal_SZ:			binclude "palette/Sparkling Zone.bin"
-Pal_CWZ:		binclude "palette/Clock Work Zone.bin"
+Pal_Sonic:	binclude "palette/Sonic.bin"
+Pal_GHZ:	binclude "palette/Green Hill Zone.bin"
+Pal_LZ:		binclude "palette/Labyrinth Zone.bin"
+Pal_Unused:	binclude "palette/Unused.bin"
+Pal_MZ:		binclude "palette/Marble Zone.bin"
+Pal_SLZ:	binclude "palette/Star Light Zone.bin"
+Pal_SZ:		binclude "palette/Sparkling Zone.bin"
+Pal_CWZ:	binclude "palette/Clock Work Zone.bin"
 Pal_Special:	binclude "palette/Special Stage.bin"
 
 ; ===========================================================================
@@ -1496,6 +1500,7 @@ WaitForVInt:
 		tst.b	(v_vint_routine).w
 		bne.s	.wait
 		rts
+; ===========================================================================
 
 		include	"obj/sub RandomNumber.asm"
 		include	"obj/sub CalcSine.asm"
