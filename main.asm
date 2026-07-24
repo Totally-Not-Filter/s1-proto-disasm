@@ -2861,7 +2861,7 @@ Map_TSon:	include "_maps/Title Screen Sonic.asm"
 
 		include "obj/1E Ball Hog.asm"
 		include "obj/20 Cannonball.asm"
-		include "obj/24, 27 & 3F Explosions.asm"
+		include "obj/24, 27, 3F Explosions.asm"
 		include "_anim/Ball Hog.asm"
 Map_Hog:	include "_maps/Ball Hog.asm"
 Map_Cannonball:	include "_maps/Cannonball.asm"
@@ -2886,7 +2886,7 @@ Map_Crab:	include "_maps/Crabmeat.asm"
 Map_Buzz:	include "_maps/Buzz Bomber.asm"
 Map_Missile:	include "_maps/Buzz Bomber Missile.asm"
 
-		include "obj/25 & 37 Rings.asm"
+		include "obj/25, 37 Rings.asm"
 		include "obj/4B Giant Ring.asm"
 		include "_anim/Rings.asm"
 Map_Ring:	include "_maps/Rings.asm"
@@ -3044,7 +3044,7 @@ Map_Bump:	include "_maps/Bumper.asm"
 		include "_anim/Signpost.asm"
 Map_Sign:	include "_maps/Signpost.asm"
 
-		include "obj/4C & 4D Lava Geyser Maker.asm"
+		include "obj/4C, 4D Lava Geyser Maker.asm"
 
 		include "obj/4E Wall of Lava.asm"
 
