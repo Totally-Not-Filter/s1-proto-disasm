@@ -1,4 +1,4 @@
-Map_Switch_Door_internal:	mappingsTable
+Map_Edge_Door_internal:	mappingsTable
 	mappingsTableEntry.w	byte_6A30
 	mappingsTableEntry.w	byte_6A45
 
