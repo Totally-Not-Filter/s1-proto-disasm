@@ -13,9 +13,10 @@ CirclingPlatform:
 		out_of_range.w	DeleteObject,circ_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Circ_Index:	dc.w Circ_Main-Circ_Index
-		dc.w Circ_Platform-Circ_Index
-		dc.w Circ_Action-Circ_Index
+Circ_Index:
+		dc.w	Circ_Main-Circ_Index
+		dc.w	Circ_Platform-Circ_Index
+		dc.w	Circ_Action-Circ_Index
 ; ===========================================================================
 
 Circ_Main:	; Routine 0
@@ -53,8 +54,9 @@ Circ_Types:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:		dc.w .type00-.index
-		dc.w .type04-.index
+.index:
+		dc.w	.type00-.index
+		dc.w	.type04-.index
 ; ===========================================================================
 
 .type00:

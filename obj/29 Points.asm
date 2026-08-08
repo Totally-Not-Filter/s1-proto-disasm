@@ -13,8 +13,9 @@ Points:
 		bra.w	DisplaySprite
 	endif
 ; ===========================================================================
-Poi_Index:	dc.w Poi_Main-Poi_Index
-		dc.w Poi_Slower-Poi_Index
+Poi_Index:
+		dc.w	Poi_Main-Poi_Index
+		dc.w	Poi_Slower-Poi_Index
 ; ===========================================================================
 
 Poi_Main:	; Routine 0

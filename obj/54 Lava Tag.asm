@@ -8,10 +8,12 @@ LavaTag:
 		move.w	LTag_Index(pc,d0.w),d1
 		jmp	LTag_Index(pc,d1.w)
 ; ===========================================================================
-LTag_Index:	dc.w LTag_Main-LTag_Index
-		dc.w LTag_ChkDel-LTag_Index
+LTag_Index:
+		dc.w	LTag_Main-LTag_Index
+		dc.w	LTag_ChkDel-LTag_Index
 
-LTag_ColTypes:	dc.b $96, $94, $95
+LTag_ColTypes:
+		dc.b $96, $94, $95
 		even
 ; ===========================================================================
 
@@ -42,7 +44,7 @@ LTag_ChkDel:	; Routine 2
 
 .playerdead:
 	endif
-		out_of_range_2.w	DeleteObject
+		out_of_range.w	DeleteObject,,1
 
 	if FixBugs
 		cmpi.b	#6,(v_player+obRoutine).w	; has sonic died?

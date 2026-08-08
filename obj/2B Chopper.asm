@@ -9,10 +9,11 @@ Chopper:
 		jsr	Chop_Index(pc,d1.w)
 		bra.w	RememberState
 ; ===========================================================================
-Chop_Index:	dc.w Chop_Main-Chop_Index
-		dc.w Chop_ChgSpeed-Chop_Index
+Chop_Index:
+		dc.w	Chop_Main-Chop_Index
+		dc.w	Chop_ChgSpeed-Chop_Index
 
-chop_origY = objoff_30
+chop_origY: equ objoff_30
 ; ===========================================================================
 
 Chop_Main:	; Routine 0

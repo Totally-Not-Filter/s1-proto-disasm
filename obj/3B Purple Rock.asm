@@ -8,8 +8,9 @@ PurpleRock:
 		move.w	Rock_Index(pc,d0.w),d1
 		jmp	Rock_Index(pc,d1.w)
 ; ===========================================================================
-Rock_Index:	dc.w Rock_Main-Rock_Index
-		dc.w Rock_Solid-Rock_Index
+Rock_Index:
+		dc.w	Rock_Main-Rock_Index
+		dc.w	Rock_Solid-Rock_Index
 ; ===========================================================================
 
 Rock_Main:	; Routine 0

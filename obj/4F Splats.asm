@@ -7,12 +7,13 @@ Splats:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
 		move.w	.index(pc,d0.w),d1
-		jmp .index(pc,d1.w)
+		jmp	.index(pc,d1.w)
 ; ---------------------------------------------------------------------------
-.index:		dc.w .init-.index			; 0 - object init
-		dc.w .waitforsonic-.index		; 2 - wait for Sonic to enter a certain trigger zone (bounce in place until then)
-		dc.w .chkbounce-.index			; 4 - trigger zone entered, apply movement and check for floor to bounce
-		dc.w .fallthroughfloor-.index		; 6 - special case after hitting lava: phase through floor and despawn on screen exit
+.index:
+		dc.w	.init-.index			; 0 - object init
+		dc.w	.waitforsonic-.index		; 2 - wait for Sonic to enter a certain trigger zone (bounce in place until then)
+		dc.w	.chkbounce-.index		; 4 - trigger zone entered, apply movement and check for floor to bounce
+		dc.w	.fallthroughfloor-.index	; 6 - special case after hitting lava: phase through floor and despawn on screen exit
 ; ---------------------------------------------------------------------------
  
 .init:

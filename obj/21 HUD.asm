@@ -8,8 +8,9 @@ HUD:
 		move.w	HUD_Index(pc,d0.w),d1
 		jmp	HUD_Index(pc,d1.w)
 ; ===========================================================================
-HUD_Index:	dc.w HUD_Main-HUD_Index
-		dc.w HUD_Display-HUD_Index
+HUD_Index:
+		dc.w	HUD_Main-HUD_Index
+		dc.w	HUD_Display-HUD_Index
 ; ===========================================================================
 
 HUD_Main:	; Routine 0

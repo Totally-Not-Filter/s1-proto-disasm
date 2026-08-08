@@ -8,13 +8,14 @@ Helix:
 		move.w	Hel_Index(pc,d0.w),d1
 		jmp	Hel_Index(pc,d1.w)
 ; ===========================================================================
-Hel_Index:	dc.w Hel_Main-Hel_Index
-		dc.w Hel_Action-Hel_Index
-		dc.w Hel_Action-Hel_Index
-		dc.w Hel_Delete-Hel_Index
-		dc.w Hel_Display-Hel_Index
+Hel_Index:
+		dc.w	Hel_Main-Hel_Index
+		dc.w	Hel_Action-Hel_Index
+		dc.w	Hel_Action-Hel_Index
+		dc.w	Hel_Delete-Hel_Index
+		dc.w	Hel_Display-Hel_Index
 
-hel_frame = objoff_3E		; start frame (different for each spike)
+hel_frame:	equ objoff_3E		; start frame (different for each spike)
 
 ;  $29-38 are used for child object addresses
 ; ===========================================================================

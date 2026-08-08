@@ -8,8 +8,9 @@ MissileDissolve:
 		move.w	MDis_Index(pc,d0.w),d1
 		jmp	MDis_Index(pc,d1.w)
 ; ===========================================================================
-MDis_Index:	dc.w MDis_Main-MDis_Index
-		dc.w MDis_Animate-MDis_Index
+MDis_Index:
+		dc.w	MDis_Main-MDis_Index
+		dc.w	MDis_Animate-MDis_Index
 ; ===========================================================================
 
 MDis_Main:	; Routine 0
@@ -36,7 +37,6 @@ MDis_Animate:	; Routine 2
 .display:
 		bra.w	DisplaySprite
 ; ===========================================================================
-
 ; ---------------------------------------------------------------------------
 ; Object 27 - explosion from a destroyed enemy or monitor
 ; ---------------------------------------------------------------------------
@@ -47,9 +47,10 @@ ExplosionItem:
 		move.w	ExItem_Index(pc,d0.w),d1
 		jmp	ExItem_Index(pc,d1.w)
 ; ===========================================================================
-ExItem_Index:	dc.w ExItem_Animal-ExItem_Index
-		dc.w ExItem_Main-ExItem_Index
-		dc.w ExItem_Animate-ExItem_Index
+ExItem_Index:
+		dc.w	ExItem_Animal-ExItem_Index
+		dc.w	ExItem_Main-ExItem_Index
+		dc.w	ExItem_Animate-ExItem_Index
 ; ===========================================================================
 
 ExItem_Animal:	; Routine 0
@@ -94,8 +95,9 @@ ExplosionBomb:
 		move.w	ExBom_Index(pc,d0.w),d1
 		jmp	ExBom_Index(pc,d1.w)
 ; ===========================================================================
-ExBom_Index:	dc.w ExBom_Main-ExBom_Index
-		dc.w ExItem_Animate-ExBom_Index
+ExBom_Index:
+		dc.w	ExBom_Main-ExBom_Index
+		dc.w	ExItem_Animate-ExBom_Index
 ; ===========================================================================
 
 ExBom_Main:	; Routine 0

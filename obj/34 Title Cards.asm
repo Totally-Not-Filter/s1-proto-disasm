@@ -8,10 +8,11 @@ TitleCard:
 		move.w	Card_Index(pc,d0.w),d1
 		jmp	Card_Index(pc,d1.w)
 ; ===========================================================================
-Card_Index:	dc.w Card_LoadConfig-Card_Index
-		dc.w Card_ChkPos-Card_Index
-		dc.w Card_Wait-Card_Index
-		dc.w Card_Wait-Card_Index
+Card_Index:
+		dc.w	Card_LoadConfig-Card_Index
+		dc.w	Card_ChkPos-Card_Index
+		dc.w	Card_Wait-Card_Index
+		dc.w	Card_Wait-Card_Index
 ; ===========================================================================
 
 Card_LoadConfig:	; Routine 0

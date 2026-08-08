@@ -9,9 +9,10 @@ PowerUp:
 		jsr	Pow_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Pow_Index:	dc.w Pow_Main-Pow_Index
-		dc.w Pow_Move-Pow_Index
-		dc.w loc_83AA-Pow_Index
+Pow_Index:
+		dc.w	Pow_Main-Pow_Index
+		dc.w	Pow_Move-Pow_Index
+		dc.w	loc_83AA-Pow_Index
 ; ===========================================================================
 
 Pow_Main:	; Routine 0

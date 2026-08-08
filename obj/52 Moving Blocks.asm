@@ -10,12 +10,13 @@ MovingBlock:
 		out_of_range.w	DeleteObject,mblock_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-MBlock_Index:	dc.w MBlock_Main-MBlock_Index
-		dc.w MBlock_Platform-MBlock_Index
-		dc.w MBlock_StandOn-MBlock_Index
+MBlock_Index:
+		dc.w	MBlock_Main-MBlock_Index
+		dc.w	MBlock_Platform-MBlock_Index
+		dc.w	MBlock_StandOn-MBlock_Index
 
-mblock_origX = objoff_32
-mblock_origY = objoff_30
+mblock_origX:	equ objoff_32
+mblock_origY:	equ objoff_30
 
 MBlock_Var:	dc.b $10, 0		; object width, frame number
 		dc.b $20, 1
@@ -73,8 +74,11 @@ MBlock_Move:
 		move.w	MBlock_TypeIndex(pc,d0.w),d1
 		jmp	MBlock_TypeIndex(pc,d1.w)
 ; ===========================================================================
-MBlock_TypeIndex:	dc.w MBlock_Type00-MBlock_TypeIndex, MBlock_Type01-MBlock_TypeIndex
-		dc.w MBlock_Type02-MBlock_TypeIndex, MBlock_Type03-MBlock_TypeIndex
+MBlock_TypeIndex:
+		dc.w	MBlock_Type00-MBlock_TypeIndex
+		dc.w	MBlock_Type01-MBlock_TypeIndex
+		dc.w	MBlock_Type02-MBlock_TypeIndex
+		dc.w	MBlock_Type03-MBlock_TypeIndex
 ; ===========================================================================
 
 MBlock_Type00:

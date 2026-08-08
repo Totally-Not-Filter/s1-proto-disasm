@@ -5,14 +5,15 @@
 Obj1B:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	off_6634(pc,d0.w),d1
-		jmp	off_6634(pc,d1.w)
+		move.w	Obj1B_Index(pc,d0.w),d1
+		jmp	Obj1B_Index(pc,d1.w)
 ; ===========================================================================
-off_6634:	dc.w loc_663E-off_6634
-		dc.w loc_6676-off_6634
-		dc.w loc_668A-off_6634
-		dc.w loc_66CE-off_6634
-		dc.w loc_66D6-off_6634
+Obj1B_Index:
+		dc.w	loc_663E-Obj1B_Index
+		dc.w	loc_6676-Obj1B_Index
+		dc.w	loc_668A-Obj1B_Index
+		dc.w	loc_66CE-Obj1B_Index
+		dc.w	loc_66D6-Obj1B_Index
 ; ===========================================================================
 
 loc_663E:

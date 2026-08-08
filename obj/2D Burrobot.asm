@@ -8,11 +8,12 @@ Burrobot:
 		move.w	Burro_Index(pc,d0.w),d1
 		jmp	Burro_Index(pc,d1.w)
 ; ===========================================================================
-Burro_Index:	dc.w Burro_Main-Burro_Index
-		dc.w Burro_Action-Burro_Index
-		dc.w Burro_Delete-Burro_Index
+Burro_Index:
+		dc.w	Burro_Main-Burro_Index
+		dc.w	Burro_Action-Burro_Index
+		dc.w	Burro_Delete-Burro_Index
 
-burro_timedelay = objoff_30		; time between direction changes
+burro_timedelay: equ objoff_30		; time between direction changes
 ; ===========================================================================
 
 Burro_Main:
@@ -46,9 +47,10 @@ Burro_Action:
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:	dc.w .changedir-.index
-		dc.w Burro_Move-.index
-		dc.w Burro_Jump-.index
+.index:
+		dc.w	.changedir-.index
+		dc.w	Burro_Move-.index
+		dc.w	Burro_Jump-.index
 ; ===========================================================================
 
 .changedir:

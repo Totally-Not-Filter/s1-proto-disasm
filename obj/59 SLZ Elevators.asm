@@ -14,28 +14,29 @@ Elevator:
 		out_of_range.w	DeleteObject,elev_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Elev_Index:	dc.w Elev_Main-Elev_Index
-		dc.w Elev_Platform-Elev_Index
-		dc.w Elev_Action-Elev_Index
-		dc.w Elev_MakeMulti-Elev_Index
+Elev_Index:
+		dc.w	Elev_Main-Elev_Index
+		dc.w	Elev_Platform-Elev_Index
+		dc.w	Elev_Action-Elev_Index
+		dc.w	Elev_MakeMulti-Elev_Index
 
-Elev_Var1:	dc.b $28, 0		; width, frame number
+Elev_Var1:	dc.b	$28, 0		; width, frame number
 
-Elev_Var2:	dc.b $10, 1		; distance to move, action type
-		dc.b $20, 1
-		dc.b $34, 1
-		dc.b $10, 3
-		dc.b $20, 3
-		dc.b $34, 3
-		dc.b $14, 1
-		dc.b $24, 1
-		dc.b $2C, 1
-		dc.b $14, 3
-		dc.b $24, 3
-		dc.b $2C, 3
-		dc.b $20, 5
-		dc.b $20, 7
-		dc.b $30, 9
+Elev_Var2:	dc.b	$10, 1		; distance to move, action type
+		dc.b	$20, 1
+		dc.b	$34, 1
+		dc.b	$10, 3
+		dc.b	$20, 3
+		dc.b	$34, 3
+		dc.b	$14, 1
+		dc.b	$24, 1
+		dc.b	$2C, 1
+		dc.b	$14, 3
+		dc.b	$24, 3
+		dc.b	$2C, 3
+		dc.b	$20, 5
+		dc.b	$20, 7
+		dc.b	$30, 9
 ; ===========================================================================
 
 Elev_Main:	; Routine 0
@@ -126,11 +127,17 @@ Elev_Types:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:		dc.w .type00-.index, .type01-.index
-		dc.w .type02-.index, .type01-.index
-		dc.w .type04-.index, .type01-.index
-		dc.w .type06-.index, .type01-.index
-		dc.w .type08-.index, .type09-.index
+.index:
+		dc.w	.type00-.index
+		dc.w	.type01-.index
+		dc.w	.type02-.index
+		dc.w	.type01-.index
+		dc.w	.type04-.index
+		dc.w	.type01-.index
+		dc.w	.type06-.index
+		dc.w	.type01-.index
+		dc.w	.type08-.index
+		dc.w	.type09-.index
 ; ===========================================================================
 
 .type00:

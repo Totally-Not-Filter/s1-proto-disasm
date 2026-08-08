@@ -8,10 +8,11 @@ Scenery:
 		move.w	Scen_Index(pc,d0.w),d1
 		jmp	Scen_Index(pc,d1.w)
 ; ===========================================================================
-Scen_Index:	dc.w Scen_Main-Scen_Index
-		dc.w Scen_ChkDel-Scen_Index
-		dc.w Scen_Delete-Scen_Index
-		dc.w Scen_Delete-Scen_Index
+Scen_Index:
+		dc.w	Scen_Main-Scen_Index
+		dc.w	Scen_ChkDel-Scen_Index
+		dc.w	Scen_Delete-Scen_Index
+		dc.w	Scen_Delete-Scen_Index
 ; ===========================================================================
 
 Scen_Main:	; Routine 0

@@ -8,8 +8,9 @@ Basaran:
 		move.w	Bas_Index(pc,d0.w),d1
 		jmp	Bas_Index(pc,d1.w)
 ; ===========================================================================
-Bas_Index:	dc.w Bas_Main-Bas_Index
-		dc.w Bas_Action-Bas_Index
+Bas_Index:
+		dc.w	Bas_Main-Bas_Index
+		dc.w	Bas_Action-Bas_Index
 ; ===========================================================================
 
 Bas_Main:	; Routine 0
@@ -31,10 +32,11 @@ Bas_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:		dc.w .dropcheck-.index
-		dc.w .dropfly-.index
-		dc.w .flapsound-.index
-		dc.w .flyup-.index
+.index:
+		dc.w	.dropcheck-.index
+		dc.w	.dropfly-.index
+		dc.w	.flapsound-.index
+		dc.w	.flyup-.index
 ; ===========================================================================
 
 .dropcheck:

@@ -9,10 +9,10 @@ Obj03:
 		jmp	Obj03_Index(pc,d1.w)
 ; ===========================================================================
 Obj03_Index:
-		dc.w Obj03_Main-Obj03_Index
-		dc.w Obj03_Display-Obj03_Index
-		dc.w Obj03_Delete-Obj03_Index
-		dc.w Obj03_Delete-Obj03_Index
+		dc.w	Obj03_Main-Obj03_Index
+		dc.w	Obj03_Display-Obj03_Index
+		dc.w	Obj03_Delete-Obj03_Index
+		dc.w	Obj03_Delete-Obj03_Index
 ; ===========================================================================
 
 Obj03_Main:	; Routine 0

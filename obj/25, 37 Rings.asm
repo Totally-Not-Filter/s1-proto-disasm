@@ -8,11 +8,12 @@ Rings:
 		move.w	Ring_Index(pc,d0.w),d1
 		jmp	Ring_Index(pc,d1.w)
 ; ===========================================================================
-Ring_Index:	dc.w Ring_Main-Ring_Index
-		dc.w Ring_Animate-Ring_Index
-		dc.w Ring_Collect-Ring_Index
-		dc.w Ring_Sparkle-Ring_Index
-		dc.w Ring_Delete-Ring_Index
+Ring_Index:
+		dc.w	Ring_Main-Ring_Index
+		dc.w	Ring_Animate-Ring_Index
+		dc.w	Ring_Collect-Ring_Index
+		dc.w	Ring_Sparkle-Ring_Index
+		dc.w	Ring_Delete-Ring_Index
 
 ; ---------------------------------------------------------------------------
 ; Distances between rings (format: horizontal, vertical)
@@ -166,11 +167,12 @@ RingLoss:
 		move.w	RLoss_Index(pc,d0.w),d1
 		jmp	RLoss_Index(pc,d1.w)
 ; ===========================================================================
-RLoss_Index:	dc.w RLoss_Count-RLoss_Index
-		dc.w RLoss_Bounce-RLoss_Index
-		dc.w RLoss_Collect-RLoss_Index
-		dc.w RLoss_Sparkle-RLoss_Index
-		dc.w RLoss_Delete-RLoss_Index
+RLoss_Index:
+		dc.w	RLoss_Count-RLoss_Index
+		dc.w	RLoss_Bounce-RLoss_Index
+		dc.w	RLoss_Collect-RLoss_Index
+		dc.w	RLoss_Sparkle-RLoss_Index
+		dc.w	RLoss_Delete-RLoss_Index
 ; ===========================================================================
 
 RLoss_Count:	; Routine 0

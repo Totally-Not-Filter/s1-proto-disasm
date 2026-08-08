@@ -80,19 +80,23 @@ vram_bg:	equ $E000	; plane B (background namespace)
 vram_sprites:	equ $F800	; sprite table
 vram_hscroll:	equ $FC00	; horizontal scroll table
 
+; VRAM data from ICD_BLK4
+vram_sprites_icd:	equ $D800	; sprite table
+vram_hscroll_icd:	equ $DC00	; horizontal scroll table
+window_plane_icd:	equ $F000	; window plane
+
+; Various sizes
 tile_size:	equ 8*8/2	; size of a single 8x8 tile
 chunk_size:	equ $200	; size of a single 256x256 chunk
 plane_size_64x32: equ 64*32*2	; size of plane in 512x256 mode
 
-; VRAM data from ICD_BLK4
-vram_sprites_prev:	equ $D800	; sprite table
-vram_hscroll_prev:	equ $DC00	; horizontal scroll table
-window_plane_prev:	equ $F000	; window plane
+vsram_size:	equ $50
+palette_size:	equ 2*64
 
-; CRAM equates
-palette_size:	equ $80
+layout_row_interlaced:	equ $40			; size of a single level layout row (FG/BG alternating)
+layout_row:	equ layout_row_interlaced*2	; size of a single level layout row (skipping over other plane)
 
-; Levels
+; Levels (zones)
 id_GHZ:		equ 0
 id_LZ:		equ 1
 id_MZ:		equ 2
@@ -101,6 +105,37 @@ id_SZ:		equ 4
 id_CWZ:		equ 5
 id_06:		equ 6
 id_SS:		equ 7
+
+; Levels (zone/act word combos)
+act1:		equ 0
+act2:		equ 1
+act3:		equ 2
+act4:		equ 3
+
+id_GHZ_act1:	equ (id_GHZ<<8)+act1	; $0000
+id_GHZ_act2:	equ (id_GHZ<<8)+act2	; $0001
+id_GHZ_act3:	equ (id_GHZ<<8)+act3	; $0002
+id_GHZ_act4:	equ (id_GHZ<<8)+act4	; $0003
+
+id_LZ_act1:	equ (id_LZ<<8)+act1	; $0100
+id_LZ_act2:	equ (id_LZ<<8)+act2	; $0101
+id_LZ_act3:	equ (id_LZ<<8)+act3	; $0102
+
+id_MZ_act1:	equ (id_MZ<<8)+act1	; $0200
+id_MZ_act2:	equ (id_MZ<<8)+act2	; $0201
+id_MZ_act3:	equ (id_MZ<<8)+act3	; $0202
+
+id_SLZ_act1:	equ (id_SLZ<<8)+act1	; $0300
+id_SLZ_act2:	equ (id_SLZ<<8)+act2	; $0301
+id_SLZ_act3:	equ (id_SLZ<<8)+act3	; $0302
+
+id_SZ_act1:	equ (id_SZ<<8)+act1	; $0400
+id_SZ_act2:	equ (id_SZ<<8)+act2	; $0401
+id_SZ_act3:	equ (id_SZ<<8)+act3	; $0402
+
+id_CWZ_act1:	equ (id_CWZ<<8)+act1	; $0500
+id_CWZ_act2:	equ (id_CWZ<<8)+act2	; $0501
+id_CWZ_act3:	equ (id_CWZ<<8)+act3	; $0502
 
 ; Colours
 cBlack:		equ $000			; colour black

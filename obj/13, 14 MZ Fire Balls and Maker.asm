@@ -15,8 +15,9 @@ LavaMaker:
 		bra.w	LBall_ChkDel
 	endif
 ; ===========================================================================
-LavaM_Index:	dc.w LavaM_Main-LavaM_Index
-		dc.w LavaM_MakeLava-LavaM_Index
+LavaM_Index:
+		dc.w	LavaM_Main-LavaM_Index
+		dc.w	LavaM_MakeLava-LavaM_Index
 ; ---------------------------------------------------------------------------
 ;
 ; Lava ball production rates
@@ -64,11 +65,13 @@ LavaBall:
 		bra.w	DisplaySprite
 	endif
 ; ===========================================================================
-LBall_Index:	dc.w LBall_Main-LBall_Index
-		dc.w LBall_Action-LBall_Index
-		dc.w LBall_Delete-LBall_Index
+LBall_Index:
+		dc.w	LBall_Main-LBall_Index
+		dc.w	LBall_Action-LBall_Index
+		dc.w	LBall_Delete-LBall_Index
 
-LBall_Speeds:	dc.w -$400, -$500, -$600, -$700, -$200
+LBall_Speeds:
+		dc.w -$400, -$500, -$600, -$700, -$200
 		dc.w $200, -$200, $200
 ; ===========================================================================
 
@@ -117,11 +120,16 @@ LBall_ChkDel:
 		rts
 	endif
 ; ===========================================================================
-LBall_TypeIndex:	dc.w LBall_Type00-LBall_TypeIndex, LBall_Type00-LBall_TypeIndex
-		dc.w LBall_Type00-LBall_TypeIndex, LBall_Type00-LBall_TypeIndex
-		dc.w LBall_Type04-LBall_TypeIndex, LBall_Type05-LBall_TypeIndex
-		dc.w LBall_Type06-LBall_TypeIndex, LBall_Type07-LBall_TypeIndex
-		dc.w LBall_Type08-LBall_TypeIndex
+LBall_TypeIndex:
+		dc.w	LBall_Type00-LBall_TypeIndex
+		dc.w	LBall_Type00-LBall_TypeIndex
+		dc.w	LBall_Type00-LBall_TypeIndex
+		dc.w	LBall_Type00-LBall_TypeIndex
+		dc.w	LBall_Type04-LBall_TypeIndex
+		dc.w	LBall_Type05-LBall_TypeIndex
+		dc.w	LBall_Type06-LBall_TypeIndex
+		dc.w	LBall_Type07-LBall_TypeIndex
+		dc.w	LBall_Type08-LBall_TypeIndex
 ; ===========================================================================
 ; lavaball types 00-03 fly up and fall back down
 

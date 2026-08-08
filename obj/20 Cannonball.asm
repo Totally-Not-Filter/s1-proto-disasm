@@ -8,11 +8,12 @@ Cannonball:
 		move.w	Cbal_Index(pc,d0.w),d1
 		jmp	Cbal_Index(pc,d1.w)
 ; ===========================================================================
-Cbal_Index:	dc.w Cbal_Main-Cbal_Index
-		dc.w Cbal_ChkExplode-Cbal_Index
-		dc.w Cbal_Delete-Cbal_Index
+Cbal_Index:
+		dc.w	Cbal_Main-Cbal_Index
+		dc.w	Cbal_ChkExplode-Cbal_Index
+		dc.w	Cbal_Delete-Cbal_Index
 
-cbal_time = objoff_30		; time until the cannonball explodes (2 bytes)
+cbal_time:	equ objoff_30		; time until the cannonball explodes (2 bytes)
 ; ===========================================================================
 
 Cbal_Main:	; Routine 0

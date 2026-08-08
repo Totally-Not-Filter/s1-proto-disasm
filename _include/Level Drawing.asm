@@ -6,8 +6,8 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
 		lea	(v_bgscrposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
-		move.w	#$6000,d2
+		lea	(v_lvllayout_bg).w,a4
+		move.w	#$4000+vram_bg-vram_fg,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
 		lea	(v_bg2scrposx).w,a3
@@ -19,15 +19,15 @@ LoadTilesAsYouMove:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
 		lea	(v_bgscrposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
-		move.w	#$6000,d2
+		lea	(v_lvllayout_bg).w,a4
+		move.w	#$4000+vram_bg-vram_fg,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
 		lea	(v_bg2scrposx).w,a3
 		bsr.w	DrawBGScrollBlock2
 		lea	(v_fg_scroll_flags).w,a2
 		lea	(v_scrposx).w,a3
-		lea	(v_lvllayout).w,a4
+		lea	(v_lvllayout_fg).w,a4
 		move.w	#$4000,d2
 		tst.b	(a2)
 		beq.s	locret_4482
@@ -210,7 +210,7 @@ locret_45B0:
 		bsr.w	Calc_VRAM_Pos_Unknown
 		move.w	(sp)+,d4
 		moveq	#-16,d5
-		moveq	#2,d6
+		moveq	#((224-176)/16)-1,d6
 		bsr.w	DrawBlocks_TB_2
 
 loc_45DC:
@@ -225,7 +225,7 @@ loc_45DC:
 		bsr.w	Calc_VRAM_Pos_Unknown
 		move.w	(sp)+,d4
 		move.w	#320,d5
-		moveq	#2,d6
+		moveq	#((224-176)/16)-1,d6
 		bsr.w	DrawBlocks_TB_2
 
 locret_4606:
@@ -450,7 +450,7 @@ Calc_VRAM_Pos:
 		lsl.w	#4,d4
 		lsr.w	#2,d5
 		add.w	d5,d4
-		moveq	#3,d0	; Highest bits of plane VRAM address
+		moveq	#vram_fg>>14,d0	; Highest bits of plane VRAM address
 		swap	d0
 		move.w	d4,d0
 		rts	
@@ -473,7 +473,7 @@ Calc_VRAM_Pos_Unknown:
 		lsl.w	#4,d4
 		lsr.w	#2,d5
 		add.w	d5,d4
-		moveq	#2,d0
+		moveq	#window_plane>>14,d0
 		swap	d0
 		move.w	d4,d0
 		rts
@@ -487,12 +487,12 @@ LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_scrposx).w,a3
-		lea	(v_lvllayout).w,a4
+		lea	(v_lvllayout_fg).w,a4
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
 		lea	(v_bgscrposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
-		move.w	#$6000,d2
+		lea	(v_lvllayout_bg).w,a4
+		move.w	#$4000+vram_bg-vram_fg,d2
 ; End of function LoadTilesFromStart
 
 ; ===========================================================================
@@ -519,8 +519,8 @@ DrawChunks:
 loc_47D8:
 		lea	(v_bg3scrposx).w,a3
 		move.w	#$6000,d2
-		move.w	#(320/2)+16,d4
-		moveq	#3-1,d6
+		move.w	#320-144,d4
+		moveq	#((224-176)/16)-1,d6
 
 loc_47E6:
 		movem.l	d4-d6,-(sp)

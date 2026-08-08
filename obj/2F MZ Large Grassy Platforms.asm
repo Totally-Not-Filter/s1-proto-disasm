@@ -8,17 +8,18 @@ LargeGrass:
 		move.w	LGrass_Index(pc,d0.w),d1
 		jmp	LGrass_Index(pc,d1.w)
 ; ===========================================================================
-LGrass_Index:	dc.w LGrass_Main-LGrass_Index
-		dc.w LGrass_Action-LGrass_Index
+LGrass_Index:
+		dc.w	LGrass_Main-LGrass_Index
+		dc.w	LGrass_Action-LGrass_Index
 
-lgrass_origX = objoff_2A
-lgrass_origY = objoff_2C
+lgrass_origX:	equ objoff_2A
+lgrass_origY:	equ objoff_2C
 
-LGrass_Data:	dc.w LGrass_Data1-LGrass_Data 	; collision angle data
+LGrass_Data:	dc.w LGrass_Data_Symmetrical-LGrass_Data 	; collision angle data
 		dc.b 0, $40			; frame number, platform width
-		dc.w LGrass_Data3-LGrass_Data
+		dc.w LGrass_Data_Asymmetrical-LGrass_Data
 		dc.b 1, $40
-		dc.w LGrass_Data2-LGrass_Data
+		dc.w LGrass_Data_Column-LGrass_Data
 		dc.b 2, $20
 ; ===========================================================================
 
@@ -97,12 +98,13 @@ LGrass_Types:
 		move.w	LGrass_TypeIndex(pc,d0.w),d1
 		jmp	LGrass_TypeIndex(pc,d1.w)
 ; ===========================================================================
-LGrass_TypeIndex:	dc.w LGrass_Type00-LGrass_TypeIndex
-		dc.w LGrass_Type01-LGrass_TypeIndex
-		dc.w LGrass_Type02-LGrass_TypeIndex
-		dc.w LGrass_Type03-LGrass_TypeIndex
-		dc.w LGrass_Type04-LGrass_TypeIndex
-		dc.w LGrass_Type05-LGrass_TypeIndex
+LGrass_TypeIndex:
+		dc.w	LGrass_Type00-LGrass_TypeIndex
+		dc.w	LGrass_Type01-LGrass_TypeIndex
+		dc.w	LGrass_Type02-LGrass_TypeIndex
+		dc.w	LGrass_Type03-LGrass_TypeIndex
+		dc.w	LGrass_Type04-LGrass_TypeIndex
+		dc.w	LGrass_Type05-LGrass_TypeIndex
 ; ===========================================================================
 
 LGrass_Type00:
@@ -268,9 +270,26 @@ locret_911E:
 ; ---------------------------------------------------------------------------
 ; Collision data for large moving platforms (MZ)
 ; ---------------------------------------------------------------------------
-LGrass_Data1:	binclude	"misc/mz_pfm1.bin"
-		even
-LGrass_Data2:	binclude	"misc/mz_pfm2.bin"
-		even
-LGrass_Data3:	binclude	"misc/mz_pfm3.bin"
-		even
+
+LGrass_Data_Symmetrical:
+	; _/*\_
+	dcb.b	 14,$20		; flat
+	range	$21,$2F,+1	; ascending
+	dcb.b	 18,$30		; flat
+	range	$2F,$21,-1	; descending
+	dcb.b	 14,$20		; flat
+	even
+
+LGrass_Data_Column:
+	; |**|
+	dcb.b	 44,$30		; flat
+	even
+
+LGrass_Data_Asymmetrical:
+	; _/*\-
+	dcb.b	  6,$20		; flat
+	range	$21,$3F,+1	; ascending
+	dcb.b	 18,$40		; flat
+	range	$3F,$31,-1	; descending
+	dcb.b	  6,$30		; flat
+	even

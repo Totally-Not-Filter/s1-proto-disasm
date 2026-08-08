@@ -8,13 +8,14 @@ BuzzBomber:
 		move.w	Buzz_Index(pc,d0.w),d1
 		jmp	Buzz_Index(pc,d1.w)
 ; ===========================================================================
-Buzz_Index:	dc.w Buzz_Main-Buzz_Index
-		dc.w Buzz_Action-Buzz_Index
-		dc.w Buzz_Delete-Buzz_Index
+Buzz_Index:
+		dc.w	Buzz_Main-Buzz_Index
+		dc.w	Buzz_Action-Buzz_Index
+		dc.w	Buzz_Delete-Buzz_Index
 
-buzz_timedelay = objoff_32
-buzz_buzzstatus = objoff_34
-buzz_parent = objoff_3C
+buzz_timedelay:	equ objoff_32
+buzz_buzzstatus:	equ objoff_34
+buzz_parent:	equ objoff_3C
 ; ===========================================================================
 
 Buzz_Main:	; Routine 0
@@ -35,8 +36,9 @@ Buzz_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:		dc.w .move-.index
-		dc.w .chknearsonic-.index
+.index:
+		dc.w	.move-.index
+		dc.w	.chknearsonic-.index
 ; ===========================================================================
 
 .move:

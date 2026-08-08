@@ -8,11 +8,12 @@ BasicPlatform:
 		move.w	Plat_Index(pc,d0.w),d1
 		jmp	Plat_Index(pc,d1.w)
 ; ===========================================================================
-Plat_Index:	dc.w Plat_Main-Plat_Index
-		dc.w Plat_Solid-Plat_Index
-		dc.w Plat_Action2-Plat_Index
-		dc.w Plat_Delete-Plat_Index
-		dc.w Plat_Action-Plat_Index
+Plat_Index:
+		dc.w	Plat_Main-Plat_Index
+		dc.w	Plat_Solid-Plat_Index
+		dc.w	Plat_Action2-Plat_Index
+		dc.w	Plat_Delete-Plat_Index
+		dc.w	Plat_Action-Plat_Index
 ; ===========================================================================
 
 Plat_Main:	; Routine 0
@@ -118,13 +119,20 @@ Plat_Move:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:		dc.w .type00-.index, .type01-.index
-		dc.w .type02-.index, .type03-.index
-		dc.w .type04-.index, .type05-.index
-		dc.w .type06-.index, .type07-.index
-		dc.w .type08-.index, .type00-.index
-		dc.w .type0A-.index, .type0B-.index
-		dc.w .type0C-.index
+.index:
+		dc.w	.type00-.index
+		dc.w	.type01-.index
+		dc.w	.type02-.index
+		dc.w	.type03-.index
+		dc.w	.type04-.index
+		dc.w	.type05-.index
+		dc.w	.type06-.index
+		dc.w	.type07-.index
+		dc.w	.type08-.index
+		dc.w	.type00-.index
+		dc.w	.type0A-.index
+		dc.w	.type0B-.index
+		dc.w	.type0C-.index
 ; ===========================================================================
 
 .type00:

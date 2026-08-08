@@ -9,11 +9,12 @@ GrassFire:
 		move.w	GFire_Index(pc,d0.w),d1
 		jmp	GFire_Index(pc,d1.w)
 ; ===========================================================================
-GFire_Index:	dc.w GFire_Main-GFire_Index
-		dc.w loc_9240-GFire_Index
-		dc.w GFire_Move-GFire_Index
+GFire_Index:
+		dc.w	GFire_Main-GFire_Index
+		dc.w	loc_9240-GFire_Index
+		dc.w	GFire_Move-GFire_Index
 
-gfire_origX = objoff_2A
+gfire_origX:	equ objoff_2A
 ; ===========================================================================
 
 GFire_Main:	; Routine 0

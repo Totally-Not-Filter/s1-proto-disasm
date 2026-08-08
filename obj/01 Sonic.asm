@@ -10,11 +10,12 @@ SonicPlayer:
 		move.w	Sonic_Index(pc,d0.w),d1
 		jmp	Sonic_Index(pc,d1.w)
 ; ===========================================================================
-Sonic_Index:	dc.w Sonic_Main-Sonic_Index
-		dc.w Sonic_Control-Sonic_Index
-		dc.w Sonic_Hurt-Sonic_Index
-		dc.w Sonic_Death-Sonic_Index
-		dc.w Sonic_ResetLevel-Sonic_Index
+Sonic_Index:
+		dc.w	Sonic_Main-Sonic_Index
+		dc.w	Sonic_Control-Sonic_Index
+		dc.w	Sonic_Hurt-Sonic_Index
+		dc.w	Sonic_Death-Sonic_Index
+		dc.w	Sonic_ResetLevel-Sonic_Index
 ; ===========================================================================
 
 ; Obj01_Main:
@@ -59,10 +60,10 @@ Sonic_Control:	; Routine 2
 ; ===========================================================================
 
 Sonic_Modes:
-		dc.w Sonic_MdNormal-Sonic_Modes
-		dc.w Sonic_MdJump-Sonic_Modes
-		dc.w Sonic_MdRoll-Sonic_Modes
-		dc.w Sonic_MdJump2-Sonic_Modes
+		dc.w	Sonic_MdNormal-Sonic_Modes
+		dc.w	Sonic_MdJump-Sonic_Modes
+		dc.w	Sonic_MdRoll-Sonic_Modes
+		dc.w	Sonic_MdJump2-Sonic_Modes
 
 ; ---------------------------------------------------------------------------
 ; Music to play after invincibility wears off

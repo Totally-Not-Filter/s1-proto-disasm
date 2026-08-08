@@ -8,12 +8,16 @@ CollapseLedge:
 		move.w	Ledge_Index(pc,d0.w),d1
 		jmp	Ledge_Index(pc,d1.w)
 ; ===========================================================================
-Ledge_Index:	dc.w Ledge_Main-Ledge_Index, Ledge_Touch-Ledge_Index
-		dc.w Ledge_Collapse-Ledge_Index, Ledge_Display-Ledge_Index
-		dc.w Ledge_Delete-Ledge_Index, Ledge_WalkOff-Ledge_Index
+Ledge_Index:
+		dc.w	Ledge_Main-Ledge_Index
+		dc.w	Ledge_Touch-Ledge_Index
+		dc.w	Ledge_Collapse-Ledge_Index
+		dc.w	Ledge_Display-Ledge_Index
+		dc.w	Ledge_Delete-Ledge_Index
+		dc.w	Ledge_WalkOff-Ledge_Index
 
-ledge_timedelay = objoff_38		; time between touching the ledge and it collapsing
-ledge_collapse_flag = objoff_3A		; collapse flag
+ledge_timedelay:	equ objoff_38		; time between touching the ledge and it collapsing
+ledge_collapse_flag:	equ objoff_3A		; collapse flag
 ; ===========================================================================
 
 Ledge_Main:	; Routine 0
@@ -45,6 +49,7 @@ Ledge_Collapse:	; Routine 4
 		beq.w	loc_6130
 		move.b	#1,ledge_collapse_flag(a0)
 		subq.b	#1,ledge_timedelay(a0)
+		; fall into Ledge_WalkOff
 
 ; ===========================================================================
 
@@ -117,12 +122,16 @@ CollapseFloor:
 		move.w	CFlo_Index(pc,d0.w),d1
 		jmp	CFlo_Index(pc,d1.w)
 ; ===========================================================================
-CFlo_Index:	dc.w CFlo_Main-CFlo_Index, CFlo_Touch-CFlo_Index
-		dc.w CFlo_Collapse-CFlo_Index, CFlo_Display-CFlo_Index
-		dc.w CFlo_Delete-CFlo_Index, CFlo_WalkOff-CFlo_Index
+CFlo_Index:
+		dc.w	CFlo_Main-CFlo_Index
+		dc.w	CFlo_Touch-CFlo_Index
+		dc.w	CFlo_Collapse-CFlo_Index
+		dc.w	CFlo_Display-CFlo_Index
+		dc.w	CFlo_Delete-CFlo_Index
+		dc.w	CFlo_WalkOff-CFlo_Index
 
-cflo_timedelay = objoff_38
-cflo_collapse_flag = objoff_3A
+cflo_timedelay: equ objoff_38
+cflo_collapse_flag: equ objoff_3A
 ; ===========================================================================
 
 CFlo_Main:	; Routine 0
@@ -170,6 +179,7 @@ CFlo_Collapse:	; Routine 4
 		beq.w	loc_610E
 		move.b	#1,cflo_collapse_flag(a0)	; set object as "touched"
 		subq.b	#1,cflo_timedelay(a0)
+		; fall into CFlo_WalkOff
 
 ; ===========================================================================
 
@@ -297,13 +307,18 @@ loc_61A8:
 		jmp	(QueueSound2).l
 ; ===========================================================================
 
-CFlo_Data1:	dc.b $1C, $18, $14, $10, $1A, $16, $12, $E, $A, 6, $18
+CFlo_Data1:
+		dc.b $1C, $18, $14, $10, $1A, $16, $12, $E, $A, 6, $18
 		dc.b $14, $10, $C, 8, 4, $16, $12, $E, $A, 6, 2, $14, $10
 		dc.b $C
 		even
-CFlo_Data2:	dc.b $1E, $16, $E, 6, $1A, $12, $A, 2
+
+CFlo_Data2:
+		dc.b $1E, $16, $E, 6, $1A, $12, $A, 2
 		even
-CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E, $A, 2
+
+CFlo_Data3:
+		dc.b $16, $1E, $1A, $12, 6, $E, $A, 2
 		even
 ; ===========================================================================
 
@@ -336,7 +351,8 @@ locret_6224:
 		rts
 ; ===========================================================================
 
-Ledge_SlopeData: dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
+Ledge_SlopeData:
+		dc.b $20, $20, $20, $20, $20, $20, $20, $20, $21, $21
 		dc.b $22, $22, $23, $23, $24, $24, $25, $25, $26, $26
 		dc.b $27, $27, $28, $28, $29, $29, $2A, $2A, $2B, $2B
 		dc.b $2C, $2C, $2D, $2D, $2E, $2E, $2F, $2F, $30, $30

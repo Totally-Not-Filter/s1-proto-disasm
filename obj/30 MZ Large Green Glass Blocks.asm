@@ -21,22 +21,27 @@ Glass_Delete:
 		bsr.w	DeleteObject
 		rts
 ; ===========================================================================
-Glass_Index:	dc.w Glass_Main-Glass_Index
-		dc.w Glass_Block012-Glass_Index
-		dc.w loc_94B0-Glass_Index
-		dc.w Glass_Reflect012-Glass_Index
-		dc.w Glass_Block34-Glass_Index
-		dc.w Glass_Reflect34-Glass_Index
+Glass_Index:
+		dc.w	Glass_Main-Glass_Index
+		dc.w	Glass_Block012-Glass_Index
+		dc.w	loc_94B0-Glass_Index
+		dc.w	Glass_Reflect012-Glass_Index
+		dc.w	Glass_Block34-Glass_Index
+		dc.w	Glass_Reflect34-Glass_Index
 
-glass_dist = objoff_32		; distance block moves when switch is pressed
-glass_parent = objoff_3C		; address of parent object
+glass_dist:	equ objoff_32		; distance block moves when switch is pressed
+glass_parent:	equ objoff_3C		; address of parent object
 
-Glass_Vars1:	dc.b 2, 4, 0	; routine num, y-axis dist from origin, frame num
+Glass_Vars1:
+		dc.b 2, 4, 0	; routine num, y-axis dist from origin, frame num
 		dc.b 4, $48, 1
 		dc.b 6, 4, 2
 		even
-Glass_Vars2:	dc.b 8, 0, 3
+
+Glass_Vars2:
+		dc.b 8, 0, 3
 		dc.b $A, 0, 2
+		even
 ; ===========================================================================
 
 Glass_Main:
@@ -141,11 +146,12 @@ Glass_Types:
 ; End of function Glass_Types
 
 ; ===========================================================================
-Glass_TypeIndex:	dc.w Glass_Type00-Glass_TypeIndex
-		dc.w Glass_Type01-Glass_TypeIndex
-		dc.w Glass_Type02-Glass_TypeIndex
-		dc.w Glass_Type03-Glass_TypeIndex
-		dc.w Glass_Type04-Glass_TypeIndex
+Glass_TypeIndex:
+		dc.w	Glass_Type00-Glass_TypeIndex
+		dc.w	Glass_Type01-Glass_TypeIndex
+		dc.w	Glass_Type02-Glass_TypeIndex
+		dc.w	Glass_Type03-Glass_TypeIndex
+		dc.w	Glass_Type04-Glass_TypeIndex
 ; ===========================================================================
 
 Glass_Type00:

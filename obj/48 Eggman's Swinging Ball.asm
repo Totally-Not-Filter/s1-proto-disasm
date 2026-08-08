@@ -8,11 +8,12 @@ BossBall:
 		move.w	GBall_Index(pc,d0.w),d1
 		jmp	GBall_Index(pc,d1.w)
 ; ===========================================================================
-GBall_Index:	dc.w GBall_Main-GBall_Index
-		dc.w GBall_Base-GBall_Index
-		dc.w GBall_Display2-GBall_Index
-		dc.w loc_B49E-GBall_Index
-		dc.w GBall_ChkVanish-GBall_Index
+GBall_Index:
+		dc.w	GBall_Main-GBall_Index
+		dc.w	GBall_Base-GBall_Index
+		dc.w	GBall_Display2-GBall_Index
+		dc.w	loc_B49E-GBall_Index
+		dc.w	GBall_ChkVanish-GBall_Index
 ; ===========================================================================
 
 GBall_Main:	; Routine 0
@@ -62,7 +63,8 @@ GBall_MakeBall:
 		rts
 ; ===========================================================================
 
-GBall_PosData:	dc.b 0, $10, $20, $30, $40, $60	; y-position data for links and giant ball
+GBall_PosData:
+		dc.b 0, $10, $20, $30, $40, $60	; y-position data for links and giant ball
 
 ; ===========================================================================
 

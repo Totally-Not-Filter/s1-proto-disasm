@@ -8,9 +8,10 @@ Obj2A:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:		dc.w .init-.index
-		dc.w .chkpress-.index
-		dc.w .display-.index
+.index:
+		dc.w	.init-.index
+		dc.w	.chkpress-.index
+		dc.w	.display-.index
 ; ===========================================================================
 
 .init:	; Routine 0

@@ -8,9 +8,13 @@ Bridge:
 		move.w	Bri_Index(pc,d0.w),d1
 		jmp	Bri_Index(pc,d1.w)
 ; ===========================================================================
-Bri_Index:	dc.w Bri_Main-Bri_Index, Bri_Action-Bri_Index
-		dc.w Bri_Platform-Bri_Index, Bri_Delete-Bri_Index
-		dc.w Bri_Delete-Bri_Index, Bri_Display-Bri_Index
+Bri_Index:
+		dc.w	Bri_Main-Bri_Index
+		dc.w	Bri_Action-Bri_Index
+		dc.w	Bri_Platform-Bri_Index
+		dc.w	Bri_Delete-Bri_Index
+		dc.w	Bri_Delete-Bri_Index
+		dc.w	Bri_Display-Bri_Index
 ; ===========================================================================
 
 Bri_Main:	; Routine 0
@@ -314,7 +318,7 @@ Bri_Bend:
 		move.b	objoff_3E(a0),d0
 		bsr.w	CalcSine
 		move.w	d0,d4
-		lea	(Obj11_BendData2).l,a4
+		lea	(Bri_Data_Align).l,a4
 		moveq	#0,d0
 		move.b	obSubtype(a0),d0
 		lsl.w	#4,d0
@@ -323,7 +327,7 @@ Bri_Bend:
 		move.w	d3,d2
 		add.w	d0,d3
 		moveq	#0,d5
-		lea	(Obj11_BendData).l,a5
+		lea	(Bri_Data_Y_Max).l,a5
 		move.b	(a5,d3.w),d5
 		andi.w	#$F,d3
 		lsl.w	#4,d3
@@ -380,14 +384,52 @@ locret_51F4:
 		rts
 ; End of function Bri_Bend
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; GHZ bridge-bending data
 ; (Defines how the bridge bends when Sonic walks across it)
 ; ---------------------------------------------------------------------------
-Obj11_BendData:	binclude	"misc/ghzbend1.bin"
+
+_ = 0	; for readability of out-of-bounds bytes
+
+; Obj11_BendData:
+Bri_Data_Y_Max:	; Y-distance each log is moved down when stood on (only 12 logs are ever used in-game)
+		dc.b _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 0 logs (invalid)
+		dc.b 2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 1 log
+		dc.b 2,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 2 logs
+		dc.b 2,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 3 logs
+		dc.b 2,  4,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 4 logs
+		dc.b 2,  4,  6,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 5 logs
+		dc.b 2,  4,  6,  6,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 6 logs
+		dc.b 2,  4,  6,  8,  6,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _,  _	; 7 logs
+		dc.b 2,  4,  6,  8,  8,  6,  4,  2,  _,  _,  _,  _,  _,  _,  _,  _	; 8 logs
+		dc.b 2,  4,  6,  8, 10,  8,  6,  4,  2,  _,  _,  _,  _,  _,  _,  _	; 9 logs
+		dc.b 2,  4,  6,  8, 10, 10,  8,  6,  4,  2,  _,  _,  _,  _,  _,  _	; 10 logs
+		dc.b 2,  4,  6,  8, 10, 12, 10,  8,  6,  4,  2,  _,  _,  _,  _,  _	; 11 logs
+		dc.b 2,  4,  6,  8, 10, 12, 12, 10,  8,  6,  4,  2,  _,  _,  _,  _	; 12 logs
+		dc.b 2,  4,  6,  8, 10, 12, 14, 12, 10,  8,  6,  4,  2,  _,  _,  _	; 13 logs
+		dc.b 2,  4,  6,  8, 10, 12, 14, 14, 12, 10,  8,  6,  4,  2,  _,  _	; 14 logs
+		dc.b 2,  4,  6,  8, 10, 12, 14, 16, 14, 12, 10,  8,  6,  4,  2,  _	; 15 logs
+		dc.b 2,  4,  6,  8, 10, 12, 14, 16, 16, 14, 12, 10,  8,  6,  4,  2	; 16 logs
 		even
-Obj11_BendData2:binclude	"misc/ghzbend2.bin"
+
+; Obj11_BendData2:
+Bri_Data_Align:	; Values used to align logs to the left & right of the one being stood on
+		dc.b $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 0
+		dc.b $B5, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 1
+		dc.b $7E, $DB, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 2
+		dc.b $61, $B5, $EC, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 3
+		dc.b $4A, $93, $CD, $F3, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 4
+		dc.b $3E, $7E, $B0, $DB, $F6, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 5
+		dc.b $38, $6D, $9D, $C5, $E4, $F8, $FF,   _,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 6
+		dc.b $31, $61, $8E, $B5, $D4, $EC, $FB, $FF,   _,   _,   _,   _,   _,   _,   _,   _	; standing on log 7
+		dc.b $2B, $56, $7E, $A2, $C1, $DB, $EE, $FB, $FF,   _,   _,   _,   _,   _,   _,   _	; standing on log 8
+		dc.b $25, $4A, $73, $93, $B0, $CD, $E1, $F3, $FC, $FF,   _,   _,   _,   _,   _,   _	; standing on log 9
+		dc.b $1F, $44, $67, $88, $A7, $BD, $D4, $E7, $F4, $FD, $FF,   _,   _,   _,   _,   _	; standing on log 10
+		dc.b $1F, $3E, $5C, $7E, $98, $B0, $C9, $DB, $EA, $F6, $FD, $FF,   _,   _,   _,   _	; standing on log 11
+		dc.b $19, $38, $56, $73, $8E, $A7, $BD, $D1, $E1, $EE, $F8, $FE, $FF,   _,   _,   _	; standing on log 12
+		dc.b $19, $38, $50, $6D, $83, $9D, $B0, $C5, $D8, $E4, $F1, $F8, $FE, $FF,   _,   _	; standing on log 13
+		dc.b $19, $31, $4A, $67, $7E, $93, $A7, $BD, $CD, $DB, $E7, $F3, $F9, $FE, $FF,   _	; standing on log 14
+		dc.b $19, $31, $4A, $61, $78, $8E, $A2, $B5, $C5, $D4, $E1, $EC, $F4, $FB, $FE, $FF	; standing on log 15
 		even
 ; ===========================================================================
 

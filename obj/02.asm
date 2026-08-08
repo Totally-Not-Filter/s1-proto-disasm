@@ -7,14 +7,14 @@ Obj02:
 		move.b	obRoutine(a0),d0
 		move.w	Obj02_Index(pc,d0.w),d1
 		jmp	Obj02_Index(pc,d1.w)
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 Obj02_Index:
-		dc.w Obj02_Main-Obj02_Index
-		dc.w Obj02_Display-Obj02_Index
-		dc.w Obj02_Delete-Obj02_Index
-		dc.w Obj02_Delete-Obj02_Index
-; ---------------------------------------------------------------------------
+		dc.w	Obj02_Main-Obj02_Index
+		dc.w	Obj02_Display-Obj02_Index
+		dc.w	Obj02_Delete-Obj02_Index
+		dc.w	Obj02_Delete-Obj02_Index
+; ===========================================================================
 
 Obj02_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
@@ -42,7 +42,7 @@ Obj02_Display:	; Routine 2
 
 .wait:
 		rts
-; ---------------------------------------------------------------------------
+; ===========================================================================
 
 Obj02_Delete:	; Routine 4, 6
 		bsr.w	DeleteObject

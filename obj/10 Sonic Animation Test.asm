@@ -10,10 +10,10 @@ Obj10:
 		jmp	Obj10_Index(pc,d1.w)
 ; ===========================================================================
 Obj10_Index:
-		dc.w Obj10_Init-Obj10_Index
-		dc.w Obj10_Main-Obj10_Index
-		dc.w Obj10_Delete-Obj10_Index
-		dc.w Obj10_Delete-Obj10_Index
+		dc.w	Obj10_Init-Obj10_Index
+		dc.w	Obj10_Main-Obj10_Index
+		dc.w	Obj10_Delete-Obj10_Index
+		dc.w	Obj10_Delete-Obj10_Index
 ; ===========================================================================
 
 Obj10_Init:	; Routine 0

@@ -8,10 +8,11 @@ BossGreenHill:
 		move.w	BGHZ_Index(pc,d0.w),d1
 		jmp	BGHZ_Index(pc,d1.w)
 ; ===========================================================================
-BGHZ_Index:	dc.w BGHZ_Main-BGHZ_Index
-		dc.w BGHZ_ShipMain-BGHZ_Index
-		dc.w BGHZ_FaceMain-BGHZ_Index
-		dc.w BGHZ_FlameMain-BGHZ_Index
+BGHZ_Index:
+		dc.w	BGHZ_Main-BGHZ_Index
+		dc.w	BGHZ_ShipMain-BGHZ_Index
+		dc.w	BGHZ_FaceMain-BGHZ_Index
+		dc.w	BGHZ_FlameMain-BGHZ_Index
 
 BGHZ_ObjData:	dc.b 2, 0		; routine counter, animation
 		dc.b 4, 1
@@ -62,12 +63,13 @@ BGHZ_ShipMain:	; Routine 2
 		or.b	d0,obRender(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-BGHZ_ShipIndex:	dc.w BGHZ_ShipStart-BGHZ_ShipIndex
-		dc.w BGHZ_MakeBall-BGHZ_ShipIndex
-		dc.w BGHZ_ShipMove-BGHZ_ShipIndex
-		dc.w loc_B236-BGHZ_ShipIndex
-		dc.w loc_B25C-BGHZ_ShipIndex
-		dc.w loc_B290-BGHZ_ShipIndex
+BGHZ_ShipIndex:
+		dc.w	BGHZ_ShipStart-BGHZ_ShipIndex
+		dc.w	BGHZ_MakeBall-BGHZ_ShipIndex
+		dc.w	BGHZ_ShipMove-BGHZ_ShipIndex
+		dc.w	loc_B236-BGHZ_ShipIndex
+		dc.w	loc_B25C-BGHZ_ShipIndex
+		dc.w	loc_B290-BGHZ_ShipIndex
 ; ===========================================================================
 
 BGHZ_ShipStart:

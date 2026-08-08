@@ -9,8 +9,9 @@ Jaws:
 		jsr	Jaws_Index(pc,d1.w)
 		bra.w	RememberState
 ; ===========================================================================
-Jaws_Index:	dc.w Jaws_Main-Jaws_Index
-		dc.w Jaws_Turn-Jaws_Index
+Jaws_Index:
+		dc.w	Jaws_Main-Jaws_Index
+		dc.w	Jaws_Turn-Jaws_Index
 ; ===========================================================================
 
 Jaws_Main:	; Routine 0

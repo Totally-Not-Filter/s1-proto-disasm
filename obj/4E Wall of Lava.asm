@@ -8,19 +8,20 @@ LavaWall:
 		move.w	LWall_Index(pc,d0.w),d1
 		jmp	LWall_Index(pc,d1.w)
 ; ===========================================================================
-LWall_Index:	dc.w LWall_Main-LWall_Index
-		dc.w LWall_Action-LWall_Index
-		dc.w LWall_Solid-LWall_Index
-		dc.w LWall_Move-LWall_Index
-		dc.w LWall_Delete-LWall_Index
+LWall_Index:
+		dc.w	LWall_Main-LWall_Index
+		dc.w	LWall_Action-LWall_Index
+		dc.w	LWall_Solid-LWall_Index
+		dc.w	LWall_Move-LWall_Index
+		dc.w	LWall_Delete-LWall_Index
 
-lwall_flag = objoff_36		; flag to start wall moving
+lwall_flag: equ objoff_36		; flag to start wall moving
 ; ===========================================================================
 
 LWall_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
 		movea.l	a0,a1
-		moveq	#1,d1
+		moveq	#2-1,d1
 		bra.s	.make
 ; ===========================================================================
 

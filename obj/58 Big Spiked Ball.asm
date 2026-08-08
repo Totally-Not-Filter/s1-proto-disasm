@@ -8,13 +8,14 @@ BigSpikeBall:
 		move.w	BBall_Index(pc,d0.w),d1
 		jmp	BBall_Index(pc,d1.w)
 ; ===========================================================================
-BBall_Index:	dc.w BBall_Main-BBall_Index
-		dc.w BBall_Move-BBall_Index
+BBall_Index:
+		dc.w	BBall_Main-BBall_Index
+		dc.w	BBall_Move-BBall_Index
 
-bball_origX = objoff_3A		; original x-axis position
-bball_origY = objoff_38		; original y-axis position
-bball_radius = objoff_3C	; radius of circle
-bball_speed = objoff_3E		; speed
+bball_origX:	equ objoff_3A		; original x-axis position
+bball_origY:	equ objoff_38		; original y-axis position
+bball_radius:	equ objoff_3C	; radius of circle
+bball_speed:	equ objoff_3E		; speed
 ; ===========================================================================
 
 BBall_Main:	; Routine 0
@@ -48,10 +49,11 @@ BBall_Move:	; Routine 2
 		out_of_range.w	DeleteObject,bball_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-.index:		dc.w .type00-.index
-		dc.w .type01-.index
-		dc.w .type02-.index
-		dc.w .type03-.index
+.index:
+		dc.w	.type00-.index
+		dc.w	.type01-.index
+		dc.w	.type02-.index
+		dc.w	.type03-.index
 ; ===========================================================================
 
 .type00:

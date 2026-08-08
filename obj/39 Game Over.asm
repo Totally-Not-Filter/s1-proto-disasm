@@ -8,9 +8,10 @@ GameOverCard:
 		move.w	Over_Index(pc,d0.w),d1
 		jmp	Over_Index(pc,d1.w)
 ; ===========================================================================
-Over_Index:	dc.w Over_ChkPLC-Over_Index
-		dc.w Over_Move-Over_Index
-		dc.w Over_Wait-Over_Index
+Over_Index:
+		dc.w	Over_ChkPLC-Over_Index
+		dc.w	Over_Move-Over_Index
+		dc.w	Over_Wait-Over_Index
 ; ===========================================================================
 
 Over_ChkPLC:	; Routine 0
@@ -48,9 +49,7 @@ Over_UpdatePos:
 Over_SetWait:
 		move.w	#600,obTimeFrame(a0)	; set time delay to 10 seconds
 		addq.b	#2,obRoutine(a0)
-	if FixBugs
-		bra.w	DisplaySprite
-	else
+	if FixBugs=0
 		rts
 	endif
 ; ===========================================================================

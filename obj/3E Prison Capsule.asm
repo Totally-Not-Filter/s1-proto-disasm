@@ -18,16 +18,17 @@ Prison:
 		rts
 	endif
 ; ===========================================================================
-Pri_Index:	dc.w Pri_Main-Pri_Index
-		dc.w Pri_BodyMain-Pri_Index
-		dc.w Pri_Switched-Pri_Index
-		dc.w Pri_Explosion-Pri_Index
-		dc.w Pri_Explosion-Pri_Index
-		dc.w Pri_Explosion-Pri_Index
-		dc.w Pri_Animals-Pri_Index
-		dc.w Pri_EndAct-Pri_Index
+Pri_Index:
+		dc.w	Pri_Main-Pri_Index
+		dc.w	Pri_BodyMain-Pri_Index
+		dc.w	Pri_Switched-Pri_Index
+		dc.w	Pri_Explosion-Pri_Index
+		dc.w	Pri_Explosion-Pri_Index
+		dc.w	Pri_Explosion-Pri_Index
+		dc.w	Pri_Animals-Pri_Index
+		dc.w	Pri_EndAct-Pri_Index
 
-pri_origY = objoff_30		; original y-axis position
+pri_origY: equ objoff_30		; original y-axis position
 
 Pri_Var:	dc.b 2, $20, 4, 0	; routine, width, priority, frame
 		dc.b 4, $C, 5, 1

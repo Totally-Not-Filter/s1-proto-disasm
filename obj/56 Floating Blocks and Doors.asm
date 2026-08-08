@@ -8,13 +8,14 @@ FloatingBlock:
 		move.w	FBlock_Index(pc,d0.w),d1
 		jmp	FBlock_Index(pc,d1.w)
 ; ===========================================================================
-FBlock_Index:	dc.w FBlock_Main-FBlock_Index
-		dc.w FBlock_Action-FBlock_Index
+FBlock_Index:
+		dc.w	FBlock_Main-FBlock_Index
+		dc.w	FBlock_Action-FBlock_Index
 
-fb_origX = objoff_34		; original x-axis position
-fb_origY = objoff_30		; original y-axis position
-fb_height = objoff_3A		; total object height
-fb_type = objoff_3C		; subtype (2nd digit only)
+fb_origX:	equ objoff_34		; original x-axis position
+fb_origY:	equ objoff_30		; original y-axis position
+fb_height:	equ objoff_3A		; total object height
+fb_type:	equ objoff_3C		; subtype (2nd digit only)
 
 FBlock_Var:	; width/2, height/2
 		dc.b  $10, $10	; subtype 0x/8x
@@ -109,12 +110,18 @@ FBlock_Action:	; Routine 2
 		rts
 	endif
 ; ===========================================================================
-.index:		dc.w .type00-.index, .type01-.index
-		dc.w .type02-.index, .type03-.index
-		dc.w .type04-.index, .type05-.index
-		dc.w .type06-.index, .type07-.index
-		dc.w .type08-.index, .type09-.index
-		dc.w .type0A-.index, .type0B-.index
+.index:		dc.w	.type00-.index
+		dc.w	.type01-.index
+		dc.w	.type02-.index
+		dc.w	.type03-.index
+		dc.w	.type04-.index
+		dc.w	.type05-.index
+		dc.w	.type06-.index
+		dc.w	.type07-.index
+		dc.w	.type08-.index
+		dc.w	.type09-.index
+		dc.w	.type0A-.index
+		dc.w	.type0B-.index
 ; ===========================================================================
 
 .type00:

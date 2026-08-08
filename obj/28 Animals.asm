@@ -8,20 +8,27 @@ Animals:
 		move.w	Anml_Index(pc,d0.w),d1
 		jmp	Anml_Index(pc,d1.w)
 ; ===========================================================================
-Anml_Index:	dc.w Anml_FromEnemy-Anml_Index, loc_7418-Anml_Index
-		dc.w loc_7472-Anml_Index, loc_74A8-Anml_Index
-		dc.w loc_7472-Anml_Index, loc_7472-Anml_Index
-		dc.w loc_7472-Anml_Index, loc_74A8-Anml_Index
-		dc.w loc_7472-Anml_Index
+Anml_Index:
+		dc.w	Anml_FromEnemy-Anml_Index
+		dc.w	loc_7418-Anml_Index
+		dc.w	loc_7472-Anml_Index
+		dc.w	loc_74A8-Anml_Index
+		dc.w	loc_7472-Anml_Index
+		dc.w	loc_7472-Anml_Index
+		dc.w	loc_7472-Anml_Index
+		dc.w	loc_74A8-Anml_Index
+		dc.w	loc_7472-Anml_Index
 
-Anml_VarIndex:	dc.b 0, 1 ; Green Hill Zone
+Anml_VarIndex:
+		dc.b 0, 1 ; Green Hill Zone
 		dc.b 2, 3 ; Labyrinth Zone
 		dc.b 4, 5 ; Marble Zone
 		dc.b 6, 3 ; Star Light Zone
 		dc.b 4, 1 ; Sparkling Zone
 		dc.b 0, 5 ; Clock Work Zone
 
-Anml_Variables:	dc.w -$200, -$400
+Anml_Variables:
+		dc.w -$200, -$400
 		dc.l Map_Animal1
 		dc.w -$200, -$300	; horizontal speed, vertical speed
 		dc.l Map_Animal2	; mappings address

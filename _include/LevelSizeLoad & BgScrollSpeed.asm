@@ -88,10 +88,10 @@ LevelBoundArray:
 ; ===========================================================================
 
 LevSz_StartLoc:
-		move.w	(v_zone).w,d0
-		cmpi.b	#3,d0
-		bne.s	loc_3C7C
-		subq.b	#1,(v_act).w
+		move.w	(v_zone).w,d0	; get current zone and act
+		cmpi.b	#act4,d0	; is current act 4?
+		bne.s	loc_3C7C	; if not, branch
+		subq.b	#1,(v_act).w	; subtract 1 from the act number, effectively making act 4, act 3
 
 loc_3C7C:
 		lsl.b	#6,d0

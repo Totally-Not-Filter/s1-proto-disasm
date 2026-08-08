@@ -8,8 +8,9 @@ Button:
 		move.w	But_Index(pc,d0.w),d1
 		jmp	But_Index(pc,d1.w)
 ; ===========================================================================
-But_Index:	dc.w But_Main-But_Index
-		dc.w But_Pressed-But_Index
+But_Index:
+		dc.w	But_Main-But_Index
+		dc.w	But_Pressed-But_Index
 ; ===========================================================================
 
 But_Main:	; Routine 0
@@ -119,7 +120,8 @@ loc_9E82:
 locret_9E8C:
 		rts
 ; ===========================================================================
-But_MZData:	dc.b $10, $10
+But_MZData:
+		dc.b $10, $10
 ; ===========================================================================
 
 loc_9E90:

@@ -9,20 +9,14 @@ Crabmeat:
 		jmp	Crab_Index(pc,d1.w)
 ; ===========================================================================
 Crab_Index:
-ptr_Crab_Main:		dc.w Crab_Main-Crab_Index
-ptr_Crab_Action:	dc.w Crab_Action-Crab_Index
-ptr_Crab_Delete:	dc.w Crab_Delete-Crab_Index
-ptr_Crab_BallMain:	dc.w Crab_BallMain-Crab_Index
-ptr_Crab_BallMove:	dc.w Crab_BallMove-Crab_Index
+		dc.w	Crab_Main-Crab_Index		; 0
+		dc.w	Crab_Action-Crab_Index		; 2
+		dc.w	Crab_Delete-Crab_Index		; 4
+		dc.w	Crab_BallMain-Crab_Index	; 6
+		dc.w	Crab_BallMove-Crab_Index	; 8
 
-id_Crab_Main = ptr_Crab_Main-Crab_Index	; 0
-id_Crab_Action = ptr_Crab_Action-Crab_Index	; 2
-id_Crab_Delete = ptr_Crab_Delete-Crab_Index	; 4
-id_Crab_BallMain = ptr_Crab_BallMain-Crab_Index	; 6
-id_Crab_BallMove = ptr_Crab_BallMove-Crab_Index	; 8
-
-crab_timedelay = objoff_30
-crab_mode = objoff_32
+crab_timedelay: equ objoff_30		; delay timer before and after launching fireballs
+crab_flags:	equ objoff_32		; contains two flags (0 = scuttle check mode // 1 = firing flag)
 ; ===========================================================================
 
 Crab_Main:	; Routine 0
@@ -50,22 +44,23 @@ Crab_Main:	; Routine 0
 Crab_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ob2ndRout(a0),d0
-		move.w	.index(pc,d0.w),d1
-		jsr	.index(pc,d1.w)
+		move.w	Crab_ActIndex(pc,d0.w),d1
+		jsr	Crab_ActIndex(pc,d1.w)
 		lea	(Ani_Crab).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:		dc.w .waittofire-.index
-		dc.w .walkonfloor-.index
+Crab_ActIndex:
+		dc.w	Crab_Action_WaitFire-Crab_ActIndex
+		dc.w	Crab_Action_Scuttle-Crab_ActIndex
 ; ===========================================================================
 
-.waittofire:
+Crab_Action_WaitFire:
 		subq.w	#1,crab_timedelay(a0) ; subtract 1 from time delay
 		bpl.s	.dontmove
 		tst.b	obRender(a0)
 		bpl.s	.movecrab
-		bchg	#1,crab_mode(a0)
+		bchg	#1,crab_flags(a0)
 		bne.s	.fire
 
 .movecrab:
@@ -90,7 +85,7 @@ Crab_Action:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	.failleft
 		_move.b	#id_Crabmeat,obID(a1) ; load left fireball
-		move.b	#id_Crab_BallMain,obRoutine(a1)
+		move.b	#6,obRoutine(a1)			; set to Crab_BallMain
 		move.w	obX(a0),obX(a1)
 		subi.w	#$10,obX(a1)
 		move.w	obY(a0),obY(a1)
@@ -100,7 +95,7 @@ Crab_Action:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	.failright
 		_move.b	#id_Crabmeat,obID(a1) ; load right fireball
-		move.b	#id_Crab_BallMain,obRoutine(a1)
+		move.b	#6,obRoutine(a1)			; set to Crab_BallMain
 		move.w	obX(a0),obX(a1)
 		addi.w	#$10,obX(a1)
 		move.w	obY(a0),obY(a1)
@@ -110,11 +105,11 @@ Crab_Action:	; Routine 2
 		rts
 ; ===========================================================================
 
-.walkonfloor:
+Crab_Action_Scuttle:
 		subq.w	#1,crab_timedelay(a0)
 		bmi.s	loc_7728
 		bsr.w	SpeedToPos
-		bchg	#0,crab_mode(a0)
+		bchg	#0,crab_flags(a0)
 		bne.s	loc_770E
 		move.w	obX(a0),d3
 		addi.w	#$10,d3

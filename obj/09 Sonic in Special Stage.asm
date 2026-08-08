@@ -9,10 +9,10 @@ SonicSpecial:
 		jmp	Obj09_Index(pc,d1.w)
 ; ===========================================================================
 Obj09_Index:
-		dc.w Obj09_Main-Obj09_Index
-		dc.w Obj09_Load-Obj09_Index
-		dc.w Obj09_ExitStage-Obj09_Index
-		dc.w Obj09_Exit2-Obj09_Index
+		dc.w	Obj09_Main-Obj09_Index
+		dc.w	Obj09_Load-Obj09_Index
+		dc.w	Obj09_ExitStage-Obj09_Index
+		dc.w	Obj09_Exit2-Obj09_Index
 ; ===========================================================================
 
 Obj09_Main:	; Routine 0
@@ -39,8 +39,8 @@ Obj09_Load:	; Routine 2
 ; ===========================================================================
 
 Obj09_Modes:
-		dc.w Obj09_OnWall-Obj09_Modes
-		dc.w Obj09_InAir-Obj09_Modes
+		dc.w	Obj09_OnWall-Obj09_Modes
+		dc.w	Obj09_InAir-Obj09_Modes
 ; ===========================================================================
 
 Obj09_OnWall:
@@ -238,7 +238,7 @@ locret_10EF6:
 		rts
 ; ===========================================================================
 
-ss_waitcount	= objoff_38
+ss_waitcount:	equ objoff_38
 
 Obj09_ExitStage:	; Routine 4
 		addi.w	#$40,(v_ssrotate).w	; increase rotation speed

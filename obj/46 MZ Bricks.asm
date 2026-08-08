@@ -8,10 +8,11 @@ MarbleBrick:
 		move.w	Brick_Index(pc,d0.w),d1
 		jmp	Brick_Index(pc,d1.w)
 ; ===========================================================================
-Brick_Index:	dc.w Brick_Main-Brick_Index
-		dc.w Brick_Action-Brick_Index
+Brick_Index:
+		dc.w	Brick_Main-Brick_Index
+		dc.w	Brick_Action-Brick_Index
 
-brick_origY = objoff_30
+brick_origY:	equ objoff_30
 ; ===========================================================================
 
 Brick_Main:	; Routine 0
@@ -51,11 +52,12 @@ Brick_Action:	; Routine 2
 		rts
 	endif
 ; ===========================================================================
-Brick_TypeIndex:	dc.w Brick_Type00-Brick_TypeIndex
-		dc.w Brick_Type01-Brick_TypeIndex
-		dc.w Brick_Type02-Brick_TypeIndex
-		dc.w Brick_Type03-Brick_TypeIndex
-		dc.w Brick_Type04-Brick_TypeIndex
+Brick_TypeIndex:
+		dc.w	Brick_Type00-Brick_TypeIndex
+		dc.w	Brick_Type01-Brick_TypeIndex
+		dc.w	Brick_Type02-Brick_TypeIndex
+		dc.w	Brick_Type03-Brick_TypeIndex
+		dc.w	Brick_Type04-Brick_TypeIndex
 ; ===========================================================================
 
 Brick_Type00:
@@ -65,7 +67,7 @@ Brick_Type00:
 Brick_Type02:
 		move.w	(v_player+obX).w,d0
 		sub.w	obX(a0),d0
-		bcc.s	loc_C4A6
+		bhs.s	loc_C4A6
 		neg.w	d0
 
 loc_C4A6:
@@ -101,7 +103,7 @@ Brick_Type03:
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		cmpi.w	#$2E8,d0
-		bcc.s	locret_C50C
+		bhs.s	locret_C50C
 		move.b	#0,obSubtype(a0)
 
 locret_C50C:

@@ -8,11 +8,12 @@ GBall:
 		move.w	.index(pc,d0.w),d1
 		jmp	.index(pc,d1.w)
 ; ===========================================================================
-.index:		dc.w .main-.index
-		dc.w GBall_Roll-.index
-		dc.w GBall_InAir-.index
-		dc.w GBall_Delete-.index
-		dc.w GBall_ChkPush-.index
+.index:
+		dc.w	.main-.index
+		dc.w	GBall_Roll-.index
+		dc.w	GBall_InAir-.index
+		dc.w	GBall_Delete-.index
+		dc.w	GBall_ChkPush-.index
 ; ===========================================================================
 
 .main:	; Routine 0

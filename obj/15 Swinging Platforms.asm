@@ -8,12 +8,16 @@ SwingingPlatform:
 		move.w	Swing_Index(pc,d0.w),d1
 		jmp	Swing_Index(pc,d1.w)
 ; ===========================================================================
-Swing_Index:	dc.w Swing_Main-Swing_Index, Swing_SetSolid-Swing_Index
-		dc.w Swing_Action2-Swing_Index, Swing_Delete-Swing_Index
-		dc.w Swing_Delete-Swing_Index, Swing_Display-Swing_Index
+Swing_Index:
+		dc.w	Swing_Main-Swing_Index
+		dc.w	Swing_SetSolid-Swing_Index
+		dc.w	Swing_Action2-Swing_Index
+		dc.w	Swing_Delete-Swing_Index
+		dc.w	Swing_Delete-Swing_Index
+		dc.w	Swing_Display-Swing_Index
 
-swing_origX = objoff_3A		; original x-axis position
-swing_origY = objoff_38		; original y-axis position
+swing_origX:	equ objoff_3A		; original x-axis position
+swing_origY:	equ objoff_38		; original y-axis position
 ; ===========================================================================
 
 Swing_Main:	; Routine 0

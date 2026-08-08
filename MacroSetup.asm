@@ -1,3 +1,8 @@
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Macros (assembler-specific)
+; ---------------------------------------------------------------------------
+
 	padding off					; we don't want AS padding out dc.b instructions
 	listing purecode				; Want listing file, but only the final code in expanded macros
 	page	0					; Don't want form feeds
@@ -86,6 +91,11 @@ ds macro
 			db 0
 		endm
 	endif
+	endm
+
+; adds easy cross-compatibility with ASM68K
+dcb macro count,value
+	dc.ATTRIBUTE	[count]value
 	endm
 
 ; define a trace macro

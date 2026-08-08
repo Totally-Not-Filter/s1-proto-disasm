@@ -203,7 +203,7 @@ ClrCRAMLoop:
 		dbf	d3,ClrCRAMLoop
 
 		move.l	#$40000010,(a4)
-		moveq	#bytesToLcnt($50),d4
+		moveq	#bytesToLcnt(vsram_size),d4
 
 ClrVSRAMLoop:
 		move.l	d0,(a3)
@@ -234,9 +234,9 @@ VDPInitValues:
 		dc.b %0100			; VDP $80 - 8-colour mode
 		dc.b %00010100			; VDP $81 - Megadrive mode, DMA enable
 		dc.b vram_fg>>10		; VDP $82 - foreground nametable address
-		dc.b window_plane_prev>>10	; VDP $83 - window nametable address
+		dc.b window_plane_icd>>10	; VDP $83 - window nametable address
 		dc.b vram_bg>>13		; VDP $84 - background nametable address
-		dc.b vram_sprites_prev>>9	; VDP $85 - sprite table address
+		dc.b vram_sprites_icd>>9	; VDP $85 - sprite table address
 		dc.b 0				; VDP $86 - unused
 		dc.b 0				; VDP $87 - background colour
 		dc.b 0				; VDP $88 - unused
@@ -244,7 +244,7 @@ VDPInitValues:
 		dc.b 255			; VDP $8A - H_Int register
 		dc.b 0				; VDP $8B - full screen scroll
 		dc.b %10000001			; VDP $8C - 40 cell display
-		dc.b vram_hscroll_prev>>10	; VDP $8D - hscroll table address
+		dc.b vram_hscroll_icd>>10	; VDP $8D - hscroll table address
 		dc.b 0				; VDP $8E - unused
 		dc.b 1				; VDP $8F - VDP increment
 		dc.b 1				; VDP $90 - 64 cell hscroll size
@@ -1478,8 +1478,8 @@ GM_Title:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bgscrposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
-		move.w	#$6000,d2
+		lea	(v_lvllayout_bg).w,a4
+		move.w	#$4000+vram_bg-vram_fg,d2
 		bsr.w	DrawChunks
 		moveq	#palid_Title,d0
 		bsr.w	PalLoad1
@@ -1594,7 +1594,7 @@ LevSel_Level:
 		andi.w	#$3FFF,d0
 		btst	#bitB,(v_jpadhold1).w	; is B held?
 		beq.s	.notB			; if not, ignore below
-		move.w	#id_GHZ<<8+3,d0	; Set the zone to Green Hill Act 4
+		move.w	#id_GHZ_act4,d0	; Set the zone to Green Hill Act 4
 
 .notB:
 		move.w	d0,(v_zone).w
@@ -1611,26 +1611,26 @@ PlayLevel:
 		rts
 ; ===========================================================================
 LevSelOrder:
-		dc.b id_GHZ,0	; GHZ1
-		dc.b id_GHZ,1	; GHZ2
-		dc.b id_GHZ,2	; GHZ3
-		dc.b id_LZ,0	; LZ1
-		dc.b id_LZ,1	; LZ2
-		dc.b id_LZ,2	; LZ3
-		dc.b id_MZ,0	; MZ1
-		dc.b id_MZ,1	; MZ2
-		dc.b id_MZ,2	; MZ3
-		dc.b id_SLZ,0	; SLZ1
-		dc.b id_SLZ,1	; SLZ2
-		dc.b id_SLZ,2	; SLZ3
-		dc.b id_SZ,0	; SZ1
-		dc.b id_SZ,1	; SZ2
-		dc.b id_SZ,2	; SZ3
-		dc.b id_CWZ,0	; CWZ1
-		dc.b id_CWZ,1	; CWZ2
-		dc.b id_CWZ+$80,0	; CWZ3
-		dc.b id_SS,0	; SS
-		dc.b id_SS,0	; SS (Sound Select)
+		dc.w id_GHZ_act1	; GHZ1
+		dc.w id_GHZ_act2	; GHZ2
+		dc.w id_GHZ_act3	; GHZ3
+		dc.w id_LZ_act1		; LZ1
+		dc.w id_LZ_act2		; LZ2
+		dc.w id_LZ_act3		; LZ3
+		dc.w id_MZ_act1		; MZ1
+		dc.w id_MZ_act2		; MZ2
+		dc.w id_MZ_act3		; MZ3
+		dc.w id_SLZ_act1	; SLZ1
+		dc.w id_SLZ_act2	; SLZ2
+		dc.w id_SLZ_act3	; SLZ3
+		dc.w id_SZ_act1		; SZ1
+		dc.w id_SZ_act2		; SZ2
+		dc.w id_SZ_act3		; SZ3
+		dc.w id_CWZ_act1	; CWZ1
+		dc.w id_CWZ_act2	; CWZ2
+		dc.w id_CWZ_act1+$8000	; CWZ3
+		dc.w id_SS<<8		; SS
+		dc.w id_SS<<8		; SS (Sound Select)
 		dc.w $8000
 ; ===========================================================================
 
@@ -1691,19 +1691,19 @@ Demo_Level:
 ; ---------------------------------------------------------------------------
 Demo_Levels:
 		;	Format: ZONE,ACT
-		dc.b	id_GHZ,0	; 1
-		dc.b	(id_SS-1),0	; 2
-		dc.b	id_MZ,0		; 3
-		dc.b	(id_SS-1),0	; 4
-		dc.b	id_SZ,0		; 5
-		dc.b	(id_SS-1),0	; 6
+		dc.w	id_GHZ_act1	; 1
+		dc.w	(id_SS-1)<<8	; 2
+		dc.w	id_MZ_act1	; 3
+		dc.w	(id_SS-1)<<8	; 4
+		dc.w	id_SZ_act1	; 5
+		dc.w	(id_SS-1)<<8	; 6
 		; The demo levels below are unused
-		dc.b	id_SLZ,0	; 7
-		dc.b	(id_SS-1),0	; 8
-		dc.b	id_MZ,0		; 9
-		dc.b	(id_SS-1),0	; 10
-		dc.b	id_SZ,0		; 11
-		dc.b	(id_SS-1),0	; 12
+		dc.w	id_SLZ_act1	; 7
+		dc.w	(id_SS-1)<<8	; 8
+		dc.w	id_MZ_act1	; 9
+		dc.w	(id_SS-1)<<8	; 10
+		dc.w	id_SZ_act1	; 11
+		dc.w	(id_SS-1)<<8	; 12
 		even
 
 ; ---------------------------------------------------------------------------
@@ -1781,7 +1781,7 @@ textpos:	= ($40000000+(($E210&$3FFF)<<16)+(($E210&$C000)>>14))
 		lea	(vdp_data_port).l,a6
 		move.l	#textpos,d4
 		move.w	#$E680,d3
-		moveq	#20-1,d1	; Only load 20 lines.
+		moveq	#bytesToXcnt(LevelSelectText_End-LevelSelectText,24),d1	; Only load 20 lines.
 
 LevSel_DrawAll:
 		move.l	d4,4(a6)
@@ -1843,6 +1843,7 @@ LevSel_LineLoop:
 		bpl.s	LevSel_CharOk
 		move.w	#0,(a6)
 		dbf	d2,LevSel_LineLoop
+
 		rts
 ; ===========================================================================
 
@@ -1850,6 +1851,7 @@ LevSel_CharOk:
 		add.w	d3,d0
 		move.w	d0,(a6)
 		dbf	d2,LevSel_LineLoop
+
 		rts
 ; ===========================================================================
 
@@ -1886,6 +1888,8 @@ LevelSelectText:
 		dc.b "SOUND SELECT            "
 
 		charset
+
+LevelSelectText_End:
 
 ; ---------------------------------------------------------------------------
 ; Music playlist
@@ -1966,7 +1970,7 @@ Level_TtlCardLoop:
 		bsr.w	PalLoad1
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
-		bsr.w	LoadLevelData
+		bsr.w	LevelDataLoad
 		bsr.w	LoadAnimatedBlocks
 		bsr.w	LoadTilesFromStart
 		jsr	(ConvertCollisionArray).l
@@ -2207,7 +2211,6 @@ Anim16MZ_End:
 
 DebugPosLoadArt:
 		rts
-; ===========================================================================
 
 		locVRAM ArtTile_Debug_Numbers*tile_size
 		lea	(Art_Text).l,a0
@@ -2304,7 +2307,7 @@ SyncEnd:
 SignpostArtLoad:
 		tst.w	(v_debuguse).w
 		bne.w	.exit
-		cmpi.w	#(id_MZ<<8)+2,(v_zone).w	; are we on Marble Zone Act 3?
+		cmpi.w	#id_MZ_act3,(v_zone).w	; are we on Marble Zone Act 3?
 		beq.s	.isMZ3	; if so, load the signpost
 		cmpi.b	#2,(v_act).w
 		beq.s	.exit
@@ -2706,101 +2709,7 @@ byte_3A9A:	dc.b 8, 2, 4, $FF, 2, 3, 8, $FF, 4, 2, 2, 3, 8, $FD, 4
 		include "_include/LevelSizeLoad & BgScrollSpeed.asm"
 		include "_include/DeformLayers.asm"
 		include	"_include/Level Drawing.asm"
-
-; ===========================================================================
-
-LoadLevelData:
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#4,d0
-		lea	(LevelHeaders).l,a2
-		lea	(a2,d0.w),a2
-		move.l	a2,-(sp)
-		addq.l	#4,a2
-		movea.l	(a2)+,a0
-		lea	(v_16x16).w,a4
-		move.w	#bytesToLcnt(v_16x16_end-v_16x16),d0
-
-.loadblocks:
-		move.l	(a0)+,(a4)+
-		dbf	d0,.loadblocks
-		movea.l	(a2)+,a0
-		lea	(v_256x256).l,a1
-		bsr.w	KosDec
-		bsr.w	LevelLayoutLoad
-		move.w	(a2)+,d0
-		move.w	(a2),d0
-		andi.w	#$FF,d0
-		bsr.w	PalLoad1
-		movea.l	(sp)+,a2
-		addq.w	#4,a2
-		moveq	#0,d0
-		move.b	(a2),d0
-		beq.s	.skipPLC
-		bsr.w	AddPLC
-
-.skipPLC:
-		rts
-; End of function LevelDataLoad
-
-		include	"leftovers/routines/Lives Window Plane.asm"
-
-; ---------------------------------------------------------------------------
-; Level layout loading subroutine
-; ---------------------------------------------------------------------------
-
-LevelLayoutLoad:
-		lea	(v_lvllayout).w,a3
-	if FixBugs
-		move.w	#bytesToLcnt(v_lvllayout_end-v_lvllayout),d1
-	else
-		; v_lvllayout is only $400 bytes, but this clears $800...
-		; In Sonic 2, this function was corrected to only clear the
-		; layout buffer.
-		move.w	#bytesToWcnt(v_lvllayout_end-v_lvllayout),d1
-	endif
-		moveq	#0,d0
-
-LevLoad_ClrRam:
-		move.l	d0,(a3)+
-		dbf	d1,LevLoad_ClrRam ; clear the RAM ($A400-A7FF)
-
-		lea	(v_lvllayout).w,a3 ; RAM address for level layout
-		moveq	#0,d1
-		bsr.w	LevelLayoutLoad2 ; load level layout into RAM
-		lea	(v_lvllayout+$40).w,a3 ; RAM address for background layout
-		moveq	#2,d1
-; End of function LevelLayoutLoad
-
-; "LevelLayoutLoad2" is run twice - for the level and the background
-
-LevelLayoutLoad2:
-		move.w	(v_zone).w,d0
-		lsl.b	#6,d0
-		lsr.w	#5,d0
-		move.w	d0,d2
-		add.w	d0,d0
-		add.w	d2,d0
-		add.w	d1,d0
-		lea	(Level_Index).l,a1
-		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1
-		moveq	#0,d1
-		move.w	d1,d2
-		move.b	(a1)+,d1	; load level width (in tiles)
-		move.b	(a1)+,d2	; load level height (in tiles)
-
-LevLoad_NumRows:
-		move.w	d1,d0
-		movea.l	a3,a0
-
-LevLoad_Row:
-		move.b	(a1)+,(a0)+
-		dbf	d0,LevLoad_Row	; load 1 row
-		lea	$80(a3),a3	; do next row
-		dbf	d2,LevLoad_NumRows
-		rts
-; End of function LevelLayoutLoad2
+		include	"_include/LevelLayoutLoad.asm"
 
 		include "_include/DynamicLevelEvents.asm"
 

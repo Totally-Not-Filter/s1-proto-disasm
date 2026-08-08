@@ -15,16 +15,17 @@ GeyserMaker:
 		bra.w	Geyser_ChkDel
 	endif
 ; ===========================================================================
-GMake_Index:	dc.w GMake_Main-GMake_Index
-		dc.w GMake_Wait-GMake_Index
-		dc.w GMake_ChkType-GMake_Index
-		dc.w GMake_MakeLava-GMake_Index
-		dc.w GMake_Display-GMake_Index
-		dc.w GMake_Delete-GMake_Index
+GMake_Index:
+		dc.w	GMake_Main-GMake_Index
+		dc.w	GMake_Wait-GMake_Index
+		dc.w	GMake_ChkType-GMake_Index
+		dc.w	GMake_MakeLava-GMake_Index
+		dc.w	GMake_Display-GMake_Index
+		dc.w	GMake_Delete-GMake_Index
 
-gmake_time = objoff_34		; time delay (2 bytes)
-gmake_timer = objoff_32		; current time remaining (2 bytes)
-gmake_parent = objoff_3C		; address of parent object
+gmake_time: equ objoff_34		; time delay (2 bytes)
+gmake_timer: equ objoff_32		; current time remaining (2 bytes)
+gmake_parent: equ objoff_3C		; address of parent object
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
@@ -137,12 +138,14 @@ LavaGeyser:
 		bra.w	DisplaySprite
 	endif
 ; ===========================================================================
-Geyser_Index:	dc.w Geyser_Main-Geyser_Index
-		dc.w Geyser_Action-Geyser_Index
-		dc.w loc_CB8C-Geyser_Index
-		dc.w Geyser_Delete-Geyser_Index
+Geyser_Index:
+		dc.w	Geyser_Main-Geyser_Index
+		dc.w	Geyser_Action-Geyser_Index
+		dc.w	loc_CB8C-Geyser_Index
+		dc.w	Geyser_Delete-Geyser_Index
 
-Geyser_Speeds:	dc.w $FB00, 0
+Geyser_Speeds:
+		dc.w -$500, 0
 ; ===========================================================================
 
 Geyser_Main:	; Routine 0
@@ -158,7 +161,7 @@ Geyser_Main:	; Routine 0
 		add.w	d0,d0
 		move.w	Geyser_Speeds(pc,d0.w),obVelY(a0)
 		movea.l	a0,a1
-		moveq	#1,d1
+		moveq	#2-1,d1
 		bsr.s	.makelava
 		bra.s	.activate
 ; ===========================================================================
@@ -198,7 +201,7 @@ Geyser_Main:	; Routine 0
 		move.l	a0,objoff_3C(a1)
 		tst.b	obSubtype(a0)
 		beq.s	.sound
-		moveq	#0,d1
+		moveq	#1-1,d1
 		bsr.w	.loop
 		addq.b	#2,obRoutine(a1)
 		bset	#4,obGfx(a1)
@@ -231,8 +234,9 @@ Geyser_ChkDel:
 		rts
 	endif
 ; ===========================================================================
-Geyser_Types:	dc.w Geyser_Type00-Geyser_Types
-		dc.w Geyser_Type01-Geyser_Types
+Geyser_Types:
+		dc.w	Geyser_Type00-Geyser_Types
+		dc.w	Geyser_Type01-Geyser_Types
 ; ===========================================================================
 
 Geyser_Type00:

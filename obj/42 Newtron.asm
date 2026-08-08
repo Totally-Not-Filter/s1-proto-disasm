@@ -8,9 +8,10 @@ Newtron:
 		move.w	Newt_Index(pc,d0.w),d1
 		jmp	Newt_Index(pc,d1.w)
 ; ===========================================================================
-Newt_Index:	dc.w Newt_Main-Newt_Index
-		dc.w Newt_Action-Newt_Index
-		dc.w Newt_Delete-Newt_Index
+Newt_Index:
+		dc.w	Newt_Main-Newt_Index
+		dc.w	Newt_Action-Newt_Index
+		dc.w	Newt_Delete-Newt_Index
 ; ===========================================================================
 
 Newt_Main:	; Routine 0
@@ -32,11 +33,12 @@ Newt_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-.index:		dc.w .chkdistance-.index
-		dc.w .type00-.index
-		dc.w .matchfloor-.index
-		dc.w .speed-.index
-		dc.w .type01-.index
+.index:
+		dc.w	.chkdistance-.index
+		dc.w	.type00-.index
+		dc.w	.matchfloor-.index
+		dc.w	.speed-.index
+		dc.w	.type01-.index
 ; ===========================================================================
 
 .chkdistance:

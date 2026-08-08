@@ -9,9 +9,10 @@ SmashBlock:
 		jsr	Smab_Index(pc,d1.w)
 		bra.w	RememberState
 ; ===========================================================================
-Smab_Index:	dc.w Smab_Main-Smab_Index
-		dc.w Smab_Solid-Smab_Index
-		dc.w Smab_Points-Smab_Index
+Smab_Index:
+		dc.w	Smab_Main-Smab_Index
+		dc.w	Smab_Solid-Smab_Index
+		dc.w	Smab_Points-Smab_Index
 ; ===========================================================================
 
 Smab_Main:	; Routine 0
@@ -25,7 +26,7 @@ Smab_Main:	; Routine 0
 
 Smab_Solid:	; Routine 2
 
-sonicAniFrame = objoff_32		; Sonic's current animation number
+sonicAniFrame: equ objoff_32		; Sonic's current animation number
 
 		move.b	(v_player+obAnim).w,sonicAniFrame(a0)
 		move.w	#$1B,d1
@@ -76,7 +77,8 @@ Smab_Points:	; Routine 4
 		rts
 	endif
 ; ===========================================================================
-Smab_Speeds:	dc.w -$200, -$200	; x-speed, y-speed
+Smab_Speeds:
+		dc.w -$200, -$200	; x-speed, y-speed
 		dc.w -$100, -$100
 		dc.w $200, -$200
 		dc.w $100, -$100

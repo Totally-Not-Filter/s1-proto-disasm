@@ -8,18 +8,21 @@ ChainStomp:
 		move.w	CStom_Index(pc,d0.w),d1
 		jmp	CStom_Index(pc,d1.w)
 ; ===========================================================================
-CStom_Index:	dc.w CStom_Main-CStom_Index
-		dc.w loc_97D0-CStom_Index
-		dc.w loc_9834-CStom_Index
-		dc.w CStom_Display2-CStom_Index
-		dc.w loc_9818-CStom_Index
+CStom_Index:
+		dc.w	CStom_Main-CStom_Index
+		dc.w	loc_97D0-CStom_Index
+		dc.w	loc_9834-CStom_Index
+		dc.w	CStom_Display2-CStom_Index
+		dc.w	loc_9818-CStom_Index
 
-CStom_switch = objoff_3A		; switch number for the current stomper
+CStom_switch:	equ objoff_3A		; switch number for the current stomper
 
-CStom_SwchNums:	dc.b 0, 0		; switch number, obj number
+CStom_SwchNums:
+		dc.b 0, 0		; switch number, obj number
 		dc.b 1, 0
 
-CStom_Var:	dc.b 2, 0, 0		; routine number, y-position, frame number
+CStom_Var:
+		dc.b 2, 0, 0		; routine number, y-position, frame number
 		dc.b 4, $1C, 1
 		dc.b 8, $CC, 3
 		dc.b 6, $F0, 2
@@ -108,7 +111,8 @@ CStom_SetSize:
 		move.b	(a2)+,obFrame(a0)
 		bra.s	loc_97D0
 ; ===========================================================================
-CStom_Var2:	dc.b $38, 0		; width, frame number
+CStom_Var2:
+		dc.b $38, 0		; width, frame number
 		dc.b $30, 9
 		dc.b $10, $A
 ; ===========================================================================
@@ -178,13 +182,14 @@ CStom_Types:
 		move.w	CStom_TypeIndex(pc,d0.w),d1
 		jmp	CStom_TypeIndex(pc,d1.w)
 ; ===========================================================================
-CStom_TypeIndex:	dc.w CStom_Type00-CStom_TypeIndex
-		dc.w CStom_Type01-CStom_TypeIndex
-		dc.w CStom_Type01-CStom_TypeIndex
-		dc.w CStom_Type03-CStom_TypeIndex
-		dc.w CStom_Type01-CStom_TypeIndex
-		dc.w CStom_Type03-CStom_TypeIndex
-		dc.w CStom_Type01-CStom_TypeIndex
+CStom_TypeIndex:
+		dc.w	CStom_Type00-CStom_TypeIndex
+		dc.w	CStom_Type01-CStom_TypeIndex
+		dc.w	CStom_Type01-CStom_TypeIndex
+		dc.w	CStom_Type03-CStom_TypeIndex
+		dc.w	CStom_Type01-CStom_TypeIndex
+		dc.w	CStom_Type03-CStom_TypeIndex
+		dc.w	CStom_Type01-CStom_TypeIndex
 ; ===========================================================================
 
 CStom_Type00:

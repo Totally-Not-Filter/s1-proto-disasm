@@ -8,9 +8,10 @@ Roller:
 		move.w	Roll_Index(pc,d0.w),d1
 		jmp	Roll_Index(pc,d1.w)
 ; ===========================================================================
-Roll_Index:	dc.w Roll_Main-Roll_Index
-		dc.w Roll_Action-Roll_Index
-		dc.w Roll_Delete-Roll_Index
+Roll_Index:
+		dc.w	Roll_Main-Roll_Index
+		dc.w	Roll_Action-Roll_Index
+		dc.w	Roll_Delete-Roll_Index
 ; ===========================================================================
 
 Roll_Main:	; Routine 0
@@ -43,10 +44,11 @@ Roll_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-Roll_Index2:	dc.w Roll_RollChk-Roll_Index2
-		dc.w Roll_RollNoChk-Roll_Index2
-		dc.w Roll_ChkJump-Roll_Index2
-		dc.w Roll_MatchFloor-Roll_Index2
+Roll_Index2:
+		dc.w	Roll_RollChk-Roll_Index2
+		dc.w	Roll_RollNoChk-Roll_Index2
+		dc.w	Roll_ChkJump-Roll_Index2
+		dc.w	Roll_MatchFloor-Roll_Index2
 ; ===========================================================================
 
 Roll_RollChk:

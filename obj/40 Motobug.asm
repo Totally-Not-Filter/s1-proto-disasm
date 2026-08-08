@@ -8,10 +8,11 @@ MotoBug:
 		move.w	Moto_Index(pc,d0.w),d1
 		jmp	Moto_Index(pc,d1.w)
 ; ===========================================================================
-Moto_Index:	dc.w Moto_Main-Moto_Index
-		dc.w Moto_Action-Moto_Index
-		dc.w Moto_Animate-Moto_Index
-		dc.w Moto_Delete-Moto_Index
+Moto_Index:
+		dc.w	Moto_Main-Moto_Index
+		dc.w	Moto_Action-Moto_Index
+		dc.w	Moto_Animate-Moto_Index
+		dc.w	Moto_Delete-Moto_Index
 ; ===========================================================================
 
 Moto_Main:	; Routine 0
@@ -54,11 +55,12 @@ Moto_Action:	; Routine 2
 		include "sub RememberState.asm" ; Moto_Action terminates in this file
 
 ; ===========================================================================
-Moto_ActIndex:	dc.w .move-Moto_ActIndex
-		dc.w .findfloor-Moto_ActIndex
+Moto_ActIndex:
+		dc.w	.move-Moto_ActIndex
+		dc.w	.findfloor-Moto_ActIndex
 
-.time = objoff_30
-.smokedelay = objoff_33
+.time:		equ objoff_30
+.smokedelay:	equ objoff_33
 ; ===========================================================================
 
 .move:

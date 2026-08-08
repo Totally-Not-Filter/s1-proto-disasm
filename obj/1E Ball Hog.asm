@@ -8,10 +8,11 @@ BallHog:
 		move.w	Hog_Index(pc,d0.w),d1
 		jmp	Hog_Index(pc,d1.w)
 ; ===========================================================================
-Hog_Index:	dc.w Hog_Main-Hog_Index
-		dc.w Hog_Action-Hog_Index
-		dc.w Hog_Display-Hog_Index
-		dc.w Hog_Delete-Hog_Index
+Hog_Index:
+		dc.w	Hog_Main-Hog_Index
+		dc.w	Hog_Action-Hog_Index
+		dc.w	Hog_Display-Hog_Index
+		dc.w	Hog_Delete-Hog_Index
 ; ===========================================================================
 
 Hog_Main:	; Routine 0
@@ -44,11 +45,12 @@ Hog_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-Hog_ActIndex:	dc.w loc_6FB6-Hog_ActIndex
-		dc.w loc_701C-Hog_ActIndex
+Hog_ActIndex:
+		dc.w	loc_6FB6-Hog_ActIndex
+		dc.w	loc_701C-Hog_ActIndex
 
-hog_time = objoff_30
-hog_launchflag = objoff_32		; 0 to launch a cannonball
+hog_time:	equ objoff_30
+hog_launchflag:	equ objoff_32		; 0 to launch a cannonball
 ; ===========================================================================
 
 loc_6FB6:

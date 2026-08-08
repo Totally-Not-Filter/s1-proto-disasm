@@ -20,14 +20,15 @@ Signpost:
 		rts
 	endif
 ; ===========================================================================
-Sign_Index:	dc.w Sign_Main-Sign_Index
-		dc.w Sign_Touch-Sign_Index
-		dc.w Sign_Spin-Sign_Index
-		dc.w Sign_GotThrough-Sign_Index
+Sign_Index:
+		dc.w	Sign_Main-Sign_Index
+		dc.w	Sign_Touch-Sign_Index
+		dc.w	Sign_Spin-Sign_Index
+		dc.w	Sign_GotThrough-Sign_Index
 
-spintime = objoff_30		; time for signpost to spin
-sparkletime = objoff_32		; time between sparkles
-sparkle_id = objoff_34		; counter to keep track of sparkles
+spintime:	equ objoff_30			; time for signpost to spin
+sparkletime:	equ objoff_32		; time between sparkles
+sparkle_id:	equ objoff_34		; counter to keep track of sparkles
 ; ===========================================================================
 
 Sign_Main:	; Routine 0
@@ -93,7 +94,8 @@ Sign_Spin:	; Routine 4
 .fail:
 		rts
 ; ===========================================================================
-Sign_SparkPos:	dc.b -$18,-$10		; x-position, y-position
+Sign_SparkPos:
+		dc.b -$18,-$10		; x-position, y-position
 		dc.b	8,   8
 		dc.b -$10,   0
 		dc.b  $18,  -8

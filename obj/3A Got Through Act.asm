@@ -8,14 +8,15 @@ GotThroughCard:
 		move.w	Got_Index(pc,d0.w),d1
 		jmp	Got_Index(pc,d1.w)
 ; ===========================================================================
-Got_Index:	dc.w Got_ChkPLC-Got_Index
-		dc.w Got_Move-Got_Index
-		dc.w Got_Wait-Got_Index
-		dc.w Got_TimeBonus-Got_Index
-		dc.w Got_Wait-Got_Index
-		dc.w Got_NextLevel-Got_Index
+Got_Index:
+		dc.w	Got_ChkPLC-Got_Index
+		dc.w	Got_Move-Got_Index
+		dc.w	Got_Wait-Got_Index
+		dc.w	Got_TimeBonus-Got_Index
+		dc.w	Got_Wait-Got_Index
+		dc.w	Got_NextLevel-Got_Index
 
-got_mainX = objoff_30		; position for card to display on
+got_mainX: equ objoff_30		; position for card to display on
 ; ===========================================================================
 
 Got_ChkPLC:	; Routine 0

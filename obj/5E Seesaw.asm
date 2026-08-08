@@ -9,9 +9,10 @@ Seesaw:
 		jsr	See_Index(pc,d1.w)
 		bra.w	RememberState
 ; ===========================================================================
-See_Index:	dc.w See_Main-See_Index
-		dc.w See_Slope-See_Index
-		dc.w See_Slope2-See_Index
+See_Index:
+		dc.w	See_Main-See_Index
+		dc.w	See_Slope-See_Index
+		dc.w	See_Slope2-See_Index
 ; ===========================================================================
 
 See_Main:	; Routine 0

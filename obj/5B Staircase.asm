@@ -2,10 +2,10 @@
 ; Object 5B - blocks that form a staircase (SLZ)
 ; ---------------------------------------------------------------------------
 
-stair_origX = objoff_30		; original x-axis position
-stair_origY = objoff_32		; original y-axis position
+stair_origX:	equ objoff_30		; original x-axis position
+stair_origY:	equ objoff_32		; original y-axis position
 
-stair_parent = objoff_3C	; address of parent object (4 bytes)
+stair_parent:	equ objoff_3C	; address of parent object (4 bytes)
 
 Staircase:
 		moveq	#0,d0
@@ -15,9 +15,10 @@ Staircase:
 		out_of_range.w	DeleteObject,stair_origX(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Stair_Index:	dc.w Stair_Main-Stair_Index
-		dc.w Stair_Move-Stair_Index
-		dc.w Stair_Solid-Stair_Index
+Stair_Index:
+		dc.w	Stair_Main-Stair_Index
+		dc.w	Stair_Move-Stair_Index
+		dc.w	Stair_Solid-Stair_Index
 
 ; ===========================================================================
 
@@ -96,10 +97,11 @@ loc_E42A:
 locret_E438:
 		rts
 ; ===========================================================================
-Stair_TypeIndex:	dc.w Stair_Type00-Stair_TypeIndex
-		dc.w Stair_Type01-Stair_TypeIndex
-		dc.w Stair_Type02-Stair_TypeIndex
-		dc.w Stair_Type01-Stair_TypeIndex
+Stair_TypeIndex:
+		dc.w	Stair_Type00-Stair_TypeIndex
+		dc.w	Stair_Type01-Stair_TypeIndex
+		dc.w	Stair_Type02-Stair_TypeIndex
+		dc.w	Stair_Type01-Stair_TypeIndex
 ; ===========================================================================
 
 Stair_Type00:

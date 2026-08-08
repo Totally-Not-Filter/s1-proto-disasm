@@ -8,11 +8,12 @@ SideStomp:
 		move.w	SStom_Index(pc,d0.w),d1
 		jmp	SStom_Index(pc,d1.w)
 ; ===========================================================================
-SStom_Index:	dc.w SStom_Main-SStom_Index
-		dc.w SStom_Solid-SStom_Index
-		dc.w loc_9AC4-SStom_Index
-		dc.w SStom_Display-SStom_Index
-		dc.w SStom_Pole-SStom_Index
+SStom_Index:
+		dc.w	SStom_Main-SStom_Index
+		dc.w	SStom_Solid-SStom_Index
+		dc.w	loc_9AC4-SStom_Index
+		dc.w	SStom_Display-SStom_Index
+		dc.w	SStom_Pole-SStom_Index
 
 		;	routine		frame
 		;		 xpos
@@ -22,9 +23,10 @@ SStom_Var:	dc.b	2,  	 4,	0	; main block
 		dc.b	6,	 $28,	2	; wall bracket
 
 ;word_99F4:	; Note that this indicates three subtypes
-SStom_Len:	dc.w $3800	; short
-		dc.w $A000	; long
-		dc.w $5000	; medium
+SStom_Len:
+		dc.w	$3800	; short
+		dc.w	$A000	; long
+		dc.w	$5000	; medium
 ; ===========================================================================
 
 SStom_Main:	; Routine 0
@@ -127,8 +129,9 @@ SStom_Move:
 ; ===========================================================================
 		; This indicates only two subtypes... that do the same thing
 		; Compare to SStom_Len. This breaks subtype 02
-off_9B0C:	dc.w loc_9B10-off_9B0C
-		dc.w loc_9B10-off_9B0C
+off_9B0C:
+		dc.w	loc_9B10-off_9B0C
+		dc.w	loc_9B10-off_9B0C
 ; ===========================================================================
 
 loc_9B10:
