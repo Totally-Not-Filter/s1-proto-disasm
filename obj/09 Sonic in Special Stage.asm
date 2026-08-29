@@ -17,11 +17,11 @@ Obj09_Index:
 
 Obj09_Main:	; Routine 0
 		addq.b	#2,obRoutine(a0)
-		move.b	#$E,obHeight(a0)
-		move.b	#7,obWidth(a0)
+		move.b	#sonic_roll_height,obHeight(a0)
+		move.b	#sonic_roll_width,obWidth(a0)
 		move.l	#Map_Sonic,obMap(a0)
 		move.w	#ArtTile_Sonic,obGfx(a0)
-		move.b	#4,obRender(a0)
+		move.b	#sprite_cam_field,obRender(a0)
 		move.b	#0,obPriority(a0)
 		move.b	#id_Roll,obAnim(a0)
 		bset	#2,obStatus(a0)
@@ -59,19 +59,19 @@ Obj09_Display:
 		bsr.w	Obj09_ChkItems2
 		jsr	(SpeedToPos).l
 		bsr.w	SS_FixCamera
-		btst	#bitA,(v_jpadhold1).w	; is A held?
-		beq.s	loc_10D66	; if not, branch
-		subq.w	#2,(v_ssrotate).w	; reverse rotation of the special stage
+		btst	#bitA,(v_jpadhold1).w			; is A held?
+		beq.s	loc_10D66				; if not, branch
+		subq.w	#2,(v_ssrotate).w			; reverse rotation of the special stage
 
 loc_10D66:
-		btst	#bitB,(v_jpadhold1).w	; is B held?
-		beq.s	loc_10D72	; if not, branch
-		addq.w	#2,(v_ssrotate).w	; increase rotation of the special stage
+		btst	#bitB,(v_jpadhold1).w			; is B held?
+		beq.s	loc_10D72				; if not, branch
+		addq.w	#2,(v_ssrotate).w			; increase rotation of the special stage
 
 loc_10D72:
-		btst	#bitStart,(v_jpadpress1).w	; is Start pressed?
-		beq.s	loc_10D80	; if not, branch
-		move.w	#0,(v_ssrotate).w	; stop rotation of the special stage
+		btst	#bitStart,(v_jpadpress1).w		; is Start pressed?
+		beq.s	loc_10D80				; if not, branch
+		move.w	#0,(v_ssrotate).w			; stop rotation of the special stage
 
 loc_10D80:
 		move.w	(v_ssangle).w,d0
@@ -222,14 +222,14 @@ SS_FixCamera:
 		move.w	obY(a0),d2
 		move.w	obX(a0),d3
 		move.w	(v_scrposx).w,d0
-		subi.w	#$A0,d3
+		subi.w	#320/2,d3
 		bcs.s	loc_10EE6
 		sub.w	d3,d0
 		sub.w	d0,(v_scrposx).w
 
 loc_10EE6:
 		move.w	(v_scrposy).w,d0
-		subi.w	#$70,d2
+		subi.w	#224/2,d2
 		bcs.s	locret_10EF6
 		sub.w	d2,d0
 		sub.w	d0,(v_scrposy).w

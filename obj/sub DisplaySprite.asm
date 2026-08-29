@@ -22,7 +22,7 @@ DSpr_Full:
 ; Subroutine to display a 2nd sprite/object, when a1 is the object RAM
 ; ---------------------------------------------------------------------------
 
-DisplaySprite1:
+DisplaySprite2:
 		lea	(v_spritequeue).w,a2
 		move.b	obPriority(a1),d0
 		andi.w	#7,d0

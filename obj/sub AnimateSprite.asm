@@ -3,9 +3,9 @@
 AnimateSprite:
 		moveq	#0,d0
 		move.b	obAnim(a0),d0
-		cmp.b	obNextAni(a0),d0
+		cmp.b	obPrevAni(a0),d0
 		beq.s	loc_6B54
-		move.b	d0,obNextAni(a0)
+		move.b	d0,obPrevAni(a0)
 		move.b	#0,obAniFrame(a0)
 		move.b	#0,obTimeFrame(a0)
 

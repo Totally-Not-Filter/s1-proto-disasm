@@ -10,13 +10,13 @@ ptr_PLC_GameOver:	dc.w PLC_GameOver-ArtLoadCues
 PLC_Levels:
 ptr_PLC_GHZ:		dc.w PLC_GHZ-ArtLoadCues
 ptr_PLC_GHZ2:		dc.w PLC_GHZ2-ArtLoadCues
-ptr_PLC_LZ:			dc.w PLC_LZ-ArtLoadCues
+ptr_PLC_LZ:		dc.w PLC_LZ-ArtLoadCues
 ptr_PLC_LZ2:		dc.w PLC_LZ2-ArtLoadCues
-ptr_PLC_MZ:			dc.w PLC_MZ-ArtLoadCues
+ptr_PLC_MZ:		dc.w PLC_MZ-ArtLoadCues
 ptr_PLC_MZ2:		dc.w PLC_MZ2-ArtLoadCues
 ptr_PLC_SLZ:		dc.w PLC_SLZ-ArtLoadCues
 ptr_PLC_SLZ2:		dc.w PLC_SLZ2-ArtLoadCues
-ptr_PLC_SZ:			dc.w PLC_SZ-ArtLoadCues
+ptr_PLC_SZ:		dc.w PLC_SZ-ArtLoadCues
 ptr_PLC_SZ2:		dc.w PLC_SZ2-ArtLoadCues
 ptr_PLC_CWZ:		dc.w PLC_CWZ-ArtLoadCues
 ptr_PLC_CWZ2:		dc.w PLC_CWZ2-ArtLoadCues

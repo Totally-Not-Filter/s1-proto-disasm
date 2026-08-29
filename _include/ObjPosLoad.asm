@@ -30,11 +30,11 @@ OPL_Main:
 		lea	(v_objstate).w,a2
 		move.w	#$101,(a2)+
 	if FixBugs
-		move.w	#bytesToLcnt(v_objstate_end-v_objstate-2),d0
+		move.w	#(v_objstate_end-v_objstate-2)/4-1,d0
 	else
 		; This clears longwords, but the loop counter is measured in words!
 		; This causes $17C bytes to be cleared instead of $BE.
-		move.w	#bytesToWcnt(v_objstate_end-v_objstate-2),d0
+		move.w	#(v_objstate_end-v_objstate-2)/2-1,d0
 	endif
 
 loc_8A38:

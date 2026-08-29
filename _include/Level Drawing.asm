@@ -473,7 +473,7 @@ Calc_VRAM_Pos_Unknown:
 		lsl.w	#4,d4
 		lsr.w	#2,d5
 		add.w	d5,d4
-		moveq	#window_plane>>14,d0
+		moveq	#vram_win>>14,d0
 		swap	d0
 		move.w	d4,d0
 		rts

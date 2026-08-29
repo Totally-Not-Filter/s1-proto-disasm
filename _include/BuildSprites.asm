@@ -1,33 +1,33 @@
 ; ===========================================================================
-BldSpr_ScrPos:	dc.l 0				; blank
-		dc.l v_scrposx&$FFFFFF		; main screen x-position
-		dc.l v_bgscrposx&$FFFFFF	; background x-position 1
-		dc.l v_bg3scrposx&$FFFFFF	; background x-position 2
+BldSpr_ScrPos:	dc.l 0						; blank
+		dc.l v_scrposx&$FFFFFF				; main screen x-position
+		dc.l v_bgscrposx&$FFFFFF			; background x-position 1
+		dc.l v_bg3scrposx&$FFFFFF			; background x-position 2
 ; ---------------------------------------------------------------------------
 ; Subroutine to convert mappings (etc) to proper Megadrive sprites
 ; ---------------------------------------------------------------------------
 
 BuildSprites:
-		lea	(v_spritetablebuffer).w,a2 ; set address for sprite table
+		lea	(v_spritetablebuffer).w,a2		; set address for sprite table
 		moveq	#0,d5
 		lea	(v_spritequeue).w,a4
 		moveq	#7,d7
 
 .priorityloop:
-		tst.w	(a4)	; are there objects left to draw?
-		beq.w	.nextpriority	; if not, branch
+		tst.w	(a4)					; are there objects left to draw?
+		beq.w	.nextpriority				; if not, branch
 		moveq	#2,d6
 
 .objloop:
-		movea.w	(a4,d6.w),a0	; load object ID
-		tst.b	obID(a0)		; if null, branch
+		movea.w	(a4,d6.w),a0				; load object ID
+		tst.b	obID(a0)				; if null, branch
 		beq.w	.skipobj
-		bclr	#7,obRender(a0)
+		bclr	#sprite_rendered_bit,obRender(a0)
 
 		move.b	obRender(a0),d0
 		move.b	d0,d4
-		andi.w	#$C,d0		; get drawing coordinates
-		beq.s	.scrcoords	; branch if 0 (screen coordinates)
+		andi.w	#$C,d0					; get drawing coordinates
+		beq.s	.scrcoords				; branch if 0 (screen coordinates)
 		movea.l	BldSpr_ScrPos(pc,d0.w),a1
 	; check object bounds
 		moveq	#0,d0
@@ -36,32 +36,32 @@ BuildSprites:
 		sub.w	(a1),d3
 		move.w	d3,d1
 		add.w	d0,d1
-		bmi.w	.skipobj	; left edge out of bounds
+		bmi.w	.skipobj				; left edge out of bounds
 		move.w	d3,d1
 		sub.w	d0,d1
 		cmpi.w	#320,d1
-		bge.s	.skipobj	; right edge out of bounds
-		addi.w	#128,d3		; VDP sprites start at 128px
+		bge.s	.skipobj				; right edge out of bounds
+		addi.w	#128,d3					; VDP sprites start at 128px
 
-		btst	#4,d4		; is assume height flag on?
-		beq.s	.assumeheight	; if yes, branch
+		btst	#sprite_customheight_bit,d4		; is assume height flag on?
+		beq.s	.assumeheight				; if yes, branch
 		moveq	#0,d0
 		move.b	obHeight(a0),d0
 		move.w	obY(a0),d2
 		sub.w	4(a1),d2
 		move.w	d2,d1
 		add.w	d0,d1
-		bmi.s	.skipobj	; top edge out of bounds
+		bmi.s	.skipobj				; top edge out of bounds
 		move.w	d2,d1
 		sub.w	d0,d1
 		cmpi.w	#224,d1
 		bge.s	.skipobj
-		addi.w	#128,d2		; VDP sprites start at 128px
+		addi.w	#128,d2					; VDP sprites start at 128px
 		bra.s	.drawobj
 ; ===========================================================================
 
 .scrcoords:
-		move.w	obScreenY(a0),d2	; special variable for screen Y
+		move.w	obScreenY(a0),d2			; special variable for screen Y
 		move.w	obX(a0),d3
 		bra.s	.drawobj
 ; ===========================================================================
@@ -78,24 +78,24 @@ BuildSprites:
 .drawobj:
 		movea.l	obMap(a0),a1
 		moveq	#0,d1
-		btst	#5,d4		; is static mappings flag on?
-		bne.s	.drawframe	; if yes, branch
+		btst	#sprite_rawmappings_bit,d4		; is static mappings flag on?
+		bne.s	.drawframe				; if yes, branch
 		move.b	obFrame(a0),d1
 		add.b	d1,d1
-		adda.w	(a1,d1.w),a1	; get mappings frame address
-		move.b	(a1)+,d1	; number of sprite pieces
+		adda.w	(a1,d1.w),a1				; get mappings frame address
+		move.b	(a1)+,d1				; number of sprite pieces
 		subq.b	#1,d1
 		bmi.s	.setvisible
 
 .drawframe:
-		bsr.w	BuildSpr_Draw	; write data from sprite pieces to buffer
+		bsr.w	BuildSpr_Draw				; write data from sprite pieces to buffer
 
 .setvisible:
-		bset	#7,obRender(a0)		; set object as visible
+		bset	#sprite_rendered_bit,obRender(a0)	; set object as visible
 
 .skipobj:
 		addq.w	#2,d6
-		subq.w	#2,(a4)			; number of objects left
+		subq.w	#2,(a4)					; number of objects left
 		bne.w	.objloop
 
 .nextpriority:
@@ -109,7 +109,7 @@ BuildSprites:
 ; ===========================================================================
 
 .spritelimit:
-		move.b	#0,-5(a2)	; set last sprite link
+		move.b	#0,-5(a2)				; set last sprite link
 		rts
 ; End of function BuildSprites
 
@@ -117,9 +117,9 @@ BuildSprites:
 
 BuildSpr_Draw:
 		movea.w	obGfx(a0),a3
-		btst	#0,d4
+		btst	#sprite_xflip_bit,d4
 		bne.s	BuildSpr_FlipX
-		btst	#1,d4
+		btst	#sprite_yflip_bit,d4
 		bne.w	BuildSpr_FlipY
 ; End of function BuildSpr_Draw
 
@@ -158,7 +158,7 @@ BuildSpr_Normal:
 ; ===========================================================================
 
 BuildSpr_FlipX:
-		btst	#1,d4		; is object also y-flipped?
+		btst	#sprite_yflip_bit,d4		; is object also y-flipped?
 		bne.w	BuildSpr_FlipXY	; if yes, branch
 
 .loop:

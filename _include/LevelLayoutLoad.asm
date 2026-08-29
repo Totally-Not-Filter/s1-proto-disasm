@@ -12,7 +12,7 @@ LevelDataLoad:
 		addq.l	#4,a2
 		movea.l	(a2)+,a0
 		lea	(v_16x16).w,a4
-		move.w	#bytesToLcnt(v_16x16_end-v_16x16),d0
+		move.w	#(v_16x16_end-v_16x16)/4-1,d0
 
 .loadblocks:
 		move.l	(a0)+,(a4)+
@@ -45,12 +45,12 @@ LevelDataLoad:
 LevelLayoutLoad:
 		lea	(v_lvllayout).w,a3
 	if FixBugs
-		move.w	#bytesToLcnt(v_lvllayout_end-v_lvllayout),d1
+		move.w	#(v_lvllayout_end-v_lvllayout)/4-1,d1
 	else
 		; v_lvllayout is only $400 bytes, but this clears $800...
 		; In Sonic 2, this function was corrected to only clear the
 		; layout buffer.
-		move.w	#bytesToWcnt(v_lvllayout_end-v_lvllayout),d1
+		move.w	#(v_lvllayout_end-v_lvllayout)/2-1,d1
 	endif
 		moveq	#0,d0
 

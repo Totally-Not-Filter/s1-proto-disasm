@@ -75,7 +75,7 @@ loc_FEC8:
 loc_FED4:
 		bset	#1,obStatus(a0)
 		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		move.b	#1,obPrevAni(a0)
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -204,7 +204,7 @@ locret_FFFE:
 loc_10000:
 		bset	#1,obStatus(a0)
 		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		move.b	#1,obPrevAni(a0)
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -263,7 +263,7 @@ loc_10090:
 loc_1009C:
 		bset	#1,obStatus(a0)
 		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		move.b	#1,obPrevAni(a0)
 		rts
 ; ---------------------------------------------------------------------------
 
@@ -322,5 +322,5 @@ loc_1012C:
 loc_10138:
 		bset	#1,obStatus(a0)
 		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		move.b	#1,obPrevAni(a0)
 		rts

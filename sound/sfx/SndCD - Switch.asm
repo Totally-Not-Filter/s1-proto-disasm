@@ -1,8 +1,8 @@
 SndCD_Switch_Header:
 	smpsHeaderStartSong 1
-	smpsHeaderVoice		SndCD_Switch_Voices
-	smpsHeaderTempoSFX	$01
-	smpsHeaderChanSFX	$01
+	smpsHeaderVoice     SndCD_Switch_Voices
+	smpsHeaderTempoSFX  $01
+	smpsHeaderChanSFX   $01
 
 	smpsHeaderSFXChannel cPSG3, SndCD_Switch_PSG3,	$00, $00
 

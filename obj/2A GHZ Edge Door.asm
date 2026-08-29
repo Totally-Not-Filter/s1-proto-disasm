@@ -5,172 +5,60 @@
 Obj2A:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	.index(pc,d0.w),d1
-		jmp	.index(pc,d1.w)
+		move.w	Obj2A_Index(pc,d0.w),d1
+		jmp	Obj2A_Index(pc,d1.w)
 ; ===========================================================================
-.index:
-		dc.w	.init-.index
-		dc.w	.chkpress-.index
-		dc.w	.display-.index
+Obj2A_Index:
+		dc.w	Obj2A_Main-Obj2A_Index
+		dc.w	Obj2A_Press-Obj2A_Index
+		dc.w	Obj2A_Display-Obj2A_Index
+
+edgedoor_finaly:	equ objoff_30	; copy of the Y-position, subtracted by 32 (2 bytes)
 ; ===========================================================================
 
-.init:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Edge_Door,obMap(a0)
-		move.w	#ArtTile_Level,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.w	obY(a0),d0
-		subi.w	#32,d0
-		move.w	d0,objoff_30(a0)
-		move.b	#11,obActWid(a0)
-		move.b	#5,obPriority(a0)
-		tst.b	obSubtype(a0)
-		beq.s	.chkpress
-		move.b	#1,obFrame(a0)
-		move.w	#ArtTile_Level|Tile_Pal3,obGfx(a0)
-		move.b	#4,obPriority(a0)
-		addq.b	#2,obRoutine(a0)
+Obj2A_Main:	; Routine 0
+		addq.b	#2,obRoutine(a0)			; advance to Obj2A_Press
+		move.l	#Map_Edge_Door,obMap(a0)		; set mappings
+		move.w	#ArtTile_Level,obGfx(a0)		; set art tile
+		move.b	#sprite_cam_field,obRender(a0)		; set to playfield-positioned mode
+		move.w	obY(a0),d0				; get object's Y-position
+		subi.w	#32,d0					; subtract 32 pixels from it
+		move.w	d0,edgedoor_finaly(a0)			; set it into height register
+		move.b	#22/2,obActWid(a0)			; set sprite display width
+		move.b	#5,obPriority(a0)			; set sprite priority
+		tst.b	obSubtype(a0)				; is subtype 0?
+		beq.s	Obj2A_Press				; if so, branch
+		move.b	#1,obFrame(a0)				; set sprite frame
+		move.w	#ArtTile_Level|Tile_Pal3,obGfx(a0)	; set art tile and palette line
+		move.b	#4,obPriority(a0)			; set sprite priority
+		addq.b	#2,obRoutine(a0)			; advance to Obj2A_Display
 
-.chkpress:	; Routine 2
-		tst.w	(f_switch).w
-		beq.s	.notpressed
-		subq.w	#1,obY(a0)
-		move.w	objoff_30(a0),d0
-		cmp.w	obY(a0),d0
-		beq.w	DeleteObject
+Obj2A_Press:	; Routine 2
+		tst.w	(f_switch).w				; has switch been pressed?
+		beq.s	.notpressed				; if not, branch
+		subq.w	#1,obY(a0)				; lower door by 1 pixel per frame
+		move.w	edgedoor_finaly(a0),d0			; get final lowered Y-position
+		cmp.w	obY(a0),d0				; does Edge Door's Y-position match with final Y-position?
+		beq.w	DeleteObject				; if so, delete the Edge Door
 
 .notpressed:
-		move.w	#22,d1
-		move.w	#16,d2
-		bsr.w	Obj44_SolidWall
+		move.w	#44/2,d1				; set collision detection width
+		move.w	#32/2,d2				; set collision detection height
+		bsr.w	EdgeWall_SolidWall			; check if Sonic has collided with the wall and stop him if so
 
-.display:	; Routine 4
+Obj2A_Display:	; Routine 4
 	if FixBugs
-		out_of_range.w	DeleteObject
-		bra.w	DisplaySprite
+		; Objects shouldn't call DisplaySprite and DeleteObject on
+		; the same frame, or else cause a null-pointer dereference.
+		out_of_range.w	DeleteObject			; has object gone out of range? if yes, delete it
+		bra.w	DisplaySprite				; otherwise, display object
 	else
 		bsr.w	DisplaySprite
-		out_of_range.w	DeleteObject
+		out_of_range.w	DeleteObject			; has object gone out of range? if yes, delete it
 		rts
 	endif
 ; ===========================================================================
 
-Obj44_SolidWall:
-		tst.w	(v_debuguse).w
-		bne.w	locret_69A6
-		cmpi.b	#6,(v_player+obRoutine).w
-		bhs.s	locret_69A6
-		bsr.w	Obj44_SolidWall2
-		beq.s	loc_698C
-		bmi.w	loc_69A8
-		tst.w	d0
-		beq.w	loc_6976
-		bmi.s	loc_6960
-		tst.w	obVelX(a1)
-		bmi.s	loc_6976
-		bra.s	loc_6966
-; ===========================================================================
+		include	"obj/sub SolidWall.asm"
 
-loc_6960:
-		tst.w	obVelX(a1)
-		bpl.s	loc_6976
-
-loc_6966:
-		sub.w	d0,obX(a1)
-		move.w	#0,obInertia(a1)
-		move.w	#0,obVelX(a1)
-
-loc_6976:
-		btst	#1,obStatus(a1)
-		bne.s	loc_699A
-		bset	#5,obStatus(a1)
-		bset	#5,obStatus(a0)
-		rts
-; ===========================================================================
-
-loc_698C:
-		btst	#5,obStatus(a0)
-		beq.s	locret_69A6
-		move.w	#id_Run,obAnim(a1)	; and obNextAni
-
-loc_699A:
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
-
-locret_69A6:
-		rts
-; ===========================================================================
-
-loc_69A8:
-		tst.w	obVelY(a1)
-		beq.s	loc_69C0
-		bpl.s	locret_69BE
-		tst.w	d3
-		bpl.s	locret_69BE
-		sub.w	d3,obY(a1)
-		move.w	#0,obVelY(a1)
-
-locret_69BE:
-		rts
-; ===========================================================================
-
-loc_69C0:
-		move.l	a0,-(sp)
-		movea.l	a1,a0
-		jsr	(KillSonic).l
-		movea.l	(sp)+,a0
-		rts
-; ===========================================================================
-
-Obj44_SolidWall2:
-		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.s	loc_6A28
-		move.w	d1,d3
-		add.w	d3,d3
-		cmp.w	d3,d0
-		bhi.s	loc_6A28
-		move.b	obHeight(a1),d3
-		ext.w	d3
-		add.w	d3,d2
-		move.w	obY(a1),d3
-		sub.w	obY(a0),d3
-		add.w	d2,d3
-		bmi.s	loc_6A28
-		move.w	d2,d4
-		add.w	d4,d4
-		cmp.w	d4,d3
-		bhs.s	loc_6A28
-		move.w	d0,d5
-		cmp.w	d0,d1
-		bhs.s	loc_6A10
-		add.w	d1,d1
-		sub.w	d1,d0
-		move.w	d0,d5
-		neg.w	d5
-
-loc_6A10:
-		move.w	d3,d1
-		cmp.w	d3,d2
-		bhs.s	loc_6A1C
-		sub.w	d4,d3
-		move.w	d3,d1
-		neg.w	d1
-
-loc_6A1C:
-		cmp.w	d1,d5
-		bhi.s	loc_6A24
-		moveq	#1,d4
-		rts
-; ===========================================================================
-
-loc_6A24:
-		moveq	#-1,d4
-		rts
-; ===========================================================================
-
-loc_6A28:
-		moveq	#0,d4
-		rts
+Map_Edge_Door:	include "_maps/GHZ Edge Door.asm"

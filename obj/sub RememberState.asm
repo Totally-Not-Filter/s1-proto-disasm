@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 RememberState:
-		out_of_range.w	.offscreen,,1
+		out_of_range.w	.offscreen,obX(a0),1
 		bra.w	DisplaySprite
 
 .offscreen:

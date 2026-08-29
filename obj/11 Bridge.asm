@@ -1,5 +1,6 @@
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Object 11 - GHZ bridge
+; Object 11 - GHZ bridge (the main object, for the stumps refer to Object 1C)
 ; ---------------------------------------------------------------------------
 
 Bridge:
@@ -9,380 +10,290 @@ Bridge:
 		jmp	Bri_Index(pc,d1.w)
 ; ===========================================================================
 Bri_Index:
-		dc.w	Bri_Main-Bri_Index
-		dc.w	Bri_Action-Bri_Index
-		dc.w	Bri_Platform-Bri_Index
-		dc.w	Bri_Delete-Bri_Index
-		dc.w	Bri_Delete-Bri_Index
-		dc.w	Bri_Display-Bri_Index
+		dc.w	Bri_Main-Bri_Index	; 0
+		dc.w	Bri_Action-Bri_Index	; 2
+		dc.w	Bri_StoodOn-Bri_Index	; 4
+		dc.w	Bri_Delete-Bri_Index	; 6
+		dc.w	Bri_Delete-Bri_Index	; 8
+		dc.w	Bri_ChildLog-Bri_Index	; A
+
+bridge_children:	equ obSubtype		; number of log objects, initially retrieved from subtype ($28)
+bridge_children_ram:	equ bridge_children+1	; RAM indices to log objects ($29-$39, usually read together with bridge_children)
+bridge_origY:		equ objoff_3C		; initial Y-position
+bridge_nudge:		equ objoff_3E		; general nudge Y-offset while Sonic is on bridge
+bridge_currentlog:	equ objoff_3F		; 0-based index of log Sonic is currently standing on
 ; ===========================================================================
 
 Bri_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bri,obMap(a0)
-		move.w	#ArtTile_GHZ_Bridge|Tile_Pal3,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$80,obActWid(a0)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
-		_move.b	obID(a0),d4	; copy object number ($11) to d4
-		lea	obSubtype(a0),a2
-		moveq	#0,d1
-		move.b	(a2),d1		; copy bridge length to d1
-		move.b	#0,(a2)+	; clear bridge length
-		move.w	d1,d0
-		lsr.w	#1,d0
-		lsl.w	#4,d0
-		sub.w	d0,d3		; d3 is position of leftmost log
-		subq.b	#2,d1
-		bcs.s	Bri_Action	; don't make more if bridge has only 1 log
-
-.buildloop:
+		addq.b	#2,obRoutine(a0)			; advance to Bri_Action
+		move.l	#Map_Bri,obMap(a0)			; set mappings
+		move.w	#ArtTile_GHZ_Bridge|Tile_Pal3,obGfx(a0)	; set art tile and palette line
+		move.b	#sprite_cam_field,obRender(a0)		; set to playfield-positioned mode
+		move.b	#3,obPriority(a0)			; set sprite priority
 	if FixBugs
-		bsr.w	FindNextFreeObj
+		move.b	#16/2,obActWid(a0)			; set sprite display width (one log)
 	else
-		bsr.w	FindFreeObj
+		; This sprite display width is way too large, causing the bridge to potentially screen-wrap.
+		; It's likely that this was forgotten when the bridge was turned into individual 16px log objects.
+		move.b	#256/2,obActWid(a0)			; set sprite display width (very large)
 	endif
-		bne.s	Bri_Action
-		addq.b	#1,obSubtype(a0)
-		cmp.w	obX(a0),d3	; is this log the leftmost one?
-		bne.s	.notleftmost	; if not, branch
 
-		addi.w	#$10,d3
-		move.w	d2,obY(a0)
-		move.w	d2,objoff_3C(a0)
-		move.w	a0,d5
-		subi.w	#v_objspace,d5
-		lsr.w	#object_size_bits,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		addq.b	#1,obSubtype(a0)
+		move.w	obY(a0),d2				; copy Y-position from parent
+		move.w	obX(a0),d3				; get center X-position of bridge
+		_move.b	obID(a0),d4				; copy parent object ID to children
+		lea	bridge_children(a0),a2			; load child object index array (= obSubtype)
+		moveq	#0,d1
+		move.b	(a2),d1					; get subtype for bridge
+		move.b	#0,(a2)+				; clear subtype, and initialize number of spawned children to 0
+		move.w	d1,d0					; copy bridge log count to d0
+		lsr.w	#1,d0					; divide by 2 (half-size)
+		lsl.w	#4,d0					; multiply by $10 (16px per log)
+		sub.w	d0,d3					; d3 = X-position of leftmost log
+		subq.b	#2,d1					; -1 for dbf, -1 for parent log
+		blo.s	Bri_Action				; branch on underflow (bridge only has only 1 log)
 
-.notleftmost:
-		move.w	a1,d5
-		subi.w	#v_objspace,d5
-		lsr.w	#object_size_bits,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		move.b	#$A,obRoutine(a1)
-		_move.b	d4,obID(a1)	; load bridge object (d4 = $11)
-		move.w	d2,obY(a1)
-		move.w	d2,objoff_3C(a1)
-		move.w	d3,obX(a1)
-		move.l	#Map_Bri,obMap(a1)
-		move.w	#ArtTile_GHZ_Bridge|Tile_Pal3,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#8,obActWid(a1)
-		addi.w	#$10,d3
-		dbf	d1,.buildloop ; repeat d1 times (length of bridge)
+.loopBuildBridge:
+	if FixBugs
+		; If an object is allocated before the parent object, then
+		; when the child is deleted, it will have already been queued
+		; for display, which is a display-and-delete bug.
+		bsr.w	FindNextFreeObj				; find next free object RAM slot
+	else
+		bsr.w	FindFreeObj				; find any free object RAM slot
+	endif
+		bne.s	Bri_Action				; if object RAM is full, abort
+		addq.b	#1,bridge_children(a0)			; increment number of loaded child objects
+
+		cmp.w	obX(a0),d3				; is current X-position matching parent/middle log's initial X-position?
+		bne.s	.setupChild				; if not, branch
+		addi.w	#16,d3					; make next child horizontally skip over parent
+		move.w	d2,obY(a0)				; set parent Y-position (redundant)
+		move.w	d2,bridge_origY(a0)			; remember initial Y-position
+		move.w	a0,d5					; get parent address
+		subi.w	#v_objspace&$FFFF,d5			; make address 0-based
+		lsr.w	#object_size_bits,d5			; divide by $40 (object_size)
+		andi.w	#$7F,d5					; d5 = index of parent in object RAM
+		move.b	d5,(a2)+				; store parent RAM index as first entry in bridge_children
+		addq.b	#1,bridge_children(a0)			; increment number of loaded objects to account for parent
+
+	.setupChild:
+		move.w	a1,d5					; get child address
+		subi.w	#v_objspace&$FFFF,d5			; make child address 0-based
+		lsr.w	#object_size_bits,d5			; divide by $40 (object_size)
+		andi.w	#$7F,d5					; d5 = index of child in object RAM
+		move.b	d5,(a2)+				; store new child index at the end of bridge_children
+
+		move.b	#$A,obRoutine(a1)			; set child log to Bri_ChildLog (display only)
+		_move.b	d4,obID(a1)				; copy object ID from parent
+		move.w	d2,obY(a1)				; copy Y-position from parent
+		move.w	d2,bridge_origY(a1)			; remember initial Y-position
+		move.w	d3,obX(a1)				; write current X-position set in d3
+		move.l	#Map_Bri,obMap(a1)			; set mappings
+		move.w	#ArtTile_GHZ_Bridge|Tile_Pal3,obGfx(a1)	; set art tile and palette line
+		move.b	#sprite_cam_field,obRender(a1)		; set to playfield-positioned mode
+		move.b	#3,obPriority(a1)			; set sprite priority
+		move.b	#16/2,obActWid(a1)			; set sprite display width for individual log
+		addi.w	#16,d3					; position next log 16px further to the right
+
+		dbf	d1,.loopBuildBridge			; repeat for length of bridge
+; ---------------------------------------------------------------------------
 
 Bri_Action:	; Routine 2
-		bsr.s	Bri_Solid
-		tst.b	objoff_3E(a0)
-		beq.s	.display
-		subq.b	#4,objoff_3E(a0)
-		bsr.w	Bri_Bend
+		bsr.s	Bri_CheckOnBridge			; allow stepping on bridge (sets obRoutine = 4 (Bri_StoodOn) on enter)
+
+		tst.b	bridge_nudge(a0)			; has bridge nudge gone back to 0?
+		beq.s	.display				; if yes, branch
+		subq.b	#4,bridge_nudge(a0)			; reduce nudging while Sonic isn't on bridge
+		bsr.w	Bri_Bend				; update bridge bend for nudge
 
 .display:
 	if FixBugs=0
-		bsr.w	DisplaySprite
+		; This has been moved to prevent a display-after-free bug.
+		bsr.w	DisplaySprite				; display main bridge object
 	endif
-		bra.w	Bri_ChkDel
-; ===========================================================================
+		bra.w	Bri_ChkDel				; delete main bridge object and all child logs if out of range
 
-Bri_Solid:
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to check if Sonic is on bridge platform
+; ---------------------------------------------------------------------------
+
+; Bri_Solid:
+Bri_CheckOnBridge:
 		moveq	#0,d1
-		move.b	obSubtype(a0),d1
-		lsl.w	#3,d1
-		move.w	d1,d2
-		addq.w	#8,d1
-		add.w	d2,d2
-		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
-		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.w	Plat_Exit
-		cmp.w	d2,d0
-		bhs.w	Plat_Exit
-		bra.s	Plat_NoXCheck
-; End of function Bri_Solid
+		move.b	bridge_children(a0),d1			; get number of logs in bridge
+		lsl.w	#3,d1					; multiply by 8
+		move.w	d1,d2					; copy for right-side check
+		addq.w	#8,d1					; d1 = left edge of bridge
+		add.w	d2,d2					; d2 = right edge of bridge
+		lea	(v_player).w,a1				; load Sonic player object
+		tst.w	obVelY(a1)				; is Sonic moving upwards?
+		bmi.w	Plat_Exit				; if yes, ignore bridge interaction
+
+		move.w	obX(a1),d0				; get Sonic's current X-position
+		sub.w	obX(a0),d0				; d0 = Sonic's distance from center of bridge
+		add.w	d1,d0					; add left edge of bridge
+		bmi.w	Plat_Exit				; branch if Sonic is left of the bridge
+		cmp.w	d2,d0					; is Sonic within right edge of the bridge?
+		bhs.w	Plat_Exit				; if not, branch
+
+		bra.s	Plat_NoXCheck				; continue with regular platform check, assume height is 8px
+; End of function Bri_CheckOnBridge
 
 ; ===========================================================================
 
-PlatformObject:
-		lea	(v_player).w,a1
-		tst.w	obVelY(a1)	; is Sonic moving up/jumping?
-		bmi.w	Plat_Exit	; if yes, branch
+	; Allow Sonic stepping on platforms. This is sandwiched in here,
+	; likely for being the first platform object created for the game.
+	include	"obj/sub PlatformObject & SlopeObject.asm"
 
-;		perform x-axis range check
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.w	Plat_Exit
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bhs.w	Plat_Exit
-
-Plat_NoXCheck:
-		move.w	obY(a0),d0
-		subq.w	#8,d0
-
-Platform3:
-;		perform y-axis range check
-		move.w	obY(a1),d2
-		move.b	obHeight(a1),d1
-		ext.w	d1
-		add.w	d2,d1
-		addq.w	#4,d1
-		sub.w	d1,d0
-		bhi.w	Plat_Exit
-		cmpi.w	#-$10,d0
-		blo.w	Plat_Exit
-
-		cmpi.b	#6,obRoutine(a1)
-		bhs.w	Plat_Exit
-		add.w	d0,d2
-		addq.w	#3,d2
-		move.w	d2,obY(a1)
-		addq.b	#2,obRoutine(a0)
-
-loc_4FD4:
-		btst	#3,obStatus(a1)
-		beq.s	loc_4FFC
-		moveq	#0,d0
-		move.b	standonobject(a1),d0
-		lsl.w	#object_size_bits,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a2
-		cmpi.b	#4,obRoutine(a2)
-		bne.s	loc_4FFC
-		subq.b	#2,obRoutine(a2)
-		clr.b	ob2ndRout(a2)
-
-loc_4FFC:
-		move.w	a0,d0
-		subi.w	#v_objspace,d0
-		lsr.w	#object_size_bits,d0
-		andi.w	#$7F,d0
-		move.b	d0,standonobject(a1)
-		move.b	#0,obAngle(a1)
-		move.w	#0,obVelY(a1)
-		move.w	obVelX(a1),d0
-		asr.w	#2,d0
-		sub.w	d0,obVelX(a1)
-		move.w	obVelX(a1),obInertia(a1)
-		btst	#1,obStatus(a1)
-		beq.s	loc_503C
-		move.l	a0,-(sp)
-		movea.l	a1,a0
-		jsr	(Sonic_ResetOnFloor).l
-		movea.l	(sp)+,a0
-
-loc_503C:
-		bset	#3,obStatus(a1)
-		bset	#3,obStatus(a0)
-
-Plat_Exit:
-		rts
-; End of function PlatformObject
-
-; ---------------------------------------------------------------------------
-; Sloped platform subroutine (GHZ collapsing ledges and SLZ seesaws)
-; ---------------------------------------------------------------------------
-
-SlopeObject:
-		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
-		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.s	Plat_Exit
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bhs.s	Plat_Exit
-		btst	#0,obRender(a0)
-		beq.s	loc_5074
-		not.w	d0
-		add.w	d1,d0
-
-loc_5074:
-		lsr.w	#1,d0
-		moveq	#0,d3
-		move.b	(a2,d0.w),d3
-		move.w	obY(a0),d0
-		sub.w	d3,d0
-		bra.w	Platform3
 ; ===========================================================================
 
-Swing_Solid:
-		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
-		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.w	Plat_Exit
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bhs.w	Plat_Exit
-		move.w	obY(a0),d0
-		sub.w	d3,d0
-		bra.w	Platform3
+; Bri_Platform:
+Bri_StoodOn:	; Routine 4
+		bsr.s	Bri_WalkOff				; allow exiting bridge (sets obRoutine = 2 (Bri_Action) on exit)
 
-Bri_Platform:	; Routine 4
-		bsr.s	Bri_WalkOff
 	if FixBugs=0
-		bsr.w	DisplaySprite
+		; This has been moved to prevent a display-after-free bug.
+		bsr.w	DisplaySprite				; display main bridge object
 	endif
-		bra.w	Bri_ChkDel
+		bra.w	Bri_ChkDel				; delete main bridge object and all child logs if out of range
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine allowing Sonic to walk off a bridge
 ; ---------------------------------------------------------------------------
 
 Bri_WalkOff:
 		moveq	#0,d1
-		move.b	obSubtype(a0),d1
-		lsl.w	#3,d1
-		move.w	d1,d2
-		addq.w	#8,d1
-		bsr.s	ExitPlatform2
-		bcc.s	locret_50E8
-		lsr.w	#4,d0
-		move.b	d0,objoff_3F(a0)
-		move.b	objoff_3E(a0),d0
-		cmpi.b	#$40,d0
-		beq.s	loc_50E0
-		addq.b	#4,objoff_3E(a0)
+		move.b	bridge_children(a0),d1			; get number of logs in bridge
+		lsl.w	#3,d1					; multiply by 8
+		move.w	d1,d2					; d2 = half-width for right-side check
+		addq.w	#8,d1					; d1 = half-width for left-side check
+		bsr.s	ExitPlatform2				; allow Sonic exiting the bridge
+		bcc.s	.return					; has Sonic exited bridge? if yes, branch
 
-loc_50E0:
-		bsr.w	Bri_Bend
-		bsr.w	Bri_MoveSonic
+		lsr.w	#4,d0					; divide Sonic's distance from left edge by $10 (i.e. 16px per log)
+		move.b	d0,bridge_currentlog(a0)		; store index of log Sonic is currently standing on
 
-locret_50E8:
+		move.b	bridge_nudge(a0),d0			; get current bridge nudge value (0-$40)
+		cmpi.b	#$40,d0					; has bridge fully nudged down?
+		beq.s	.bridgeBehavior				; if yes, don't depress it further
+		addq.b	#4,bridge_nudge(a0)			; nudge bridge down as Sonic stands on it
+
+	.bridgeBehavior:
+		bsr.w	Bri_Bend				; update bridge bend for nudge
+		bsr.w	Bri_MoveSonic				; vertically align Sonic with bridge bend
+
+	.return:
 		rts
 ; End of function Bri_WalkOff
-
 ; ===========================================================================
 
-ExitPlatform:
-		move.w	d1,d2
-
-ExitPlatform2:
-		add.w	d2,d2
-		lea	(v_player).w,a1
-		btst	#1,obStatus(a1)
-		bne.s	loc_510A
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		add.w	d1,d0
-		bmi.s	loc_510A
-		cmp.w	d2,d0
-		blo.s	locret_511C
-
-loc_510A:
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a0)
-		bclr	#3,obStatus(a0)
-
-locret_511C:
-		rts
+	; Allow Sonic exiting platforms. This is sandwiched in here,
+	; likely for being the first platform object created.
+	include	"obj/sub ExitPlatform.asm"
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to vertically align Sonic with log he is currently standing on
+; ---------------------------------------------------------------------------
 
 Bri_MoveSonic:
 		moveq	#0,d0
-		move.b	objoff_3F(a0),d0
-		move.b	objoff_29(a0,d0.w),d0
-		lsl.w	#object_size_bits,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a2
-		lea	(v_player).w,a1
-		move.w	obY(a2),d0
-		subq.w	#8,d0
+		move.b	bridge_currentlog(a0),d0		; get index of log Sonic is currently standing on
+		move.b	bridge_children_ram(a0,d0.w),d0		; find RAM index of that log
+		lsl.w	#object_size_bits,d0			; multiply by $40 (object_size)
+		addi.l	#v_objspace&$FFFFFF,d0			; add base object RAM offset
+		movea.l	d0,a2					; a1 = full RAM address to log Sonic is standing on
+
+		lea	(v_player).w,a1				; load Sonic player object
+		move.w	obY(a2),d0				; get current Y-position of log Sonic is standing on
+		subq.w	#8,d0					; align by 8px upwards
 		moveq	#0,d1
-		move.b	obHeight(a1),d1
-		sub.w	d1,d0
-		move.w	d0,obY(a1)	; change Sonic's position on y-axis
+		move.b	obHeight(a1),d1				; get Sonic's current collision height
+		sub.w	d1,d0					; adjust upwards by Sonic's collision height
+		move.w	d0,obY(a1)				; vertically align Sonic with currently stood-on log
 		rts
 ; End of function Bri_MoveSonic
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to bend the bridge by vertically aligning all log objects
+; to the left and right of the one Sonic is currently standing on.
+; ---------------------------------------------------------------------------
 
 Bri_Bend:
-		move.b	objoff_3E(a0),d0
-		bsr.w	CalcSine
-		move.w	d0,d4
-		lea	(Bri_Data_Align).l,a4
+		move.b	bridge_nudge(a0),d0			; get current bridge nudge value (0-$40)
+		bsr.w	CalcSine				; convert it into a sine for smooth movement
+		move.w	d0,d4					; backup sine result for later
+
+		lea	(Bri_Data_Align).l,a4			; load values used to align logs to the left/right of the one being stood on
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
-		lsl.w	#4,d0
-		moveq	#0,d3
-		move.b	objoff_3F(a0),d3
-		move.w	d3,d2
-		add.w	d0,d3
+		move.b	bridge_children(a0),d0			; get bridge log count
+		lsl.w	#4,d0					; multiply by $10 bytes per data row
+		moveq	#0,d3					; clear d3
+		move.b	bridge_currentlog(a0),d3		; get index of log Sonic is currently standing on
+		move.w	d3,d2					; d2 = number of logs to the left of Sonic (dbf count)
+		add.w	d0,d3					; d3 = index in Bri_Data_Y_Max for current log
 		moveq	#0,d5
-		lea	(Bri_Data_Y_Max).l,a5
-		move.b	(a5,d3.w),d5
-		andi.w	#$F,d3
-		lsl.w	#4,d3
-		lea	(a4,d3.w),a3
-		lea	objoff_29(a0),a2
+		lea	(Bri_Data_Y_Max).l,a5			; load max Y-bend distance array
+		move.b	(a5,d3.w),d5				; d5 = max Y-bend distance based on current log
+		andi.w	#$F,d3					; clear upper nybble in d3
+		lsl.w	#4,d3					; multiply by $10 bytes per data row
+		lea	(a4,d3.w),a3				; a3 = start index in align data array for current log
+		lea	bridge_children_ram(a0),a2		; a2 = RAM indices to log objects
 
-loc_5186:
+	.loopLeftLogs:
 		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#object_size_bits,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
+		move.b	(a2)+,d0				; get next RAM index for log object
+		lsl.w	#object_size_bits,d0			; multiply by $40 (object_size)
+		addi.l	#v_objspace&$FFFFFF,d0			; add base object RAM offset
+		movea.l	d0,a1					; a1 = full RAM address to object
 		moveq	#0,d0
-		move.b	(a3)+,d0
-		addq.w	#1,d0
-		mulu.w	d5,d0
-		mulu.w	d4,d0
-		swap	d0
-		add.w	objoff_3C(a1),d0
-		move.w	d0,obY(a1)
-		dbf	d2,loc_5186
+		move.b	(a3)+,d0				; retrieve next byte value from align data array
+		addq.w	#1,d0					; increment by 1 (max ROM value is $FF, probably to save space)
+		mulu.w	d5,d0					; multiply align value by max Y-bend distance
+		mulu.w	d4,d0					; multiply that by the sine of the current nudge distance
+		swap	d0					; move integer result into lower word
+		add.w	bridge_origY(a1),d0			; add initial Y-position
+		move.w	d0,obY(a1)				; update Y-position for current log
+		dbf	d2,.loopLeftLogs			; repeat for all logs left of the one Sonic is standing on
+; ---------------------------------------------------------------------------
+
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	bridge_children(a0),d0			; get bridge log count
 		moveq	#0,d3
-		move.b	objoff_3F(a0),d3
-		addq.b	#1,d3
-		sub.b	d0,d3
-		neg.b	d3
-		bmi.s	locret_51F4
-		move.w	d3,d2
-		lsl.w	#4,d3
-		lea	(a4,d3.w),a3
-		adda.w	d2,a3
-		subq.w	#1,d2
-		bcs.s	locret_51F4
+		move.b	bridge_currentlog(a0),d3		; get index of log Sonic is currently standing on
+		addq.b	#1,d3					; add 1 for total subtraction
+		sub.b	d0,d3					; subtract total log count from current log index
+		neg.b	d3					; make result positive again
+		bmi.s	.return					; if result is still negative, abort
+		move.w	d3,d2					; backup result
+		lsl.w	#4,d3					; multiply by $10 bytes per data row
+		lea	(a4,d3.w),a3				; load row in Bri_Data_Align
+		adda.w	d2,a3					; advance to first right-side log inside data row
+		subq.w	#1,d2					; undo earlier +1 for dbf
+		blo.s	.return					; if underflowed, Sonic is already standing on the rightmost log
 
-loc_51CE:
+	.loopRightLogs:
 		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#object_size_bits,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		moveq	#0,d0
-		move.b	-(a3),d0
-		addq.w	#1,d0
-		mulu.w	d5,d0
-		mulu.w	d4,d0
-		swap	d0
-		add.w	objoff_3C(a1),d0
-		move.w	d0,obY(a1)
-		dbf	d2,loc_51CE
+		move.b	(a2)+,d0				; get next RAM index for log object
+		lsl.w	#object_size_bits,d0			; multiply by $40 (object_size)
+		addi.l	#v_objspace&$FFFFFF,d0			; add base object RAM offset
+		movea.l	d0,a1					; a1 = full RAM address to object
 
-locret_51F4:
+		moveq	#0,d0
+		move.b	-(a3),d0				; retrieve PREVIOUS byte value from align data array
+		addq.w	#1,d0					; increment by 1 (max ROM value is $FF, probably to save space)
+		mulu.w	d5,d0					; multiply align value by max Y-bend distance
+		mulu.w	d4,d0					; multiply that by the sine of the current nudge distance
+		swap	d0					; move integer result into lower word
+		add.w	bridge_origY(a1),d0			; add initial Y-position
+		move.w	d0,obY(a1)				; update Y-position for current log
+		dbf	d2,.loopRightLogs			; repeat for all logs right of the one Sonic is standing on
+
+	.return:
 		rts
-; End of function Bri_Bend
 
 ; ---------------------------------------------------------------------------
 ; GHZ bridge-bending data
@@ -431,47 +342,55 @@ Bri_Data_Align:	; Values used to align logs to the left & right of the one being
 		dc.b $19, $31, $4A, $67, $7E, $93, $A7, $BD, $CD, $DB, $E7, $F3, $F9, $FE, $FF,   _	; standing on log 14
 		dc.b $19, $31, $4A, $61, $78, $8E, $A2, $B5, $C5, $D4, $E1, $EC, $F4, $FB, $FE, $FF	; standing on log 15
 		even
+
+; End of function Bri_Bend
+
 ; ===========================================================================
 
 Bri_ChkDel:
-		out_of_range.w	.deletebridge
+		out_of_range.w	.deleteBridge			; has bridge gone out of range? if yes, delete it with all child logs
 	if FixBugs
-		bra.w	DisplaySprite
+		; This has been moved to prevent a display-after-free bug.
+		bra.w	DisplaySprite				; display main bridge object
 	else
 		rts
 	endif
-; ===========================================================================
+; ---------------------------------------------------------------------------
 
-.deletebridge:
+.deleteBridge:
 		moveq	#0,d2
-		lea	obSubtype(a0),a2 ; load bridge length
-		move.b	(a2)+,d2	; move bridge length to d2
-		subq.b	#1,d2		; subtract 1
-		bcs.s	.delparent
+		lea	bridge_children(a0),a2			; load child log object index array (includes main parent log itself, too)
+		move.b	(a2)+,d2				; get number of child objects
+		subq.b	#1,d2					; decrement for dbf
+		blo.s	.deleteParentLog			; if it underflowed, bridge only contained 1 log (parent)
 
-.loop:
+	.loopDeleteLogs:
 		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#object_size_bits,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		cmp.w	a0,d0
-		beq.s	.skipdel
-		bsr.w	DeleteChild
+		move.b	(a2)+,d0				; get next RAM index for object
+		lsl.w	#object_size_bits,d0			; multiply by $40 (object_size)
+		addi.l	#v_objspace&$FFFFFF,d0			; add base object RAM offset
+		movea.l	d0,a1					; move result to a1 as input for DeleteChild
+		cmp.w	a0,d0					; is current object the main parent log?
+		beq.s	.next					; if yes, postpone deletion
+		bsr.w	DeleteChild				; delete child log object
+	.next:	dbf	d2,.loopDeleteLogs			; repeat for bridge length
 
-.skipdel:
-		dbf	d2,.loop ; repeat d2 times (bridge length)
+	.deleteParentLog:
+		bsr.w	DeleteObject				; finally, delete main parent log itself
+		rts
+; ===========================================================================
 
-.delparent:
+Bri_Delete:	; Routine 6/8 (unused?)
 		bsr.w	DeleteObject
 		rts
 ; ===========================================================================
 
-Bri_Delete:	; Routine 6, 8
-		bsr.w	DeleteObject
+; Bri_Display:
+Bri_ChildLog:	; Routine $A
+		; Note: Child logs are updated and deleted through the parent object!
+		bsr.w	DisplaySprite				; just display child log sprite
 		rts
+
 ; ===========================================================================
 
-Bri_Display:	; Routine $A
-		bsr.w	DisplaySprite
-		rts
+Map_Bri:	include	"_maps/Bridge.asm"

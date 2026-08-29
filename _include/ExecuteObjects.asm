@@ -4,7 +4,7 @@
 
 ExecuteObjects:
 		lea	(v_objspace).w,a0 ; set address for object RAM
-		moveq	#bytesToXcnt(v_objspace_end-v_objspace,object_size),d7
+		moveq	#(v_objspace_end-v_objspace)/object_size-1,d7
 		moveq	#0,d0
 		cmpi.b	#6,(v_player+obRoutine).w	; has sonic died?
 		bhs.s	loc_8560			; if so, branch
@@ -25,9 +25,9 @@ loc_8556:
 ; ===========================================================================
 
 loc_8560:
-		moveq	#bytesToXcnt(v_lvlobjspace-v_objspace,object_size),d7
+		moveq	#(v_lvlobjspace-v_objspace)/object_size-1,d7
 		bsr.s	loc_8546
-		moveq	#bytesToXcnt(v_lvlobjend-v_lvlobjspace,object_size),d7
+		moveq	#(v_lvlobjend-v_lvlobjspace)/object_size-1,d7
 
 loc_8566:
 		moveq	#0,d0

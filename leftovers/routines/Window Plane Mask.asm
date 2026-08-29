@@ -9,7 +9,7 @@
 		lea	(v_ngfx_buffer).w,a0
 		move.w	(f_water).w,d2
 		move.w	#$9100,d3
-		move.w	#bytesToWcnt($200),d7
+		move.w	#(v_ngfx_buffer_end-v_ngfx_buffer)/2-1,d7
 
 loc_3028:
 		move.w	d2,d0

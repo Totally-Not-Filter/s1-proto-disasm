@@ -1,3 +1,4 @@
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Object 38 - shield and invincibility stars
 ; ---------------------------------------------------------------------------
@@ -12,93 +13,101 @@ Shi_Index:
 		dc.w	Shi_Main-Shi_Index
 		dc.w	Shi_Shield-Shi_Index
 		dc.w	Shi_Stars-Shi_Index
+
+stars_lag:	equ objoff_30		; lag index before stars update position again
 ; ===========================================================================
 
 Shi_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Shield,obMap(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		tst.b	obAnim(a0)	; is object a shield?
-		bne.s	.stars		; if not, branch
-		move.w	#ArtTile_Shield,obGfx(a0)	; shield specific code
-		rts
-; ===========================================================================
+		addq.b	#2,obRoutine(a0)			; advance to Shi_Shield
+		move.l	#Map_Shield,obMap(a0)			; set shield mappings
+		move.b	#sprite_cam_field,obRender(a0)		; set playfield-positioning mode
+		move.b	#1,obPriority(a0)			; set sprite priority (above Sonic)
+		move.b	#32/2,obActWid(a0)			; set sprite display width
 
-.stars:
-		addq.b	#2,obRoutine(a0) ; goto Shi_Stars next
-		move.w	#ArtTile_Invincibility,obGfx(a0)
-		rts
+		tst.b	obAnim(a0)				; is object a shield?
+		bne.s	.stars					; if not, branch
+		move.w	#ArtTile_Shield,obGfx(a0)		; shield-specific art tile
+		rts						; return
+
+	.stars:
+		addq.b	#2,obRoutine(a0)			; advance to Shi_Stars
+		move.w	#ArtTile_Invincibility,obGfx(a0)	; stars-specific art tile
+		rts						; return
 ; ===========================================================================
 
 Shi_Shield:	; Routine 2
-		tst.b	(v_invinc).w	; does Sonic have invincibility?
-		bne.s	.remove		; if yes, branch
-		tst.b	(v_shield).w	; does Sonic have shield?
-		beq.s	.delete		; if not, branch
-		move.w	(v_player+obX).w,obX(a0)
-		move.w	(v_player+obY).w,obY(a0)
-		move.b	(v_player+obStatus).w,obStatus(a0)
-		lea	(Ani_Shield).l,a1
-		jsr	(AnimateSprite).l
-		bsr.w	DisplaySprite
+		tst.b	(v_invinc).w				; has Sonic gained invincibility after already having a shield?
+		bne.s	.hide					; if yes, hide shield sprite
+		tst.b	(v_shield).w				; has Sonic lost the shield?
+		beq.s	.delete					; if yes, delete it
 
-.remove:
-		rts
+		move.w	(v_player+obX).w,obX(a0)		; keep copying Sonic's X-position
+		move.w	(v_player+obY).w,obY(a0)		; keep copying Sonic's Y-position
+		move.b	(v_player+obStatus).w,obStatus(a0)	; keep Sonic's status flags for rendering
+		lea	(Ani_Shield).l,a1			; load shield animation script
+		jsr	(AnimateSprite).l			; keep animating shield
+		bsr.w	DisplaySprite				; display shield sprite
 
-.delete:
-		bra.w	DeleteObject
+	.hide:
+		rts						; hide shield sprite but don't delete it
+
+	.delete:
+		bra.w	DeleteObject				; delete shield object
 ; ===========================================================================
 
 Shi_Stars:	; Routine 4
-		tst.b	(v_invinc).w	; does Sonic have invincibility?
-		beq.s	Shi_Start_Delete		; if not, branch
-		move.w	(v_trackpos).w,d0 ; get index value for tracking data
-		move.b	obAnim(a0),d1
-		subq.b	#1,d1
-		bra.s	.trail
-; ===========================================================================
+		tst.b	(v_invinc).w				; has invincibility run out?
+		beq.s	Shi_Start_Delete			; if yes, delete stars object
 
-.trail_unused:	;	unused older trailing code that makes a much shorter trail
-		lsl.b	#4,d1		; multiply animation number by 16
+		move.w	(v_trackpos).w,d0			; get index value for tracking data
+		move.b	obAnim(a0),d1				; get stars animation ID (1-4)
+		subq.b	#1,d1					; make it 0-based
+		bra.s	.trail					; skip over dead code
+
+; ===========================================================================
+; unused older trailing code that makes a much shorter trail
+	; .trail_unused:
+		lsl.b	#4,d1					; multiply animation ID by 16
 		addq.b	#4,d1
 		sub.b	d1,d0
-		move.b	objoff_30(a0),d1
-		sub.b	d1,d0		; use earlier tracking data to create trail
+		move.b	stars_lag(a0),d1
+		sub.b	d1,d0					; use earlier tracking data to create trail
 		addq.b	#4,d1
 		andi.b	#$F,d1
-		move.b	d1,objoff_30(a0)
-		bra.s	.b
+		move.b	d1,stars_lag(a0)
+		bra.s	.updateStars
 ; ===========================================================================
 
-.trail:
-		lsl.b	#3,d1		; multiply animation number by 8
+	.trail:
+		lsl.b	#3,d1					; multiply animation ID by 8
 		move.b	d1,d2
 		add.b	d1,d1
-		add.b	d2,d1		; multiply by 3
-		addq.b	#4,d1
-		sub.b	d1,d0
-		move.b	objoff_30(a0),d1
-		sub.b	d1,d0		; use earlier tracking data to create trail
-		addq.b	#4,d1
-		cmpi.b	#$18,d1
-		blo.s	.a
-		moveq	#0,d1
+		add.b	d2,d1					; multiply by 3
+		addq.b	#4,d1					; advance to next recorded position array index
+		sub.b	d1,d0					; d0 = base index for animation ID
 
-.a:
-		move.b	d1,objoff_30(a0)
+		; This makes stars effectively only update position every 6 frames to create a small jitter effect
+		move.b	stars_lag(a0),d1			; get previous lag value
+		sub.b	d1,d0					; subtract lag value use earlier tracking data to create trail
+		addq.b	#4,d1					; increment lag value to previous recording array index
+		cmpi.b	#6*4,d1					; has lag value exceeded limit? (=$18)
+		blo.s	.updateLag				; if not, branch
+		moveq	#0,d1					; reset lag value
+	;.a:
+	.updateLag:
+		move.b	d1,stars_lag(a0)			; update lag value for next run
 
-.b:
-		lea	(v_tracksonic).w,a1
-		lea	(a1,d0.w),a1
-		move.w	(a1)+,obX(a0)
-		move.w	(a1)+,obY(a0)
-		move.b	(v_player+obStatus).w,obStatus(a0)
-		lea	(Ani_Shield).l,a1
-		jsr	(AnimateSprite).l
-		bra.w	DisplaySprite
+	; .b:
+	.updateStars:
+		lea	(v_tracksonic).w,a1			; load Sonic's recorded position data array (each entry is 4 bytes, a word per X/Y)
+		lea	(a1,d0.w),a1				; go to desired recorded position
+		move.w	(a1)+,obX(a0)				; set new X-position
+		move.w	(a1)+,obY(a0)				; set new Y-position
+		move.b	(v_player+obStatus).w,obStatus(a0)	; keep Sonic's status flags for rendering
+		lea	(Ani_Shield).l,a1			; load stars animation script (bundled with shield animations)
+		jsr	(AnimateSprite).l			; keep animating stars
+		bra.w	DisplaySprite				; keep displaying stars
 ; ===========================================================================
 
 Shi_Start_Delete:
-		bra.w	DeleteObject
+		bra.w	DeleteObject				; delete invincibility stars object

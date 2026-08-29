@@ -2,76 +2,76 @@
 ; Object 19 - Ball obstacle in GHZ
 ; ---------------------------------------------------------------------------
 
-GBall:
+GHZBall:
 		moveq	#0,d0
 		move.b	obRoutine(a0),d0
-		move.w	.index(pc,d0.w),d1
-		jmp	.index(pc,d1.w)
+		move.w	GHZBall_Index(pc,d0.w),d1
+		jmp	GHZBall_Index(pc,d1.w)
 ; ===========================================================================
-.index:
-		dc.w	.main-.index
-		dc.w	GBall_Roll-.index
-		dc.w	GBall_InAir-.index
-		dc.w	GBall_Delete-.index
-		dc.w	GBall_ChkPush-.index
+GHZBall_Index:
+		dc.w	GHZBall_Main-GHZBall_Index
+		dc.w	GHZBall_Roll-GHZBall_Index
+		dc.w	GHZBall_InAir-GHZBall_Index
+		dc.w	GHZBall_Delete-GHZBall_Index
+		dc.w	GHZBall_ChkPush-GHZBall_Index
 ; ===========================================================================
 
-.main:	; Routine 0
-		move.b	#$18,obHeight(a0)
-		move.b	#$C,obWidth(a0)
+GHZBall_Main:	; Routine 0
+		move.b	#48/2,obHeight(a0)
+		move.b	#24/2,obWidth(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l	; find floor
+		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	.floornotfound
 		add.w	d1,obY(a0)
 		move.w	#0,obVelY(a0)
-		move.b	#8,obRoutine(a0)
+		move.b	#8,obRoutine(a0)			; advance to GHZ_Ball_ChkPush
 		move.l	#Map_GBall,obMap(a0)
 		move.w	#ArtTile_GHZ_Giant_Ball|Tile_Pal3,obGfx(a0)
-		move.b	#4,obRender(a0)
+		move.b	#sprite_cam_field,obRender(a0)
 		move.b	#3,obPriority(a0)
-		move.b	#$18,obActWid(a0)
+		move.b	#48/2,obActWid(a0)
 		move.b	#1,obDelayAni(a0)
-		bsr.w	GBall_Animate
+		bsr.w	GHZBall_Animate
 
 .floornotfound:
 		rts
 ; ===========================================================================
 
-GBall_ChkPush:	; Routine 8
-		move.w	#$23,d1
-		move.w	#$18,d2
-		move.w	#$18,d3
-		move.w	obX(a0),d4
+GHZBall_ChkPush: ; Routine 8
+		move.w	#48/2+sonic_solid_width,d1		; SolidObject input: width
+		move.w	#48/2,d2				; SolidObject input: height (initial)
+		move.w	#48/2,d3				; SolidObject input: height (stood-on)
+		move.w	obX(a0),d4				; SolidObject input: object X-position (stood-on)
 		bsr.w	SolidObject
-		btst	#5,obStatus(a0)	; is the ball being pushed?
-		bne.s	.pushed	; if so, branch
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
-		bcs.s	.notouch
+		btst	#5,obStatus(a0)				; is the ball being pushed?
+		bne.s	.pushed					; if so, branch
+		move.w	(v_player+obX).w,d0			; get player's X position
+		sub.w	obX(a0),d0				; subtract object position from player's X position
+		blo.s	.notouch				; if lower than total value, branch
 
 .pushed:
-		move.b	#2,obRoutine(a0)
+		move.b	#2,obRoutine(a0)			; advance to GHZBall_Roll
 		move.w	#$80,obInertia(a0)
 
 .notouch:
-		bsr.w	GBall_Animate
+		bsr.w	GHZBall_Animate
 	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
-		bra.w	GBall_ChkDel
+		bra.w	GHZBall_ChkDel
 ; ===========================================================================
 
-GBall_Roll:	; Routine 2
-		btst	#1,obStatus(a0)	; is the ball in the air?
-		bne.w	GBall_InAir	; if so, branch
-		bsr.w	GBall_Animate
-		bsr.w	sub_5E50
+GHZBall_Roll:	; Routine 2
+		btst	#1,obStatus(a0)				; is the ball in the air?
+		bne.w	GHZBall_InAir				; if so, branch
+		bsr.w	GHZBall_Animate
+		bsr.w	GHZBall_Angle
 		bsr.w	SpeedToPos
-		move.w	#$23,d1
-		move.w	#$18,d2
-		move.w	#$18,d3
-		move.w	obX(a0),d4
+		move.w	#48/2+sonic_solid_width,d1		; SolidObject input: width
+		move.w	#48/2,d2				; SolidObject input: height (initial)
+		move.w	#48/2,d3				; SolidObject input: height (stood-on)
+		move.w	obX(a0),d4				; SolidObject input: object X-position (stood-on)
 		bsr.w	SolidObject
 		jsr	(Sonic_AnglePos).l
 		cmpi.w	#$20,obX(a0)
@@ -80,28 +80,28 @@ GBall_Roll:	; Routine 2
 		move.w	#$400,obInertia(a0)
 
 .faster:
-		btst	#1,obStatus(a0)	; is the ball in the air?
-		beq.s	.notinair	; if not, branch
-		move.w	#-$400,obVelY(a0)	; set ball to bounce upwards
+		btst	#1,obStatus(a0)				; is the ball in the air?
+		beq.s	.notinair				; if not, branch
+		move.w	#-$400,obVelY(a0)			; set ball to bounce upwards
 
 .notinair:
 	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
-		bra.w	GBall_ChkDel
+		bra.w	GHZBall_ChkDel
 ; ===========================================================================
 
-GBall_InAir:	; Routine 4
-		bsr.w	GBall_Animate
+GHZBall_InAir:	; Routine 4
+		bsr.w	GHZBall_Animate
 		bsr.w	SpeedToPos
-		move.w	#$23,d1
-		move.w	#$18,d2
-		move.w	#$18,d3
-		move.w	obX(a0),d4
+		move.w	#48/2+sonic_solid_width,d1		; SolidObject input: width
+		move.w	#48/2,d2				; SolidObject input: height (initial)
+		move.w	#48/2,d3				; SolidObject input: height (stood-on)
+		move.w	obX(a0),d4				; SolidObject input: object X-position (stood-on)
 		bsr.w	SolidObject
 		jsr	(Sonic_Floor).l
-		btst	#1,obStatus(a0)	; is the ball in the air?
-		beq.s	.notinair	; if not, branch
+		btst	#1,obStatus(a0)				; is the ball in the air?
+		beq.s	.notinair				; if not, branch
 		move.w	obVelY(a0),d0
 		addi.w	#$28,d0
 		move.w	d0,obVelY(a0)
@@ -109,31 +109,31 @@ GBall_InAir:	; Routine 4
 ; ===========================================================================
 
 .notinair:
-		nop
+		nop						; unknown removed code
 
 .display:
 	if FixBugs=0
 		bsr.w	DisplaySprite
 	endif
-		bra.w	GBall_ChkDel
+		bra.w	GHZBall_ChkDel
 ; ===========================================================================
 
-GBall_Animate:
+GHZBall_Animate:
 		tst.b	obFrame(a0)
 		beq.s	.evenframes
-		move.b	#0,obFrame(a0)	; every odd frame, set to frame 0
+		move.b	#0,obFrame(a0)				; every odd frame, set to frame 0
 		rts
 ; ===========================================================================
 
 .evenframes:
-		move.b	obInertia(a0),d0	; get byte of inertia
-		beq.s	loc_5E02	; if zero, branch
-		bmi.s	loc_5E0A	; if negative, branch
+		move.b	obInertia(a0),d0			; get byte of inertia
+		beq.s	loc_5E02				; if zero, branch
+		bmi.s	loc_5E0A				; if negative, branch
 		subq.b	#1,obTimeFrame(a0)
 		bpl.s	loc_5E02
 		neg.b	d0
 		addq.b	#8,d0
-		bcs.s	loc_5DEC
+		blo.s	loc_5DEC
 		moveq	#0,d0
 
 loc_5DEC:
@@ -156,7 +156,7 @@ loc_5E0A:
 		subq.b	#1,obTimeFrame(a0)
 		bpl.s	loc_5E02
 		addq.b	#8,d0
-		bcs.s	loc_5E16
+		blo.s	loc_5E16
 		moveq	#0,d0
 
 loc_5E16:
@@ -171,7 +171,7 @@ loc_5E24:
 		bra.s	loc_5E02
 ; ===========================================================================
 
-GBall_ChkDel:
+GHZBall_ChkDel:
 		out_of_range.w	DeleteObject
 	if FixBugs
 		bra.w	DisplaySprite
@@ -180,12 +180,12 @@ GBall_ChkDel:
 	endif
 ; ===========================================================================
 
-GBall_Delete:	; Routine 6
+GHZBall_Delete:	; Routine 6
 		bsr.w	DeleteObject
 		rts
 ; ===========================================================================
 
-sub_5E50:
+GHZBall_Angle:
 		move.b	obAngle(a0),d0
 		bsr.w	CalcSine
 		move.w	d0,d2
@@ -199,3 +199,6 @@ sub_5E50:
 		asr.l	#8,d0
 		move.w	d0,obVelY(a0)
 		rts
+; ===========================================================================
+
+Map_GBall:	include "_maps/GHZ Ball.asm"

@@ -1,5 +1,6 @@
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Object 3A - "SONIC GOT THROUGH" title card
+; Object 3A - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
 
 GotThroughCard:
@@ -9,203 +10,232 @@ GotThroughCard:
 		jmp	Got_Index(pc,d1.w)
 ; ===========================================================================
 Got_Index:
-		dc.w	Got_ChkPLC-Got_Index
-		dc.w	Got_Move-Got_Index
-		dc.w	Got_Wait-Got_Index
-		dc.w	Got_TimeBonus-Got_Index
-		dc.w	Got_Wait-Got_Index
-		dc.w	Got_NextLevel-Got_Index
+		dc.w	Got_ChkPLC-Got_Index			; 0
+		dc.w	Got_MoveIn-Got_Index			; 2
+		dc.w	Got_Wait-Got_Index			; 4
+		dc.w	Got_Bonus-Got_Index			; 6
+		dc.w	Got_Wait-Got_Index			; 8
+		dc.w	Got_NextLevel-Got_Index			; A
 
-got_mainX: equ objoff_30		; position for card to display on
+got_mainX:	equ	objoff_30	; target X-position for card while moving in
 ; ===========================================================================
 
 Got_ChkPLC:	; Routine 0
-		tst.l	(v_plc_buffer).w ; are the pattern load cues empty?
-		beq.s	Got_Main	; if yes, branch
-		rts
+		tst.l	(v_plc_buffer).w			; have title card patterns in PLC finished decompressing?
+		beq.s	Got_Main				; if yes, branch
+		rts						; otherwise, wait until PLC queue is empty
 ; ===========================================================================
 
 Got_Main:
-		movea.l	a0,a1
-		lea	(Got_Config).l,a2
-		moveq	#6,d1
+		movea.l	a0,a1					; set this root object to become the level name card
+
+		lea	(Got_ItemData).l,a2			; load card item data
+		moveq	#7-1,d1					; set to affect all seven end-of-level card objects
 
 Got_Loop:
-		_move.b	#id_GotThroughCard,obID(a1)
-		move.w	(a2)+,obX(a1)	; load start x-position
-		move.w	(a2)+,got_mainX(a1) ; load main x-position
-		move.w	(a2)+,obScreenY(a1) ; load y-position
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,d0
-		cmpi.b	#6,d0
-		bne.s	loc_A72E
-		add.b	(v_act).w,d0	; add act number to frame number
+		_move.b	#id_GotThroughCard,obID(a1)		; load next end-of-level title card element
+		move.w	(a2)+,obX(a1)				; load start x-position
+		move.w	(a2)+,got_mainX(a1)			; load main x-position
+		move.w	(a2)+,obScreenY(a1)			; load y-position
+		move.b	(a2)+,obRoutine(a1)			; load routine number
+		move.b	(a2)+,d0				; load frame ID
 
-loc_A72E:
-		move.b	d0,obFrame(a1)
-		move.l	#Map_Got,obMap(a1)
-		move.w	#ArtTile_Title_Card|Tile_Prio,obGfx(a1)
-		move.b	#0,obRender(a1)
-		lea	object_size(a1),a1
-		dbf	d1,Got_Loop	; repeat 6 times
+		cmpi.b	#6,d0					; is this the act 1/2/3 element?
+		bne.s	.setFrame				; if not, branch
+		add.b	(v_act).w,d0				; add act number to frame ID
+	; loc_A72E:
+	.setFrame:
+		move.b	d0,obFrame(a1)				; set final frame ID for object
 
-Got_Move:	; Routine 2
-		moveq	#$10,d1		; set horizontal speed
-		move.w	got_mainX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached its target position?
-		beq.s	loc_A774	; if yes, branch
-		bge.s	Got_ChgPos
-		neg.w	d1
+		move.l	#Map_Got,obMap(a1)			; set mappings pointer
+		move.w	#ArtTile_Title_Card|Tile_Prio,obGfx(a1)	; set art tile and sprite priority flag
+		move.b	#sprite_cam_screen,obRender(a1)		; set to screen-positioned sprite mode
+		lea	object_size(a1),a1			; advance to next card object (all elements are back-to-back in RAM)
+		dbf	d1,Got_Loop				; repeat sequence another 6 times
+; ---------------------------------------------------------------------------
 
-Got_ChgPos:
-		add.w	d1,obX(a0)	; change item's position
+; Got_Move:
+Got_MoveIn:
+		; Routine 2
+		moveq	#$10,d1					; set horizontal move-in speed
+		move.w	got_mainX(a0),d0			; get target moving in X-position
+		cmp.w	obX(a0),d0				; has item reached its target position?
+		beq.s	.reachedXTarget				; if yes, branch
+		bge.s	.updateXPos				; is item moving in from the left? if yes, branch
+		neg.w	d1					; negate move-in direction if coming from the right
+	; Got_ChgPos:
+	.updateXPos:
+		add.w	d1,obX(a0)				; change item's x-position
 
-loc_A762:
-		move.w	obX(a0),d0
-		bmi.s	locret_A772
-		cmpi.w	#$200,d0	; has item moved beyond $200 on x-axis?
-		bhs.s	locret_A772	; if yes, branch
-		bra.w	DisplaySprite
-; ===========================================================================
+	; loc_A762:
+	.checkOffScreen:
+		move.w	obX(a0),d0				; get current x-position of card
+		bmi.s	.return					; if it's negative, don't display
+		cmpi.w	#$80+320+64,d0				; has card moved beyond $200 on x-axis (to the right)?
+	if FixBugs
+		; See the fix at Card_NoMove
+		bgt.s	.return					; if yes, branch
+		cmpi.w	#$80-64+16,d0				; has card moved beyond $50 on the x-axis (to the left)?
+		bgt.w	DisplaySprite				; if not, display card
+	else
+		bhs.s	.return					; if yes, branch
+		bra.w	DisplaySprite				; display card
+	endif
 
-locret_A772:
+	; locret_A772:
+	.return:
 		rts
 ; ===========================================================================
 
-loc_A774:
-		cmpi.b	#4,obFrame(a0)
-		bne.s	loc_A762
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+	; loc_A774:
+	.reachedXTarget:
+		cmpi.b	#4,obFrame(a0)				; is this the ring bonus element? (only one element can control)
+		bne.s	.checkOffScreen				; if not, branch
+		addq.b	#2,obRoutine(a0)			; set to Got_Wait (4)
+		move.w	#3*60,obTimeFrame(a0)			; set time delay before tally to 3 seconds
+; ---------------------------------------------------------------------------
 
 Got_Wait:	; Routine 4, 8, $C
-		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
-		bne.s	Got_Display
-		addq.b	#2,obRoutine(a0)
+		subq.w	#1,obTimeFrame(a0)			; subtract 1 from time delay
+		bne.s	.display				; if time remains, branch
+		addq.b	#2,obRoutine(a0)			; advance to whatever the next routine is
 
-Got_Display:
-		bra.w	DisplaySprite
+	; Got_Display:
+	.display:
+		bra.w	DisplaySprite				; display card sprites
 ; ===========================================================================
 
-Got_TimeBonus:	; Routine 6
-		bsr.w	DisplaySprite
-		move.b	#1,(f_endactbonus).w ; set time/ring bonus update flag
-		moveq	#0,d0
-		tst.w	(v_timebonus).w	; is time bonus = zero?
-		beq.s	Got_RingBonus	; if yes, branch
-		addi.w	#10,d0		; add 10 to score
-		subi.w	#10,(v_timebonus).w ; subtract 10 from time bonus
+; Got_TimeBonus: <-- old misnomer
+Got_Bonus:	; Routine 6
+		bsr.w	DisplaySprite				; keep displaying card sprites
+		move.b	#1,(f_endactbonus).w			; set time/ring bonus HUD update flag
+		moveq	#0,d0					; set ticked-down bonus points to 0 by default
 
-Got_RingBonus:
-		tst.w	(v_ringbonus).w	; is ring bonus = zero?
-		beq.s	Got_ChkBonus	; if yes, branch
-		addi.w	#10,d0		; add 10 to score
-		subi.w	#10,(v_ringbonus).w ; subtract 10 from ring bonus
+	.timeBonus:
+		tst.w	(v_timebonus).w				; is any time bonus left?
+		beq.s	.ringBonus				; if not, branch
+		addi.w	#10,d0					; add 100 to score
+		subi.w	#10,(v_timebonus).w			; subtract 100 points from remaining time bonus
 
-Got_ChkBonus:
-		tst.w	d0		; is there any bonus?
-		bne.s	Got_AddBonus	; if yes, branch
-		move.w	#sfx_Cash,d0
-		jsr	(QueueSound2).l	; play "ker-ching" sound
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+	; Got_RingBonus:
+	.ringBonus:
+		tst.w	(v_ringbonus).w				; is any ring bonus left?
+		beq.s	.checkFinished				; if not, branch
+		addi.w	#10,d0					; add 100 to score
+		subi.w	#10,(v_ringbonus).w			; subtract 100 points from remaining ring bonus
 
-locret_A7D8:
+	; Got_ChkBonus:
+	.checkFinished:
+		tst.w	d0					; have any bonuses been ticked down this frame?
+		bne.s	.addBonusPoints				; if yes, branch
+
+	.finished:
+		move.w	#sfx_Cash,d0				; set "ka-ching" sound
+		jsr	(QueueSound2).l				; play it
+
+		addq.b	#2,obRoutine(a0)			; set to Got_Wait (8, before Got_NextLevel)
+		move.w	#3*60,obTimeFrame(a0)			; set post summing-up time delay to 3 seconds
+
+	; locret_A7D8:
+	.return:
 		rts
-; ===========================================================================
+; ---------------------------------------------------------------------------
 
-Got_AddBonus:
-		bsr.w	AddPoints
-		move.b	(v_vint_byte).w,d0
-		andi.b	#3,d0
-		bne.s	locret_A7D8
-		move.w	#sfx_Switch,d0
-		jmp	(QueueSound2).l	; play "blip" sound
+	; Got_AddBonus:
+	.addBonusPoints:
+		bsr.w	AddPoints				; add d0 points to score
+
+		move.b	(v_vblank_byte).w,d0			; get current VBlank byte
+		andi.b	#3,d0					; only play blip sound every 4th frame
+		bne.s	.return					; on other frames, branch
+		move.w	#sfx_Switch,d0				; set "blip" sound
+		jmp	(QueueSound2).l				; play it
 ; ===========================================================================
 
 Got_NextLevel:	; Routine $A
-		move.b	(v_zone).w,d0
-		andi.w	#7,d0
-		lsl.w	#3,d0
-		move.b	(v_act).w,d1
-		andi.w	#3,d1
-		add.w	d1,d1
-		add.w	d1,d0
-		move.w	LevelOrder(pc,d0.w),d0 ; load level from level order array
-		move.w	d0,(v_zone).w	; set level number
-		tst.w	d0
-		bne.s	loc_A81C
-		move.b	#id_Sega,(v_gamemode).w
-		bra.s	Got_Display2
+		move.b	(v_zone).w,d0				; get current zone ID
+		andi.w	#7,d0					; mask out unrelated bits
+		lsl.w	#3,d0					; multiply by 8 (size per zone block in LevelOrder array)
+		move.b	(v_act).w,d1				; get current act number
+		andi.w	#3,d1					; limit to acts 1-4
+		add.w	d1,d1					; double act number for word-based indexing
+		add.w	d1,d0					; d0 = index in LevelOrder for current level
+
+		move.w	LevelOrder(pc,d0.w),d0			; load next level from LevelOrder array
+		move.w	d0,(v_zone_act).w			; set new zone ID and act number
+
+		; If an ID is set to 0 in the next level array (GHZ1 internally), instead of
+		; going to the next level, the entire game will go back to the Sega screen.
+		tst.w	d0					; is new level number 0? (GHZ1)
+		bne.s	.restartLevel				; if not, branch
+		move.b	#id_Sega,(v_gamemode).w			; otherwise, instantly return to the Sega screen
+		bra.s	.display				; display sprite
 ; ===========================================================================
 
-loc_A81C:
-		move.w	#1,(f_restart).w
+	; loc_A81C:
+	.restartLevel:
+		move.w	#1,(f_restart).w			; trigger level restart to load next level
 
-Got_Display2:
-		bra.w	DisplaySprite
+	; Got_Display2:
+	.display:
+		bra.w	DisplaySprite				; keep displaying card during fade-out
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Level order array
 ; ---------------------------------------------------------------------------
 LevelOrder:
-		; Green Hill Zone
-		dc.b id_GHZ,1	; Act 1
-		dc.b id_GHZ,2	; Act 2
-		dc.b id_MZ,0	; Act 3
-		dc.b 0,0
+		include	"_include/LevelOrder.asm"
 
-		; Labyrinth Zone
-		dc.b id_LZ,1	; Act 1
-		dc.b id_LZ,2	; Act 2
-		dc.b id_MZ,0	; Act 3
-		dc.b 0,0
-
-		; Marble Zone Zone
-		dc.b id_MZ,1	; Act 1
-		dc.b id_MZ,2	; Act 2
-		dc.b id_SZ,0	; Act 3
-		dc.b 0,0
-
-		; Star Light Zone
-		dc.b 0,0		; Act 1
-		dc.b id_SLZ,2	; Act 2
-		dc.b id_MZ,0	; Act 3
-		dc.b 0,0
-
-		; Sparkling Zone
-		dc.b id_SLZ,0	; Act 1
-		dc.b id_SZ,2	; Act 2
-		dc.b id_CWZ,0	; Act 3
-		dc.b 0,0
-
-		; Clock Work Zone
-		dc.b id_CWZ,1	; Act 1
-		dc.b id_CWZ,2	; Act 2
-		dc.b 0,0
-		dc.b 0,0
-		even
 ; ===========================================================================
-		;    x-start, x-main, y-main,
-		;    routine, frame number
+; ---------------------------------------------------------------------------
+; End title card element setup data. Format:
+; - start X-position, target X-position
+; - Y-position
+; - base routine number
+; - frame ID
+; ---------------------------------------------------------------------------
+; Got_Config:
+Got_ItemData:
+		; "SONIC HAS"
+		dc.w $004, $124
+		dc.w $BC
+		dc.b 2
+		dc.b 0
 
-Got_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
-		dc.b 				2,	0
+		; "PASSED"
+		dc.w -$120, $120
+		dc.w $D0
+		dc.b 2
+		dc.b 1
 
-		dc.w -$120,	$120,	$D0			; "PASSED"
-		dc.b 				2,	1
+		; "ACT" 1/2/3
+		dc.w $40C, $14C
+		dc.w $D6
+		dc.b 2
+		dc.b 6	; dynamic frame ID (see Got_Loop)
 
-		dc.w $40C,	$14C,	$D6			; "ACT" 1/2/3
-		dc.b 				2,	6
+		; Score tally
+		dc.w $520, $120
+		dc.w $EC
+		dc.b 2
+		dc.b 2
 
-		dc.w $520,	$120,	$EC			; score
-		dc.b 				2,	2
+		; Time Bonus tally
+		dc.w $540, $120
+		dc.w $FC
+		dc.b 2
+		dc.b 3
 
-		dc.w $540,	$120,	$FC			; time bonus
-		dc.b 				2,	3
+		; Ring Bonus tally
+		dc.w $560, $120
+		dc.w $10C
+		dc.b 2
+		dc.b 4
 
-		dc.w $560,	$120,	$10C			; ring bonus
-		dc.b 				2,	4
-
-		dc.w $20C,	$14C,	$CC			; oval
-		dc.b 				2,	5
+		; Blue oval
+		dc.w $20C, $14C
+		dc.w $CC
+		dc.b 2
+		dc.b 5
+; ===========================================================================

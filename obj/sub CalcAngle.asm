@@ -59,13 +59,13 @@ CalcAngle:
 
 .return:
 		movem.l	(sp)+,d3-d4				; restore register data
-		rts						; return
+		rts
 ; ===========================================================================
 
 CA_NullAngle:
 		move.w	#$40,d0					; force angle to $40 (90 degrees)
 		movem.l	(sp)+,d3-d4				; restore register data
-		rts						; return
+		rts
 ; End of function CalcAngle
 
 ; ===========================================================================

@@ -15,8 +15,8 @@ Pause_StopGame:
 		move.w	#-1,(f_pause).w	; freeze time
 
 Pause_Loop:
-		move.b	#id_VInt_10,(v_vint_routine).w
-		bsr.w	WaitForVInt
+		move.b	#id_VBlank_10,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
 		btst	#bitA,(v_jpadpress1).w ; is button A pressed?
 		beq.s	Pause_ChkBC	; if not, branch
 		move.b	#id_Title,(v_gamemode).w ; set game mode to 4 (title screen)

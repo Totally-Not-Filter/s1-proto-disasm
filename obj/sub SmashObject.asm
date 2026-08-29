@@ -9,7 +9,7 @@ SmashObject:
 		movea.l	obMap(a0),a3
 		adda.w	(a3,d0.w),a3
 		addq.w	#1,a3
-		bset	#5,obRender(a0)
+		bset	#sprite_rawmappings_bit,obRender(a0)
 		_move.b	obID(a0),d4
 		move.b	obRender(a0),d5
 		movea.l	a0,a1
@@ -40,7 +40,7 @@ SmashObject:
 		bsr.w	SpeedToPos
 		add.w	d2,obVelY(a0)
 		movea.l	(sp)+,a0
-		bsr.w	DisplaySprite1
+		bsr.w	DisplaySprite2
 
 .loc_AF24:
 		dbf	d1,.loop

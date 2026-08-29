@@ -16,7 +16,7 @@ CalcSine:
 		move.w	Sine_Data(pc,d0.w),d1			; get cosine value
 		subi.w	#$80,d0					; go back sine value index
 		move.w	Sine_Data(pc,d0.w),d0			; get sine value
-		rts						; return
+		rts
 ; End of function CalcSine
 
 ; ===========================================================================

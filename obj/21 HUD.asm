@@ -14,13 +14,17 @@ HUD_Index:
 ; ===========================================================================
 
 HUD_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$90,obX(a0)
-		move.w	#$108,obScreenY(a0)
-		move.l	#Map_HUD,obMap(a0)
-		move.w	#ArtTile_HUD,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#0,obPriority(a0)
+		addq.b	#2,obRoutine(a0)			; advance to HUD_Flash
+		move.w	#$80+$10,obX(a0)			; set screen X-position
+		move.w	#$80+$88,obScreenY(a0)			; set screen Y-position
+		move.l	#Map_HUD,obMap(a0)			; set mappings
+		move.w	#ArtTile_HUD,obGfx(a0)			; set art tile (mappings themselves are high-prio)
+		move.b	#sprite_cam_screen,obRender(a0)		; set to screen-positioned mode
+		move.b	#0,obPriority(a0)			; set to maximum sprite priority
+; ---------------------------------------------------------------------------
 
 HUD_Display:	; Routine 2
 		jmp	(DisplaySprite).l
+; ===========================================================================
+
+Map_HUD:	include "_maps/HUD.asm"

@@ -1,7 +1,7 @@
-		save
-		!org	0	; set Z80 location to 0
-		cpu z80	; use Z80 cpu
-		listing purecode	; add to listing file
+	save
+	!org	0		; z80 Align, handled by the build process
+	cpu Z80
+	listing purecode
 
 ; function to decide whether an offset's full range won't fit in one byte
 offsetover1byte function from,maxsize, ((from&0FFh)>(100h-maxsize))
@@ -22,38 +22,38 @@ endpad := $
 	endm
 
 ; Data offset equates
-zLowAdr:	equ	0		; data low address
-zHighAdr:	equ	1		; data high address
-zSizeLow:	equ	2		; data size (low byte)
-zSizeHigh:	equ	3		; data size (high byte)
-zLoopFlag:	equ	4		; loop flag
-zPriority:	equ	5		; priority flag
-zLoopLow:	equ	6		; loop low byte
-zLoopHigh:	equ	7		; loop high byte
-zLoopSizeLow:	equ	8		; loop size low byte
-zLoopSizeHigh:	equ	9		; loop size high byte
-zSampleRate:	equ	11		; sample rate
+zLowAdr:	equ	0	; data low address
+zHighAdr:	equ	1	; data high address
+zSizeLow:	equ	2	; data size (low byte)
+zSizeHigh:	equ	3	; data size (high byte)
+zLoopFlag:	equ	4	; loop flag
+zPriority:	equ	5	; priority flag
+zLoopLow:	equ	6	; loop low byte
+zLoopHigh:	equ	7	; loop high byte
+zLoopSizeLow:	equ	8	; loop size low byte
+zLoopSizeHigh:	equ	9	; loop size high byte
+zSampleRate:	equ	11	; sample rate
 
 ; ===========================================================================
 
-StartOfZ80:
-		di	; disable interrupts
-		di
-		di
-		ld	sp,zStack
-		xor	a
-		ld	(zDAC_Status),a
-		ld	a,(zBankHigh)
-		rlca
-		ld	(zBankRegister),a
-		ld	b,8
-		ld	a,(zBankLow)
+;Z80Driver_Start:
+	di					; Disable interrupts
+	di
+	di
+	ld	sp,zStack
+	xor	a
+	ld	(zDAC_Status),a
+	ld	a,(zBankHigh)
+	rlca
+	ld	(zBankRegister),a
+	ld	b,8
+	ld	a,(zBankLow)
 
 zBankLoop:
-		ld	(zBankRegister),a
-		rrca
-		djnz	zBankLoop
-		jr	zStart
+	ld	(zBankRegister),a
+	rrca					; Move next bit into position
+	djnz	zBankLoop
+	jr	zCheckForSamples
 ; ===========================================================================
 ; JMan2050's DAC decode lookup table
 ; ===========================================================================
@@ -63,187 +63,186 @@ zDACDecodeTbl:
 	db	 80h,	-1,  -2,  -4,  -8, -10h, -20h, -40h
 ; ===========================================================================
 
-zStart:
-		ld	hl,zDAC_Sample
+zCheckForSamples:
+	ld	hl,zDAC_Sample
 
-loc_31:
-		ld	a,(hl)
-		or	a
-		jp	p,loc_31
-		push	af
-		push	hl
-		ld	a,80h
-		ld	(zDAC_Status),a
-		ld	hl,zYM2612_A0
-		ld	(hl),2Bh
-		inc	hl
-		ld	(hl),80h
-		xor	a
-		ld	(zDAC_Status),a
-		dec	hl
-		ld	ix,zLoopDataStr
-		ld	d,0
-		exx
-		pop	hl
-		ld	(zDAC_Update),a
-		pop	af
-		ld	(zVoiceFlag),a
-		sub	81h
-		ld	(hl),a
-		ld	de,0
-		ld	iy,zPCM_Table
-		cp	6	; Is the sample 87h or higher?
-		jr	c,loc_73	; If not, branch
-		ld	(zVoiceFlag),a
-		ld	(zDAC_Update),a
-		ld	iy,(zVoiceTblAdr)
-		sub	7
+zWaitDACLoop:
+	ld	a,(hl)
+	or	a
+	jp	p,zWaitDACLoop
+	push	af
+	push	hl
+	ld	a,80h
+	ld	(zDAC_Status),a
+	ld	hl,zYM2612_A0
+	ld	(hl),2Bh
+	inc	hl
+	ld	(hl),80h
+	xor	a
+	ld	(zDAC_Status),a
+	dec	hl
+	ld	ix,zLoopDataStr
+	ld	d,0
+	exx
+	pop	hl
+	ld	(zDAC_Update),a
+	pop	af
+	ld	(zVoiceFlag),a
+	sub	81h
+	ld	(hl),a
+	ld	de,0
+	ld	iy,zPCM_Table
+	cp	6				; Is the sample 87h or higher?
+	jr	c,loc_73			; If not, branch
+	ld	(zVoiceFlag),a
+	ld	(zDAC_Update),a
+	ld	iy,(zVoiceTblAdr)
+	sub	7
 
 loc_73:
-		add	a,a	; Multiply by 12
-		add	a,a
-		ld	c,a
-		add	a,a
-		add	a,c
-		ld	c,a
-		ld	b,0
-		add	iy,bc
-		ld	e,(iy+zLowAdr)
-		ld	d,(iy+zHighAdr)
-		ld	a,(zVoiceFlag)
-		or	a
-		jp	m,loc_8F
-		ld	hl,(zVoiceTblAdr)
-		add	hl,de
-		ex	de,hl
+	add	a,a
+	add	a,a
+	ld	c,a
+	add	a,a
+	add	a,c
+	ld	c,a				; Multiply by 12
+	ld	b,0
+	add	iy,bc
+	ld	e,(iy+zLowAdr)
+	ld	d,(iy+zHighAdr)
+	ld	a,(zVoiceFlag)
+	or	a
+	jp	m,loc_8F
+	ld	hl,(zVoiceTblAdr)
+	add	hl,de
+	ex	de,hl
 
 loc_8F:
-		ld	c,(iy+zSizeLow)
-		ld	b,(iy+zSizeHigh)
-		ld	a,(iy+zLoopFlag)
-		ld	(zRepeatFlag),a
-		exx
-		ld	c,80h
-		exx
+	ld	c,(iy+zSizeLow)
+	ld	b,(iy+zSizeHigh)
+	ld	a,(iy+zLoopFlag)
+	ld	(zRepeatFlag),a
+	exx
+	ld	c,80h
+	exx
 
 zPlayPCMLoop:
-		ld	hl,zDAC_Sample		; 10
-		ld	a,(de)			; 7
-		and	0F0h			; 7
-		rrca				; 4
-		rrca				; 4
-		rrca				; 4
-		rrca				; 4
-		add	a,zDACDecodeTbl&0FFh	; 7
-		exx				; 4
-		ld	e,a			; 4
-		ld	a,(de)			; 7
-		add	a,c			; 4
-		ld	c,a			; 4
-		ld	a,80h			; 7
-		ld	(zDAC_Status),a		; 13
-		ld	b,(iy+zSampleRate)	; 19
+	ld	hl,zDAC_Sample			; 10
+	ld	a,(de)				; 7
+	and	0F0h				; 7
+	rrca					; 4
+	rrca					; 4
+	rrca					; 4
+	rrca					; 4
+	add	a,zDACDecodeTbl&0FFh		; 7
+	exx					; 4
+	ld	e,a				; 4
+	ld	a,(de)				; 7
+	add	a,c				; 4
+	ld	c,a				; 4
+	ld	a,80h				; 7
+	ld	(zDAC_Status),a			; 13
+	ld	b,(iy+zSampleRate)		; 19
 
 .loop1:
-		bit	7,(hl)			; 12
-		jr	nz,.loop1		; 12
-		ld	(hl),2Ah		; 10
-		inc	hl			; 6
-		xor	a			; 4
-		ld	(hl),c			; 7
-		ld	(zDAC_Status),a		; 13
-		dec	hl			; 6
-		djnz	$			; 8
-		exx				; 4
-		ld	a,(de)			; 7
-		and	0Fh			; 7
-		add	a,zDACDecodeTbl&0FFh	; 7
-		exx				; 4
-		ld	e,a			; 4
-		ld	a,(de)			; 7
-		add	a,c			; 4
-		ld	c,a			; 4
-		ld	a,80h			; 7
-		ld	(zDAC_Status),a		; 13
-		ld	b,(iy+zSampleRate)	; 19
+	bit	7,(hl)				; 12
+	jr	nz,.loop1			; 12
+	ld	(hl),2Ah			; 10
+	inc	hl				; 6
+	xor	a				; 4
+	ld	(hl),c				; 7
+	ld	(zDAC_Status),a			; 13
+	dec	hl				; 6
+	djnz	$				; 8
+	exx					; 4
+	ld	a,(de)				; 7
+	and	0Fh				; 7
+	add	a,zDACDecodeTbl&0FFh		; 7
+	exx					; 4
+	ld	e,a				; 4
+	ld	a,(de)				; 7
+	add	a,c				; 4
+	ld	c,a				; 4
+	ld	a,80h				; 7
+	ld	(zDAC_Status),a			; 13
+	ld	b,(iy+zSampleRate)		; 19
 
 .loop2:
-		bit	7,(hl)			; 12
-		jr	nz,.loop2		; 12
-		ld	(hl),2Ah		; 10
-		inc	hl			; 6
-		xor	a			; 4
-		ld	(hl),c			; 7
-		ld	(zDAC_Status),a		; 13
-		dec	hl			; 6
-		djnz	$			; 8
-		exx				; 4
-		bit	7,(iy+zPriority)	; 20
-		jr	nz,loc_F5		; 12
-		bit	7,(hl)			; 12
-		jp	nz,loc_31		; 10
+	bit	7,(hl)				; 12
+	jr	nz,.loop2			; 12
+	ld	(hl),2Ah			; 10
+	inc	hl				; 6
+	xor	a				; 4
+	ld	(hl),c				; 7
+	ld	(zDAC_Status),a			; 13
+	dec	hl				; 6
+	djnz	$				; 8
+	exx					; 4
+	bit	7,(iy+zPriority)		; 20
+	jr	nz,loc_F5			; 12
+	bit	7,(hl)				; 12
+	jp	nz,zWaitDACLoop			; 10
 
 loc_F5:
-		inc	de			; 6
-		dec	bc			; 6
-		ld	a,c			; 4
-		or	b			; 4
-		jp	nz,zPlayPCMLoop		; 10
+	inc	de				; 6
+	dec	bc				; 6
+	ld	a,c				; 4
+	or	b				; 4
+	jp	nz,zPlayPCMLoop			; 10
 						; 420 cycles in total
-		ld	a,(zRepeatFlag)
-		or	a
-		jp	z,loc_153
-		exx
-		jp	p,loc_10C
-		and	7Fh
-		ld	(ix+0),c
+	ld	a,(zRepeatFlag)
+	or	a
+	jp	z,loc_153
+	exx
+	jp	p,loc_10C
+	and	7Fh
+	ld	(ix+0),c
 
 loc_10C:
-		dec	a
-		ld	(zRepeatFlag),a
-		jr	z,loc_133
-		ld	c,(ix+0)
-		exx
-		ld	l,(iy+zLoopLow)
-		ld	h,(iy+zLoopHigh)
-		ld	b,h
-		ld	c,l
-		ld	e,(iy+zLowAdr)
-		ld	d,(iy+zHighAdr)
-		ld	hl,(zVoiceTblAdr)
-		add	hl,de
-		ld	e,(iy+zSizeLow)
-		ld	d,(iy+zSizeHigh)
-		add	hl,de
-		ex	de,hl
-		jp	zPlayPCMLoop
+	dec	a
+	ld	(zRepeatFlag),a
+	jr	z,loc_133
+	ld	c,(ix+0)
+	exx
+	ld	l,(iy+zLoopLow)
+	ld	h,(iy+zLoopHigh)
+	ld	b,h
+	ld	c,l
+	ld	e,(iy+zLowAdr)
+	ld	d,(iy+zHighAdr)
+	ld	hl,(zVoiceTblAdr)
+	add	hl,de
+	ld	e,(iy+zSizeLow)
+	ld	d,(iy+zSizeHigh)
+	add	hl,de
+	ex	de,hl
+	jp	zPlayPCMLoop
 ; ===========================================================================
 
 loc_133:
-		ld	c,(ix+0)
-		exx
-		ld	c,(iy+zLoopSizeLow)
-		ld	b,(iy+zLoopSizeHigh)
-		ld	l,(iy+zSizeLow)
-		ld	h,(iy+zSizeHigh)
-		ld	e,(iy+zLowAdr)
-		ld	d,(iy+zHighAdr)
-		add	hl,de
-		ld	de,(zVoiceTblAdr)
-		add	hl,de
-		ex	de,hl
-		jp	zPlayPCMLoop
+	ld	c,(ix+0)
+	exx
+	ld	c,(iy+zLoopSizeLow)
+	ld	b,(iy+zLoopSizeHigh)
+	ld	l,(iy+zSizeLow)
+	ld	h,(iy+zSizeHigh)
+	ld	e,(iy+zLowAdr)
+	ld	d,(iy+zHighAdr)
+	add	hl,de
+	ld	de,(zVoiceTblAdr)
+	add	hl,de
+	ex	de,hl
+	jp	zPlayPCMLoop
 ; ===========================================================================
 
 loc_153:
-		ld	hl,zDAC_Update
-		ld	a,(hl)
-		or	a
-		jp	m,zStart
-		xor	a
-		ld	(hl),a
-		jp	zStart
-; End of function StartOfZ80
+	ld	hl,zDAC_Update
+	ld	a,(hl)
+	or	a
+	jp	m,zCheckForSamples
+	xor	a
+	ld	(hl),a
+	jp	zCheckForSamples
 
 ; ===========================================================================
 
@@ -275,7 +274,7 @@ zPCM_Table:
 	zPCMMetadata zDAC_Kick,0,0,0,7750
 	zPCMMetadata zDAC_Snare,0,0,0,16500
 zTimpani_Pitch = $+zSampleRate
-	zPCMMetadata zDAC_Timpani,0,0,0,6500
+	zPCMMetadata zDAC_Timpani,0,0,0,6450
 
 ; DPCM data
 zDAC_Kick:
@@ -298,6 +297,6 @@ zDAC_Timpani_End:
 		endif
 	endif
 
-		restore
-		padding off
-		!org (DACDriver+Size_of_DAC_driver_guess)
+	restore
+	padding off
+	!org (DACDriver+Size_of_DAC_driver_guess)

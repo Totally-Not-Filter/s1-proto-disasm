@@ -1,7 +1,23 @@
-Ani_Hog:	dc.w byte_724A-Ani_Hog, byte_724E-Ani_Hog, byte_7254-Ani_Hog
-byte_724A:	dc.b $F, 0, afEnd
+; ---------------------------------------------------------------------------
+; Animation script - Ball Hog enemy
+; ---------------------------------------------------------------------------
+
+Ani_Hog:
+		dc.w	.still-Ani_Hog
+		dc.w	.walk-Ani_Hog
+		dc.w	.fire-Ani_Hog
+
+.still:		dc.b 15
+		dc.b 0
+		dc.b afEnd
 		even
-byte_724E:	dc.b $B, 1, 0, $21, 0, afEnd
+
+.walk:		dc.b 11
+		dc.b 1, 0, 1|$20, 0
+		dc.b afEnd
 		even
-byte_7254:	dc.b $14, 0, 2, 0, afBack, 1
+
+.fire:		dc.b 20
+		dc.b 0, 2
+		dc.b 0, afBack, 1
 		even

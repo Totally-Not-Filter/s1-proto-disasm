@@ -42,8 +42,8 @@ PalFadeIn_Alt:	; start position and size are already set
 
 		move.w	#21-1,d4				; fade in for 21 frames (d4 must not be used elsewhere!)
 	.fadeMainLoop:
-		move.b	#id_VInt_12,(v_vint_routine).w ; set VBlank routine to fade-in ($12)
-		bsr.w	WaitForVInt				; wait for VBlank to transfer CRAM and sync screen
+		move.b	#id_VBlank_12,(v_vblank_routine).w ; set VBlank routine to fade-in ($12)
+		bsr.w	WaitForVBlank				; wait for VBlank to transfer CRAM and sync screen
 		bsr.s	FadeIn_FromBlack			; fade-in all affected colors from black a bit more
 		bsr.w	RunPLC					; run any PLC, if necessary
 		dbf	d4,.fadeMainLoop			; loop for 21 frames
@@ -120,8 +120,8 @@ PaletteFadeOut:
 
 		move.w	#21-1,d4				; fade in for 21 frames (d4 must not be used elsewhere!)
 	.fadeMainLoop:
-		move.b	#id_VInt_12,(v_vint_routine).w ; set VBlank routine to fade-in ($12)
-		bsr.w	WaitForVInt				; wait for VBlank to transfer CRAM and sync screen
+		move.b	#id_VBlank_12,(v_vblank_routine).w ; set VBlank routine to fade-in ($12)
+		bsr.w	WaitForVBlank				; wait for VBlank to transfer CRAM and sync screen
 		bsr.s	FadeOut_ToBlack				; fade-out all affected colors to black a bit more
 		bsr.w	RunPLC					; run any PLC, if necessary
 		dbf	d4,.fadeMainLoop			; loop for 21 frames

@@ -6,16 +6,16 @@
 
 ; sub_2ED0:
 Debug_Coord_Sprites:
-		lea	(Debug_Coords_XY_Index).l,a0	; get index of x and y positions for the coords
-		lea	(v_debugnumbers1).w,a1	; set object RAM to load to
-		move.w	#bytesToLcnt(Debug_Coords_XY_Index_End-Debug_Coords_XY_Index),d1	; load 12 digits
+		lea	(Debug_Coords_XY_Index).l,a0		; get index of x and y positions for the coords
+		lea	(v_debugnumbers1).w,a1			; set object RAM to load to
+		move.w	#(Debug_Coords_XY_Index_End-Debug_Coords_XY_Index)/4-1,d1 ; load 12 digits
 
 .loop:
-		move.b	#id_Obj05,obID(a1)	; load object 05
-		move.w	(a0)+,obX(a1)	; set x position
-		move.w	(a0)+,obScreenY(a1)	; set y position
-		lea	object_size(a1),a1	; goto next object RAM slot
-		dbf	d1,.loop	; loop until all digits have been loaded
+		move.b	#id_Obj05,obID(a1)			; load object 05
+		move.w	(a0)+,obX(a1)				; set X position
+		move.w	(a0)+,obScreenY(a1)			; set Y position
+		lea	object_size(a1),a1			; go to next object RAM slot
+		dbf	d1,.loop				; loop until all digits have been loaded
 		rts
 ; ===========================================================================
 
@@ -40,16 +40,16 @@ Debug_Coords_XY_Index_End:
 ; ===========================================================================
 ; sub_2F24:
 Debug_Coord_B_Sprites:
-		lea	(Debug_Coords_B_XY_Index).l,a0	; get index of x and y positions for the coords
-		lea	(v_debugnumbers2).w,a1	; set object RAM to load to
-		move.w	#bytesToLcnt(Debug_Coords_B_XY_Index_End-Debug_Coords_B_XY_Index),d1	; load 52 digits
+		lea	(Debug_Coords_B_XY_Index).l,a0		; get index of x and y positions for the coords
+		lea	(v_debugnumbers2).w,a1			; set object RAM to load to
+		move.w	#(Debug_Coords_B_XY_Index_End-Debug_Coords_B_XY_Index)/4-1,d1 ; load 52 digits
 
 .loop:
-		move.b	#id_Obj05,obID(a1)	; load object 05
-		move.w	(a0)+,obX(a1)	; set x position
-		move.w	(a0)+,obScreenY(a1)	; set y position
-		lea	object_size(a1),a1	; goto next object RAM slot
-		dbf	d1,.loop	; loop until all digits have been loaded
+		move.b	#id_Obj05,obID(a1)			; load object 05
+		move.w	(a0)+,obX(a1)				; set X position
+		move.w	(a0)+,obScreenY(a1)			; set Y position
+		lea	object_size(a1),a1			; go to next object RAM slot
+		dbf	d1,.loop				; loop until all digits have been loaded
 		rts
 ; ===========================================================================
 
