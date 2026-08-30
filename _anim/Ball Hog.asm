@@ -13,7 +13,7 @@ Ani_Hog:
 		even
 
 .walk:		dc.b 11
-		dc.b 1, 0, 1|$20, 0
+		dc.b 1, 0, 1|aniXFlip, 0
 		dc.b afEnd
 		even
 

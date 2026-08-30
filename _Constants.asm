@@ -5,10 +5,10 @@
 Size_of_DAC_driver_guess:	equ $1C5C
 
 ; Clocks
-Master_Clock:	equ 53693175
-M68000_Clock:	equ Master_Clock/7
+Master_Clock:		equ 53693175
+M68000_Clock:		equ Master_Clock/7
 Z80_Clock:		equ Master_Clock/15
-FM_Sample_Rate:	equ M68000_Clock/(6*6*4)
+FM_Sample_Rate:		equ M68000_Clock/(6*6*4)
 PSG_Sample_Rate:	equ Z80_Clock/16
 VDP_Clock:		equ Master_Clock/4
 VDP_Pixel_Clock:	equ VDP_Clock/2
@@ -22,25 +22,25 @@ psg_input:		equ $C00011
 debug_reg:		equ $C0001C
 
 	phase	$1FF4
-zStack:		ds.w 1
-zDAC_Update:	ds.b 1
-zVoiceFlag:	ds.b 1
-zVoiceTblAdr:	ds.w 1
-zBankLow:	ds.b 1
-zBankHigh:	ds.b 1
-zLoopDataStr:	ds.b 1
-zDAC_Status:	ds.b 1	; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
-zRepeatFlag:	ds.b 1
-zDAC_Sample:	ds.b 1	; Sample to play, the 68k will move into this location whatever sample that's supposed to be played.
+zStack:			ds.w 1
+zDAC_Update:		ds.b 1
+zVoiceFlag:		ds.b 1
+zVoiceTblAdr:		ds.w 1
+zBankLow:		ds.b 1
+zBankHigh:		ds.b 1
+zLoopDataStr:		ds.b 1
+zDAC_Status:		ds.b 1	; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
+zRepeatFlag:		ds.b 1
+zDAC_Sample:		ds.b 1	; Sample to play, the 68k will move into this location whatever sample that's supposed to be played.
 	dephase
 	!org 0
 
-zYM2612_A0:	equ $4000
-zYM2612_D0:	equ $4001
-zYM2612_A1:	equ $4002
-zYM2612_D1:	equ $4003
-zBankRegister:	equ $6000
-zROMWindow:	equ $8000
+zYM2612_A0:		equ $4000
+zYM2612_D0:		equ $4001
+zYM2612_A1:		equ $4002
+zYM2612_D1:		equ $4003
+zBankRegister:		equ $6000
+zROMWindow:		equ $8000
 
 ; Z80 addresses
 z80_ram:		equ $A00000			; start of Z80 RAM
@@ -101,6 +101,13 @@ vram_sprites_icd:	equ $D800				; sprite table
 vram_hscroll_icd:	equ $DC00				; horizontal scroll table
 window_plane_icd:	equ $F000				; window plane
 
+; Sprite data
+sprites_max:		equ 80					; maximum number of sprites the Mega Drive can handle
+spritelayer_num:	equ 1<<3				; =8 sprite priority layers (must be a power of 2)
+spritelayer_size_bits:	equ 7					; layer size must be a power of 2
+spritelayer_size:	equ 1<<spritelayer_size_bits		; =$80 (2 bytes entry counter + $7E bytes to store entries)
+spritetable_entrysize:	equ 8					; 8 bytes per linked sprite table entry (2 y-pos + 1 size + 1 link + 2 VRAM + 2 x-pos)
+
 ; Various sizes
 tile_size:		equ 8*8/2				; size of a single 8x8 tile
 chunk_size:		equ $200				; size of a single 256x256 chunk
@@ -152,6 +159,11 @@ id_SZ_act3:		equ (id_SZ<<8)+act3			; $0402
 id_CWZ_act1:		equ (id_CWZ<<8)+act1			; $0500
 id_CWZ_act2:		equ (id_CWZ<<8)+act2			; $0501
 id_CWZ_act3:		equ (id_CWZ<<8)+act3			; $0502
+
+; Special Stage
+ss_rotatespeed:		equ $40					; base special stage rotation speed
+ss_timeout:		equ 30					; delay after touching an UP/DOWN or R block
+ss_blocksize:		equ 24					; logical size of a single block
 
 ; Colours
 cBlack:			equ $000				; colour black
@@ -292,113 +304,113 @@ object_size_bits:	equ 6
 object_size:		equ 1<<object_size_bits
 
 ; Animation flags
-af2ndRoutine:	equ $FA	; increment 2nd routine counter
-afReset:	equ $FB	; reset animation and 2nd object routine counter
-afRoutine:	equ $FC	; increment routine counter
-afChange:	equ $FD	; run specified animation
-afBack:		equ $FE	; go back (specified number) bytes
-afEnd:		equ $FF	; return to beginning of animation
+af2ndRoutine:		equ $FA	; increment 2nd routine counter
+afReset:		equ $FB	; reset animation and 2nd object routine counter
+afRoutine:		equ $FC	; increment routine counter
+afChange:		equ $FD	; run specified animation
+afBack:			equ $FE	; go back (specified number) bytes
+afEnd:			equ $FF	; return to beginning of animation
+
+aniXFlip:		equ $20 ; horizontally mirrors the current frame
+aniYFlip:		equ $40 ; vertically mirrors the current frame
 
 ; Background music
-bgm__First:	equ $81
-bgm_GHZ:	equ ((ptr_mus81-MusicIndex)/4)+bgm__First
-bgm_LZ:		equ ((ptr_mus82-MusicIndex)/4)+bgm__First
-bgm_MZ:		equ ((ptr_mus83-MusicIndex)/4)+bgm__First
-bgm_SLZ:	equ ((ptr_mus84-MusicIndex)/4)+bgm__First
-bgm_SZ:	        equ ((ptr_mus85-MusicIndex)/4)+bgm__First
-bgm_CWZ:	equ ((ptr_mus86-MusicIndex)/4)+bgm__First
-bgm_Invincible:	equ ((ptr_mus87-MusicIndex)/4)+bgm__First
-bgm_ExtraLife:	equ ((ptr_mus88-MusicIndex)/4)+bgm__First
-bgm_SS:		equ ((ptr_mus89-MusicIndex)/4)+bgm__First
-bgm_Title:	equ ((ptr_mus8A-MusicIndex)/4)+bgm__First
-bgm_Ending:	equ ((ptr_mus8B-MusicIndex)/4)+bgm__First
-bgm_Boss:	equ ((ptr_mus8C-MusicIndex)/4)+bgm__First
-bgm_FZ:		equ ((ptr_mus8D-MusicIndex)/4)+bgm__First
-bgm_GotThrough:	equ ((ptr_mus8E-MusicIndex)/4)+bgm__First
-bgm_GameOver:	equ ((ptr_mus8F-MusicIndex)/4)+bgm__First
-bgm_Continue:	equ ((ptr_mus90-MusicIndex)/4)+bgm__First
-bgm_Credits:	equ ((ptr_mus91-MusicIndex)/4)+bgm__First
-bgm__Last:	equ ((ptr_musend-MusicIndex-4)/4)+bgm__First
+bgm__First:		equ $81
+bgm_GHZ:		equ ((ptr_mus81-MusicIndex)/4)+bgm__First
+bgm_LZ:			equ ((ptr_mus82-MusicIndex)/4)+bgm__First
+bgm_MZ:			equ ((ptr_mus83-MusicIndex)/4)+bgm__First
+bgm_SLZ:		equ ((ptr_mus84-MusicIndex)/4)+bgm__First
+bgm_SZ:	        	equ ((ptr_mus85-MusicIndex)/4)+bgm__First
+bgm_CWZ:		equ ((ptr_mus86-MusicIndex)/4)+bgm__First
+bgm_Invincible:		equ ((ptr_mus87-MusicIndex)/4)+bgm__First
+bgm_ExtraLife:		equ ((ptr_mus88-MusicIndex)/4)+bgm__First
+bgm_SS:			equ ((ptr_mus89-MusicIndex)/4)+bgm__First
+bgm_Title:		equ ((ptr_mus8A-MusicIndex)/4)+bgm__First
+bgm_Ending:		equ ((ptr_mus8B-MusicIndex)/4)+bgm__First
+bgm_Boss:		equ ((ptr_mus8C-MusicIndex)/4)+bgm__First
+bgm_FZ:			equ ((ptr_mus8D-MusicIndex)/4)+bgm__First
+bgm_GotThrough:		equ ((ptr_mus8E-MusicIndex)/4)+bgm__First
+bgm_GameOver:		equ ((ptr_mus8F-MusicIndex)/4)+bgm__First
+bgm_Continue:		equ ((ptr_mus90-MusicIndex)/4)+bgm__First
+bgm_Credits:		equ ((ptr_mus91-MusicIndex)/4)+bgm__First
+bgm__Last:		equ ((ptr_musend-MusicIndex-4)/4)+bgm__First
 
 ; Sound effects
-sfx__First:	equ $A0
-sfx_Jump:	equ ((ptr_sndA0-SoundIndex)/4)+sfx__First
-sfx_Lamppost:	equ ((ptr_sndA1-SoundIndex)/4)+sfx__First
-sfx_A2:		equ ((ptr_sndA2-SoundIndex)/4)+sfx__First
-sfx_Death:	equ ((ptr_sndA3-SoundIndex)/4)+sfx__First
-sfx_Skid:	equ ((ptr_sndA4-SoundIndex)/4)+sfx__First
-sfx_A5:		equ ((ptr_sndA5-SoundIndex)/4)+sfx__First
-sfx_HitSpikes:	equ ((ptr_sndA6-SoundIndex)/4)+sfx__First
-sfx_Push:	equ ((ptr_sndA7-SoundIndex)/4)+sfx__First
-sfx_SSGoal:	equ ((ptr_sndA8-SoundIndex)/4)+sfx__First
-sfx_SSItem:	equ ((ptr_sndA9-SoundIndex)/4)+sfx__First
-sfx_Splash:	equ ((ptr_sndAA-SoundIndex)/4)+sfx__First
-sfx_AB:		equ ((ptr_sndAB-SoundIndex)/4)+sfx__First
-sfx_HitBoss:	equ ((ptr_sndAC-SoundIndex)/4)+sfx__First
-sfx_Bubble:	equ ((ptr_sndAD-SoundIndex)/4)+sfx__First
-sfx_Fireball:	equ ((ptr_sndAE-SoundIndex)/4)+sfx__First
-sfx_Shield:	equ ((ptr_sndAF-SoundIndex)/4)+sfx__First
-sfx_Saw:	equ ((ptr_sndB0-SoundIndex)/4)+sfx__First
-sfx_Electric:	equ ((ptr_sndB1-SoundIndex)/4)+sfx__First
-sfx_Drown:	equ ((ptr_sndB2-SoundIndex)/4)+sfx__First
-sfx_Flamethrower:equ ((ptr_sndB3-SoundIndex)/4)+sfx__First
-sfx_Bumper:	equ ((ptr_sndB4-SoundIndex)/4)+sfx__First
-sfx_Ring:	equ ((ptr_sndB5-SoundIndex)/4)+sfx__First
-sfx_SpikesMove:	equ ((ptr_sndB6-SoundIndex)/4)+sfx__First
-sfx_Rumbling:	equ ((ptr_sndB7-SoundIndex)/4)+sfx__First
-sfx_B8:		equ ((ptr_sndB8-SoundIndex)/4)+sfx__First
-sfx_Collapse:	equ ((ptr_sndB9-SoundIndex)/4)+sfx__First
-sfx_SSGlass:	equ ((ptr_sndBA-SoundIndex)/4)+sfx__First
-sfx_Door:	equ ((ptr_sndBB-SoundIndex)/4)+sfx__First
-sfx_Teleport:	equ ((ptr_sndBC-SoundIndex)/4)+sfx__First
-sfx_ChainStomp:	equ ((ptr_sndBD-SoundIndex)/4)+sfx__First
-sfx_Roll:	equ ((ptr_sndBE-SoundIndex)/4)+sfx__First
-sfx_Continue:	equ ((ptr_sndBF-SoundIndex)/4)+sfx__First
-sfx_Basaran:	equ ((ptr_sndC0-SoundIndex)/4)+sfx__First
-sfx_BreakItem:	equ ((ptr_sndC1-SoundIndex)/4)+sfx__First
-sfx_Warning:	equ ((ptr_sndC2-SoundIndex)/4)+sfx__First
-sfx_GiantRing:	equ ((ptr_sndC3-SoundIndex)/4)+sfx__First
-sfx_Bomb:	equ ((ptr_sndC4-SoundIndex)/4)+sfx__First
-sfx_Cash:	equ ((ptr_sndC5-SoundIndex)/4)+sfx__First
-sfx_RingLoss:	equ ((ptr_sndC6-SoundIndex)/4)+sfx__First
-sfx_ChainRise:	equ ((ptr_sndC7-SoundIndex)/4)+sfx__First
-sfx_Burning:	equ ((ptr_sndC8-SoundIndex)/4)+sfx__First
-sfx_Bonus:	equ ((ptr_sndC9-SoundIndex)/4)+sfx__First
-sfx_EnterSS:	equ ((ptr_sndCA-SoundIndex)/4)+sfx__First
-sfx_WallSmash:	equ ((ptr_sndCB-SoundIndex)/4)+sfx__First
-sfx_Spring:	equ ((ptr_sndCC-SoundIndex)/4)+sfx__First
-sfx_Switch:	equ ((ptr_sndCD-SoundIndex)/4)+sfx__First
-sfx_RingLeft:	equ ((ptr_sndCE-SoundIndex)/4)+sfx__First
-sfx_Signpost:	equ ((ptr_sndCF-SoundIndex)/4)+sfx__First
-sfx__Last:	equ ((ptr_sndend-SoundIndex-4)/4)+sfx__First
+sfx__First:		equ $A0
+sfx_Jump:		equ ((ptr_sndA0-SoundIndex)/4)+sfx__First
+sfx_Lamppost:		equ ((ptr_sndA1-SoundIndex)/4)+sfx__First
+sfx_A2:			equ ((ptr_sndA2-SoundIndex)/4)+sfx__First
+sfx_Death:		equ ((ptr_sndA3-SoundIndex)/4)+sfx__First
+sfx_Skid:		equ ((ptr_sndA4-SoundIndex)/4)+sfx__First
+sfx_A5:			equ ((ptr_sndA5-SoundIndex)/4)+sfx__First
+sfx_HitSpikes:		equ ((ptr_sndA6-SoundIndex)/4)+sfx__First
+sfx_Push:		equ ((ptr_sndA7-SoundIndex)/4)+sfx__First
+sfx_SSGoal:		equ ((ptr_sndA8-SoundIndex)/4)+sfx__First
+sfx_SSItem:		equ ((ptr_sndA9-SoundIndex)/4)+sfx__First
+sfx_Splash:		equ ((ptr_sndAA-SoundIndex)/4)+sfx__First
+sfx_AB:			equ ((ptr_sndAB-SoundIndex)/4)+sfx__First
+sfx_HitBoss:		equ ((ptr_sndAC-SoundIndex)/4)+sfx__First
+sfx_Bubble:		equ ((ptr_sndAD-SoundIndex)/4)+sfx__First
+sfx_Fireball:		equ ((ptr_sndAE-SoundIndex)/4)+sfx__First
+sfx_Shield:		equ ((ptr_sndAF-SoundIndex)/4)+sfx__First
+sfx_Saw:		equ ((ptr_sndB0-SoundIndex)/4)+sfx__First
+sfx_Electric:		equ ((ptr_sndB1-SoundIndex)/4)+sfx__First
+sfx_Drown:		equ ((ptr_sndB2-SoundIndex)/4)+sfx__First
+sfx_Flamethrower:	equ ((ptr_sndB3-SoundIndex)/4)+sfx__First
+sfx_Bumper:		equ ((ptr_sndB4-SoundIndex)/4)+sfx__First
+sfx_Ring:		equ ((ptr_sndB5-SoundIndex)/4)+sfx__First
+sfx_SpikesMove:		equ ((ptr_sndB6-SoundIndex)/4)+sfx__First
+sfx_Rumbling:		equ ((ptr_sndB7-SoundIndex)/4)+sfx__First
+sfx_B8:			equ ((ptr_sndB8-SoundIndex)/4)+sfx__First
+sfx_Collapse:		equ ((ptr_sndB9-SoundIndex)/4)+sfx__First
+sfx_SSGlass:		equ ((ptr_sndBA-SoundIndex)/4)+sfx__First
+sfx_Door:		equ ((ptr_sndBB-SoundIndex)/4)+sfx__First
+sfx_Teleport:		equ ((ptr_sndBC-SoundIndex)/4)+sfx__First
+sfx_ChainStomp:		equ ((ptr_sndBD-SoundIndex)/4)+sfx__First
+sfx_Roll:		equ ((ptr_sndBE-SoundIndex)/4)+sfx__First
+sfx_Continue:		equ ((ptr_sndBF-SoundIndex)/4)+sfx__First
+sfx_Basaran:		equ ((ptr_sndC0-SoundIndex)/4)+sfx__First
+sfx_BreakItem:		equ ((ptr_sndC1-SoundIndex)/4)+sfx__First
+sfx_Warning:		equ ((ptr_sndC2-SoundIndex)/4)+sfx__First
+sfx_GiantRing:		equ ((ptr_sndC3-SoundIndex)/4)+sfx__First
+sfx_Bomb:		equ ((ptr_sndC4-SoundIndex)/4)+sfx__First
+sfx_Cash:		equ ((ptr_sndC5-SoundIndex)/4)+sfx__First
+sfx_RingLoss:		equ ((ptr_sndC6-SoundIndex)/4)+sfx__First
+sfx_ChainRise:		equ ((ptr_sndC7-SoundIndex)/4)+sfx__First
+sfx_Burning:		equ ((ptr_sndC8-SoundIndex)/4)+sfx__First
+sfx_Bonus:		equ ((ptr_sndC9-SoundIndex)/4)+sfx__First
+sfx_EnterSS:		equ ((ptr_sndCA-SoundIndex)/4)+sfx__First
+sfx_WallSmash:		equ ((ptr_sndCB-SoundIndex)/4)+sfx__First
+sfx_Spring:		equ ((ptr_sndCC-SoundIndex)/4)+sfx__First
+sfx_Switch:		equ ((ptr_sndCD-SoundIndex)/4)+sfx__First
+sfx_RingLeft:		equ ((ptr_sndCE-SoundIndex)/4)+sfx__First
+sfx_Signpost:		equ ((ptr_sndCF-SoundIndex)/4)+sfx__First
+sfx__Last:		equ ((ptr_sndend-SoundIndex-4)/4)+sfx__First
 
 ; Special sound effects
-spec__First:	equ $D0
-sfx_Waterfall:	equ ((ptr_sndD0-SpecSoundIndex)/4)+spec__First
+spec__First:		equ $D0
+sfx_Waterfall:		equ ((ptr_sndD0-SpecSoundIndex)/4)+spec__First
 sfx_Loud_Waterfall:	equ ((ptr_sndD1-SpecSoundIndex)/4)+spec__First
-sfx_Pounding:	equ ((ptr_sndD2-SpecSoundIndex)/4)+spec__First
-spec__Last:	equ ((ptr_specend-SpecSoundIndex-4)/4)+spec__First
+sfx_Pounding:		equ ((ptr_sndD2-SpecSoundIndex)/4)+spec__First
+spec__Last:		equ ((ptr_specend-SpecSoundIndex-4)/4)+spec__First
 
 ; DAC samples
-dac__First:	equ $D7
+dac__First:		equ $D7
 
-flg__First:	equ $E0
-bgm_Fade:	equ ((ptr_flgE0-Sound_ExIndex)/4)+flg__First
-bgm_Stop:	equ ((ptr_flgE1-Sound_ExIndex)/4)+flg__First
-bgm_Speedup:	equ ((ptr_flgE2-Sound_ExIndex)/4)+flg__First
-bgm_Slowdown:	equ ((ptr_flgE3-Sound_ExIndex)/4)+flg__First
-bgm_StopSpec:	equ ((ptr_flgE4-Sound_ExIndex)/4)+flg__First
-flg__Last:	equ ((ptr_flgend-Sound_ExIndex-4)/4)+flg__First
+flg__First:		equ $E0
+bgm_Fade:		equ ((ptr_flgE0-Sound_ExIndex)/4)+flg__First
+bgm_Stop:		equ ((ptr_flgE1-Sound_ExIndex)/4)+flg__First
+bgm_Speedup:		equ ((ptr_flgE2-Sound_ExIndex)/4)+flg__First
+bgm_Slowdown:		equ ((ptr_flgE3-Sound_ExIndex)/4)+flg__First
+bgm_StopSpec:		equ ((ptr_flgE4-Sound_ExIndex)/4)+flg__First
+flg__Last:		equ ((ptr_flgend-Sound_ExIndex-4)/4)+flg__First
 
-;=======================================;
 ; PSG envelope commands
-;=======================================;
-TBREPT:	equ	$80		; table repeat sign
-TBSTAY:	equ	$81		; table staying sign
-TBEND:	equ	$83		; table end sign
-TBADD:	equ	$84		; after this command
-				; data=([table data]-0)*[add data]
-TBBAK:	equ	$85		; table pointer set next data
+TBREPT:			equ	$80		; table repeat sign
+TBSTAY:			equ	$81		; table staying sign
+TBEND:			equ	$83		; table end sign
+TBADD:			equ	$84		; after this command (data=([table data]-0)*[add data])
+TBBAK:			equ	$85		; table pointer set next data
 
 ; Boss locations
 ; The main values are based on where the camera boundaries mainly lie

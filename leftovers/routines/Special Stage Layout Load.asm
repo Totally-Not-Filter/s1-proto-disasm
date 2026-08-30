@@ -11,19 +11,19 @@
 ; Size of Special Stage: 4096 bytes (4KB)
 ; ---------------------------------------------------------------------------
 
-SS_1_size_prev:	equ 64*64
+SS_1_size_prev:	equ ss_layout_rowlength_prev*ss_layout_rows_prev
 
 SS_Load_Prev:
 		lea	(v_sslayout_prev).l,a1
 		lea	(SS_1).l,a0
-		moveq	#(SS_1_size_prev)/64-1,d1	; 64 bytes per row
+		moveq	#(SS_1_size_prev)/ss_layout_rowlength_prev-1,d1
 
 loc_10CA6:
-		moveq	#(64)/4-1,d2
+		moveq	#(ss_layout_rows_prev)/4-1,d2
 
 loc_10CA8:
 		move.l	(a0)+,(a1)+
 		dbf	d2,loc_10CA8
-		lea	64(a1),a1
+		lea	ss_layout_rows_prev(a1),a1
 		dbf	d1,loc_10CA6
 		rts

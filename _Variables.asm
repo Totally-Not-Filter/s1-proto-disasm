@@ -154,13 +154,13 @@ v_plc_buffer_end:
 
 v_misc_variables:
 v_scrposx:		ds.l	1
-v_screenposx:	equ	v_scrposx
+v_screenposx:		equ	v_scrposx
 v_scrposy:		ds.l	1
-v_screenposy:	equ	v_scrposy
+v_screenposy:		equ	v_scrposy
 v_bgscrposx:		ds.l	1
-v_bgscreenposx:	equ	v_bgscrposx
+v_bgscreenposx:		equ	v_bgscrposx
 v_bgscrposy:		ds.l	1
-v_bgscreenposy:	equ	v_bgscrposy
+v_bgscreenposy:		equ	v_bgscrposy
 v_bg2scrposx:		ds.l	1
 v_bg2screenposx:	equ	v_bg2scrposx
 v_bg2scrposy:		ds.l	1
@@ -357,22 +357,36 @@ v_init:			ds.l	1				; 'init' text string (4 bytes)
 v_ram_end:
 	dephase
 
-; Special Stage Variables
-v_ssbuffer1:		equ v_ram_start
-v_ssblockbuffer:	equ v_ssbuffer1+$1020			; ($2000 bytes)
-v_sslayout_prev:	equ v_ssblockbuffer
-v_ssblockbuffer_end:	equ v_ssblockbuffer+$80*$40
-v_sslayout:		equ v_ram_start+$172E			; ($510 bytes)
-v_ssbuffer2:		equ v_ram_start+$4000
-v_ssblocktypes:		equ v_ssbuffer2
-v_ssitembuffer:		equ v_ssbuffer2+$400			; ($100 bytes)
-v_ssitembuffer_end:	equ v_ssitembuffer+$100
-v_ssbuffer3:		equ v_ram_start+$8000
-v_ssscroll_buffer:	equ v_ngfx_buffer+$100
+; Special Stage
+	phase	$FF0000
+ss_layout_rowlength_prev:	equ $40
+ss_layout_rows_prev:	equ $40
+ss_layout_rowlength:	equ $80
+ss_layout_rows:		equ $24
+ss_matrixsize:		equ 16
 
-	phase v_objstate
-v_regbuffer:	ds.b	object_size				; stores registers d0-a7 during an error event
-v_spbuffer:	ds.l	1					; stores most recent sp address
-v_errortype:	ds.b	1					; error type
+v_sslayout_base:	ds.b	$172E
+v_sslayout_prev:	equ	$FF1020
+v_sslayout_actual:	ds.b	ss_layout_rowlength*ss_layout_rows ; actual SS layout, after padding
+v_sslayout_end:							; end of SS layout buffer
+			ds.b	$16D2				; unused in SS
+v_ss_spritesettings:	ds.b	8*$4F				; sprite mappings/VRAM settings loaded from SS_MapIndex (total $278 bytes)
+			ds.b	$188				; unused in SS
+v_ss_animations:	ds.b	8*$20				; animation update queue (8 bytes per entry, $20 entries total)
+v_ss_animations_end:						; end of animation update queue
+	org	$FFFF8000					; (need 32-bit addressing starting at FFFF8000)
+v_ss_rotationmatrix:	ds.b	2*2*ss_matrixsize*ss_matrixsize	; rotated X/Y sprite coordinates (words) per visible cell (2*2*$10*$10 = $400 bytes)
+			ds.b	$2600				; unused in SS
+v_ss_scroll_bubbles:	ds.b	$28				; buffer to store scroll positions for SS background bubbles
+			ds.b	$D8				; unused in SS
+v_ss_scroll_clouds:	ds.b	$1C				; buffer to store scroll positions for SS background clouds
 	dephase
+
+	phase	v_objstate
+v_regbuffer:		ds.b	object_size			; stores registers d0-a7 during an error event
+v_spbuffer:		ds.l	1				; stores most recent sp address
+v_errortype:		ds.b	1				; error type
+	dephase
+
+
 	!org 0

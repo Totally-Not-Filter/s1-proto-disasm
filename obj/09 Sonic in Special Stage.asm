@@ -337,7 +337,7 @@ loc_10FFA:
 ; ===========================================================================
 
 sub_1100E:
-		lea	(v_ssbuffer1).l,a1
+		lea	(v_sslayout_base).l,a1
 		moveq	#0,d4
 		swap	d2
 		move.w	d2,d4
@@ -393,7 +393,7 @@ loc_11078:
 ; ===========================================================================
 
 Obj09_ChkItems:
-		lea	(v_ssbuffer1).l,a1
+		lea	(v_sslayout_base).l,a1
 		moveq	#0,d4
 		move.w	obY(a0),d4
 		addi.w	#$50,d4
@@ -414,7 +414,7 @@ Obj09_ChkItems:
 Obj09_ChkRing:
 		cmpi.b	#$11,d4
 		bne.s	loc_110D0
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeAnimationSlot
 		bne.s	Obj09_GetRing
 		move.b	#1,(a2)
 		move.l	a1,4(a2)
@@ -478,7 +478,7 @@ Obj09_ChkBumper:
 		asr.l	#8,d0
 		move.w	d0,obVelY(a0)
 		bset	#1,obStatus(a0)
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeAnimationSlot
 		bne.s	Obj09_BumpSnd
 		move.b	#2,(a2)
 		move.l	objoff_32(a0),d0
