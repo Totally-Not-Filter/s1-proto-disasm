@@ -1,29 +1,37 @@
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	level graphics
 ; ---------------------------------------------------------------------------
 
 AnimateLevelGfx:
-		tst.w	(f_pause).w			; is the game paused?
-		bmi.s	.ispaused			; if yes, branch
-		lea	(vdp_data_port).l,a6
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		add.w	d0,d0
-		move.w	AniArt_Index(pc,d0.w),d0
-		jmp	AniArt_Index(pc,d0.w)
+		tst.w	(f_pause).w				; is the game paused?
+		bmi.s	.isPaused				; if yes, branch
 
-.ispaused:
-		rts
+		lea	(vdp_data_port).l,a6			; prepare VDP data port (shared by all gfx routines)
+
+		moveq	#0,d0
+		move.b	(v_zone).w,d0				; get current zone ID
+		add.w	d0,d0					; double for word-based indexing
+		move.w	AniArt_Index(pc,d0.w),d0		; find entry in jump table
+		jmp	AniArt_Index(pc,d0.w)			; jump to animation routine for current Zone
+; ---------------------------------------------------------------------------
+
+	.isPaused:
+		rts						; don't animate level gfx while paused
+; End of function AnimateLevelGfx
 
 ; ===========================================================================
 AniArt_Index:
-		dc.w AniArt_GHZ-AniArt_Index	; GHZ
-		dc.w AniArt_none-AniArt_Index	; LZ
-		dc.w AniArt_MZ-AniArt_Index		; MZ
-		dc.w AniArt_none-AniArt_Index	; SLZ
-		dc.w AniArt_none-AniArt_Index	; SZ
-		dc.w AniArt_none-AniArt_Index	; CWZ
-		dc.w AniArt_none-AniArt_Index	; 06
+		dc.w	AniArt_GHZ-AniArt_Index			; GHZ
+		dc.w	AniArt_none-AniArt_Index		; LZ (empty)
+		dc.w	AniArt_MZ-AniArt_Index			; MZ
+		dc.w	AniArt_none-AniArt_Index		; SLZ (empty)
+		dc.w	AniArt_none-AniArt_Index		; SZ (empty)
+		dc.w	AniArt_none-AniArt_Index		; CWZ (empty)
+		dc.w	AniArt_none-AniArt_Index		; 06 (empty)
+; ===========================================================================
+
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Animated pattern routine - Green Hill
@@ -32,342 +40,355 @@ AniArt_Index:
 AniArt_GHZ:
 
 AniArt_GHZ_Waterfall:
-		subq.b	#1,(v_lani0_time).w
-		bpl.s	AniArt_GHZ_Bigflower
+		.size:	= 8					; number of tiles per frame
 
-		move.b	#6-1,(v_lani0_time).w
-		lea	(Art_GhzWater).l,a1
-		move.b	(v_lani0_frame).w,d0
-		addq.b	#1,(v_lani0_frame).w
-		andi.w	#1,d0
-		beq.s	.isframe0
-		lea	$100(a1),a1
+		subq.b	#1,(v_lani0_time).w			; decrement timer
+		bpl.s	AniArt_GHZ_Bigflower			; if time remains, branch
 
-.isframe0:
-		locVRAM ArtTile_GHZ_Waterfall*tile_size
-		move.w	#8-1,d1
-		bra.w	LoadTiles
+		move.b	#6-1,(v_lani0_time).w			; time to display each frame
+		lea	(Art_GhzWater).l,a1			; load waterfall patterns
+		move.b	(v_lani0_frame).w,d0			; get current frame ID
+		addq.b	#1,(v_lani0_frame).w			; increment frame counter
+		andi.w	#1,d0					; there are only 2 frames
+		beq.s	.isFrame0				; branch if frame 0
+		lea	.size*tile_size(a1),a1			; use graphics for frame 1
+	.isFrame0:
+		locVRAM	ArtTile_GHZ_Waterfall*tile_size		; VRAM address
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bra.w	LoadTiles				; transfer tiles to VRAM
 ; ===========================================================================
 
 AniArt_GHZ_Bigflower:
-		subq.b	#1,(v_lani1_time).w
-		bpl.s	AniArt_GHZ_Smallflower
+		.size:	= 16					; number of tiles per frame
 
-		move.b	#16-1,(v_lani1_time).w
-		lea	(Art_GhzFlower1).l,a1
-		move.b	(v_lani1_frame).w,d0
-		addq.b	#1,(v_lani1_frame).w
-		andi.w	#1,d0
-		beq.s	.isframe0
-		lea	$200(a1),a1
+		subq.b	#1,(v_lani1_time).w			; decrement timer
+		bpl.s	AniArt_GHZ_Smallflower			; if time remains, branch
 
-.isframe0:
-		locVRAM ArtTile_GHZ_Big_Flower_1*tile_size
-		move.w	#16-1,d1
-		bra.w	LoadTiles
+		move.b	#16-1,(v_lani1_time).w			; time to display each frame
+		lea	(Art_GhzFlower1).l,a1			; load big flower patterns
+		move.b	(v_lani1_frame).w,d0			; get current frame ID
+		addq.b	#1,(v_lani1_frame).w			; increment frame counter
+		andi.w	#1,d0					; there are only 2 frames
+		beq.s	.isFrame0				; branch if frame 0
+		lea	.size*tile_size(a1),a1			; use graphics for frame 1
+	.isFrame0:
+		locVRAM	ArtTile_GHZ_Big_Flower_1*tile_size	; VRAM address
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bra.w	LoadTiles				; transfer tiles to VRAM
 ; ===========================================================================
 
 AniArt_GHZ_Smallflower:
-		subq.b	#1,(v_lani2_time).w
-		bpl.s	.end
+		.size:	= 12					; number of tiles per frame
 
-		move.b	#8-1,(v_lani2_time).w
-		move.b	(v_lani2_frame).w,d0
-		addq.b	#1,(v_lani2_frame).w
-		andi.w	#3,d0
-		move.b	.sequence(pc,d0.w),d0
-		btst	#0,d0
-		bne.s	.isframe1
-		move.b	#$7F,(v_lani2_time).w
+		subq.b	#1,(v_lani2_time).w			; decrement timer
+		bpl.s	.return					; if time remains, branch
 
-.isframe1:
-		lsl.w	#7,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		add.w	d1,d0
-		locVRAM ArtTile_GHZ_Small_Flower*tile_size
-		lea	(Art_GhzFlower2).l,a1
-		lea	(a1,d0.w),a1
-		move.w	#12-1,d1
-		bsr.w	LoadTiles
+		move.b	#8-1,(v_lani2_time).w			; time to display each frame
+		move.b	(v_lani2_frame).w,d0			; get current frame ID
+		addq.b	#1,(v_lani2_frame).w			; increment frame counter
+		andi.w	#3,d0					; there are 4 frames
+		move.b	.flowerSeq(pc,d0.w),d0			; get current flower frame (0-2)
+		btst	#0,d0					; is frame 0 or 2? (actual frame, not frame counter)
+		bne.s	.isFrame1				; if not, branch
+		move.b	#128-1,(v_lani2_time).w			; set longer duration for frames 0 and 2
+	.isFrame1:
+		lsl.w	#7,d0					; multiply frame num by $80
+		move.w	d0,d1					; multiply that by 3 (i.e. frame num times 12 * $20)
+		add.w	d0,d0					; ''
+		add.w	d1,d0					; ''
+		locVRAM	ArtTile_GHZ_Small_Flower*tile_size	; VRAM address
+		lea	(Art_GhzFlower2).l,a1			; load small flower patterns
+		lea	(a1,d0.w),a1				; jump to appropriate tile
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bsr.w	LoadTiles				; transfer tiles to VRAM
 
-.end:
+	.return:
 		rts
-; ===========================================================================
+; ---------------------------------------------------------------------------
 
-.sequence:	dc.b 0, 1, 2, 1
-		even
+.flowerSeq:	; Sequence of frame offsets for small flowers
+		dc.b 0,	1, 2, 1
+
+; End of function AniArt_GHZ
+
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animated pattern routine - Marble
+; ---------------------------------------------------------------------------
 
 AniArt_MZ:
 
 AniArt_MZ_Lava:
-		subq.b	#1,(v_lani0_time).w
-		bpl.s	AniArt_MZ_Magma
+		.size:	= 8					; number of tiles per frame
 
-		move.b	#20-1,(v_lani0_time).w
-		lea	(Art_MzLava1).l,a1
-		moveq	#0,d0
-		move.b	(v_lani0_frame).w,d0
-		addq.b	#1,d0
-		cmpi.b	#3,d0
-		bne.s	.frame01or2
-		moveq	#0,d0
+		subq.b	#1,(v_lani0_time).w			; decrement timer
+		bpl.s	AniArt_MZ_Magma				; if time remains, branch
 
-.frame01or2:
-		move.b	d0,(v_lani0_frame).w
-		mulu.w	#$100,d0
-		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Animated_Lava*tile_size
-		move.w	#8-1,d1
-		bsr.w	LoadTiles
+		move.b	#20-1,(v_lani0_time).w			; time to display each frame
+		lea	(Art_MzLava1).l,a1			; load lava surface patterns
+		moveq	#0,d0
+		move.b	(v_lani0_frame).w,d0			; get current frame ID
+		addq.b	#1,d0					; increment frame counter
+		cmpi.b	#3,d0					; there are 3 frames
+		bne.s	.notFrame3				; branch if frame 0, 1 or 2
+		moveq	#0,d0
+	.notFrame3:
+		move.b	d0,(v_lani0_frame).w			; set new frame
+		mulu.w	#.size*tile_size,d0			; multiply frame by size of tiles in VRAM
+		adda.w	d0,a1					; jump to appropriate tile
+		locVRAM	ArtTile_MZ_Animated_Lava*tile_size	; VRAM address
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bsr.w	LoadTiles				; transfer tiles to VRAM
+; ---------------------------------------------------------------------------
 
 AniArt_MZ_Magma:
-		subq.b	#1,(v_lani1_time).w
-		bpl.s	AniArt_MZ_Saturns
+		subq.b	#1,(v_lani1_time).w			; decrement timer
+		bpl.s	AniArt_MZ_Saturns			; if time remains, branch
 
-		move.b	#2-1,(v_lani1_time).w
+		move.b	#2-1,(v_lani1_time).w			; time between each gfx change
 		moveq	#0,d0
-		move.b	(v_lani0_frame).w,d0
-		lea	(Art_MzLava2).l,a4
-		ror.w	#7,d0
-		adda.w	d0,a4
-		locVRAM ArtTile_MZ_Animated_Magma*tile_size
+		move.b	(v_lani0_frame).w,d0			; get surface lava frame number
+		lea	(Art_MzLava2).l,a4			; load magma gfx
+		ror.w	#7,d0					; multiply frame num by $200
+		adda.w	d0,a4					; jump to appropriate tile
+		locVRAM	ArtTile_MZ_Animated_Magma*tile_size	; VRAM address
 		moveq	#0,d3
-		move.b	(v_lani1_frame).w,d3
-		addq.b	#1,(v_lani1_frame).w
-		move.b	(v_oscillate+$A).w,d3
-		move.w	#4-1,d2
+		move.b	(v_lani1_frame).w,d3			; get current frame ID
+		addq.b	#1,(v_lani1_frame).w			; increment frame counter (unused)
+		move.b	(v_oscillate+$A).w,d3			; get oscillating value
+		move.w	#4-1,d2					; number of frames to animate in the level
+	.loop:
+		move.w	d3,d0					; copy sinewave sync position
+		add.w	d0,d0					; multiply by 2 (size of word from jump table)
+		andi.w	#$1E,d0					; keep in multiples of $10 bytes of art ($10 routines each)
+		lea	(AniArt_MZMagma).l,a3			; load magma routines list
+		move.w	(a3,d0.w),d0				; load correct relative address
+		lea	(a3,d0.w),a3				; add and jump to correct address (correct pixel/byte position)
+		movea.l	a4,a1					; load uncompressed art ($20x$20 pixel tile)
+		move.w	#$20-1,d1				; set number of 8 pixel lines to write in a column (4 bytes each)
+		jsr	(a3)					; draw the column correctly in the 8 pixels of this column
+		addq.w	#4,d3					; increase sinewave position right by 4 bytes (a single tile)
+		dbf	d2,.loop				; repeat for all four columns of tiles
 
-.loop:
-		move.w	d3,d0
-		add.w	d0,d0
-		andi.w	#$1E,d0
-		lea	(AniArt_MZextra).l,a3
-		move.w	(a3,d0.w),d0
-		lea	(a3,d0.w),a3
-		movea.l	a4,a1
-		move.w	#$20-1,d1
-		jsr	(a3)
-		addq.w	#4,d3
-		dbf	d2,.loop
 		rts
 ; ===========================================================================
 
 AniArt_MZ_Saturns:
-		subq.b	#1,(v_lani2_time).w
-		bpl.w	locret_11480
-		move.b	#8-1,(v_lani2_time).w
-		lea	(Art_MzSaturns).l,a1
+		.size:	= 8					; number of tiles per frame
+
+		subq.b	#1,(v_lani2_time).w			; decrement timer
+		bpl.w	AniArt_MZ_Return			; if time remains, branch
+
+		move.b	#8-1,(v_lani2_time).w			; time to display each frame
+		lea	(Art_MzSaturns).l,a1			; load saturn patterns
 		moveq	#0,d0
-		move.b	(v_lani2_frame).w,d0
-		addq.b	#1,d0
+		move.b	(v_lani2_frame).w,d0			; get current frame ID
+		addq.b	#1,d0					; increment frame counter
 	if FixBugs
-		cmpi.b	#6,d0				; are we on frame 6?
+		cmpi.b	#6,d0					; are we on frame 6?
 	else
 		; Bug: This misses the last frame of animation
-		cmpi.b	#5,d0				; are we on frame 5?
+		cmpi.b	#5,d0					; are we on frame 5?
 	endif
-		bne.s	.notframe5			; if not, then set back to frame 0
+		bne.s	.notlastframe				; if not, then set back to frame 0
 		moveq	#0,d0
 
-.notframe5:
-		move.b	d0,(v_lani2_frame).w
-		mulu.w	#$100,d0
-		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Saturns*tile_size
-		move.w	#8-1,d1
-		bsr.w	LoadTiles
+.notlastframe:
+		move.b	d0,(v_lani2_frame).w			; set as frame
+		mulu.w	#.size*tile_size,d0			; multiply frame by size of tiles in VRAM
+		adda.w	d0,a1					; jump to appropriate tile
+		locVRAM ArtTile_MZ_Saturns*tile_size		; VRAM address
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bsr.w	LoadTiles				; transfer tiles to VRAM
 		
-;AniArt_MZ_Torch:
-		lea	(Art_MzTorch).l,a1
-		moveq	#0,d0
-		move.b	(v_lani3_frame).w,d0
-		addq.b	#1,(v_lani3_frame).w
-		andi.b	#3,(v_lani3_frame).w
-		mulu.w	#$C0,d0
-		adda.w	d0,a1
-		locVRAM ArtTile_MZ_Torch*tile_size
-		move.w	#6-1,d1
-		bra.w	LoadTiles
-; ===========================================================================
+AniArt_MZ_Torch:
+		.size:	= 6					; number of tiles per frame
 
-locret_11480:
+		lea	(Art_MzTorch).l,a1			; load torch patterns
+		moveq	#0,d0
+		move.b	(v_lani3_frame).w,d0			; get current frame ID
+		addq.b	#1,(v_lani3_frame).w			; increment frame counter
+		andi.b	#3,(v_lani3_frame).w			; there are 3 frames
+		mulu.w	#.size*tile_size,d0			; multiply frame by size of tiles in VRAM
+		adda.w	d0,a1					; jump to appropriate tile
+		locVRAM ArtTile_MZ_Torch*tile_size		; VRAM address
+		move.w	#.size-1,d1				; number of 8x8 tiles
+		bra.w	LoadTiles				; transfer tiles to VRAM
+
+AniArt_MZ_Return:
 		rts
+; End of function AniArt_MZ
+
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animated pattern routine - zones without animated gfx (LZ, SLZ, SZ, CWZ, 06)
+; ---------------------------------------------------------------------------
 
 AniArt_none:
-		rts
+		rts						; do nothing
+; End of function AniArt_none
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Subroutine to	transfer graphics to VRAM
-
+; Subroutine to transfer raw tile data to VRAM
+; 
 ; input:
-;	a1 = source address
-;	a6 = vdp_data_port ($C00000)
-;	d1 = number of tiles to load (minus one)
+; 	a1 = source address
+; 	a6 = vdp_data_port ($C00000)
+; 	d1 = number of tiles to transfer (minus one)
 ; ---------------------------------------------------------------------------
 
 LoadTiles:
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		move.l	(a1)+,(a6)
-		dbf	d1,LoadTiles
+	rept 8							; 1 tile requires 8 longword transfers
+		move.l	(a1)+,(a6)				; transfer 1/8th of a tile and advance source pointer
+	endr
+		dbf	d1,LoadTiles				; loop for number of tiles
 		rts
 ; End of function LoadTiles
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Animated pattern routine - more Marble Zone
+; Animated pattern routine - Marble Zone (Magma byte precision write)
 ; ---------------------------------------------------------------------------
-AniArt_MZextra:
-		dc.w loc_114BA-AniArt_MZextra, loc_114C6-AniArt_MZextra
-		dc.w loc_114DC-AniArt_MZextra, loc_114EA-AniArt_MZextra
-		dc.w loc_11500-AniArt_MZextra, loc_1150E-AniArt_MZextra
-		dc.w loc_11524-AniArt_MZextra, loc_11532-AniArt_MZextra
-		dc.w loc_11548-AniArt_MZextra, loc_11556-AniArt_MZextra
-		dc.w loc_1156C-AniArt_MZextra, loc_1157A-AniArt_MZextra
-		dc.w loc_11590-AniArt_MZextra, loc_1159E-AniArt_MZextra
-		dc.w loc_115B4-AniArt_MZextra, loc_115C6-AniArt_MZextra
-; ===========================================================================
+AniArt_MZMagma:
+		dc.w	.magma_0123-AniArt_MZMagma		; 0 1 2 3
+		dc.w	.magma_1234-AniArt_MZMagma		; 1 2 3 4
+		dc.w	.magma_2345-AniArt_MZMagma		; 2 3 4 5
+		dc.w	.magma_3456-AniArt_MZMagma		; 3 4 5 6
+		dc.w	.magma_4567-AniArt_MZMagma		; 4 5 6 7
+		dc.w	.magma_5678-AniArt_MZMagma		; 5 6 7 8
+		dc.w	.magma_6789-AniArt_MZMagma		; 6 7 8 9
+		dc.w	.magma_789A-AniArt_MZMagma		; 7 8 9 A
+		dc.w	.magma_89AB-AniArt_MZMagma		; 8 9 A B
+		dc.w	.magma_9ABC-AniArt_MZMagma		; 9 A B C
+		dc.w	.magma_ABCD-AniArt_MZMagma		; A B C D
+		dc.w	.magma_BCDE-AniArt_MZMagma		; B C D E
+		dc.w	.magma_CDEF-AniArt_MZMagma		; C D E F
+		dc.w	.magma_DEF0-AniArt_MZMagma		; D E F 0
+		dc.w	.magma_EF01-AniArt_MZMagma		; E F 0 1
+		dc.w	.magma_F012-AniArt_MZMagma		; F 0 1 2
 
-loc_114BA:
-		move.l	(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_114BA
+; ---------------------------------------------------------------------------
+.magma_0123:	; ****------------
+		move.l	(a1),(a6)				; write art starting from 0 (0, 1, 2, 3)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_0123				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_114C6:
-		move.l	2(a1),d0
-		move.b	1(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_114C6
+; ---------------------------------------------------------------------------
+.magma_1234:	; -****-----------
+		move.l	2(a1),d0				; load art starting from 2
+		move.b	1(a1),d0				; load art from 1 at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from 1, 2, 3, 4
+		move.l	d0,(a6)					; write art starting from 1 (1, 2, 3, 4)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_1234				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_114DC:
-		move.l	2(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_114DC
+; ---------------------------------------------------------------------------
+.magma_2345:	; --****----------
+		move.l	2(a1),(a6)				; write art starting from 2 (2, 3, 4, 5)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_2345				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_114EA:
-		move.l	4(a1),d0
-		move.b	3(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_114EA
+; ---------------------------------------------------------------------------
+.magma_3456:	; ---****---------
+		move.l	4(a1),d0				; load art starting from 4
+		move.b	3(a1),d0				; load art from 3 at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from 3, 4, 5, 6
+		move.l	d0,(a6)					; write art starting from 3 (3, 4, 5, 6)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_3456				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11500:
-		move.l	4(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11500
+; ---------------------------------------------------------------------------
+.magma_4567:	; ----****--------
+		move.l	4(a1),(a6)				; write art starting from 4 (4, 5, 6, 7)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_4567				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_1150E:
-		move.l	6(a1),d0
-		move.b	5(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_1150E
+; ---------------------------------------------------------------------------
+.magma_5678:	; -----****-------
+		move.l	6(a1),d0				; load art starting from 6
+		move.b	5(a1),d0				; load art from 5 at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from 5, 6, 7, 8
+		move.l	d0,(a6)					; write art starting from 5 (5, 6, 7, 8)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_5678				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11524:
-		move.l	6(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11524
+; ---------------------------------------------------------------------------
+.magma_6789:	; ------****------
+		move.l	6(a1),(a6)				; write art starting from 6 (6, 7, 8, 9)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_6789				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11532:
-		move.l	8(a1),d0
-		move.b	7(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11532
+; ---------------------------------------------------------------------------
+.magma_789A:	; -------****-----
+		move.l	8(a1),d0				; load art starting from 8
+		move.b	7(a1),d0				; load art from 7 at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from 7, 8, 9, A
+		move.l	d0,(a6)					; write art starting from 7 (7, 8, 9, A)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_789A				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11548:
-		move.l	8(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11548
+; ---------------------------------------------------------------------------
+.magma_89AB:	; --------****----
+		move.l	8(a1),(a6)				; write art starting from 8 (8, 9, A, B)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_89AB				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11556:
-		move.l	$A(a1),d0
-		move.b	9(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11556
+; ---------------------------------------------------------------------------
+.magma_9ABC:	; ---------****---
+		move.l	$A(a1),d0				; load art starting from A
+		move.b	9(a1),d0				; load art from 9 at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from 9, A, B, C
+		move.l	d0,(a6)					; write art starting from 9 (9, A, B, C)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_9ABC				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_1156C:
-		move.l	$A(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_1156C
+; ---------------------------------------------------------------------------
+.magma_ABCD:	; ----------****--
+		move.l	$A(a1),(a6)				; write art starting from A (A, B, C, D)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_ABCD				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_1157A:
-		move.l	$C(a1),d0
-		move.b	$B(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_1157A
+; ---------------------------------------------------------------------------
+.magma_BCDE:	; -----------****-
+		move.l	$C(a1),d0				; load art starting from C
+		move.b	$B(a1),d0				; load art from B at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from B, C, D, E
+		move.l	d0,(a6)					; write art starting from B (B, C, D, E)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_BCDE				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_11590:
-		move.l	$C(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_11590
+; ---------------------------------------------------------------------------
+.magma_CDEF:	; ------------****
+		move.l	$C(a1),(a6)				; write art starting from C (C, D, E, F)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_CDEF				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_1159E:
-		move.l	$C(a1),d0
-		rol.l	#8,d0
-		_move.b	0(a1),d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_1159E
+; ---------------------------------------------------------------------------
+.magma_DEF0:	; *------------***
+		move.l	$C(a1),d0				; load art starting from C
+		rol.l	#8,d0					; move it up (start from D)
+		_move.b	0(a1),d0				; load art from 0 on the end
+		move.l	d0,(a6)					; write art starting from D (D, E, F, 0)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_DEF0				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_115B4:
-		move.w	$E(a1),(a6)
-		_move.w	0(a1),(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_115B4
+; ---------------------------------------------------------------------------
+.magma_EF01:	; **------------**
+		move.w	$E(a1),(a6)				; write art starting from E (E, F)
+		_move.w	0(a1),(a6)				; write art ending at 1 (0, 1) (E, F, 0, 1)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_EF01				; repeat until the column is written
 		rts
-; ===========================================================================
-
-loc_115C6:
-		_move.l	0(a1),d0
-		move.b	$F(a1),d0
-		ror.l	#8,d0
-		move.l	d0,(a6)
-		lea	$10(a1),a1
-		dbf	d1,loc_115C6
+; ---------------------------------------------------------------------------
+.magma_F012:	; ***------------*
+		_move.l	0(a1),d0				; load art starting from 0
+		move.b	$F(a1),d0				; load art from F at the end
+		ror.l	#8,d0					; rotate so that a long-word is loaded from F, 0, 1, 2
+		move.l	d0,(a6)					; write art starting from F (F, 0, 1, 2)
+		lea	$10(a1),a1				; advance to next line
+		dbf	d1,.magma_F012				; repeat until the column is written
 		rts
+; End of function AniArt_MZMagma
