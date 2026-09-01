@@ -1,529 +1,735 @@
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Object 09 - Sonic (special stage)
+; Object 09 - Sonic the Hedgehog (in Special Stages)
+; ---------------------------------------------------------------------------
+sonss_maxspeed:		equ	$800		; Sonic's max speed when moving left/right
+sonss_acceleration:	equ	$C		; Sonic's acceleration
+sonss_deceleration:	equ	$40		; Sonic's deceleration
+sonss_jumpspeed:	equ	$700		; Sonic's jump force
+sonss_gravity:		equ	gravity-$E	; Sonic's gravity (=$2A, $E lower than main level gravity)
 ; ---------------------------------------------------------------------------
 
+; Obj09:
 SonicSpecial:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
-		move.w	Obj09_Index(pc,d0.w),d1
-		jmp	Obj09_Index(pc,d1.w)
+		move.b	obRoutine(a0),d0			; get current routine number
+		move.w	SonicSS_Index(pc,d0.w),d1		; find appropriate entry in jump table
+		jmp	SonicSS_Index(pc,d1.w)			; jump there
 ; ===========================================================================
-Obj09_Index:
-		dc.w	Obj09_Main-Obj09_Index
-		dc.w	Obj09_Load-Obj09_Index
-		dc.w	Obj09_ExitStage-Obj09_Index
-		dc.w	Obj09_Exit2-Obj09_Index
+; Obj09_Index:
+SonicSS_Index:
+		dc.w	SonicSS_Main-SonicSS_Index		; 0 - object init
+		dc.w	SonicSS_Control-SonicSS_Index		; 2 - main mode
+		dc.w	SonicSS_ExitStage-SonicSS_Index		; 4 - rotate stage while exiting
+		dc.w	SonicSS_ResetStage-SonicSS_Index	; 6 - restart stage
+
+sonss_touchedblock_id:	equ	objoff_30	; ID of currently touched block (byte)
+sonss_touchedblock_ram: equ	objoff_32	; RAM address of currently touched block (longword)
+sonss_timeout_updown:	equ	objoff_36	; timeout before an UP/DOWN block can be triggered again (byte)
+sonss_timeout_r:	equ	objoff_37	; timeout before an R block can be triggered again (byte)
+sonss_exittimer:	equ	objoff_38	; (unused) timer for the secondary exiting routine (word)
 ; ===========================================================================
 
-Obj09_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#sonic_roll_height,obHeight(a0)
-		move.b	#sonic_roll_width,obWidth(a0)
-		move.l	#Map_Sonic,obMap(a0)
-		move.w	#ArtTile_Sonic,obGfx(a0)
-		move.b	#sprite_cam_field,obRender(a0)
-		move.b	#0,obPriority(a0)
-		move.b	#id_Roll,obAnim(a0)
-		bset	#2,obStatus(a0)
-		bset	#1,obStatus(a0)
+; Obj09_Main:
+SonicSS_Main:	; Routine 0
+		addq.b	#2,obRoutine(a0)			; set to SonicSS_Control
+		move.b	#sonic_roll_height,obHeight(a0)		; set rolling height
+		move.b	#sonic_roll_width,obWidth(a0)		; set rolling width
+		move.l	#Map_Sonic,obMap(a0)			; set mappings
+		move.w	#ArtTile_Sonic,obGfx(a0)		; set VRAM location
+		move.b	#sprite_cam_field,obRender(a0)		; set to playfield-positioned mode
+		move.b	#0,obPriority(a0)			; set sprite priority to top
 
-Obj09_Load:	; Routine 2
-		move.b	#0,objoff_30(a0)
+		move.b	#id_Roll,obAnim(a0)			; set to rolling animation
+		bset	#2,obStatus(a0)				; set rolling flag
+		bset	#1,obStatus(a0)				; set in-air flag
+; ---------------------------------------------------------------------------
+
+; Obj09_ChkDebug: SonicSS_ChkDebug:
+SonicSS_Control: ; Routine 2
+		move.b	#0,sonss_touchedblock_id(a0)		; reset currently touched block to none (blank)
+
 		moveq	#0,d0
-		move.b	obStatus(a0),d0
-		andi.w	#2,d0
-		move.w	Obj09_Modes(pc,d0.w),d1
-		jsr	Obj09_Modes(pc,d1.w)
-		jsr	(Sonic_LoadGfx).l
-		jmp	(DisplaySprite).l
+		move.b	obStatus(a0),d0				; get Sonic's status flags
+		andi.w	#%0010,d0				; limit to "is in air" flag
+		move.w	SonicSS_Modes(pc,d0.w),d1		; use that as routine counter for the correct mode
+		jsr	SonicSS_Modes(pc,d1.w)			; jump to that mode
+
+		jsr	(Sonic_LoadGfx).l			; update Sonic's graphics if necessary (accessing Obj01)
+		jmp	(DisplaySprite).l			; display Sonic's sprites
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Modes for controlling Sonic in Special Stages
+; ---------------------------------------------------------------------------
+; Obj09_Modes:
+SonicSS_Modes:
+		dc.w	SonicSS_OnWall-SonicSS_Modes		; 0 - while touching a block
+		dc.w	SonicSS_InAir-SonicSS_Modes		; 2 - while airborne
 ; ===========================================================================
 
-Obj09_Modes:
-		dc.w	Obj09_OnWall-Obj09_Modes
-		dc.w	Obj09_InAir-Obj09_Modes
+; Obj09_OnWall:
+SonicSS_OnWall:	; While Sonic is touching a solid block
+		bsr.w	SonicSS_Jump				; allow Sonic to jump from walls
+		bsr.w	SonicSS_Move				; update position based on button inputs
+		bsr.w	SonicSS_Fall				; apply gravity based on stage rotation
+		bra.s	SonicSS_Display				; skip over
 ; ===========================================================================
 
-Obj09_OnWall:
-		bsr.w	Obj09_Jump
-		bsr.w	Obj09_Move
-		bsr.w	Obj09_Fall
-		bra.s	Obj09_Display
-; ===========================================================================
+; Obj09_InAir:
+SonicSS_InAir:	; While Sonic is airborne from jumping or falling
+		bsr.w	SonicSS_Move				; update position based on button inputs
+		bsr.w	SonicSS_Fall				; apply gravity based on stage rotation
+; ---------------------------------------------------------------------------
 
-Obj09_InAir:
-		bsr.w	Obj09_Move
-		bsr.w	Obj09_Fall
+; Obj09_Display:
+SonicSS_Display:
+		bsr.w	SonicSS_ChkItems_NonSolidActionBlock	; check if items without collision were touched (rings etc.)
+		bsr.w	SonicSS_ChkItems_SolidActionBlock	; check if items with collision were touched (UP/DOWN blocks etc.)
 
-Obj09_Display:
-		bsr.w	Obj09_ChkItems
-		bsr.w	Obj09_ChkItems2
-		jsr	(SpeedToPos).l
-		bsr.w	SS_FixCamera
+		jsr	(SpeedToPos).l				; apply velocity and update position
+		bsr.w	SS_FixCamera				; keep camera fixated on Sonic
+
 		btst	#bitA,(v_jpadhold1).w			; is A held?
-		beq.s	loc_10D66				; if not, branch
+		beq.s	.notA					; if not, branch
 		subq.w	#2,(v_ssrotate).w			; reverse rotation of the special stage
 
-loc_10D66:
+.notA:
 		btst	#bitB,(v_jpadhold1).w			; is B held?
-		beq.s	loc_10D72				; if not, branch
+		beq.s	.notB					; if not, branch
 		addq.w	#2,(v_ssrotate).w			; increase rotation of the special stage
 
-loc_10D72:
+.notB:
 		btst	#bitStart,(v_jpadpress1).w		; is Start pressed?
-		beq.s	loc_10D80				; if not, branch
+		beq.s	.notStart				; if not, branch
 		move.w	#0,(v_ssrotate).w			; stop rotation of the special stage
 
-loc_10D80:
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
-		jsr	(Sonic_Animate).l
+.notStart:
+		move.w	(v_ssangle).w,d0			; get current stage rotation angle
+		add.w	(v_ssrotate).w,d0			; apply current rotation speed
+		move.w	d0,(v_ssangle).w			; save new angle
+
+		jsr	(Sonic_Animate).l			; animate Sonic (accessing Obj01)
+		rts
+; End of function SonicSS_Control
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to move Sonic in Special Stages based on D-Pad inputs
+; ---------------------------------------------------------------------------
+
+; Obj09_Move:
+SonicSS_Move:
+		btst	#bitL,(v_jpadhold2).w			; is left being held?
+		beq.s	SonicSS_ChkRight			; if not, branch
+		bsr.w	SonicSS_MoveLeft			; apply left side movement updates
+
+; Obj09_ChkRight:
+SonicSS_ChkRight:
+		btst	#bitR,(v_jpadhold2).w			; is right being held?
+		beq.s	SonicSS_CheckDpadLetGo			; if not, branch
+		bsr.w	SonicSS_MoveRight			; apply right side movement updates
+; ---------------------------------------------------------------------------
+
+; This part is mostly identical to Sonic_CheckDpadLetGo in Obj01,
+; except that the deceleration value is hardcoded.
+
+; loc_10DAC:
+SonicSS_CheckDpadLetGo:
+		move.b	(v_jpadhold2).w,d0			; get held buttons
+		andi.b	#btnL+btnR,d0				; is left or right being held?
+		bne.s	SonicSS_AngleSpeed			; if yes, branch (don't decrease speed)
+		move.w	obInertia(a0),d0			; get Sonic's current ground speed
+		beq.s	SonicSS_AngleSpeed			; is he standing still? if yes, branch
+		bmi.s	.movingleftward				; is he moving to the left? if yes, branch
+		subi.w	#sonss_acceleration,d0			; reduce current rightward speed by acceleration
+		bcc.s	.stillright				; if result is still to the right, branch
+		move.w	#0,d0					; reset speed to zero on sign change
+
+; loc_10DC8:
+.stillright:
+		move.w	d0,obInertia(a0)			; set Sonic's new ground speed
+		bra.s	SonicSS_AngleSpeed			; skip over
+; ===========================================================================
+
+; loc_10DCE:
+.movingleftward:
+		addi.w	#sonss_acceleration,d0			; reduce current leftward speed by acceleration
+		bcc.s	.stillleft				; if result is still to the left, branch
+		move.w	#0,d0					; reset speed to zero on sign change
+
+; loc_10DD8:
+.stillleft:
+		move.w	d0,obInertia(a0)			; set Sonic's new ground speed
+; ---------------------------------------------------------------------------
+
+; loc_10DDC:
+SonicSS_AngleSpeed:
+		move.b	(v_ssangle).w,d0			; get current angle of the special stage rotation
+		addi.b	#$20,d0					; rotate angle by 45 degrees clockwise
+		andi.b	#$C0,d0					; snap angle to nearest multiple of 90 degrees
+		neg.b	d0					; negate for sine calculation
+		jsr	(CalcSine).l				; get sine and cosine values based on angle
+		muls.w	obInertia(a0),d1			; multiply cosine value by current ground speed
+		add.l	d1,obX(a0)				; add delta to X-velocity
+		muls.w	obInertia(a0),d0			; multiply sine value by current ground speed
+		add.l	d0,obY(a0)				; add delta to Y-velocity
+
+		movem.l	d0-d1,-(sp)				; backup X and Y speed deltas
+		move.l	obY(a0),d2				; get Sonic's current Y position
+		move.l	obX(a0),d3				; get Sonic's current X position
+		bsr.w	SonicSS_FindWall			; has Sonic touched a (solid) block?
+		beq.s	.nowall					; if not, branch
+		movem.l	(sp)+,d0-d1				; restore X and Y speed deltas
+		sub.l	d1,obX(a0)				; undo delta addition to X-velocity
+		sub.l	d0,obY(a0)				; undo delta addition to Y-velocity
+		move.w	#0,obInertia(a0)			; reset ground speed
 		rts
 ; ===========================================================================
 
-Obj09_Move:
-		btst	#bitL,(v_jpadhold2).w
-		beq.s	loc_10DA0
-		bsr.w	sub_10E2C
+; loc_10E26:
+.nowall:
+		movem.l	(sp)+,d0-d1				; restore stack
+		rts
+; End of function SonicSS_Move
 
-loc_10DA0:
-		btst	#bitR,(v_jpadhold2).w
-		beq.s	loc_10DAC
-		bsr.w	sub_10E5C
 
-loc_10DAC:
-		move.b	(v_jpadhold2).w,d0
-		andi.b	#btnL+btnR,d0
-		bne.s	loc_10DDC
-		move.w	obInertia(a0),d0
-		beq.s	loc_10DDC
-		bmi.s	loc_10DCE
-		subi.w	#$C,d0
-		bcc.s	loc_10DC8
-		move.w	#0,d0
+; ---------------------------------------------------------------------------
+; Subroutine handling Sonic's movement while moving to the left
+; ---------------------------------------------------------------------------
 
-loc_10DC8:
-		move.w	d0,obInertia(a0)
-		bra.s	loc_10DDC
-; ===========================================================================
+; Obj09_MoveLeft:
+SonicSS_MoveLeft:
+		bset	#0,obStatus(a0)				; set X-flip flag (Sonic is facing left)
 
-loc_10DCE:
-		addi.w	#$C,d0
-		bcc.s	loc_10DD8
-		move.w	#0,d0
+		move.w	obInertia(a0),d0			; get Sonic's current ground speed
+		beq.s	.accelerate				; is Sonic standing still? if yes, branch
+		bpl.s	.changeddirection			; has Sonic changed direction? if yes, branch
 
-loc_10DD8:
-		move.w	d0,obInertia(a0)
+; loc_10E3A:
+.accelerate:
+		subi.w	#sonss_acceleration,d0			; increase leftward speed
+		cmpi.w	#-sonss_maxspeed,d0			; is new speed above max speed?
+		bgt.s	.nocap					; if not, branch
+		move.w	#-sonss_maxspeed,d0			; cap Sonic's ground speed
 
-loc_10DDC:
-		move.b	(v_ssangle).w,d0
-		addi.b	#$20,d0
-		andi.b	#$C0,d0
-		neg.b	d0
-		jsr	(CalcSine).l
-		muls.w	obInertia(a0),d1
-		add.l	d1,obX(a0)
-		muls.w	obInertia(a0),d0
-		add.l	d0,obY(a0)
-		movem.l	d0-d1,-(sp)
-		move.l	obY(a0),d2
-		move.l	obX(a0),d3
-		bsr.w	sub_1100E
-		beq.s	loc_10E26
-		movem.l	(sp)+,d0-d1
-		sub.l	d1,obX(a0)
-		sub.l	d0,obY(a0)
-		move.w	#0,obInertia(a0)
+; loc_10E48:
+.nocap:
+		move.w	d0,obInertia(a0)			; set new ground speed
 		rts
 ; ===========================================================================
 
-loc_10E26:
-		movem.l	(sp)+,d0-d1
+; loc_1BB1A:
+.changeddirection:
+		subi.w	#sonss_deceleration,d0			; apply deceleration to current speed
+
+		; Unknown, removed extra functionality. In Obj01, this part gives
+		; a tiny speed boost on a sign change, but here it does nothing.
+		bcc.s	.stilldecel    				; if still decelerating, branch
+		nop						; no operation
+
+; loc_10E56:
+.stilldecel:
+		move.w	d0,obInertia(a0)			; set new ground speed
 		rts
+; End of function SonicSS_MoveLeft
+
+
+; ---------------------------------------------------------------------------
+; Subroutine handling Sonic's movement while moving to the right
+; ---------------------------------------------------------------------------
+
+; Obj09_MoveRight:
+SonicSS_MoveRight:
+		bclr	#0,obStatus(a0)				; clear X-flip flag (Sonic is facing right)
+
+		move.w	obInertia(a0),d0			; get Sonic's current ground speed
+		bmi.s	.changedirection			; has Sonic changed direction? if yes, branch
+		addi.w	#sonss_acceleration,d0			; increase rightward speed
+		cmpi.w	#sonss_maxspeed,d0			; is new speed above max speed?
+		blt.s	.nocap					; if not, branch
+		move.w	#sonss_maxspeed,d0			; cap Sonic's ground speed
+
+; loc_10E76:
+.nocap:
+		move.w	d0,obInertia(a0)			; set new ground speed
+		bra.s	.return					; skip over
 ; ===========================================================================
 
-sub_10E2C:
-		bset	#0,obStatus(a0)
-		move.w	obInertia(a0),d0
-		beq.s	loc_10E3A
-		bpl.s	loc_10E4E
+; loc_10E7C:
+.changedirection:
+		addi.w	#sonss_deceleration,d0			; apply deceleration to current speed
 
-loc_10E3A:
-		subi.w	#$C,d0
-		cmpi.w	#-$800,d0
-		bgt.s	loc_10E48
-		move.w	#-$800,d0
+		; Unknown, removed extra functionality. In Obj01, this part gives
+		; a tiny speed boost on a sign change, but here it does nothing.
+		bcc.s	.stilldecel				; if still decelerating, branch
+		nop						; no operation
 
-loc_10E48:
-		move.w	d0,obInertia(a0)
+; loc_10E84:
+.stilldecel:
+		move.w	d0,obInertia(a0)			; set new ground speed
+
+; locret_10E88:
+.return:
 		rts
+; End of function SonicSS_MoveRight
+
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine allowing Sonic to jump in Special Stages
+; ---------------------------------------------------------------------------
 
-loc_10E4E:
-		subi.w	#$40,d0
-		bcc.s	loc_10E56
-		nop
+; Obj09_Jump:
+SonicSS_Jump:
+		move.b	(v_jpadpress2).w,d0			; get pressed buttons
+		andi.b	#btnC,d0				; is C pressed?
+		beq.s	SonicSS_NoJump				; if not, branch
 
-loc_10E56:
-		move.w	d0,obInertia(a0)
+		move.b	(v_ssangle).w,d0			; get current angle of the special stage rotation
+		andi.b	#$FC,d0					; snap to nearest multiple of 4 to match stage rotation
+		neg.b	d0					; negate for sine calculation
+		subi.b	#$40,d0					; rotate it perpendicularly for jump trajectory
+		jsr	(CalcSine).l				; get sine and cosine values based on angle
+		muls.w	#sonss_jumpspeed,d1			; apply jump force to the cosine angle
+		asr.l	#8,d1					; shift result to lower word
+		move.w	d1,obVelX(a0)				; set result as new X speed
+		muls.w	#sonss_jumpspeed,d0			; apply jump force to the sine angle
+		asr.l	#8,d0					; shift result to lower word
+		move.w	d0,obVelY(a0)				; set result as new Y speed
+
+		bset	#1,obStatus(a0)				; set in-air flag
+
+		move.w	#sfx_Jump,d0				; set jump sound
+		jsr	(QueueSound2).l				; play jumping sound
+
+; Obj09_NoJump:
+SonicSS_NoJump:
 		rts
+; End of function SonicSS_Jump
+
+
 ; ===========================================================================
-
-sub_10E5C:
-		bclr	#0,obStatus(a0)
-		move.w	obInertia(a0),d0
-		bmi.s	loc_10E7C
-		addi.w	#$C,d0
-		cmpi.w	#$800,d0
-		blt.s	loc_10E76
-		move.w	#$800,d0
-
-loc_10E76:
-		move.w	d0,obInertia(a0)
-		bra.s	locret_10E88
-; ===========================================================================
-
-loc_10E7C:
-		addi.w	#$40,d0
-		bcc.s	loc_10E84
-		nop
-
-loc_10E84:
-		move.w	d0,obInertia(a0)
-
-locret_10E88:
-		rts
-; ===========================================================================
-
-Obj09_Jump:
-		move.b	(v_jpadpress2).w,d0
-		andi.b	#btnC,d0
-		beq.s	locret_10ECC
-		move.b	(v_ssangle).w,d0
-		andi.b	#$FC,d0
-		neg.b	d0
-		subi.b	#$40,d0
-		jsr	(CalcSine).l
-		muls.w	#$700,d1
-		asr.l	#8,d1
-		move.w	d1,obVelX(a0)
-		muls.w	#$700,d0
-		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
-		bset	#1,obStatus(a0)
-		move.w	#sfx_Jump,d0
-		jsr	(QueueSound2).l
-
-locret_10ECC:
-		rts
-; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to fix the camera on Sonic's position (special stage)
+; ---------------------------------------------------------------------------
 
 SS_FixCamera:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
-		move.w	(v_scrposx).w,d0
-		subi.w	#320/2,d3
-		bcs.s	loc_10EE6
-		sub.w	d3,d0
-		sub.w	d0,(v_scrposx).w
+		move.w	obY(a0),d2				; get Sonic's current Y position
 
-loc_10EE6:
-		move.w	(v_scrposy).w,d0
-		subi.w	#224/2,d2
-		bcs.s	locret_10EF6
-		sub.w	d2,d0
-		sub.w	d0,(v_scrposy).w
+		move.w	obX(a0),d3				; get Sonic's current X position
+		move.w	(v_screenposx).w,d0			; get current horizontal camera position
+		subi.w	#320/2,d3				; subtract half screen width from Sonic's X position
+		bcs.s	.updatevertical				; did result underflow? if yes, branch
+		sub.w	d3,d0					; subtract result from horizontal camera positon
+		sub.w	d0,(v_screenposx).w			; set result as new horizontal camera position
 
-locret_10EF6:
+; loc_10EE6:
+.updatevertical:
+		move.w	(v_screenposy).w,d0			; get current vertical camera position
+		subi.w	#224/2,d2				; subtract half screen height from Sonic's Y position
+		bcs.s	.return					; did result underflow? if yes, branch
+		sub.w	d2,d0					; subtract result from vertical camera positon
+		sub.w	d0,(v_screenposy).w			; set result as new vertical camera position
+
+; locret_10EF6:
+.return:
 		rts
+; End of function SS_FixCamera
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Sonic while exiting a Special Stage (make it spin increasingly faster)
+; ---------------------------------------------------------------------------
+
+; Obj09_ExitStage:
+SonicSS_ExitStage:	; Routine 4
+		addi.w	#ss_rotatespeed,(v_ssrotate).w		; increase rotation speed
+		cmpi.w	#$3000,(v_ssrotate).w			; is it lower than $3000?
+		blt.s	.noexit					; if so, skip the code below
+		move.w	#0,(v_ssrotate).w			; stop rotating
+		move.w	#$4000,(v_ssangle).w			; set angle to $4000
+		addq.b	#2,obRoutine(a0)			; go to next routine (SonicSS_ResetStage)
+		move.w	#60*5,sonss_exittimer(a0)		; set wait count to 5 seconds before reloading the special stage
+
+; loc_10F1C:
+.noexit:
+		move.w	(v_ssangle).w,d0			; get current stage rotation angle
+		add.w	(v_ssrotate).w,d0			; apply current rotation speed
+		move.w	d0,(v_ssangle).w			; save new angle
+
+		bsr.w	Sonic_Animate				; animate Sonic (accessing Obj01)
+		jsr	(Sonic_LoadGfx).l			; update Sonic's graphics if necessary (accessing Obj01)
+		bsr.w	SS_FixCamera				; keep camera centered on Sonic
+		jmp	(DisplaySprite).l			; display Sonic's sprites
 ; ===========================================================================
 
-ss_waitcount:	equ objoff_38
-
-Obj09_ExitStage:	; Routine 4
-		addi.w	#$40,(v_ssrotate).w	; increase rotation speed
-		cmpi.w	#$3000,(v_ssrotate).w	; is it lower than $3000?
-		blt.s	loc_10F1C	; if so, skip the code below
-		move.w	#0,(v_ssrotate).w	; stop rotating
-		move.w	#$4000,(v_ssangle).w	; set angle to $4000
-		addq.b	#2,obRoutine(a0)	; go to next routine (Obj09_Exit2)
-		move.w	#60*5,ss_waitcount(a0)	; set wait count to 5 seconds before reloading the special stage
-
-loc_10F1C:
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
-		bsr.w	Sonic_Animate
-		jsr	(Sonic_LoadGfx).l
-		bsr.w	SS_FixCamera
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-Obj09_Exit2:	; Routine 6
-		subq.w	#1,ss_waitcount(a0)	; subtract 1 from the wait count
-		bne.s	loc_10F66	; if zero hasn't been reached yet, skip the code below
-		clr.w	(v_ssangle).w	; clear special stage angle
-		move.w	#$40,(v_ssrotate).w	; set default rotation speed
-		move.w	#$458,(v_player+obX).w	; set sonic's x position
-		move.w	#$4A0,(v_player+obY).w	; set sonic's y position
-		clr.b	obRoutine(a0)	; reset sonic's routine back to the starting routine (Obj09_Main)
+; Obj09_Exit2: SonicSS_Exit2:
+SonicSS_ResetStage:	; Routine 6
+		subq.w	#1,sonss_exittimer(a0)			; subtract 1 from the wait count
+		bne.s	.timeremaining				; if zero hasn't been reached yet, skip the code below
+		clr.w	(v_ssangle).w				; clear special stage angle
+		move.w	#ss_rotatespeed,(v_ssrotate).w		; set default rotation speed
+		move.w	#$458,(v_player+obX).w			; set sonic's x position
+		move.w	#$4A0,(v_player+obY).w			; set sonic's y position
+		clr.b	obRoutine(a0)				; reset sonic's routine back to the starting routine (SonicSS_Main)
 		move.l	a0,-(sp)
 		jsr	(SS_Load).l
 		movea.l	(sp)+,a0
 
-loc_10F66:
-		jsr	(Sonic_Animate).l
-		jsr	(Sonic_LoadGfx).l
-		bsr.w	SS_FixCamera
-		jmp	(DisplaySprite).l
-; ===========================================================================
+; loc_10F66:
+.timeremaining:
+		jsr	(Sonic_Animate).l			; animate Sonic (accessing Obj01)
+		jsr	(Sonic_LoadGfx).l			; update Sonic's graphics if necessary (accessing Obj01)
+		bsr.w	SS_FixCamera				; keep camera centered on Sonic
+		jmp	(DisplaySprite).l			; display Sonic's sprites
+; End of function SonicSS_ResetStage
 
-Obj09_Fall:
-		move.l	obY(a0),d2
-		move.l	obX(a0),d3
-		move.b	(v_ssangle).w,d0
-		andi.b	#$FC,d0
-		jsr	(CalcSine).l
-		move.w	obVelX(a0),d4
-		ext.l	d4
-		asl.l	#8,d4
-		muls.w	#$2A,d0
-		add.l	d4,d0
-		move.w	obVelY(a0),d4
-		ext.l	d4
-		asl.l	#8,d4
-		muls.w	#$2A,d1
-		add.l	d4,d1
-		add.l	d0,d3
-		bsr.w	sub_1100E
-		beq.s	loc_10FD6
-		sub.l	d0,d3
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to apply gravity to Sonic based on the current layout rotation
+; ---------------------------------------------------------------------------
+
+; Obj09_Fall:
+SonicSS_Fall:
+		move.l	obY(a0),d2				; get Sonic's current Y position
+		move.l	obX(a0),d3				; get Sonic's current X position
+		move.b	(v_ssangle).w,d0			; get current angle of the special stage rotation
+		andi.b	#$FC,d0					; snap to nearest multiple of 4 to match stage rotation
+		jsr	(CalcSine).l				; get sine and cosine values based on angle
+
+		move.w	obVelX(a0),d4				; get Sonic's current X velocity
+		ext.l	d4					; extend X velocity to longword
+		asl.l	#8,d4					; shift it to upper word
+		muls.w	#sonss_gravity,d0			; multiply sine value by gravitational force
+		add.l	d4,d0					; add shifted X velocity to it
+		move.w	obVelY(a0),d4				; get Sonic's current Y velocity
+		ext.l	d4					; extend Y velocity to longword
+		asl.l	#8,d4					; shift it to upper word
+		muls.w	#sonss_gravity,d1			; multiply cosine value by gravitational force
+		add.l	d4,d1					; add shifted Y velocity to it
+
+		add.l	d0,d3					; add new X delta to target X position
+		bsr.w	SonicSS_FindWall			; check if the new result would make Sonic clip through a left/right wall
+		beq.s	.noleftrightwall			; if not, branch
+		sub.l	d0,d3					; undo X delta addition
 		moveq	#0,d0
-		move.w	d0,obVelX(a0)
-		bclr	#1,obStatus(a0)
-		add.l	d1,d2
-		bsr.w	sub_1100E
-		beq.s	loc_10FEC
-		sub.l	d1,d2
+		move.w	d0,obVelX(a0)				; stop Sonic's horizonal momentum
+		bclr	#1,obStatus(a0)				; clear in-air flag
+
+		add.l	d1,d2					; add new Y delta to target Y position
+		bsr.w	SonicSS_FindWall			; check if the new result would make Sonic clip through a floor wall
+		beq.s	.nofloor				; if not, branch
+		sub.l	d1,d2					; undo Y delta addition
 		moveq	#0,d1
-		move.w	d1,obVelY(a0)
+		move.w	d1,obVelY(a0)				; stop Sonic's vertical momentum
 		rts
 ; ===========================================================================
 
-loc_10FD6:
-		add.l	d1,d2
-		bsr.w	sub_1100E
-		beq.s	loc_10FFA
-		sub.l	d1,d2
+; loc_10FD6:
+.noleftrightwall:
+		add.l	d1,d2					; add new Y delta to target Y position
+		bsr.w	SonicSS_FindWall			; check if the new result would make Sonic clip through a floor wall
+		beq.s	.airborne				; if not, branch
+		sub.l	d1,d2					; undo Y delta addition
 		moveq	#0,d1
-		move.w	d1,obVelY(a0)
-		bclr	#1,obStatus(a0)
+		move.w	d1,obVelY(a0)				; stop Sonic's vertical momentum
+		bclr	#1,obStatus(a0)				; clear in-air flag
 
-loc_10FEC:
-		asr.l	#8,d0
-		asr.l	#8,d1
-		move.w	d0,obVelX(a0)
-		move.w	d1,obVelY(a0)
+; loc_10FEC:
+.nofloor:
+		asr.l	#8,d0					; shift new X speed back to word range
+		asr.l	#8,d1					; shift new Y speed back to word range
+		move.w	d0,obVelX(a0)				; set new X velocity
+		move.w	d1,obVelY(a0)				; set new Y velocity
 		rts
 ; ===========================================================================
 
-loc_10FFA:
-		asr.l	#8,d0
-		asr.l	#8,d1
-		move.w	d0,obVelX(a0)
-		move.w	d1,obVelY(a0)
-		bset	#1,obStatus(a0)
+; loc_10FFA:
+.airborne:
+		asr.l	#8,d0					; shift new X speed back to word range
+		asr.l	#8,d1					; shift new Y speed back to word range
+		move.w	d0,obVelX(a0)				; set new X velocity
+		move.w	d1,obVelY(a0)				; set new Y velocity
+		bset	#1,obStatus(a0)				; set in-air flag
 		rts
-; ===========================================================================
+; End of function SonicSS_Fall
 
-sub_1100E:
-		lea	(v_sslayout_base).l,a1
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to detect a Special Stage wall at a given position
+; 
+; input:
+;	d2 = y position (including subpixel)
+;	d3 = x position (including subpixel)
+; 
+; output:
+;	d4 = id of wall or item
+;	d5 = flag: 0 = no collision (e.g. rings); -1 = collision with solid wall
+; ---------------------------------------------------------------------------
+
+; sub_1100E:
+SonicSS_FindWall:
+		lea	(v_sslayout_base).l,a1			; get special stage layout in RAM
+
 		moveq	#0,d4
-		swap	d2
-		move.w	d2,d4
-		swap	d2
-		addi.w	#$44,d4
-		divu.w	#$18,d4
-		mulu.w	#$80,d4
-		adda.l	d4,a1
+		swap	d2					; move main pixel Y position into lower word
+		move.w	d2,d4					; copy that word to d4
+		swap	d2					; revert swapping
+		addi.w	#20+(ss_blocksize*2),d4			; manually adjust target Y position by 68 pixels down
+		divu.w	#ss_blocksize,d4			; divide by size of SS blocks (24 pixels)
+		mulu.w	#ss_layout_rowlength,d4			; multiply by bytes per layout row
+		adda.l	d4,a1					; add result to a1 to find current row Sonic is in
+
 		moveq	#0,d4
-		swap	d3
-		move.w	d3,d4
-		swap	d3
-		addi.w	#$14,d4
-		divu.w	#$18,d4
-		adda.w	d4,a1
-		moveq	#0,d5
-		move.b	(a1)+,d4
-		bsr.s	sub_11056
-		move.b	(a1)+,d4
-		bsr.s	sub_11056
-		adda.w	#$7E,a1
-		move.b	(a1)+,d4
-		bsr.s	sub_11056
-		move.b	(a1)+,d4
-		bsr.s	sub_11056
-		tst.b	d5
-		rts
+		swap	d3					; move main pixel X position into lower word
+		move.w	d3,d4					; copy that word to d4
+		swap	d3					; revert swapping
+		addi.w	#20,d4					; manually adjust target X position by 20 pixels to the right
+		divu.w	#ss_blocksize,d4			; divide by size of SS blocks (24 pixels)
+		adda.w	d4,a1					; add result to a1 to find current column Sonic is in
+
+		; a1 is now pointing to the exact byte (row/column) within the layout Sonic is in.
+		; From there, check if this position intersects with any of the four nearest blocks
+		; around Sonic, checking them one by one. If any of them are solid, d5 gets set.
+
+		moveq	#0,d5					; set to no collision detected
+
+		move.b	(a1)+,d4				; get top-left block
+		bsr.s	SonicSS_FindWall_CheckType		; check for collision
+		move.b	(a1)+,d4				; get top-right block
+		bsr.s	SonicSS_FindWall_CheckType		; check for collision
+		adda.w	#ss_layout_rowlength-2,a1		; advance to next row (2 bytes were already advanced)
+		move.b	(a1)+,d4				; get bottom-left block
+		bsr.s	SonicSS_FindWall_CheckType		; check for collision
+		move.b	(a1)+,d4				; get bottom-right block
+		bsr.s	SonicSS_FindWall_CheckType		; check for collision
+
+		tst.b	d5					; unset Z-flag if any of the four blocks were solid
+		rts						; return with result in CCR
 ; ===========================================================================
 
-sub_11056:
-		beq.s	locret_1105E
-		cmpi.b	#$11,d4
-		bne.s	loc_11060
+; sub_11056:
+SonicSS_FindWall_CheckType:
+		beq.s	.return					; if it's a blank block ($00), branch
+		cmpi.b	#id_SS_Ring,d4				; is block ID = $11? (Ring)
+		bne.s	.solidblock				; if not, branch
 
-locret_1105E:
-		rts
+; locret_1105E:
+.return:
+		rts						; return with d5 unchanged
 ; ===========================================================================
 
-loc_11060:
-		cmpi.b	#$12,d4
-		bcs.s	loc_11078
-		cmpi.b	#$17,d4
-		bcc.s	locret_1105E
-		move.b	d4,objoff_30(a0)
-		move.l	a1,objoff_32(a0)
-		moveq	#-1,d5
-		rts
-; ===========================================================================
+; loc_11060:
+.solidblock:
+		cmpi.b	#id_SS_Bumper,d4			; is block ID < $12? (solid blocks, bumper is first non-solid)
+		blo.s	.solidblock2				; if yes, branch
+		; IDs $12-$16 are non-solid blocks (e.g. rings)
+		cmpi.b	#id_SS_Ring_Ani1,d4			; is block ID >= $17 (special blocks)
+		bhs.s	.return					; if yes, branch
 
-loc_11078:
-		moveq	#-1,d5
-		rts
-; ===========================================================================
+		move.b	d4,sonss_touchedblock_id(a0)		; remember ID of touched block
+		move.l	a1,sonss_touchedblock_ram(a0)		; remember RAM address of touched block
+		moveq	#-1,d5					; set flag that a solid block was found
+		rts						; return with d5 changed
 
-Obj09_ChkItems:
-		lea	(v_sslayout_base).l,a1
+.solidblock2:
+		moveq	#-1,d5					; set flag that a solid block was found
+		rts						; return with d5 changed
+; End of function SonicSS_FindWall
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to check for collision blocks that have no solidity (rings etc.)
+; 
+; output:
+;	d4 = (unused) 0 if block is a regular item or blank; -1 otherwise
+; ---------------------------------------------------------------------------
+
+; Obj09_ChkItems: SonicSS_ChkItems:
+SonicSS_ChkItems_NonSolidActionBlock:
+		lea	(v_sslayout_base).l,a1			; get special stage layout in RAM
+
 		moveq	#0,d4
-		move.w	obY(a0),d4
-		addi.w	#$50,d4
-		divu.w	#$18,d4
-		mulu.w	#$80,d4
-		adda.l	d4,a1
+		move.w	obY(a0),d4				; get Sonic's Y position
+		addi.w	#80,d4					; manually adjust a bit
+		divu.w	#ss_blocksize,d4			; divide by size of SS blocks (24 pixels)
+		mulu.w	#ss_layout_rowlength,d4			; multiply by bytes per layout row
+		adda.l	d4,a1					; add result to a1 to find current row Sonic is in
+
 		moveq	#0,d4
-		move.w	obX(a0),d4
-		addi.w	#$20,d4
-		divu.w	#$18,d4
-		adda.w	d4,a1
-		move.b	(a1),d4
-		bne.s	Obj09_ChkRing
-		moveq	#0,d4
+		move.w	obX(a0),d4				; get Sonic's X position
+		addi.w	#32,d4					; manually adjust a bit
+		divu.w	#ss_blocksize,d4			; divide by size of SS blocks (24 pixels)
+		adda.w	d4,a1					; add result to a1 to find current column Sonic is in
+
+		move.b	(a1),d4					; is Sonic touching a non-blank block?
+		bne.s	SonicSS_ChkRing				; if yes, check which one it was
+
+		moveq	#0,d4					; blank
 		rts
 ; ===========================================================================
 
-Obj09_ChkRing:
-		cmpi.b	#$11,d4
-		bne.s	loc_110D0
-		bsr.w	SS_FindFreeAnimationSlot
-		bne.s	Obj09_GetRing
-		move.b	#1,(a2)
-		move.l	a1,4(a2)
+SonicSS_ChkRing:
+		cmpi.b	#id_SS_Ring,d4				; is the item a ring?
+		bne.s	SonicSS_ChkItemBlock			; if not, branch
 
-Obj09_GetRing:
-		move.w	#sfx_Ring,d0
-		jsr	(QueueSound2).l
-		moveq	#0,d4
+		bsr.w	SS_FindFreeAnimationSlot		; find a free animation slot
+		bne.s	SonicSS_GetRing				; if none are free, branch
+		move.b	#1,ss_ani_id(a2)			; set to SS_AniRingSparks
+		move.l	a1,ss_ani_block(a2)			; store address of this block for animation
+
+SonicSS_GetRing:
+		move.w	#sfx_Ring,d0				; set ring sound
+		jsr	(QueueSound2).l				; play it
+
+		moveq	#0,d4					; regular item
 		rts
 ; ===========================================================================
 
-loc_110D0:
-		cmpi.b	#$12,d4
-		bne.s	loc_110DA
-		moveq	#0,d4
+SonicSS_ChkItemBlock:
+		cmpi.b	#id_SS_Bumper,d4			; is the item a bumper?
+		bne.s	SonicSS_NoItemBlock			; if not, branch
+
+		moveq	#0,d4					; regular item
 		rts
 ; ===========================================================================
 
-loc_110DA:
-		moveq	#-1,d4
+SonicSS_NoItemBlock:
+		moveq	#-1,d4					; is a non-item block
+		rts
+; End of function SonicSS_ChkItems_NotSolid
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to check for collision blocks that have solidity
+; ---------------------------------------------------------------------------
+
+; Obj09_ChkItems2: SonicSS_ChkItems2:
+SonicSS_ChkItems_SolidActionBlock:
+		move.b	sonss_touchedblock_id(a0),d0		; was any solid block found during calls to SonicSS_FindWall?
+		bne.s	SonicSS_ChkBumper			; if yes, check which one it was
+
+		subq.b	#1,sonss_timeout_updown(a0)		; decrement the UP/DOWN blocks disable timeout
+		bpl.s	.decrement_r				; if timeout remains, branch
+		move.b	#0,sonss_timeout_updown(a0)		; re-enable UP/DOWN blocks
+
+; loc_110F0:
+.decrement_r:
+		subq.b	#1,sonss_timeout_r(a0)			; decrement the R block disable timeout
+		bpl.s	.return					; if timeout remains, branch
+		move.b	#0,sonss_timeout_r(a0)			; re-enable R blocks
+
+; locret_110FC:
+.return:
 		rts
 ; ===========================================================================
 
-Obj09_ChkItems2:
-		move.b	objoff_30(a0),d0
-		bne.s	Obj09_ChkBumper
-		subq.b	#1,objoff_36(a0)
-		bpl.s	loc_110F0
-		move.b	#0,objoff_36(a0)
+; Obj09_ChkBumper:
+SonicSS_ChkBumper:
+		cmpi.b	#id_SS_Bumper,d0			; is the item a bumper?
+		bne.s	SonicSS_ChkGOAL				; if not, branch
 
-loc_110F0:
-		subq.b	#1,objoff_37(a0)
-		bpl.s	locret_110FC
-		move.b	#0,objoff_37(a0)
+		move.l	sonss_touchedblock_ram(a0),d1		; get RAM location of touched bumper
+		subi.l	#v_sslayout_base+1,d1			; subtract by base RAM offset to get logical address
+		move.w	d1,d2					; copy for second check
 
-locret_110FC:
+		andi.w	#ss_layout_rowlength-1,d1		; limit to a single row ($7F)
+		mulu.w	#ss_blocksize,d1			; multiply by size per block
+		subi.w	#20,d1					; manually adjust a bit; d1 now is bumper X coordinate
+
+		lsr.w	#7,d2					; divide by row length ($80)
+		andi.w	#ss_layout_rowlength-1,d2		; limit to a single column ($7F)
+		mulu.w	#ss_blocksize,d2			; multiply by size per block
+		subi.w	#20+(ss_blocksize*2),d2			; manually adjust a bit; d1 now is bumper Y coordinate
+
+		sub.w	obX(a0),d1				; subtract Sonic's X-pos from bumper X coordinate
+		sub.w	obY(a0),d2				; subtract Sonic's Y-pos from bumper Y coordinate
+		jsr	(CalcAngle).l				; calculate the angle of Sonic to target - atan2 of (dx,dy)
+		jsr	(CalcSine).l				; calculate the sine (d0=Y-part) and cosine (d1=X-part) of the input angle in d0
+		muls.w	#-$500,d1				; multiply X-speed by bumper force
+		asr.l	#8,d1					; move result to lower word
+		move.w	d1,obVelX(a0)				; set final result to Sonic's X-speed
+		muls.w	#-$500,d0				; multiply Y-speed by bumper force
+		asr.l	#8,d0					; move result to lower word
+		move.w	d0,obVelY(a0)				; set final result to Sonic's Y-speed
+
+		bset	#1,obStatus(a0)				; set in-air flag
+
+		bsr.w	SS_FindFreeAnimationSlot		; find a free animation slot
+		bne.s	SonicSS_BumpSnd				; if none are free, branch
+		_move.b	#2,ss_ani_id(a2)			; set to SS_AniBumper
+		move.l	sonss_touchedblock_ram(a0),d0		; get location in RAM of touched block
+		subq.l	#1,d0					; actual touched block is the byte before it
+		move.l	d0,ss_ani_block(a2)			; store address of this block for animation
+
+; Obj09_BumpSnd:
+SonicSS_BumpSnd:
+		move.w	#sfx_Bumper,d0				; set bumper sound
+		jmp	(QueueSound2).l				; play it
+; ===========================================================================
+
+SonicSS_ChkGOAL:
+		cmpi.b	#id_SS_GOAL_R,d0			; is the item a red "GOAL"?
+		bne.s	SonicSS_ChkUP				; if not, branch
+
+		addq.b	#2,obRoutine(a0)			; run routine "SonicSS_ExitStage"
+
 		rts
 ; ===========================================================================
 
-Obj09_ChkBumper:
-		cmpi.b	#$12,d0
-		bne.s	Obj09_GOAL
-		move.l	objoff_32(a0),d1
-		subi.l	#$FF0001,d1
-		move.w	d1,d2
-		andi.w	#$7F,d1
-		mulu.w	#$18,d1
-		subi.w	#$14,d1
-		lsr.w	#7,d2
-		andi.w	#$7F,d2
-		mulu.w	#$18,d2
-		subi.w	#$44,d2
-		sub.w	obX(a0),d1
-		sub.w	obY(a0),d2
-		jsr	(CalcAngle).l
-		jsr	(CalcSine).l
-		muls.w	#-$500,d1
-		asr.l	#8,d1
-		move.w	d1,obVelX(a0)
-		muls.w	#-$500,d0
-		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
-		bset	#1,obStatus(a0)
-		bsr.w	SS_FindFreeAnimationSlot
-		bne.s	Obj09_BumpSnd
-		move.b	#2,(a2)
-		move.l	objoff_32(a0),d0
-		subq.l	#1,d0
-		move.l	d0,4(a2)
+SonicSS_ChkUP:
+		cmpi.b	#id_SS_UP,d0				; is the item an "UP" block?
+		bne.s	SonicSS_ChkDOWN				; if not, branch
 
-Obj09_BumpSnd:
-		move.w	#sfx_Bumper,d0
-		jmp	(QueueSound2).l
-; ===========================================================================
+		tst.b	sonss_timeout_updown(a0)		; has an UP or DOWN block been touched recently?
+		bne.s	SonicSS_NoSolidActionBlock		; if yes, disable action until timeout has expired
+		move.b	#ss_timeout,sonss_timeout_updown(a0)	; set timeout to next action to half a second
 
-Obj09_GOAL:
-		cmpi.b	#$14,d0
-		bne.s	Obj09_UPblock
-		addq.b	#2,obRoutine(a0)
+	if FixBugs
+		move.w	(v_ssrotate).w,d0			; get current rotation speed
+		bpl.s	.pos					; if it's going clockwise, branch
+		neg.w	d0					; if it's going counter-clockwise, negate
+	.pos:	cmpi.w	#ss_rotatespeed*2,d0			; is stage already rotating at fast speed?
+		bhs.s	.decreaseSpeed				; if yes, branch (prevent speeding up again)
+	else
+		; This check only works correctly if the base rotation speed is EXACTLY $40 (bit 6 = $40).
+		; It is by default, but altering the default speed in GM_Special will break UP/DOWN blocks.
+		btst	#6,(v_ssrotate+1).w			; is stage already at fast speed? (either rotation)
+		beq.s	.decreaseSpeed				; if yes, branch (prevent speeding up twice)
+	endif
+
+		asl.w	(v_ssrotate).w				; multiply current stage rotation speed by 2
+
+		rts
+
+	.decreaseSpeed:
+		asr.w	(v_ssrotate).w				; divide current stage rotation speed by 2
+
 		rts
 ; ===========================================================================
 
-Obj09_UPblock:
-		cmpi.b	#$15,d0
-		bne.s	Obj09_DOWNblock
-		tst.b	objoff_36(a0)
-		bne.s	Obj09_Return
-		move.b	#30,objoff_36(a0)
-		btst	#6,(v_ssrotate+1).w
-		beq.s	loc_111A2
-		asl.w	(v_ssrotate).w
+; This has the same function as SonicSS_ChkR, despite it using the DOWN block art.
+SonicSS_ChkDOWN:
+		cmpi.b	#id_SS_DOWN,d0				; is the item a "DOWN" block?
+		bne.s	SonicSS_NoSolidActionBlock		; if not, branch
+
+		tst.b	sonss_timeout_r(a0)			; has a DOWN block been touched recently?
+		bne.s	SonicSS_NoSolidActionBlock		; if yes, disable action until timeout has expired
+		move.b	#ss_timeout,sonss_timeout_r(a0)		; set timeout to next action to half a second
+
+		neg.w	(v_ssrotate).w				; reverse stage rotation, preserving speed
+
 		rts
 ; ===========================================================================
 
-loc_111A2:
-		asr.w	(v_ssrotate).w
-		rts
-; ===========================================================================
-
-; This has the same function as Obj09_Rblock, despite it using the DOWN block art.
-Obj09_DOWNblock:
-		cmpi.b	#$16,d0
-		bne.s	Obj09_Return
-		tst.b	objoff_37(a0)
-		bne.s	Obj09_Return
-		move.b	#30,objoff_37(a0)
-		neg.w	(v_ssrotate).w
-		rts
-; ===========================================================================
-
-Obj09_Return:
-		rts
+SonicSS_NoSolidActionBlock:
+		rts						; block is no regular solid action block
+; End of function SonicSS_ChkItems_Solid
