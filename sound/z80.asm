@@ -22,17 +22,17 @@ endpad := $
 	endm
 
 ; Data offset equates
-zLowAdr:	equ	0	; data low address
-zHighAdr:	equ	1	; data high address
-zSizeLow:	equ	2	; data size (low byte)
-zSizeHigh:	equ	3	; data size (high byte)
-zLoopFlag:	equ	4	; loop flag
-zPriority:	equ	5	; priority flag
-zLoopLow:	equ	6	; loop low byte
-zLoopHigh:	equ	7	; loop high byte
-zLoopSizeLow:	equ	8	; loop size low byte
-zLoopSizeHigh:	equ	9	; loop size high byte
-zSampleRate:	equ	11	; sample rate
+zLowAdr:	equ	0			; data low address
+zHighAdr:	equ	1			; data high address
+zSizeLow:	equ	2			; data size (low byte)
+zSizeHigh:	equ	3			; data size (high byte)
+zLoopFlag:	equ	4			; loop flag
+zPriority:	equ	5			; priority flag
+zLoopLow:	equ	6			; loop low byte
+zLoopHigh:	equ	7			; loop high byte
+zLoopSizeLow:	equ	8			; loop size low byte
+zLoopSizeHigh:	equ	9			; loop size high byte
+zSampleRate:	equ	11			; sample rate
 
 ; ===========================================================================
 

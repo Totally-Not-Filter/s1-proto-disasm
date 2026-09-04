@@ -30,7 +30,7 @@ PaletteFadeIn:
 ; ---------------------------------------------------------------------------
 
 PalFadeIn_Alt:	; start position and size are already set
-		moveq	#0,d0					; clear d0
+		moveq	#0,d0
 		lea	(v_palette).w,a0			; load palette buffer
 		move.b	(v_pfade_start).w,d0			; get specified start position offset
 		adda.w	d0,a0					; advance palette buffer to start position
@@ -48,12 +48,12 @@ PalFadeIn_Alt:	; start position and size are already set
 		bsr.w	RunPLC					; run any PLC, if necessary
 		dbf	d4,.fadeMainLoop			; loop for 21 frames
 
-		rts						; return
+		rts
 ; End of function PaletteFadeIn
 ; ===========================================================================
 
 FadeIn_FromBlack:
-		moveq	#0,d0					; clear d0
+		moveq	#0,d0
 		lea	(v_palette).w,a0			; load active palette buffer
 		lea	(v_palette_fading).w,a1			; load fade-in palette buffer
 		move.b	(v_pfade_start).w,d0			; get specified start position offset
@@ -64,7 +64,7 @@ FadeIn_FromBlack:
 		bsr.s	FadeIn_AddColor				; fade-in current color a bit more
 		dbf	d0,.fadeColors				; loop until all colors have been faded in more
 
-		rts						; return
+		rts
 ; End of function FadeIn_FromBlack
 ; ===========================================================================
 
@@ -101,12 +101,12 @@ FadeIn_AddColor:
 
 	.addRed:
 		addq.w	#$002,(a0)+				; increase red value by one step & update active color
-		rts						; return
+		rts
 ; ---------------------------------------------------------------------------
 
 	.nextColor:
 		addq.w	#2,a0					; advance active palette buffer to next color
-		rts						; return
+		rts
 ; End of function FadeIn_AddColor
 
 
@@ -126,12 +126,12 @@ PaletteFadeOut:
 		bsr.w	RunPLC					; run any PLC, if necessary
 		dbf	d4,.fadeMainLoop			; loop for 21 frames
 
-		rts						; return
+		rts
 ; End of function PaletteFadeOut
 ; ===========================================================================
 
 FadeOut_ToBlack:
-		moveq	#0,d0					; clear d0
+		moveq	#0,d0
 		lea	(v_palette).w,a0			; load active palette buffer
 		move.b	(v_pfade_start).w,d0			; get specified start position offset
 		adda.w	d0,a0					; advance active palette buffer to start position
@@ -140,7 +140,7 @@ FadeOut_ToBlack:
 		bsr.s	FadeOut_DecColor			; fade-out current color a bit more
 		dbf	d0,.fadeColors				; repeat for size of palette
 
-		rts						; return
+		rts
 ; End of function FadeOut_ToBlack
 ; ===========================================================================
 
@@ -169,10 +169,10 @@ FadeOut_DecColor:
 		andi.w	#$E00,d1				; only look at blue channel
 		beq.s	.nextColor				; if blue channel is already at 0, exit
 		subi.w	#$200,(a0)+				; decrease blue value
-		rts						; return
+		rts
 ; ---------------------------------------------------------------------------
 
 	.nextColor:
 		addq.w	#2,a0					; advance active palette buffer to next color
-		rts						; return
+		rts
 ; End of function FadeOut_DecColor

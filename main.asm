@@ -800,15 +800,20 @@ VBlank_StandardTransfers:
 ; ---------------------------------------------------------------------------
 
 HBlank:
-		tst.w	(f_hblank).w
-		beq.s	.return
-		move.l	a5,-(sp)				; push register into stack
+		tst.w	(f_hblank).w				; is hblank flag enabled?
+		beq.s	.return					; if not, branch
+
+		move.l	a5,-(sp)				; backup a5 register
 		writeCRAM	v_palette_fading,0		; write fading palette buffer to CRAM
 		movem.l	(sp)+,a5				; pop register from stack
-		move.w	#0,(f_hblank).w
+
+		move.w	#0,(f_hblank).w				; clear hblank flag
 
 .return:
-		rte
+		rte						; return from horizontal interrupt and resume normal operation
+; End of function HBlank
+
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Secondary horizontal interrupt (unused)
@@ -817,24 +822,29 @@ HBlank:
 ; ---------------------------------------------------------------------------
 
 HBlank2:
-		tst.w	(f_hblank).w
-		beq.s	.return
-		movem.l	d0/a0/a5,-(sp)
-		move.w	#0,(f_hblank).w
-		move.w	#vreg_bgvram|(vram_win>>13),(vdp_control_port).l
-		move.w	#vreg_spritevram|(vram_sprites>>9),(vdp_control_port).l
-		locVRAM vram_sprites
-		lea	(v_spritetablebuffer).w,a0
-		lea	(vdp_data_port).l,a5
-		move.w	#(v_spritetablebuffer_end-v_spritetablebuffer)/4-1,d0
+		tst.w	(f_hblank).w				; is hblank flag enabled?
+		beq.s	.return					; if not, branch
 
-.spritetabletovdp:
-		move.l	(a0)+,(a5)
-		dbf	d0,.spritetabletovdp
-		movem.l	(sp)+,d0/a0/a5
+		movem.l	d0/a0/a5,-(sp)				; backup d0, a0 and a5 registers
+		move.w	#0,(f_hblank).w				; clear hblank flag
+		move.w	#vreg_bgvram|(vram_win>>13),(vdp_control_port).l ; set background nametable address
+		move.w	#vreg_spritevram|(vram_sprites>>9),(vdp_control_port).l	; set sprite table address
+		locVRAM vram_sprites				; set VRAM target location to sprite table
+		lea	(v_spritetablebuffer).w,a0		; load sprite table buffer to a0
+		lea	(vdp_data_port).l,a5			; load VDP data port to a5
+		move.w	#(v_spritetablebuffer_end-v_spritetablebuffer)/4-1,d0 ; set repeat times
+
+.spriteTableToVDP:
+		move.l	(a0)+,(a5)				; move sprite table buffer to VDP data port
+		dbf	d0,.spriteTableToVDP			; repeat until the entirety of the sprite table buffer has been written
+
+		movem.l	(sp)+,d0/a0/a5				; restore d0, a0 and a5
 
 .return:
-		rte
+		rte						; return from horizontal interrupt and resume normal operation
+; End of function HBlank2
+
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to initialise joypads (run once during boot)

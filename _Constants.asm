@@ -21,19 +21,16 @@ vdp_counter:		equ $C00008
 psg_input:		equ $C00011
 debug_reg:		equ $C0001C
 
-	phase	$1FF4
-zStack:			ds.w 1
-zDAC_Update:		ds.b 1
-zVoiceFlag:		ds.b 1
-zVoiceTblAdr:		ds.w 1
-zBankLow:		ds.b 1
-zBankHigh:		ds.b 1
-zLoopDataStr:		ds.b 1
-zDAC_Status:		ds.b 1	; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
-zRepeatFlag:		ds.b 1
-zDAC_Sample:		ds.b 1	; Sample to play, the 68k will move into this location whatever sample that's supposed to be played.
-	dephase
-	!org 0
+zStack:			equ $1FF4
+zDAC_Update:		equ $1FF6
+zVoiceFlag:		equ $1FF7
+zVoiceTblAdr:		equ $1FF8
+zBankLow:		equ $1FFA
+zBankHigh:		equ $1FFB
+zLoopDataStr:		equ $1FFC
+zDAC_Status:		equ $1FFD	; Bit 7 set if the driver is not accepting new samples, it is clear otherwise
+zRepeatFlag:		equ $1FFE
+zDAC_Sample:		equ $1FFF	; Sample to play, the 68k will move into this location whatever sample that's supposed to be played.
 
 zYM2612_A0:		equ $4000
 zYM2612_D0:		equ $4001
@@ -44,7 +41,6 @@ zROMWindow:		equ $8000
 
 ; Z80 addresses
 z80_ram:		equ $A00000			; start of Z80 RAM
-z80_dac_status:		equ z80_ram+zDAC_Status
 z80_ram_end:		equ $A02000			; end of non-reserved Z80 RAM
 ym2612_a0:		equ z80_ram+zYM2612_A0
 ym2612_d0:		equ z80_ram+zYM2612_D0
@@ -508,11 +504,18 @@ ArtTile_Animal_2:		equ $592
 ArtTile_Explosion:		equ $5A0
 ArtTile_Monitor:		equ $680
 ArtTile_HUD:			equ $6CA
+ArtTile_HUDScore:		equ ArtTile_HUD+$1A
+ArtTile_HUDScore_E:		equ ArtTile_HUDScore-2
+ArtTile_HUDTimeMins:		equ ArtTile_HUD+$28
+ArtTile_HUDTimeSecs:		equ ArtTile_HUD+$2C
+ArtTile_HUDRing:		equ ArtTile_HUD+$30
+
 ArtTile_Sonic:			equ $780
 ArtTile_Points:			equ $797
 ArtTile_Smoke:			equ $7A0
 ArtTile_Ring:			equ $7B2
 ArtTile_Lives_Counter:		equ $7D4
+ArtTile_Lives_Counter_Num:	equ ArtTile_Lives_Counter+9
 
 ; Eggman
 ArtTile_Eggman:			equ $400

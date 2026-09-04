@@ -9,7 +9,7 @@ UpdateHUD:
 		beq.s	loc_1169A
 
 		clr.b	(f_scorecount).w
-		locVRAM (ArtTile_HUD+$1A)*tile_size,d0
+		locVRAM (ArtTile_HUDScore)*tile_size,d0
 		move.l	(v_score).w,d1
 		bsr.w	Hud_Score
 
@@ -21,7 +21,7 @@ loc_1169A:
 
 loc_116A6:
 		clr.b	(f_ringcount).w
-		locVRAM (ArtTile_HUD+$30)*tile_size,d0
+		locVRAM (ArtTile_HUDRing)*tile_size,d0
 		moveq	#0,d1
 		move.w	(v_rings).w,d1
 		bsr.w	Hud_Rings
@@ -47,11 +47,11 @@ loc_116BA:
 		move.b	#9,(a1)
 
 loc_116EE:
-		locVRAM (ArtTile_HUD+$28)*tile_size,d0
+		locVRAM (ArtTile_HUDTimeMins)*tile_size,d0
 		moveq	#0,d1
 		move.b	(v_timemin).w,d1
 		bsr.w	Hud_Mins
-		locVRAM (ArtTile_HUD+$2C)*tile_size,d0
+		locVRAM (ArtTile_HUDTimeSecs)*tile_size,d0
 		moveq	#0,d1
 		move.b	(v_timesec).w,d1
 		bsr.w	Hud_Secs
@@ -87,13 +87,13 @@ HudDebug:
 
 loc_11756:
 		clr.b	(f_ringcount).w
-		locVRAM (ArtTile_HUD+$30)*tile_size,d0
+		locVRAM (ArtTile_HUDRing)*tile_size,d0
 		moveq	#0,d1
 		move.w	(v_rings).w,d1
 		bsr.w	Hud_Rings
 
 loc_1176A:
-		locVRAM (ArtTile_HUD+$2C)*tile_size,d0
+		locVRAM (ArtTile_HUDTimeSecs)*tile_size,d0
 		moveq	#0,d1
 		move.b	(v_spritecount).w,d1
 		bsr.w	Hud_Secs
@@ -119,7 +119,7 @@ locret_117B0:
 ; ===========================================================================
 
 Hud_LoadZero:
-		locVRAM (ArtTile_HUD+$30)*tile_size
+		locVRAM (ArtTile_HUDRing)*tile_size
 		lea	Hud_TilesRings(pc),a2
 		move.w	#(Hud_TilesBase_End-Hud_TilesRings)-1,d2
 		bra.s	loc_117E2
@@ -128,7 +128,7 @@ Hud_LoadZero:
 Hud_Base:
 		lea	(vdp_data_port).l,a6
 		bsr.w	Hud_Lives
-		locVRAM (ArtTile_HUD+$18)*tile_size
+		locVRAM (ArtTile_HUDScore_E)*tile_size
 		lea	Hud_TilesBase(pc),a2
 		move.w	#(Hud_TilesBase_End-Hud_TilesBase)-1,d2
 
@@ -186,7 +186,7 @@ Hud_TilesBase_End:
 ; ===========================================================================
 
 HudDb_XY:
-		locVRAM (ArtTile_HUD+$18)*tile_size
+		locVRAM (ArtTile_HUDScore_E)*tile_size
 		move.w	(v_scrposx).w,d1
 		swap	d1
 		move.w	(v_player+obX).w,d1
@@ -204,7 +204,7 @@ loc_11846:
 		move.w	d1,d2
 		andi.w	#$F,d2
 		cmpi.w	#$A,d2
-		bcs.s	loc_11856
+		blo.s	loc_11856
 		addq.w	#7,d2
 
 loc_11856:
@@ -243,7 +243,7 @@ loc_1188C:
 
 loc_11890:
 		sub.l	d3,d1
-		bcs.s	loc_11898
+		blo.s	loc_11898
 		addq.w	#1,d2
 		bra.s	loc_11890
 ; ===========================================================================
@@ -310,7 +310,7 @@ loc_1190C:
 
 loc_11910:
 		sub.l	d3,d1
-		bcs.s	loc_11918
+		blo.s	loc_11918
 		addq.w	#1,d2
 		bra.s	loc_11910
 ; ===========================================================================
@@ -358,7 +358,7 @@ loc_11966:
 
 loc_1196A:
 		sub.l	d3,d1
-		bcs.s	loc_11972
+		blo.s	loc_11972
 		addq.w	#1,d2
 		bra.s	loc_1196A
 ; ===========================================================================
@@ -406,7 +406,7 @@ loc_119AE:
 ; ===========================================================================
 
 Hud_Lives:
-		locVRAM (ArtTile_Lives_Counter+9)*tile_size,d0
+		locVRAM (ArtTile_Lives_Counter_Num)*tile_size,d0
 		moveq	#0,d1
 		move.b	(v_lives).w,d1
 		lea	(Hud_10).l,a2
@@ -421,7 +421,7 @@ loc_119D4:
 
 loc_119DC:
 		sub.l	d3,d1
-		bcs.s	loc_119E4
+		blo.s	loc_119E4
 		addq.w	#1,d2
 		bra.s	loc_119DC
 ; ===========================================================================

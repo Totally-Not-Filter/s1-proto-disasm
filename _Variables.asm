@@ -29,18 +29,18 @@ v_spritequeue:		ds.b	$400
 v_16x16:		ds.w	4*$300				; 16x16 tile mappings ($1800 bytes)
 v_16x16_end:
 
-v_sgfx_buffer:		ds.b	23*tile_size			; sonic graphics ram buffer ($2E0 bytes)
+v_sgfx_buffer:		ds.b	tile_size*23			; buffered Sonic graphics ($17 cells)
 v_sgfx_buffer_end:
 
 			ds.b	$20				; unused
 v_tracksonic:		ds.b	$100				; sonic position table ($100 bytes)
 
-v_hscrolltablebuffer:	ds.b	$380
+v_hscrolltablebuffer:	ds.b	$380				; scrolling table data
 v_hscrolltablebuffer_end:
-			ds.b	$80
+			ds.b	$80				; would be unused, but data from v_hscrolltablebuffer can spill into here
 v_hscrolltablebuffer_end_padded:
 
-v_objspace:		ds.b	object_size*32			; RAM for object space ($600 bytes)
+v_objspace:		ds.b	object_size*$80			; RAM for object space ($40 bytes per object)
 
 ; Title screen objects
 v_titlesonic:		equ	v_objspace+object_size*1	; object variable space for Sonic in the title screen ($40 bytes)
@@ -86,15 +86,13 @@ v_debugnumbers2:	equ	v_objspace+object_size*10	; object variable space for the u
 
 v_vanishsonic:		equ	v_objspace+object_size*7	; object variable space for when sonic is vanishing after interacting with a giant ring ($40 bytes)
 
-v_lvlobjspace:		ds.b	object_size*96
-v_lvlobjend:
-v_objspace_end:
+v_lvlobjspace:		equ	v_objspace+object_size*32	; level object variable space ($1800 bytes)
+v_lvlobjend:		equ	v_lvlobjspace+object_size*96
+v_objspace_end:		equ	v_lvlobjend
 
-; $FFFFF000
 v_snddriver_ram:	SMPS_RAM				; start of RAM for the sound driver data ($5C0 bytes)
-v_snddriver_ram_end:
-
 			ds.b	$40				; unused
+
 v_gamemode:		ds.b	1
 			ds.b	1				; unused
 v_jpadhold2:		ds.b	1
@@ -254,7 +252,7 @@ v_lani3_frame:		ds.b	1				; level graphics animation 3 - current frame
 			ds.b	$29				; unused
 f_switch:		ds.w	1
 			ds.b	$E				; unused
-v_scroll_block_size:	ds.w	1
+v_scroll_block_1_size:	ds.w	1
 			ds.b	$E				; unused
 v_misc_variables_end:
 

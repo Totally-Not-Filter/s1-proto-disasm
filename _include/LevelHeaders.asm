@@ -14,15 +14,15 @@ lhead:	macro plc1,lvlgfx,plc2,sixteen,twofivesix,music,pal
 ; 1st PLC, level gfx (unused), 2nd PLC, 16x16 data, 256x256 data,
 ; music (unused), palette (unused), palette
 
-;			1st PLC					2nd PLC					256x256 data			palette
-;						level gfx*				16x16 data				music*
+;		1st PLC				2nd PLC				256x256 data			palette
+;				level gfx*			16x16 data			music*
 
-	lhead	plcid_GHZ,	Nem_GHZ_2nd,plcid_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	bgm_GHZ,	palid_GHZ ; Green Hill
-	lhead	plcid_LZ,	Nem_LZ,		plcid_LZ2,	Blk16_LZ,	Blk256_LZ,	bgm_LZ,		palid_LZ ; Labyrinth
-	lhead	plcid_MZ,	Nem_MZ,		plcid_MZ2,	Blk16_MZ,	Blk256_MZ,	bgm_MZ,		palid_MZ ; Marble
-	lhead	plcid_SLZ,	Nem_SLZ,	plcid_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	bgm_SLZ,	palid_SLZ ; Star Light
-	lhead	plcid_SZ,	Nem_SZ,		plcid_SZ2,	Blk16_SZ,	Blk256_SZ,	bgm_SZ,		palid_SZ ; Sparkling
-	lhead	plcid_CWZ,	Nem_CWZ,	plcid_CWZ2,	Blk16_CWZ,	Blk256_CWZ,	bgm_CWZ,	palid_CWZ ; Clock Work
+	lhead	plcid_GHZ,	Nem_GHZ_2nd,	plcid_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	bgm_GHZ,	palid_GHZ	; Green Hill
+	lhead	plcid_LZ,	Nem_LZ,		plcid_LZ2,	Blk16_LZ,	Blk256_LZ,	bgm_LZ,		palid_LZ	; Labyrinth
+	lhead	plcid_MZ,	Nem_MZ,		plcid_MZ2,	Blk16_MZ,	Blk256_MZ,	bgm_MZ,		palid_MZ	; Marble
+	lhead	plcid_SLZ,	Nem_SLZ,	plcid_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	bgm_SLZ,	palid_SLZ	; Star Light
+	lhead	plcid_SZ,	Nem_SZ,		plcid_SZ2,	Blk16_SZ,	Blk256_SZ,	bgm_SZ,		palid_SZ	; Sparkling
+	lhead	plcid_CWZ,	Nem_CWZ,	plcid_CWZ2,	Blk16_CWZ,	Blk256_CWZ,	bgm_CWZ,	palid_CWZ	; Clock Work
 	even
 
 ;	* music and level gfx are actually set elsewhere, so these values are useless
