@@ -551,7 +551,7 @@ ErrorWaitForC:
 ; (formerly "menutext.bin")
 ; ---------------------------------------------------------------------------
 
-Art_Text:	binclude	"artunc/menutext.bin"
+Art_Text:	binclude	"artunc/Level Select & Debug Text.bin"
 Art_Text_end:
 		even
 
@@ -1406,11 +1406,11 @@ GM_Sega:
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
-		move.w	#$8000+%0100,(a6)
-		move.w	#$8200+vram_fg>>10,(a6)
-		move.w	#$8400+vram_bg>>13,(a6)
-		move.w	#$8700,(a6)
-		move.w	#$8B00,(a6)
+		move.w	#vreg_mode1|%0100,(a6)
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
+		move.w	#vreg_bgcolor|0,(a6)
+		move.w	#vreg_mode3|0,(a6)
 		disable_display
 		bsr.w	ClearScreen
 		locVRAM ArtTile_Sega_Tiles*tile_size
@@ -1449,13 +1449,13 @@ GM_Title:
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
-		move.w	#$8000+%0100,(a6)
-		move.w	#$8200+vram_fg>>10,(a6)
-		move.w	#$8400+vram_bg>>13,(a6)
-		move.w	#$9000+%0001,(a6)
-		move.w	#$9200,(a6)
-		move.w	#$8B00+%0011,(a6)
-		move.w	#$8700+%00100000,(a6)
+		move.w	#vreg_mode1|%0100,(a6)
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
+		move.w	#vreg_planesize|%0001,(a6)
+		move.w	#vreg_winypos|0,(a6)
+		move.w	#vreg_mode3|%0011,(a6)
+		move.w	#vreg_bgcolor|%00100000,(a6)
 		disable_display
 		bsr.w	ClearScreen
 
@@ -1639,27 +1639,27 @@ PlayLevel:
 		rts
 ; ===========================================================================
 LevSelOrder:
-		dc.w id_GHZ_act1	; GHZ1
-		dc.w id_GHZ_act2	; GHZ2
-		dc.w id_GHZ_act3	; GHZ3
-		dc.w id_LZ_act1		; LZ1
-		dc.w id_LZ_act2		; LZ2
-		dc.w id_LZ_act3		; LZ3
-		dc.w id_MZ_act1		; MZ1
-		dc.w id_MZ_act2		; MZ2
-		dc.w id_MZ_act3		; MZ3
-		dc.w id_SLZ_act1	; SLZ1
-		dc.w id_SLZ_act2	; SLZ2
-		dc.w id_SLZ_act3	; SLZ3
-		dc.w id_SZ_act1		; SZ1
-		dc.w id_SZ_act2		; SZ2
-		dc.w id_SZ_act3		; SZ3
-		dc.w id_CWZ_act1	; CWZ1
-		dc.w id_CWZ_act2	; CWZ2
-		dc.w id_CWZ_act1+$8000	; CWZ3
-		dc.w id_SS<<8		; SS
-		dc.w id_SS<<8		; SS (Sound Select)
-		dc.w $8000
+		dc.w	id_GHZ_act1		; GHZ1
+		dc.w	id_GHZ_act2		; GHZ2
+		dc.w	id_GHZ_act3		; GHZ3
+		dc.w	id_LZ_act1		; LZ1
+		dc.w	id_LZ_act2		; LZ2
+		dc.w	id_LZ_act3		; LZ3
+		dc.w	id_MZ_act1		; MZ1
+		dc.w	id_MZ_act2		; MZ2
+		dc.w	id_MZ_act3		; MZ3
+		dc.w	id_SLZ_act1		; SLZ1
+		dc.w	id_SLZ_act2		; SLZ2
+		dc.w	id_SLZ_act3		; SLZ3
+		dc.w	id_SZ_act1		; SZ1
+		dc.w	id_SZ_act2		; SZ2
+		dc.w	id_SZ_act3		; SZ3
+		dc.w	id_CWZ_act1		; CWZ1
+		dc.w	id_CWZ_act2		; CWZ2
+		dc.w	id_CWZ_act1+$8000	; CWZ3
+		dc.w	id_SS<<8		; SS
+		dc.w	id_SS<<8		; SS (Sound Select)
+		dc.w	$8000
 ; ===========================================================================
 
 ; ---------------------------------------------------------------------------
@@ -1718,7 +1718,6 @@ Demo_Level:
 ; Levels used in demos
 ; ---------------------------------------------------------------------------
 Demo_Levels:
-		;	Format: ZONE,ACT
 		dc.w	id_GHZ_act1	; 1
 		dc.w	(id_SS-1)<<8	; 2
 		dc.w	id_MZ_act1	; 3
@@ -1923,12 +1922,12 @@ LevelSelectText_End:
 ; Music playlist
 ; ---------------------------------------------------------------------------
 MusicList:
-		dc.b bgm_GHZ
-		dc.b bgm_LZ
-		dc.b bgm_MZ
-		dc.b bgm_SLZ
-		dc.b bgm_SZ
-		dc.b bgm_CWZ
+		dc.b	bgm_GHZ
+		dc.b	bgm_LZ
+		dc.b	bgm_MZ
+		dc.b	bgm_SLZ
+		dc.b	bgm_SZ
+		dc.b	bgm_CWZ
 		even
 ; ===========================================================================
 
@@ -1959,14 +1958,14 @@ loc_2C0A:
 		bsr.w	PaletteFadeOut
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a6
-		move.w	#$8B00+%0011,(a6)
-		move.w	#$8200+vram_fg>>10,(a6)
-		move.w	#$8400+vram_bg>>13,(a6)
-		move.w	#$8500+vram_sprites>>9,(a6)
+		move.w	#vreg_mode3|%0011,(a6)
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
+		move.w	#vreg_spritevram|(vram_sprites>>9),(a6)
 		move.w	#0,(v_unused13).w
-		move.w	#$8A00+175,(v_hblank_hreg).w
-		move.w	#$8000+%0100,(a6)
-		move.w	#$8700+%00100000,(a6)
+		move.w	#vreg_hintrate|175,(v_hblank_hreg).w	; set HBlank counter to scanline 175 (even though horizontal interrupts aren't normally used here...)
+		move.w	#vreg_mode1|%0100,(a6)
+		move.w	#vreg_bgcolor|%00100000,(a6)
 
 		clearRAM v_objspace,v_objspace_end
 		clearRAM v_misc_variables,v_misc_variables_end
@@ -2078,7 +2077,7 @@ GM_LevelLoop:
 		move.b	#id_VBlank_08,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w
-		bsr.w	LZWaterFeatures
+		bsr.w	WaterFeatures
 		bsr.w	MoveSonicInDemo
 		move.w	(v_jpadhold1).w,(v_jpadhold2).w
 		bsr.w	ExecuteObjects
@@ -2148,14 +2147,14 @@ loc_2EC8:
 		include "leftovers/routines/Debug Coordinate Sprites.asm"
 		include	"leftovers/routines/Window Plane Mask.asm"
 
-		include "_include/LZWaterFeatures.asm"
+		include "_include/WaterFeatures.asm"
 		include	"_include/MoveSonicInDemo.asm"
 
 ; ===========================================================================
 
 ;sub_314C:
-		cmpi.b	#id_06,(v_zone).w	; are we on Zone 6?
-		bne.s	locret_3176	; if not, branch
+		cmpi.b	#id_06,(v_zone).w			; is this Zone 6?
+		bne.s	locret_3176				; if not, branch
 		bsr.w	sub_3178
 		lea	(v_256x256+$900).l,a1
 		bsr.s	sub_3166
@@ -2196,34 +2195,34 @@ Anim256Unk2_End:
 ; ===========================================================================
 
 LoadAnimatedBlocks:
-		cmpi.b	#id_MZ,(v_zone).w			; are we on Marble Zone?
-		beq.s	.ismz					; if yes, branch
-		cmpi.b	#id_SLZ,(v_zone).w			; are we on Star Light Zone?
-		beq.s	.isslz					; if yes, branch
-		tst.b	(v_zone).w				; are we on Green Hill Zone?
-		bne.s	.notghz					; if not, branch
+		cmpi.b	#id_MZ,(v_zone).w			; is this Marble Zone?
+		beq.s	.MZ					; if yes, branch
+		cmpi.b	#id_SLZ,(v_zone).w			; is this Star Light Zone?
+		beq.s	.SLZ					; if yes, branch
+		tst.b	(v_zone).w				; is this Green Hill Zone?
+		bne.s	.notGHZ					; if not, branch
 
-.isslz:
+.SLZ:
 		lea	(v_16x16+$1790).w,a1			; load ROM address for animated blocks to load in the main block RAM into a1
 		lea	(Anim16GHZ).l,a0			; load animated GHZ blocks into a0
 		move.w	#(Anim16GHZ_End-Anim16GHZ)/2-1,d1	; load approx. size of the blocks into d1
 
-.loadghz:
+	.loadGHZ:
 		move.w	(a0)+,(a1)+
-		dbf	d1,.loadghz
+		dbf	d1,.loadGHZ
 
-.notghz:
+.notGHZ:
 		rts
 ; ===========================================================================
 
-.ismz:
+.MZ:
 		lea	(v_16x16+$17A0).w,a1			; load ROM address for animated blocks to load in the main block RAM into a1
 		lea	(Anim16MZ).l,a0				; load animated MZ blocks into a0
 		move.w	#(Anim16MZ_End-Anim16MZ)/2-1,d1		; load approx. size of the blocks into d1
 
-.loadmz:
+	.loadMZ:
 		move.w	(a0)+,(a1)+
-		dbf	d1,.loadmz
+		dbf	d1,.loadMZ
 		rts
 ; ===========================================================================
 Anim16GHZ:
@@ -2242,15 +2241,15 @@ DebugPosLoadArt:
 
 		locVRAM ArtTile_Debug_Numbers*tile_size
 		lea	(Art_Text).l,a0
-		move.w	#(Art_Text_end-Art_Text-tile_size*$1F)/2-1,d1
-		bsr.s	.loadtext
+		move.w	#(Art_Text_end-Art_Text-tile_size*31)/2-1,d1
+		bsr.s	.loadText
 		lea	(Art_Text).l,a0
-		adda.w	#$11*tile_size,a0
-		move.w	#(Art_Text_end-Art_Text-tile_size*$23)/2-1,d1
+		adda.w	#tile_size*17,a0
+		move.w	#(Art_Text_end-Art_Text-tile_size*35)/2-1,d1
 
-.loadtext:
+	.loadText:
 		move.w	(a0)+,(vdp_data_port).l
-		dbf	d1,.loadtext
+		dbf	d1,.loadText
 		rts
 ; ===========================================================================
 
@@ -2269,12 +2268,12 @@ DebugPosLoadArt:
 		rol.w	#1,d0
 		move.b	.1bpp(pc,d0.w),d2
 		move.w	d2,(vdp_data_port).l
-		dbf	d1,.loadtext
+		dbf	d1,.loadText
 		rts
 ; ===========================================================================
 
 .1bpp:
-		dc.b 0, 6, $60, $66
+		dc.b	0, 6, $60, $66
 		even
 
 		include "_include/Oscillatory Routines.asm"
@@ -2335,9 +2334,9 @@ SyncEnd:
 SignpostArtLoad:
 		tst.w	(v_debuguse).w
 		bne.w	.exit
-		cmpi.w	#id_MZ_act3,(v_zone).w			; are we on MZ3?
+		cmpi.w	#id_MZ_act3,(v_zone).w			; is this MZ3?
 		beq.s	.isMZ3					; if so, load the signpost
-		cmpi.b	#2,(v_act).w
+		cmpi.b	#act3,(v_act).w
 		beq.s	.exit
 
 	.isMZ3:

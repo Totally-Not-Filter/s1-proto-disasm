@@ -561,6 +561,6 @@ ArtTile_Error_Handler_Font:	equ $7C0
 
 ; Early VRAM locations
 ArtTile_Obj06:			equ $470
-ArtTile_Debug_Numbers:		equ $4F0	; Note: This overwrites the Moto Bug graphics.
+ArtTile_Debug_Numbers:		equ $4F0			; Note: This overwrites the Moto Bug graphics.
 
 ArtTile_Early_Lives_Icon:	equ $579

@@ -4,7 +4,7 @@
 ; via UP and DOWN on the control pad. Called in the main game loop
 ; ---------------------------------------------------------------------------
 
-LZWaterFeatures:
+WaterFeatures:
 		btst	#bitUp,(v_jpadhold1).w			; is up button held?
 		beq.s	.checkbtndown				; if not, check if we're holding down
 		addq.w	#1,(v_bg3scrposy).w			; increase y position of bg3scrpos
