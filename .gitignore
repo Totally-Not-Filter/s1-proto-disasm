@@ -3,8 +3,8 @@ s1built.prev.bin
 main.lst
 main.log
 main.p
-SonLVL INI Files/dllcache/*
-SonLVL INI Files/SonLVL.log
+Utility Project Files/SonLVL INI Files/dllcache/*
+Utility Project Files/SonLVL INI Files/SonLVL.log
 
 # Hivebrains comment utility
 Comment.bat
