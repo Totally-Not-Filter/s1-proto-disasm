@@ -551,9 +551,8 @@ ErrorWaitForC:
 ; (formerly "menutext.bin")
 ; ---------------------------------------------------------------------------
 
-Art_Text:	binclude	"artunc/Level Select & Debug Text.bin"
-Art_Text_end:
-		even
+Art_Text:	bincludeEndMarker	"artunc/Level Select & Debug Text.bin"
+
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -910,30 +909,41 @@ ReadJoypads:
 ; ---------------------------------------------------------------------------
 
 VDPSetupGame:
-		lea	(vdp_control_port).l,a0
-		lea	(vdp_data_port).l,a1
-		lea	(VDPSetupArray).l,a2
-		moveq	#(VDPSetupArray_End-VDPSetupArray)/2-1,d7
-
+		lea	(vdp_control_port).l,a0			; load VDP control port
+		lea	(vdp_data_port).l,a1			; load VDP data port
+		lea	(VDPSetupArray).l,a2			; load address of register values
+		moveq	#(VDPSetupArray_End-VDPSetupArray)/2-1,d7 ; set repeat times
 .setreg:
-		move.w	(a2)+,(a0)
-		dbf	d7,.setreg
-		move.w	(VDPSetupArray+2).l,d0
-		move.w	d0,(v_vdp_buffer1).w
-		moveq	#0,d0
-		move.l	#$C0000000,(vdp_control_port).l
-		move.w	#(palette_size)/2-1,d7
+		move.w	(a2)+,(a0)				; save register value to VDP
+		dbf	d7,.setreg				; repeat until all register values have been sent
 
+		move.w	(VDPSetupArray+2).l,d0			; get second entry of VDPSetupArray
+		move.w	d0,(v_vdp_buffer1).w			; buffer register $81 (used for enabling/disabling display)
+
+		moveq	#cBlack,d0				; set d0 to 0 (black)
+		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
+		move.w	#(palette_size)/2-1,d7			; set repeat times to cover full CRAM
 .clrCRAM:
-		move.w	d0,(a1)
-		dbf	d7,.clrCRAM
-		clr.l	(v_scrposy_vdp).w
-		clr.l	(v_scrposx_vdp).w
-		move.l	d1,-(sp)
-		fillVRAM	0,0,$10000
-		move.l	(sp)+,d1
+		move.w	d0,(a1)					; clear colours
+		dbf	d7,.clrCRAM				; repeat until the entire palette is clear (black)
+
+		clr.l	(v_scrposy_vdp).w			; clear single vertical scroll buffer
+		clr.l	(v_scrposx_vdp).w			; clear single horizontal scroll buffer
+		move.l	d1,-(sp)				; store d1 data in the stack for now
+		fillVRAM 0,0,$10000				; clear the entirety of VRAM
+		move.l	(sp)+,d1				; reload d1 data back out of the stack
 		rts
-; ===========================================================================
+; End of function VDPSetupGame
+
+; ---------------------------------------------------------------------------
+; VDP register settings to use for the game. Do note that a handful of these
+; are getting rewritten for every game mode change, though the majority
+; will stay at their initial settings defined in this array.
+; ---------------------------------------------------------------------------
+; See here for details on VDP registers:
+; https://segaretro.org/Sega_Mega_Drive/VDP_registers
+; ---------------------------------------------------------------------------
+
 VDPSetupArray:
 		dc.w vreg_mode1|%000100				; 8-color mode
 		dc.w vreg_mode2|%00110100			; vertical interrupts, DMA, Mega Drive display
@@ -956,62 +966,67 @@ VDPSetupArray:
 		dc.w vreg_winypos|0				; window vertical position
 VDPSetupArray_End:
 
+
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Subroutine to clear the screen
+; Subroutine to clear the screen (plane mappings, sprites, and scroll data)
 ; ---------------------------------------------------------------------------
 
 ClearScreen:
-		fillVRAM	0, vram_fg, vram_fg+plane_size_64x32		; clear foreground namespace
-		fillVRAM	0, vram_bg, vram_bg+plane_size_64x32		; clear background namespace
+		fillVRAM 0, vram_fg, vram_fg+plane_size_64x32	; clear foreground namespace
+		fillVRAM 0, vram_bg, vram_bg+plane_size_64x32	; clear background namespace
 
-		move.l	#0,(v_scrposy_vdp).w
-		move.l	#0,(v_scrposx_vdp).w
+		move.l	#0,(v_scrposy_vdp).w			; clear single vertical scroll buffer
+		move.l	#0,(v_scrposx_vdp).w			; clear single horizontal scroll buffer
 
 	if FixBugs
-		clearRAM v_spritetablebuffer,v_spritetablebuffer_end
-		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end_padded
+		clearRAM v_spritetablebuffer,v_spritetablebuffer_end ; clear sprite table buffer
+		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end_padded ; clear H-Scroll table buffer
 	else
-		clearRAM v_spritetablebuffer,v_spritetablebuffer_end+4	; This clears too much RAM, but this won't effect much since water palettes don't exist.
-		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end_padded+4	; This clears too much RAM, leading to a slight bug (first bit of the Sonic object's RAM is cleared)
+		; Both of these clear loops clear one more longwords than they should.
+		; This will clear the first 4 bytes of v_palette_water and v_objspace, respectively.
+		clearRAM v_spritetablebuffer,v_spritetablebuffer_end+4 ; clear sprite table buffer
+		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end_padded+4 ; clear H-Scroll table buffer
 	endif
 
 		rts
 ; End of function ClearScreen
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to load the DAC driver
 ; ---------------------------------------------------------------------------
 
-; SoundDriverLoad:
+; SoundDriverLoad: <-- old misnomer
 DACDriverLoad:
-		nop
-		stopZ80
-		deassertZ80Reset
-		lea	(DACDriver).l,a0
-		lea	(z80_ram).l,a1
-		move.w	#(DACDriver_End-DACDriver)-1,d0
+		nop						; delay
+		stopZ80						; request Z80 stop on
+		deassertZ80Reset				; request Z80 reset off
+		lea	(DACDriver).l,a0			; load DAC driver address as source
+		lea	(z80_ram).l,a1				; set Z80 RAM address as target
+		move.w	#(DACDriver_end-DACDriver)-1,d0
 
 .loadDAC:
 		move.b	(a0)+,(a1)+
 		dbf	d0,.loadDAC
 
 		moveq	#0,d0
-		lea	(z80_ram+zVoiceTblAdr).l,a1
-		move.b	d0,(a1)+				; Write 0 to 1FF8
-		move.b	#$80,(a1)+				; Write $80 to 1FF9 (zVoiceTblAdr = 8000h)
-		move.b	#make68kBank($38000),(a1)+		; Write unknown bank address $38000 (7) to 1FFA
-		move.b	#$80,(a1)+				; Write $80 to 1FFB (zBank = 8007h)
-		move.b	d0,(a1)+				; Write 0 to 1FFC
-		move.b	d0,(a1)+				; Write 0 to 1FFD
-		move.b	d0,(a1)+				; Write 0 to 1FFE
-		move.b	d0,(a1)+				; Write 0 to 1FFF
-		assertZ80Reset
-		nop
-		nop
-		nop
-		nop
-		deassertZ80Reset
-		startZ80
+		lea	(z80_ram+zVoiceTblAdr).l,a1		; load zVoiceTblAdr
+		move.b	d0,(a1)+				; write 0 to 1FF8
+		move.b	#$80,(a1)+				; write $80 to 1FF9 (zVoiceTblAdr = 8000h)
+		move.b	#make68kBank($38000),(a1)+		; write unknown bank address $38000 (7) to 1FFA
+		move.b	#$80,(a1)+				; write $80 to 1FFB (zBank = 8007h)
+		move.b	d0,(a1)+				; write 0 to 1FFC
+		move.b	d0,(a1)+				; write 0 to 1FFD
+		move.b	d0,(a1)+				; write 0 to 1FFE
+		move.b	d0,(a1)+				; write 0 to 1FFF
+		assertZ80Reset					; request Z80 reset on
+		nop						; delay (while the Z80 resets)
+		nop						; ''
+		nop						; ''
+		nop						; ''
+		deassertZ80Reset				; request Z80 reset off
+		startZ80					; request Z80 stop off
 		rts
 ; End of function DACDriverLoad
 
@@ -1028,9 +1043,19 @@ DACDriverLoad:
 		dc.b 0
 		dc.b 0
 
-		include	"_include/Queue Sound Routines.asm"
-		include "_include/PauseGame.asm"
+; ===========================================================================
+; >>> Subroutines to queue sound commands to be executed by the sound driver during VBlank
+	; includes QueueSound1, QueueSound2, QueueSound3
+	; (formerly called PlaySound, PlaySound_Special, PlaySound_Unknown)
+	include	"_include/Queue Sound Routines.asm"
 
+
+; ===========================================================================
+; >>> Subroutine to allow pausing the game
+	include "_include/PauseGame.asm"
+
+
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to copy a tile map from RAM to VRAM namespace
 
@@ -1042,439 +1067,505 @@ DACDriverLoad:
 ; ---------------------------------------------------------------------------
 
 TilemapToVRAM:
-		lea	(vdp_data_port).l,a6
-		move.l	#$800000,d4
+		lea	(vdp_data_port).l,a6			; load VDP data port address
+		move.l	#$800000,d4				; prepare plane width size for VDP address advancing (row)
 
 Tilemap_Line:
-		move.l	d0,4(a6)				; move d0 to VDP_control_port
-		move.w	d1,d3
+		move.l	d0,4(a6)				; set the VDP the VRAM write mode with address
+		move.w	d1,d3					; load width of rectangle
 
 Tilemap_Cell:
-		move.w	(a1)+,(a6)				; write value to namespace
-		dbf	d3,Tilemap_Cell				; next tile
-		add.l	d4,d0					; go to next line
-		dbf	d2,Tilemap_Line				; next line
+		move.w	(a1)+,(a6)				; copy tile map to VRAM plane space
+		dbf	d3,Tilemap_Cell				; repeat for the entire width
+		add.l	d4,d0					; advance VDP value address to the next row
+		dbf	d2,Tilemap_Line				; repeat for the entire height
 		rts
 ; End of function TilemapToVRAM
 
-		include "_include/Decompression/Nemesis Decompression.asm"
+; ===========================================================================
+; >>> Nemesis decompression algorithm, primarily (but not exclusively) used for PLCs
+	include "_include/Decompression/Nemesis Decompression.asm"
 
 ; ---------------------------------------------------------------------------
-; Subroutine to load pattern load cues (aka to queue pattern load requests)
+; Subroutine to add entries from a given Pattern Load Cue list ID to the
+; PLC decompression queue (decompressed later during VBlank)
 ; ---------------------------------------------------------------------------
-
 ; ARGUMENTS
 ; d0 = index of PLC list
+; ---------------------------------------------------------------------------
+; NOTICE: This subroutine does not check for buffer overruns. The programmer
+;         (or hacker) is responsible for making sure that no more than
+;         16 load requests are copied into the buffer.
+;         _________DO NOT PUT MORE THAN 16 LOAD REQUESTS IN A LIST!__________
+;         (or if you change the size of Plc_Buffer, the limit becomes (Plc_Buffer_Only_End-Plc_Buffer)/plc_slot_size)
 ; ---------------------------------------------------------------------------
 
 ; LoadPLC:
 AddPLC:
-		movem.l	a1-a2,-(sp)
-		lea	(ArtLoadCues).l,a1
-		add.w	d0,d0
-		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1				; jump to relevant PLC
-		lea	(v_plc_buffer).w,a2			; PLC buffer space
+		movem.l	a1-a2,-(sp)				; store register data
+		lea	(ArtLoadCues).l,a1			; load PLC list address
+		add.w	d0,d0					; double for word-based indexing
+		move.w	(a1,d0.w),d0				; load correct relative add address
+		lea	(a1,d0.w),a1				; add and load actual address of list
+		lea	(v_plc_buffer).w,a2			; load PLC process list
 
 .findspace:
-		tst.l	(a2)					; is space available in RAM?
-		beq.s	.copytoRAM				; if yes, branch
-		addq.w	#6,a2					; if not, try next space
-		bra.s	.findspace
+		tst.l	(a2)					; is this slot taken?
+		beq.s	.copytoRAM				; if not, branch
+		addq.w	#plc_slot_size,a2			; advance to next slot
+		bra.s	.findspace				; recheck
 ; ===========================================================================
 
 .copytoRAM:
-		move.w	(a1)+,d0				; get length of PLC
-		bmi.s	.skip
+		move.w	(a1)+,d0				; load size of list
+		bmi.s	.return					; if there is no list, branch
 
 .loop:
-		move.l	(a1)+,(a2)+
-		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,.loop				; repeat for length of PLC
+		move.l	(a1)+,(a2)+				; copy Nemesis art address
+		move.w	(a1)+,(a2)+				; copy VRAM location to dump to
+		dbf	d0,.loop				; repeat for all entries
 
-.skip:
-		movem.l	(sp)+,a1-a2				; a1=object
+.return:
+		movem.l	(sp)+,a1-a2				; restore register data
 		rts
 ; End of function AddPLC
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Queue pattern load requests, but clear the PLQ first
-
-; ARGUMENTS
-; d0 = index of PLC list (see ArtLoadCues)
-
-; NOTICE: This subroutine does not check for buffer overruns. The programmer
-;	(or hacker) is responsible for making sure that no more than
-;	16 load requests are copied into the buffer.
-;	_________DO NOT PUT MORE THAN 16 LOAD REQUESTS IN A LIST!__________
-;	(or if you change the size of Plc_Buffer, the limit becomes (Plc_Buffer_Only_End-Plc_Buffer)/6)
+; Identical to AddPLC, but also stops the current PLC process, and loads
+; a brand new queue. (The same 16th entry warning as above applies!)
+; ---------------------------------------------------------------------------
 
 ; LoadPLC2:
 NewPLC:
-		movem.l	a1-a2,-(sp)
-		lea	(ArtLoadCues).l,a1
-		add.w	d0,d0
-		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1				; jump to relevant PLC
-		bsr.s	ClearPLC				; erase any data in PLC buffer space
-		lea	(v_plc_buffer).w,a2
-		move.w	(a1)+,d0				; get length of PLC
-		bmi.s	.skip					; if it's negative, skip the next loop
+		movem.l	a1-a2,-(sp)				; store register data
+		lea	(ArtLoadCues).l,a1			; load PLC list address
+		add.w	d0,d0					; double for word-based indexing
+		move.w	(a1,d0.w),d0				; load correct relative add address
+		lea	(a1,d0.w),a1				; add and load actual address of list
+		bsr.s	ClearPLC				; clear the current PLC entries first
+		lea	(v_plc_buffer).w,a2			; load PLC process list
+		move.w	(a1)+,d0				; load size of list
+		bmi.s	.return					; if there is no list, branch
 
 .loop:
-		move.l	(a1)+,(a2)+
-		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,.loop				; repeat for length of PLC
+		move.l	(a1)+,(a2)+				; copy Nemesis art address
+		move.w	(a1)+,(a2)+				; copy VRAM location to dump to
+		dbf	d0,.loop				; repeat for all entries
 
-.skip:
-		movem.l	(sp)+,a1-a2
+.return:
+		movem.l	(sp)+,a1-a2				; restore register data
 		rts
 ; End of function NewPLC
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Subroutine to	clear the pattern load cues
-; ---------------------------------------------------------------------------
-
+; Subroutine to clear the pattern load cues
 ; Clear the pattern load queue ($FFF680 - $FFF700)
+; ---------------------------------------------------------------------------
 
 ClearPLC:
-		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
-		moveq	#(v_plc_buffer_end-v_plc_buffer)/4-1,d0
+		lea	(v_plc_buffer).w,a2			; load PLC process list
+		moveq	#(v_plc_buffer_end-v_plc_buffer)/4-1,d0	; set size of list
 
-.clrRAM:
-		clr.l	(a2)+
-		dbf	d0,.clrRAM
+.loop:
+		clr.l	(a2)+					; clear PLC process list
+		dbf	d0,.loop				; repeat until entire list is cleared
 		rts
 ; End of function ClearPLC
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Subroutine to use graphics listed in a pattern load cue
+; Subroutine to	check the PLC buffer and begin decompression if it contains
+; anything. ProcessPLC handles the actual decompression during VBlank
 ; ---------------------------------------------------------------------------
 
 RunPLC:
-		tst.l	(v_plc_buffer).w
-		beq.s	Rplc_Exit
-		tst.w	(v_plc_patternsleft).w
-		bne.s	Rplc_Exit
-		movea.l	(v_plc_buffer).w,a0
-		lea	(NemPCD_WriteRowToVDP).l,a3
-		lea	(v_ngfx_buffer).w,a1
-		move.w	(a0)+,d2
-		bpl.s	loc_1404
-		adda.w	#NemPCD_WriteRowToVDP_XOR-NemPCD_WriteRowToVDP,a3
+		tst.l	(v_plc_buffer).w			; are there any PLC entries left to process?
+		beq.s	.return					; if not, branch
+		tst.w	(v_plc_patternsleft).w			; is a section counter already set (is art already being decompressed)?
+		bne.s	.return					; if so, branch
 
-loc_1404:
-		andi.w	#$7FFF,d2
+		movea.l	(v_plc_buffer).w,a0			; load address of first entry's art
+		lea	(NemPCD_WriteRowToVDP).l,a3		; load address of dumping routine to use (VDP variant)
+		lea	(v_ngfx_buffer).w,a1			; load RLE huffman buffer
+		move.w	(a0)+,d2				; load number of sections to decompress (Each section is $20 bytes)
+		bpl.s	.skipXor				; if this data doesn't use XOR variant, branch
+		adda.w	#NemPCD_WriteRowToVDP_XOR-NemPCD_WriteRowToVDP,a3 ; advance to XOR variant
+; loc_160E:
+.skipXor:
+		andi.w	#$7FFF,d2				; clear XOR flag
+
 	if FixBugs=0
-		move.w	d2,(v_plc_patternsleft).w
+		; Relocated to bugfix below
+		move.w	d2,(v_plc_patternsleft).w		; save section counter
 	endif
-		bsr.w	NemDec_BuildCodeTable
-		move.b	(a0)+,d5
-		asl.w	#8,d5
-		move.b	(a0)+,d5
-		moveq	#$10,d6
+		bsr.w	NemDec_BuildCodeTable			; decompress the huffman tree RLE table
+		move.b	(a0)+,d5				; load lookup field
+		asl.w	#8,d5					; ''
+		move.b	(a0)+,d5				; ''
+		moveq	#$10,d6					; prepare bit shift counter (shifting up to a word in size)
 		moveq	#0,d0
-		move.l	a0,(v_plc_buffer).w
-		move.l	a3,(v_plc_ptrnemcode).w
-		move.l	d0,(v_plc_repeatcount).w
-		move.l	d0,(v_plc_paletteindex).w
-		move.l	d0,(v_plc_previousrow).w
-		move.l	d5,(v_plc_dataword).w
-		move.l	d6,(v_plc_shiftvalue).w
+		move.l	a0,(v_plc_buffer).w			; store current entry address
+		move.l	a3,(v_plc_ptrnemcode).w			; store dumping routine (XOR/Non-XOR)
+		move.l	d0,(v_plc_repeatcount).w		; clear RLE dump counter
+		move.l	d0,(v_plc_paletteindex).w		; clear RLE dump nybble
+		move.l	d0,(v_plc_previousrow).w		; clear previous XOR dump
+		move.l	d5,(v_plc_dataword).w			; store lookup field
+		move.l	d6,(v_plc_shiftvalue).w			; store bit shift counter
 	if FixBugs
 		; Fix a race condition with Pattern Load Cues
 		; https://info.sonicretro.org/SCHG_How-to:Fix_a_race_condition_with_Pattern_Load_Cues
-		move.w	d2,(v_plc_patternsleft).w
+		move.w	d2,(v_plc_patternsleft).w		; save section counter
 	endif
 
-Rplc_Exit:
+.return:
 		rts
+; End of function RunPLC
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to decompress and dump a specified number of Nemesis-compressed
 ; PLC tiles from the PLC process list to VRAM. These are called from VBlank,
 ; probably done to smooth out level loading because of how slow Nemesis is.
+; (Note: Process"D"PLC is an old misnomer!)
 ; ---------------------------------------------------------------------------
 
+; sub_1642: ProcessDPLC_9Tiles:
 ProcessPLC_9Tiles:
-		tst.w	(v_plc_patternsleft).w
-		beq.w	locret_14D0
-		move.w	#9,(v_plc_framepatternsleft).w		; process 9 Nemesis-compressed tiles
+		tst.w	(v_plc_patternsleft).w			; is a section counter set (is art being decompressed)?
+		beq.w	ProcessPLC_Return			; if not, branch (nothing to decompress)
+
+		move.w	#9,(v_plc_framepatternsleft).w		; set tile counter to 9 (number of tiles to decompress in a frame)
 		moveq	#0,d0
-		move.w	(v_plc_buffer+4).w,d0
-		addi.w	#$120,(v_plc_buffer+4).w
-		bra.s	ProcessDPLC
+		move.w	(v_plc_buffer_dest).w,d0		; load VRAM address for this frame
+		addi.w	#9*tile_size,(v_plc_buffer_dest).w	; increase address for next frame
+		bra.s	ProcessPLC				; continue
 ; ===========================================================================
 
+; sub_165E: ProcessDPLC2: ProcessPLC_3Tiles:
 ProcessPLC_3Tiles:
-		tst.w	(v_plc_patternsleft).w
-		beq.s	locret_14D0
-		move.w	#3,(v_plc_framepatternsleft).w		; process 3 Nemesis-compressed tiles
-		moveq	#0,d0
-		move.w	(v_plc_buffer+4).w,d0
-		addi.w	#$60,(v_plc_buffer+4).w
+		tst.w	(v_plc_patternsleft).w			; is a section counter set (is art being decompressed)?
+		beq.s	ProcessPLC_Return			; if not, branch (nothing to decompress)
 
-ProcessDPLC:
-		lea	(vdp_control_port).l,a4
-		lsl.l	#2,d0
-		lsr.w	#2,d0
-		ori.w	#$4000,d0
-		swap	d0
-		move.l	d0,(a4)
-		subq.w	#4,a4
-		movea.l	(v_plc_buffer).w,a0
-		movea.l	(v_plc_ptrnemcode).w,a3
-		move.l	(v_plc_repeatcount).w,d0
-		move.l	(v_plc_paletteindex).w,d1
-		move.l	(v_plc_previousrow).w,d2
-		move.l	(v_plc_dataword).w,d5
-		move.l	(v_plc_shiftvalue).w,d6
-		lea	(v_ngfx_buffer).w,a1
+		move.w	#3,(v_plc_framepatternsleft).w		; set tile counter to 3 (number of tiles to decompress in a frame)
+		moveq	#0,d0					; clear d0
+		move.w	(v_plc_buffer_dest).w,d0		; load VRAM address for this frame
+		addi.w	#3*tile_size,(v_plc_buffer_dest).w	; increase address for next frame
+		; fall-through to ProcessPLC...
+; ---------------------------------------------------------------------------
 
-loc_14A0:
-		movea.w	#8,a5
-		bsr.w	NemPCD_NewRow
-		subq.w	#1,(v_plc_patternsleft).w
-		beq.s	ShiftPLC
-		subq.w	#1,(v_plc_framepatternsleft).w
-		bne.s	loc_14A0
-		move.l	a0,(v_plc_buffer).w
-		move.l	a3,(v_plc_ptrnemcode).w
-		move.l	d0,(v_plc_repeatcount).w
-		move.l	d1,(v_plc_paletteindex).w
-		move.l	d2,(v_plc_previousrow).w
-		move.l	d5,(v_plc_dataword).w
-		move.l	d6,(v_plc_shiftvalue).w
+; loc_1676: ProcessPLC:
+ProcessPLC:
+		lea	(vdp_control_port).l,a4			; load VDP control port address
+		lsl.l	#2,d0					; get address MSB bits and send to LSB of long-word
+		lsr.w	#2,d0					; send rest back
+		ori.w	#$4000,d0				; set mode bits
+		swap	d0					; align for VDP port
+		move.l	d0,(a4)					; set VDP address/mode
+		subq.w	#4,a4					; move a4 down to VDP data port
+		movea.l	(v_plc_buffer).w,a0			; load current entry address
+		movea.l	(v_plc_ptrnemcode).w,a3			; load dumping routine to use (XOR/Non-XOR)
+		move.l	(v_plc_repeatcount).w,d0		; load RLE dump counter
+		move.l	(v_plc_paletteindex).w,d1		; load RLE dump nybble
+		move.l	(v_plc_previousrow).w,d2		; load previous XOR dump
+		move.l	(v_plc_dataword).w,d5			; load lookup field
+		move.l	(v_plc_shiftvalue).w,d6			; load bit shift counter
+		lea	(v_ngfx_buffer).w,a1			; load RLE huffman buffer
 
-locret_14D0:
+; loc_16AA:
+.loop:
+		movea.w	#8,a5					; set size of data to decompress (20 bytes, 1 tile)
+		bsr.w	NemPCD_NewRow				; continue the decompression
+		subq.w	#1,(v_plc_patternsleft).w		; decrease section count by 1
+		beq.s	ProcessPLC_ShiftCue			; if decompression is finished, branch
+		subq.w	#1,(v_plc_framepatternsleft).w		; decrease tile counter
+		bne.s	.loop					; if still running, branch to decompress another tile
+
+		move.l	a0,(v_plc_buffer).w			; store current entry address
+		move.l	a3,(v_plc_ptrnemcode).w			; store dumping routine to use (XOR/Non-XOR)
+		move.l	d0,(v_plc_repeatcount).w		; store RLE dump counter
+		move.l	d1,(v_plc_paletteindex).w		; store RLE dump nybble
+		move.l	d2,(v_plc_previousrow).w		; store previous XOR dump
+		move.l	d5,(v_plc_dataword).w			; store lookup field
+		move.l	d6,(v_plc_shiftvalue).w			; store bit shift counter
+
+ProcessPLC_Return:
 		rts
 ; ===========================================================================
 
-ShiftPLC:
-		lea	(v_plc_buffer).w,a0
-		moveq	#(v_plc_buffer_only_end-v_plc_buffer-6)/4-1,d0
+; loc_16DC:
+ProcessPLC_ShiftCue:
+		lea	(v_plc_buffer).w,a0			; load PLC process list
+		moveq	#(v_plc_buffer_only_end-v_plc_buffer-plc_slot_size)/4-1,d0 ; set size of list
 
+; loc_16E2:
 .loop:
-		move.l	6(a0),(a0)+
-		dbf	d0,.loop
+		move.l	plc_slot_size(a0),(a0)+			; shift contents of PLC buffer up 6 bytes
+		dbf	d0,.loop				; repeat til done
 
 	if FixBugs
 		; The above code does not properly 'pop' the 16th PLC entry.
 		; Because of this, occupying the 16th slot will cause it to
 		; be repeatedly decompressed infinitely.
-		; Granted, this could be conisdered more of an optimisation
+		; Granted, this could be considered more of an optimisation
 		; than a bug: treating the 16th entry as a dummy that
 		; should never be occupied makes this code unnecessary.
 		; Still, the overhead of this code is minimal.
-	if (v_plc_buffer_only_end-v_plc_buffer-6)&2
-		move.w	6(a0),(a0)
-	endif
-
-		clr.l	(v_plc_buffer_only_end-6).w
+		if (v_plc_buffer_only_end-v_plc_buffer-plc_slot_size)&2
+			move.w	plc_slot_size(a0),(a0)
+		endif
+		clr.l	(v_plc_buffer_only_end-plc_slot_size).w
 	endif
 
 		rts
+; End of function ProcessPLC
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Like AddPLC, but instead of adding entries to a queue to be processed later,
+; this will decompress and transfer all entries of the given PLC ID's list
+; immediately, blocking until it is done. Does not use or affect the queue.
+; ---------------------------------------------------------------------------
 
 QuickPLC:
-		lea	(ArtLoadCues).l,a1
-		add.w	d0,d0
-		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1
-		move.w	(a1)+,d1
+		lea	(ArtLoadCues).l,a1			; load PLC list address
+		add.w	d0,d0					; double for word-based indexing
+		move.w	(a1,d0.w),d0				; load correct relative add address
+		lea	(a1,d0.w),a1				; add and load actual address of list
+		move.w	(a1)+,d1				; load size of list
 
 .loop:
-		movea.l	(a1)+,a0
-		moveq	#0,d0
-		move.w	(a1)+,d0
-		lsl.l	#2,d0
-		lsr.w	#2,d0
-		ori.w	#$4000,d0
-		swap	d0
-		move.l	d0,(vdp_control_port).l
-		bsr.w	NemDec
-		dbf	d1,.loop
+		movea.l	(a1)+,a0				; load Nemesis art address
+		moveq	#0,d0					; clear d0
+		move.w	(a1)+,d0				; load VRAM dump address
+		lsl.l	#2,d0					; get address MSB bits and send to LSB of long-word
+		lsr.w	#2,d0					; send rest back
+		ori.w	#$4000,d0				; set mode bits
+		swap	d0					; align for VDP port
+		move.l	d0,(vdp_control_port).l			; set VDP address/mode
+		bsr.w	NemDec					; decompress the entire entry
+		dbf	d1,.loop				; repeat for all entries in the list
 		rts
-
-		include "_include/Decompression/Enigma Decompression.asm"
-		include "_include/Decompression/Kosinski Decompression.asm"
-		include "_include/PaletteCycle.asm"
-
-Pal_TitleCyc:	binclude	"palette/Cycle - Title.bin"
-Pal_GHZCyc:	binclude	"palette/Cycle - GHZ.bin"
-Pal_LZCyc:	binclude	"palette/Cycle - LZ (Unused).bin"
-Pal_MZCyc:	binclude	"palette/Cycle - MZ (Unused).bin"
-Pal_SLZCyc:	binclude	"palette/Cycle - SLZ.bin"
-Pal_SZ1Cyc:	binclude	"palette/Cycle - SZ1.bin"
-Pal_SZ2Cyc:	binclude	"palette/Cycle - SZ2.bin"
-
-		include	"_include/Palette Fading.asm"
+; End of function QuickPLC
 
 ; ===========================================================================
+; >>> Other decompression algorithms
+	include "_include/Decompression/Enigma Decompression.asm"
+	include "_include/Decompression/Kosinski Decompression.asm"
+
+
+; ===========================================================================
+; >>> Palette logic routines
+	include "_include/PaletteCycle.asm"
+	include	"_include/Palette Fading.asm" ; includes "PaletteFadeIn", "PaletteFadeOut"
+
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Palette cycling routine - Sega logo
+; ---------------------------------------------------------------------------
 
 PalCycle_Sega:
-		subq.w	#1,(v_pcyc_time).w	; decrement timer
-		bpl.s	.return	; if time remains, branch
+		subq.w	#1,(v_pcyc_time).w			; decrement timer
+		bpl.s	.return					; if time remains, branch
 
-		move.w	#3,(v_pcyc_time).w	; reset timer to 3 frames
-		move.w	(v_pcyc_num).w,d0	; get cycle number
-		bmi.s	.return	; if negative, return
-		subq.w	#2,(v_pcyc_num).w	; decrement cycle number by 2
-		lea	(Pal_SegaCyc).l,a0
-		lea	(v_palette_line_1+4).w,a1
+		move.w	#3,(v_pcyc_time).w			; reset timer to 3 frames
+		move.w	(v_pcyc_num).w,d0			; get cycle number
+		bmi.s	.return					; if negative, return
+		subq.w	#2,(v_pcyc_num).w			; decrement cycle number by 2
+		lea	(Pal_SegaCyc).l,a0			; load Sega palette cycle data
+		lea	(v_palette_line_1+(2*2)).w,a1		; target palette line 1, colors 2-B
 		adda.w	d0,a0
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.w	(a0)+,(a1)+
+		move.l	(a0)+,(a1)+				; write 2 colors
+		move.l	(a0)+,(a1)+				; write 2 colors
+		move.l	(a0)+,(a1)+				; write 2 colors
+		move.l	(a0)+,(a1)+				; write 2 colors
+		move.l	(a0)+,(a1)+				; write 2 colors
+		move.w	(a0)+,(a1)+				; write 1 color
 
 .return:
 		rts
 ; End of function PalCycle_Sega
 
 ; ===========================================================================
+; >>> Palette cycle data used for Sega screen
 Pal_SegaCyc:	binclude	"palette/Cycle - Sega.bin"
-; ===========================================================================
 
-PalLoad1:
-		lea	(Pal_Index).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2
-		movea.w	(a1)+,a3
-		adda.w	#v_palette_fading-v_palette,a3
-		move.w	(a1)+,d7
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to load main palettes into the fading buffer.
+; These get displayed once PaletteFadeIn/PaletteWhiteIn is called.
+
+; input:
+; d0 = index number for palette
+; ---------------------------------------------------------------------------
+
+PalLoad_Fade:
+		lea	(Pal_Index).l,a1			; get palette pointers
+		lsl.w	#3,d0					; multiply input ID by 8 (size of one palette index entry)
+		adda.w	d0,a1					; add to palette index pointer to get relevant palette entry
+		movea.l	(a1)+,a2				; get palette data address
+		movea.w	(a1)+,a3				; get target RAM address
+		adda.w	#v_palette_fading-v_palette,a3		; load to palette fade-in buffer instead of active palette buffer (+$80)
+		move.w	(a1)+,d7				; get length of palette data
 
 .loop:
-		move.l	(a2)+,(a3)+
-		dbf	d7,.loop
+		move.l	(a2)+,(a3)+				; move two colors from palette data to palette buffer RAM
+		dbf	d7,.loop				; loop until all colors are loaded
 		rts
-; ===========================================================================
+; End of function PalLoad_Fade
 
-PalLoad2:
-		lea	(Pal_Index).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2
-		movea.w	(a1)+,a3
-		move.w	(a1)+,d7
+; ---------------------------------------------------------------------------
+; Subroutine to directly load main palettes to the active palette.
+; Same as PalLoad_Fade, but without adding $80.
+; ---------------------------------------------------------------------------
+
+PalLoad:
+		lea	(Pal_Index).l,a1			; get palette pointers
+		lsl.w	#3,d0					; multiply input ID by 8 (size of one palette index entry)
+		adda.w	d0,a1					; add to palette index pointer to get relevant palette entry
+		movea.l	(a1)+,a2				; get palette data address
+		movea.w	(a1)+,a3				; get target RAM address
+		move.w	(a1)+,d7				; get length of palette data
 
 .loop:
-		move.l	(a2)+,(a3)+
-		dbf	d7,.loop
+		move.l	(a2)+,(a3)+				; move two colors from palette data to palette buffer RAM
+		dbf	d7,.loop				; loop until all colors are loaded
 		rts
-; ===========================================================================
-
-		include "_include/Palette Index.asm"
-
-Pal_SegaBG:	binclude	"palette/Sega Screen.bin"
-Pal_Title:	binclude	"palette/Title Screen.bin"
-Pal_LevelSel:	binclude	"palette/Level Select.bin"
-Pal_Sonic:	binclude	"palette/Sonic.bin"
-Pal_GHZ:	binclude	"palette/Green Hill Zone.bin"
-Pal_LZ:		binclude	"palette/Labyrinth Zone.bin"
-Pal_Unused:	binclude	"palette/Unused.bin"
-Pal_MZ:		binclude	"palette/Marble Zone.bin"
-Pal_SLZ:	binclude	"palette/Star Light Zone.bin"
-Pal_SZ:		binclude	"palette/Sparkling Zone.bin"
-Pal_CWZ:	binclude	"palette/Clock Work Zone.bin"
-Pal_Special:	binclude	"palette/Special Stage.bin"
+; End of function PalLoad
 
 ; ===========================================================================
+; >>> Palette pointers and palette binary includes
+	include "_include/Palette Index.asm"
 
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to wait for VBlank routines to complete
+; ---------------------------------------------------------------------------
+
+; DelayProgram: <-- old misnomer
+; WaitForVBla: <-- old name
 WaitForVBlank:
-		enable_ints
+		enable_ints					; enable interrupts so vertical interrupts can occur
 
 .wait:
-		tst.b	(v_vblank_routine).w
-		bne.s	.wait
-		rts
-; ===========================================================================
-
-		include	"obj/sub RandomNumber.asm"
-		include	"obj/sub CalcSine.asm"
-		include	"obj/sub CalcSqrt.asm"
-		include	"obj/sub CalcAngle.asm"
+		tst.b	(v_vblank_routine).w			; has VBlank routine finished?
+		bne.s	.wait					; if not, loop until it has
+		rts						; resume normal operation
+; End of function WaitForVBlank
 
 ; ===========================================================================
+; >>> Subroutines for generic calculations
+	include	"obj/sub RandomNumber.asm"
+	include	"obj/sub CalcSine.asm"
+	include	"obj/sub CalcSqrt.asm"
+	include	"obj/sub CalcAngle.asm"
 
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Sega screen
+; ---------------------------------------------------------------------------
+
+; SegaScreen:
 GM_Sega:
-		move.b	#bgm_Fade,d0
-		bsr.w	QueueSound2
-		bsr.w	ClearPLC
-		bsr.w	PaletteFadeOut
-		lea	(vdp_control_port).l,a6
-		move.w	#vreg_mode1|%0100,(a6)
-		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
-		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
-		move.w	#vreg_bgcolor|0,(a6)
-		move.w	#vreg_mode3|0,(a6)
-		disable_display
-		bsr.w	ClearScreen
-		locVRAM ArtTile_Sega_Tiles*tile_size
-		lea	(Nem_SegaLogo).l,a0
-		bsr.w	NemDec
-		lea	(v_ram_start).l,a1
-		lea	(Eni_SegaLogo).l,a0
-		move.w	#ArtTile_Sega_Tiles,d0
-		bsr.w	EniDec
+		; fading out from previous game mode
+		move.b	#bgm_Fade,d0				; set fade-out music command
+		bsr.w	QueueSound2				; fade-out music
+		bsr.w	ClearPLC				; stop any potential in-progress PLC
+		bsr.w	PaletteFadeOut				; fade-out previous game mode
+; ---------------------------------------------------------------------------
 
-		copyTilemap	v_ram_start,vram_fg+$61C,12,4
+		; screen setup and loading patterns
+		lea	(vdp_control_port).l,a6			; load VDP control port
+		move.w	#vreg_mode1|%000100,(a6)		; use 8-colour mode
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)		; set foreground nametable address
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)		; set background nametable address
+		move.w	#vreg_bgcolor|0<<4|0,(a6)		; set background colour (palette entry 0)
+		move.w	#vreg_mode3|%0000,(a6)			; full-screen vertical scrolling
 
-		moveq	#palid_SegaBG,d0
-		bsr.w	PalLoad2
+		disable_display					; disable screen output
+		bsr.w	ClearScreen				; wipe the screen
+
+		locVRAM	ArtTile_Sega_Tiles*tile_size		; set target VRAM location for Sega logo patterns
+		lea	(Nem_SegaLogo).l,a0			; load Sega logo patterns
+		bsr.w	NemDec					; decompress Nemesis-compressed patterns directly to VRAM
+
+		lea	(v_ram_start).l,a1			; set start of RAM to be used as decompression buffer
+		lea	(Eni_SegaLogo).l,a0			; load Sega logo mappings
+		move.w	#ArtTile_Sega_Tiles,d0			; set art tile for Sega screen mappings
+		bsr.w	EniDec					; decompress Enigma-compressed mappings to RAM buffer
+
+		copyTilemap v_ram_start,vram_fg+$61C,12,4	; transfer decompressed patterns to VRAM (FG plane, Sega logo)
+
+		moveq	#palid_SegaBG,d0			; load Sega screen palette...
+		bsr.w	PalLoad					; ...directly to active palette (not fade-in buffer)
 		move.w	#40,(v_pcyc_num).w			; set cycle number to 40
-		move.w	#0,(v_pal_buffer+$12).w
-		move.w	#0,(v_pal_buffer+$10).w
+		move.w	#0,(v_pal_buffer+$12).w			; clear some palcycle buffer (unused?)
+		move.w	#0,(v_pal_buffer+$10).w			; clear some palcycle buffer (unused?)
 		move.w	#60*3,(v_generictimer).w		; run Sega screen for 3 seconds
-		enable_display
+		enable_display					; enable screen output
+; ---------------------------------------------------------------------------
 
 Sega_MainLoop:
-		move.b	#id_VBlank_02,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	PalCycle_Sega
+		move.b	#id_VBlank_02,(v_vblank_routine).w	; set VBlank routine to $02
+		bsr.w	WaitForVBlank				; wait for VBlank to finish
+		bsr.w	PalCycle_Sega				; run sega logo palette cycle
 		tst.w	(v_generictimer).w			; has generic timer reached zero?
 		beq.s	.timerfinished				; if so, branch
 		andi.b	#btnStart,(v_jpadpress1).w		; check if Start is pressed
 		beq.s	Sega_MainLoop				; if not, branch
+; ---------------------------------------------------------------------------
 
-.timerfinished:
+.timerfinished:		; transition to title screen
 		move.b	#id_Title,(v_gamemode).w		; go to Title screen
-		rts
+		rts						; return to MainGameLoop
+; End of function GM_Sega
+
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Title screen
+; ---------------------------------------------------------------------------
 
-GM_Title:
-		bsr.w	ClearPLC
-		bsr.w	PaletteFadeOut
-		lea	(vdp_control_port).l,a6
-		move.w	#vreg_mode1|%0100,(a6)
-		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
-		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
-		move.w	#vreg_planesize|%0001,(a6)
-		move.w	#vreg_winypos|0,(a6)
-		move.w	#vreg_mode3|%0011,(a6)
-		move.w	#vreg_bgcolor|%00100000,(a6)
-		disable_display
-		bsr.w	ClearScreen
+; TitleScreen:
+GM_Title:		; fading out from previous game mode
+		bsr.w	ClearPLC				; stop any potential in-progress PLC
+		bsr.w	PaletteFadeOut				; fade-out previous game mode
+; ---------------------------------------------------------------------------
 
-		clearRAM v_objspace,v_objspace_end
+		; screen setup and loading patterns
+		lea	(vdp_control_port).l,a6			; load VDP control port
+		move.w	#vreg_mode1|%000100,(a6)		; use 8-colour mode
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)		; set foreground nametable address
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)		; set background nametable address
+		move.w	#vreg_planesize|%000001,(a6)		; 64-cell hscroll size
+		move.w	#vreg_winypos|0,(a6)			; window vertical position
+		move.w	#vreg_mode3|%0011,(a6)			; line scroll mode (per-row horizontally, full-screen vertically)
+		move.w	#vreg_bgcolor|2<<4|0,(a6)		; set background colour (palette line 2, entry 0)
 
-		locVRAM ArtTile_Title_Foreground*tile_size
-		lea	(Nem_TitleFg).l,a0
-		bsr.w	NemDec
-		locVRAM ArtTile_Title_Sonic*tile_size
-		lea	(Nem_TitleSonic).l,a0
-		bsr.w	NemDec
-		lea	(vdp_data_port).l,a6
-		locVRAM ArtTile_Level_Select_Font*tile_size,vdp_control_port-vdp_data_port(a6)
-		lea	(Art_Text).l,a5
-		move.w	#(Art_Text_end-Art_Text)/2-1,d1
+		disable_display					; disable screen output
+		bsr.w	ClearScreen				; wipe the screen
+		clearRAM v_objspace				; clear object RAM
 
-.loadtext:
-		move.w	(a5)+,(a6)
-		dbf	d1,.loadtext
+		locVRAM	ArtTile_Title_Foreground*tile_size	; set target VRAM location title screen foreground emblem
+		lea	(Nem_TitleFg).l,a0			; load title screen foreground emblem patterns
+		bsr.w	NemDec					; decompress Nemesis-compressed patterns directly to VRAM
+
+		locVRAM	ArtTile_Title_Sonic*tile_size		; set target VRAM location big Sonic object
+		lea	(Nem_TitleSonic).l,a0			; load big Sonic title screen patterns
+		bsr.w	NemDec					; decompress Nemesis-compressed patterns directly to VRAM
+
+		lea	(vdp_data_port).l,a6			; load VDP data transfer port
+		locVRAM	ArtTile_Level_Select_Font*tile_size,4(a6) ; set target VRAM location for level select font
+		lea	(Art_Text).l,a5				; load uncompressed level select font
+		move.w	#(Art_Text_end-Art_Text)/2-1,d1		; set loop count for level select
+Tit_LoadText:
+		move.w	(a5)+,(a6)				; write one row of the level select font to VRAM
+		dbf	d1,Tit_LoadText				; loop until it's fully loaded
 
 	if FixBugs
 		; Fix title screen position
@@ -1484,113 +1575,135 @@ GM_Title:
 		copyTilemap	Unc_Title,vram_fg+$206,34,22
 	endif
 
-		move.w	#0,(v_debuguse).w
-		move.w	#0,(f_demo).w
-		move.w	#0,(v_zone).w
-		bsr.w	LevelSizeLoad
-		bsr.w	DeformLayers
-		locVRAM ArtTile_Level*tile_size
-		lea	(Nem_GHZ_1st).l,a0
-		bsr.w	NemDec
-		lea	(Blk16_GHZ).l,a0
-		lea	(v_16x16).w,a4
+		move.w	#0,(v_debuguse).w			; exit debug mode if necessary
+		move.w	#0,(f_demo).w				; disable demo mode
+		move.w	#id_GHZ_act1,(v_zone_act).w		; set level to GHZ1 (000)
+		bsr.w	LevelSizeLoad				; load level size (will use GHZ1's sizes)
+		bsr.w	DeformLayers				; initialize background deformation before fade-in (redundant here)
+
+		locVRAM	ArtTile_Level*tile_size			; set target VRAM location for level patterns
+		lea	(Nem_GHZ_1st).l,a0			; load first half of GHZ patterns
+		bsr.w	NemDec					; decompress Nemesis-compressed patterns directly to VRAM
+
+		lea	(Blk16_GHZ).l,a0			; load GHZ 16x16 blocks mappings
+		lea	(v_16x16).w,a4				; set target buffer for blocks mappings
 		move.w	#(v_16x16_end-v_16x16)/4-1,d0
 
 .loadblocks:
 		move.l	(a0)+,(a4)+
 		dbf	d0,.loadblocks
-		lea	(Blk256_GHZ).l,a0
-		lea	(v_256x256).l,a1
-		bsr.w	KosDec
-		bsr.w	LevelLayoutLoad
-		lea	(vdp_control_port).l,a5
-		lea	(vdp_data_port).l,a6
-		lea	(v_bgscrposx).w,a3
-		lea	(v_lvllayout_bg).w,a4
-		move.w	#$4000+vram_bg-vram_fg,d2
-		bsr.w	DrawChunks
-		moveq	#palid_Title,d0
-		bsr.w	PalLoad1
-		move.b	#bgm_Title,d0
-		bsr.w	QueueSound2
-		move.b	#0,(f_debugmode).w
-		move.w	#376,(v_generictimer).w			; run title screen for 376 frames
+
+		lea	(Blk256_GHZ).l,a0			; load GHZ 256x256 mappings
+		lea	(v_256x256).l,a1			; set target buffer for chunks mappings
+		bsr.w	KosDec					; decompress Kosinski-compressed chunks mappings to buffer
+
+		bsr.w	LevelLayoutLoad				; load level layout for the background
+
+		lea	(vdp_control_port).l,a5			; set VDP control port
+		lea	(vdp_data_port).l,a6			; set VDP data port
+		lea	(v_bgscrposx).w,a3			; get current background X position
+		lea	(v_lvllayout_bg).w,a4			; get location in level layout RAM where background is stored
+		move.w	#$4000+(vram_bg-vram_fg),d2		; =$6000 (VRAM write command $4000 + nametable start address relative to vram_fg)
+		bsr.w	DrawChunks				; draw initial background layer
+
+		moveq	#palid_Title,d0				; load title screen palette...
+		bsr.w	PalLoad_Fade				; ...to fade-in buffer
+		move.b	#bgm_Title,d0				; set title screen music
+		bsr.w	QueueSound2				; play title screen music
+		move.b	#0,(f_debugmode).w			; disable debug mode (cheat remains active though)
+		move.w	#376,(v_generictimer).w			; run title screen for 376 frames (6 seconds plus some change)
+
 		move.b	#id_TitleSonic,(v_titlesonic).w		; load big sonic object
 		move.b	#id_PSBTM,(v_pressstart).w		; load "PRESS START BUTTON" object
-		move.b	#id_PSBTM,(v_ttlsonichide).w		; load object which hides sonic
-		move.b	#2,(v_ttlsonichide+obFrame).w		; set the object prior to use the correct frame
-		moveq	#plcid_Main,d0
-		bsr.w	NewPLC
-		enable_display
-		bsr.w	PaletteFadeIn
+		move.b	#id_PSBTM,(v_ttlsonichide).w		; load title screen HUD object
+		move.b	#2,(v_ttlsonichide+obFrame).w		; load object which hides part of Sonic's torso behind the emblem
+
+		moveq	#plcid_Main,d0				; load main patterns (rings, etc.)
+		bsr.w	NewPLC					; (these get loaded once for the title screen and then never again, except when exiting Special Stages)
+; ---------------------------------------------------------------------------
+
+		; fade-in palette and enter main loop
+		enable_display					; enable display
+		bsr.w	PaletteFadeIn				; fade-in title screen
+
+; ---------------------------------------------------------------------------
+; Title screen main loop
+; ---------------------------------------------------------------------------
 
 Tit_MainLoop:
-		move.b	#id_VBlank_04,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	ExecuteObjects
-		bsr.w	DeformLayers
-		bsr.w	BuildSprites
-		bsr.w	PalCycle_Title
-		bsr.w	RunPLC
-		move.w	(v_player+obX).w,d0
-		addq.w	#2,d0
-		move.w	d0,(v_player+obX).w			; move Sonic to the right
+		move.b	#id_VBlank_04,(v_vblank_routine).w	; set VBlank routine to $04
+		bsr.w	WaitForVBlank				; wait for VBlank to finish
+		bsr.w	ExecuteObjects				; execute title screen objects
+		bsr.w	DeformLayers				; run background deformation
+		bsr.w	BuildSprites				; display sprites
+		bsr.w	PalCycle_Title				; run title screen palette cycle
+		bsr.w	RunPLC					; run any potential PLC
+
+		move.w	(v_player+obX).w,d0			; get current title screen position (big Sonic object)
+		addq.w	#2,d0					; move it 2px to the right
+		move.w	d0,(v_player+obX).w			; write new X position
 		cmpi.w	#$1C00,d0				; has Sonic object passed $1C00 on x-axis?
-		blo.s	loc_26E4				; if not, branch
-		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
+		blo.s	Tit_ChkStartOrDemo			; if not, branch
+		; Will never happen due to the short title screen generic timer.
+		; This likely was an old failsafe before Demos were introduced.
+		move.b	#id_Sega,(v_gamemode).w			; return to Sega screen
 		rts
 ; ===========================================================================
 
-loc_26E4:
-		tst.w	(v_generictimer).w			; has generic timer reached zero?
-		beq.w	GotoDemo				; if so, branch
+; loc_26E4:
+Tit_ChkStartOrDemo:
+		tst.w	(v_generictimer).w			; has title screen timer expired?
+		beq.w	GotoDemo				; if yes, launch Demo mode
 		andi.b	#btnStart,(v_jpadpress1).w		; check if Start is pressed
-		beq.w	Tit_MainLoop				; if not, branch
-		btst	#bitA,(v_jpadhold1).w			; check if A is held
-		beq.w	PlayLevel				; if not, play level
+		beq.w	Tit_MainLoop				; if not, continue looping title screen
+		btst	#bitA,(v_jpadhold1).w			; check if A was held while pressing Start
+		beq.w	PlayLevel				; if not, begin game by playing normal level
+; ---------------------------------------------------------------------------
+
+Tit_EnterLevelSelect:
 
 	if FixBugs
 		; Fix the level selects graphics bug
 		; https://info.sonicretro.org/SCHG_How-to:Fix_the_Level_Select_graphics_bug
-		move.b	#id_VBlank_04,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
+		move.b	#id_VBlank_04,(v_vblank_routine).w	; set VBlank routine to $04
+		bsr.w	WaitForVBlank				; run VBlank one extra frame to prevent graphical glitches
 	endif
 
-		moveq	#palid_LevelSel,d0
-		bsr.w	PalLoad2				; load level select palette
+		moveq	#palid_LevelSel,d0			; load level select palette...
+		bsr.w	PalLoad					; ...directly to active palette
 
-		clearRAM v_hscrolltablebuffer,v_hscrolltablebuffer_end
+		clearRAM v_hscrolltablebuffer			; clear H-Scroll buffer
+		move.l	d0,(v_scrposy_vdp).w			; clear VSRAM (d0 is still 0)
+		disable_ints					; disable interrupts
 
-		move.l	d0,(v_scrposy_vdp).w
-		disable_ints
-		lea	(vdp_data_port).l,a6
-		locVRAM	vram_bg
-		move.w	#(plane_size_64x32)/4-1,d1
+		lea	(vdp_data_port).l,a6			; prepare VDP data write
+		locVRAM	vram_bg					; write to background nametable
+		move.w	#plane_size_64x32/4-1,d1		; write full screen
+.LevSelClearBG:	move.l	d0,(a6)					; clear background plane
+		dbf	d1,.LevSelClearBG			; loop until plane is fully cleared
 
-Tit_ClrScroll:
-		move.l	d0,(a6)
-		dbf	d1,Tit_ClrScroll			; clear scroll data (in VRAM)
-
-		bsr.w	LevSelTextLoad
+		bsr.w	LevSelTextLoad				; load level select text before entering main loop
 
 ; ---------------------------------------------------------------------------
-; Level Select
+; Level Select main loop
 ; ---------------------------------------------------------------------------
 
 LevelSelect:
-		move.b	#id_VBlank_04,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	LevSelControls
-		bsr.w	RunPLC
-		tst.l	(v_plc_buffer).w
-		bne.s	LevelSelect
-		andi.b	#btnABC+btnStart,(v_jpadpress1).w
-		beq.s	LevelSelect
-		move.w	(v_levselitem).w,d0
-		cmpi.w	#$13,d0					; are we on sound select?
-		bne.s	LevSel_Level				; if not, branch
-		move.w	(v_levselsound).w,d0
-		addi.w	#$80,d0
+		move.b	#id_VBlank_04,(v_vblank_routine).w	; set VBlank routine to $04
+		bsr.w	WaitForVBlank				; wait for VBlank to finish
+		bsr.w	LevSelControls				; update selected line if necessary
+		bsr.w	RunPLC					; run any potential PLC
+		tst.l	(v_plc_buffer).w			; are any patterns in the PLC still left to be loaded?
+		bne.s	LevelSelect				; if yes, block quitting level select until finished
+		andi.b	#btnABC+btnStart,(v_jpadpress1).w	; is A, B, C, or Start pressed?
+		beq.s	LevelSelect				; if not, loop level select
+
+LevSel_SelectionMade:
+		move.w	(v_levselitem).w,d0			; get currently selected line
+		cmpi.w	#levsel_sndtest_row,d0			; have you selected item $13 (sound test)?
+		bne.s	LevSel_Level_SS				; if not, go to Level/SS subroutine
+		move.w	(v_levselsound).w,d0			; get currently selected sound test entry
+		addi.w	#$80,d0					; make it $80-based
 		; What follows below are workarounds for bugs within the Sound Driver, these can be removed if FixBugs is enabled, but these are kept here for documentation.
 	if FixBugs
 		cmpi.w	#bgm__Last,d0				; compare the last BGM with the level select sound
@@ -1604,107 +1717,127 @@ LevelSelect:
 		blo.s	LevelSelect				; if lower than SFX, branch
 
 .notBGM:
-		bsr.w	QueueSound2
-		bra.s	LevelSelect
+		bsr.w	QueueSound2				; play selected sound
+		bra.s	LevelSelect				; loop level select
+; ===========================================================================
+
+LevSel_Level_SS:
+		add.w	d0,d0					; double selected line for word-based indexing
+		move.w	LevSel_Ptrs(pc,d0.w),d0			; find relevant level pointer from table
+		bmi.s	LevelSelect				; if it's an invalid entry, branch back to main loop
+		cmpi.w	#id_SS<<8,d0				; check if selected level Special Stage (0700 is used as dummy value)
+		bne.s	LevSel_Level				; if not, branch
+		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
+		rts
 ; ===========================================================================
 
 LevSel_Level:
-		add.w	d0,d0
-		move.w	LevSelOrder(pc,d0.w),d0
-		bmi.s	LevelSelect
-		cmpi.w	#id_SS<<8,d0				; are we on the Special Stage?
-		bne.s	.notSS					; if not, branch
-		move.b	#id_Special,(v_gamemode).w
-		rts
-; ===========================================================================
-
-.notSS:
-		andi.w	#$3FFF,d0
-		btst	#bitB,(v_jpadhold1).w			; is B held?
+		andi.w	#$3FFF,d0				; mask out invalid bits of level number
+		btst	#bitB,(v_jpadhold1).w			; is B button held?
 		beq.s	.notB					; if not, ignore below
-		move.w	#id_GHZ_act4,d0				; Set the zone and act to Green Hill Act 4
+		move.w	#id_GHZ_act4,d0				; set the zone and act to Green Hill Act 4
 
 .notB:
-		move.w	d0,(v_zone).w
+		move.w	d0,(v_zone_act).w			; set new level number (zone and act)
 
 PlayLevel:
-		move.b	#id_Level,(v_gamemode).w
-		move.b	#3,(v_lives).w
+		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
+		move.b	#3,(v_lives).w				; set lives to 3
 		moveq	#0,d0
-		move.w	d0,(v_rings).w
-		move.l	d0,(v_time).w
-		move.l	d0,(v_score).w
-		move.b	#bgm_Fade,d0
-		bsr.w	QueueSound2
-		rts
-; ===========================================================================
-LevSelOrder:
-		dc.w	id_GHZ_act1		; GHZ1
-		dc.w	id_GHZ_act2		; GHZ2
-		dc.w	id_GHZ_act3		; GHZ3
-		dc.w	id_LZ_act1		; LZ1
-		dc.w	id_LZ_act2		; LZ2
-		dc.w	id_LZ_act3		; LZ3
-		dc.w	id_MZ_act1		; MZ1
-		dc.w	id_MZ_act2		; MZ2
-		dc.w	id_MZ_act3		; MZ3
-		dc.w	id_SLZ_act1		; SLZ1
-		dc.w	id_SLZ_act2		; SLZ2
-		dc.w	id_SLZ_act3		; SLZ3
-		dc.w	id_SZ_act1		; SZ1
-		dc.w	id_SZ_act2		; SZ2
-		dc.w	id_SZ_act3		; SZ3
-		dc.w	id_CWZ_act1		; CWZ1
-		dc.w	id_CWZ_act2		; CWZ2
-		dc.w	id_CWZ_act1+$8000	; CWZ3
-		dc.w	id_SS<<8		; SS
-		dc.w	id_SS<<8		; SS (Sound Select)
-		dc.w	$8000
-; ===========================================================================
-
-; ---------------------------------------------------------------------------
-; Demo mode
-; ---------------------------------------------------------------------------
-
-GotoDemo:
-		move.w	#30,(v_generictimer).w
-
-loc_27FE:
-		move.b	#id_VBlank_04,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	DeformLayers
-		bsr.w	PaletteCycle
-		bsr.w	RunPLC
-		move.w	(v_player+obX).w,d0
-		addq.w	#2,d0
-		move.w	d0,(v_player+obX).w
-		cmpi.w	#$1C00,d0
-		blo.s	loc_282C
-		move.b	#id_Sega,(v_gamemode).w
-		rts
-; ===========================================================================
-
-loc_282C:
-		tst.w	(v_generictimer).w
-		bne.w	loc_27FE
-		move.b	#bgm_Fade,d0
+		move.w	d0,(v_rings).w				; clear rings
+		move.l	d0,(v_time).w				; clear time
+		move.l	d0,(v_score).w				; clear score
+		move.b	#bgm_Fade,d0				; set music fade-out command
 		bsr.w	QueueSound2				; fade out music
+		rts						; return to MainGameLoop to start level
+; End of function GM_Title
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Level select - level pointers
+; ---------------------------------------------------------------------------
+; This is just for the pointers. For the text itself, see: LevelMenuText
+; ---------------------------------------------------------------------------
+
+LevSel_Ptrs:
+		dc.w id_GHZ_act1
+		dc.w id_GHZ_act2
+		dc.w id_GHZ_act3
+		dc.w id_LZ_act1
+		dc.w id_LZ_act2
+		dc.w id_LZ_act3
+		dc.w id_MZ_act1
+		dc.w id_MZ_act2
+		dc.w id_MZ_act3
+		dc.w id_SLZ_act1
+		dc.w id_SLZ_act2
+		dc.w id_SLZ_act3
+		dc.w id_SZ_act1
+		dc.w id_SZ_act2
+		dc.w id_SZ_act3
+		dc.w id_CWZ_act1
+		dc.w id_CWZ_act2
+		dc.w id_CWZ_act1+$8000	; CWZ3
+		dc.w id_SS<<8		; Special Stage (dummy value)
+		dc.w id_SS<<8		; Special Stage (Sound Test)
+		dc.w $8000
+LevSel_PtrsEnd:	even
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Demo mode loading routine
+; ---------------------------------------------------------------------------
+
+GotoDemo:	; wait half a second on the final frame of Sonic's finger wagging before going to demo
+		move.w	#30,(v_generictimer).w			; set timeout to 30 frames
+
+; loc_27FE:
+GotoDemo_PreDelayLoop:
+		move.b	#id_VBlank_04,(v_vblank_routine).w	; set VBlank routine to $04
+		bsr.w	WaitForVBlank				; wait for VBlank to finish
+		bsr.w	DeformLayers				; run background deformation
+		bsr.w	PaletteCycle				; run normal palette cycle routine (this briefly uses GHZ's cycle)
+		bsr.w	RunPLC					; run any potential PLC
+
+		move.w	(v_player+obX).w,d0			; get current title screen position (big Sonic object)
+		addq.w	#2,d0					; move it 2px to the right
+		move.w	d0,(v_player+obX).w			; write new X position
+		cmpi.w	#$1C00,d0				; has Sonic object passed $1C00 on x-axis?
+		blo.s	GotoDemo_ChkLoop			; if not, branch
+		; Will never happen due to the short title screen generic timer.
+		; This likely was an old failsafe before Demos were introduced.
+		move.b	#id_Sega,(v_gamemode).w			; return to Sega screen
+		rts
+; ===========================================================================
+
+; loc_282C:
+GotoDemo_ChkLoop:
+		tst.w	(v_generictimer).w			; has pre-delay timer expired?
+		bne.w	GotoDemo_PreDelayLoop			; if not, branch
+; ---------------------------------------------------------------------------
+
+		; start loading demo now
+		move.b	#bgm_Fade,d0				; set music fade-out command
+		bsr.w	QueueSound2				; fade out music
+
 		move.w	(v_demonum).w,d0			; load demo number
-		andi.w	#7,d0
-		add.w	d0,d0
+		andi.w	#7,d0					; limit to four demo entries
+		add.w	d0,d0					; double for word-based indexing
 		move.w	Demo_Levels(pc,d0.w),d0			; load level number for demo
-		move.w	d0,(v_zone).w
+		move.w	d0,(v_zone_act).w			; set level for demo
+
 		addq.w	#1,(v_demonum).w			; add 1 to demo number
 		cmpi.w	#6,(v_demonum).w			; is demo number less than 6?
-		blo.s	loc_2860				; if yes, branch
+		blo.s	GotoDemo_NoReset			; if yes, branch
 		move.w	#0,(v_demonum).w			; reset demo number to 0
 
-loc_2860:
+; loc_2860:
+GotoDemo_NoReset:
 		move.w	#1,(f_demo).w				; turn demo mode on
 		move.b	#id_Demo,(v_gamemode).w			; set screen mode to 08 (demo)
-		cmpi.w	#(id_SS-1)<<8,d0			; is level number 0600 (special stage)?
+		cmpi.w	#$600,d0				; is level number 0600 (Special Stage dummy value)?
 		bne.s	Demo_Level				; if not, branch
-		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
+		move.b	#id_Special,(v_gamemode).w		; set game mode to $10 (Special Stage)
 
 Demo_Level:
 		move.b	#3,(v_lives).w				; set lives to 3
@@ -1713,185 +1846,212 @@ Demo_Level:
 		move.l	d0,(v_time).w				; clear time
 		move.l	d0,(v_score).w				; clear score
 		rts
+; End of function GotoDemo
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Levels used in demos
 ; ---------------------------------------------------------------------------
-Demo_Levels:
-		dc.w	id_GHZ_act1	; 1
-		dc.w	(id_SS-1)<<8	; 2
-		dc.w	id_MZ_act1	; 3
-		dc.w	(id_SS-1)<<8	; 4
-		dc.w	id_SZ_act1	; 5
-		dc.w	(id_SS-1)<<8	; 6
+
+Demo_Levels:	; previously in "misc/Demo Level Order - Intro.bin"
+		dc.w id_GHZ_act1
+		dc.w $600
+		dc.w id_MZ_act1
+		dc.w $600
+		dc.w id_SZ_act1
+		dc.w $600
 		; The demo levels below are unused
-		dc.w	id_SLZ_act1	; 7
-		dc.w	(id_SS-1)<<8	; 8
-		dc.w	id_MZ_act1	; 9
-		dc.w	(id_SS-1)<<8	; 10
-		dc.w	id_SZ_act1	; 11
-		dc.w	(id_SS-1)<<8	; 12
+		dc.w id_SLZ_act1
+		dc.w $600
+		dc.w id_MZ_act1
+		dc.w $600
+		dc.w id_SZ_act1
+		dc.w $600
 		even
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to change what you're selecting in the level select
 ; ---------------------------------------------------------------------------
 
 LevSelControls:
-		move.b	(v_jpadpress1).w,d1
-		andi.b	#btnUp+btnDn,d1
-		bne.s	LevSel_UpDown
-		subq.w	#1,(v_levseldelay).w
-		bpl.s	LevSel_SndTest
+		move.b	(v_jpadpress1).w,d1			; get current button presses
+		andi.b	#btnUp+btnDn,d1				; is up/down pressed this frame?
+		bne.s	LevSel_UpDown				; if yes, branch
+		subq.w	#1,(v_levseldelay).w			; if held, subtract 1 from delay until next move
+		bpl.s	LevSel_SndTest				; if time remains, branch
 
 LevSel_UpDown:
-		move.w	#12-1,(v_levseldelay).w
-		move.b	(v_jpadhold1).w,d1
-		andi.b	#btnUp+btnDn,d1
-		beq.s	LevSel_SndTest
-		move.w	(v_levselitem).w,d0
-		btst	#bitUp,d1
-		beq.s	LevSel_Down
-		subq.w	#1,d0
-		bhs.s	LevSel_Down
-		moveq	#$13,d0
+		move.w	#12-1,(v_levseldelay).w			; reset time delay
+		move.b	(v_jpadhold1).w,d1			; get currently held buttons
+		andi.b	#btnUp+btnDn,d1				; is up/down held?
+		beq.s	LevSel_SndTest				; if not, branch
+		move.w	(v_levselitem).w,d0			; get currently selected line
+		btst	#bitUp,d1				; is up held?
+		beq.s	LevSel_Down				; if not, branch
+		subq.w	#1,d0					; move up 1 selection
+		bhs.s	LevSel_Down				; if entry is still valid, branch
+		moveq	#levsel_line_count-1,d0			; if selection moves below 0, jump to selection last row
 
 LevSel_Down:
-		btst	#bitDn,d1
-		beq.s	LevSel_Refresh
-		addq.w	#1,d0
-		cmpi.w	#$14,d0
-		blo.s	LevSel_Refresh
-		moveq	#0,d0
+		btst	#bitDn,d1				; is down held?
+		beq.s	LevSel_Refresh				; if not, branch
+		addq.w	#1,d0					; move down 1 selection
+		cmpi.w	#levsel_line_count,d0			; is selection past the last one now?
+		blo.s	LevSel_Refresh				; if not, branch
+		moveq	#0,d0					; if selection moves past the last row, jump to selection 0
 
 LevSel_Refresh:
-		move.w	d0,(v_levselitem).w
-		bsr.w	LevSelTextLoad
+		move.w	d0,(v_levselitem).w			; set new selection
+		bsr.w	LevSelTextLoad				; refresh text
 		rts
 ; ===========================================================================
 
 LevSel_SndTest:
-		cmpi.w	#$13,(v_levselitem).w
-		bne.s	LevSel_NoMove
-		move.b	(v_jpadpress1).w,d1
-		andi.b	#btnL+btnR,d1
-		beq.s	LevSel_NoMove
-		move.w	(v_levselsound).w,d0
-		btst	#bitL,d1
-		beq.s	LevSel_Right
-		subq.w	#1,d0
-		bhs.s	LevSel_Right
-		moveq	#sfx__Last-$80,d0
+		cmpi.w	#levsel_sndtest_row,(v_levselitem).w	; is sound test row selected?
+		bne.s	LevSel_NoMove				; if not, branch
+		move.b	(v_jpadpress1).w,d1			; get currently pressed buttons
+		andi.b	#btnR+btnL,d1				; is left/right pressed?
+		beq.s	LevSel_NoMove				; if not, branch
+
+		move.w	(v_levselsound).w,d0			; get currently selected sound test number
+		btst	#bitL,d1				; is left pressed?
+		beq.s	LevSel_Right				; if not, branch
+		subq.w	#1,d0					; subtract 1 from sound test
+		bhs.s	LevSel_Right				; is result still positive? if yes, branch
+		moveq	#sfx__Last-$80,d0 			; if sound test moves below 0, set to last entry (non-$80 based)
 
 LevSel_Right:
-		btst	#bitR,d1
-		beq.s	LevSel_Refresh2
-		addq.w	#1,d0
-		cmpi.w	#spec__First-$80,d0
-		blo.s	LevSel_Refresh2
-		moveq	#0,d0
+		btst	#bitR,d1				; is right pressed?
+		beq.s	LevSel_Refresh2				; if not, branch
+		addq.w	#1,d0					; add 1 to sound test
+		cmpi.w	#sfx__Last-$80+1,d0			; is result now past the last entry?
+		blo.s	LevSel_Refresh2				; if not, branch
+		moveq	#0,d0					; if sound test moves above last entry, set to 0
 
 LevSel_Refresh2:
-		move.w	d0,(v_levselsound).w
-		bsr.w	LevSelTextLoad
+		move.w	d0,(v_levselsound).w			; set sound test number
+		bsr.w	LevSelTextLoad				; refresh text
 
 LevSel_NoMove:
 		rts
+; End of function LevSelControls
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to load level select text
+; ---------------------------------------------------------------------------
+
+levsel_line_count:	equ 20	; total number of lines
+levsel_line_length:	equ 24	; characters per line
+levsel_sndtest_row:	equ levsel_line_count-1  ; row index of the sound test
+levsel_sndtest_col:	equ levsel_line_length-8 ; column offset for the sound test number
+
+levsel_start_row:	equ 4	; top tile offset for start position
+levsel_start_col:	equ 8	; left tile offset for start position
+levsel_vram_main:	equ vram_bg+(levsel_start_row<<7)+(levsel_start_col<<1)	; nametable address in VRAM
+levsel_vram_sndtestnum:	equ levsel_vram_main+(levsel_sndtest_row<<7)+(levsel_sndtest_col<<1) ; nametable address for sound test numbers
+
+levsel_white:		equ ArtTile_Level_Select_Font|Tile_Pal4|Tile_Prio ; VRAM setting for white text (non-selected lines)
+levsel_yellow:		equ ArtTile_Level_Select_Font|Tile_Pal3|Tile_Prio ; VRAM setting for yellow text (selected line)
+
+; ---------------------------------------------------------------------------
 
 LevSelTextLoad:
+		; Write main text in white
+		lea	(LevelMenuText).l,a1			; load menu text offset
+		lea	(vdp_data_port).l,a6			; prepare VDP data write
+		locVRAM	levsel_vram_main,d4			; prepare base VRAM nametable location in d4
+		move.w	#levsel_white,d3			; VRAM setting
+		moveq	#levsel_line_count-1,d1			; number of lines of text to write
+.DrawAll:	move.l	d4,4(a6)				; write to VDP
+		bsr.w	LevSel_ChgLine				; draw line of text
+		addi.l	#$00800000,d4				; jump to next line
+		dbf	d1,.DrawAll				; repeat until all lines are drawn
 
-textpos:	= ($40000000+(($E210&$3FFF)<<16)+(($E210&$C000)>>14))
-					; $E210 is a VRAM address
-
-		lea	(LevelSelectText).l,a1
-		lea	(vdp_data_port).l,a6
-		move.l	#textpos,d4
-		move.w	#$E680,d3
-		moveq	#(LevelSelectText_End-LevelSelectText)/24-1,d1	; Only load 20 lines.
-
-LevSel_DrawAll:
-		move.l	d4,4(a6)
-		bsr.w	LevSel_ChgLine
-		addi.l	#$800000,d4
-		dbf	d1,LevSel_DrawAll
-
+		; Draw currently selected line in yellow
 		moveq	#0,d0
-		move.w	(v_levselitem).w,d0
-		move.w	d0,d1
-		move.l	#textpos,d4
-		lsl.w	#7,d0
-		swap	d0
-		add.l	d0,d4
-		lea	(LevelSelectText).l,a1
-		lsl.w	#3,d1
-		move.w	d1,d0
-		add.w	d1,d1
-		add.w	d0,d1
-		adda.w	d1,a1
-		move.w	#$C680,d3
-		move.l	d4,4(a6)
-		bsr.w	LevSel_ChgLine
-		move.w	#$E680,d3
-		cmpi.w	#$13,(v_levselitem).w	; are we on Sound Select?
-		bne.s	LevSel_DrawSnd	; if not, branch
-		move.w	#$C680,d3
+		move.w	(v_levselitem).w,d0			; get currently selected line
+		move.w	d0,d1					; back up selected line
+		locVRAM	levsel_vram_main,d4			; prepare base VRAM nametable location in d4
+		lsl.w	#7,d0					; times $80
+		swap	d0					; swap so that line now becomes VRAM nametable offset
+		add.l	d0,d4					; add that to base VRAM location
+		lea	(LevelMenuText).l,a1			; load menu text offset
+	if levsel_line_length=24
+		lsl.w	#3,d1					; times 8
+		move.w	d1,d0					; copy result
+		add.w	d1,d1					; times...
+		add.w	d0,d1					; ...3 (because default line length 8 x 3 = 24)
+	else
+		; The above calculation assumes 24 as line length, we need a different approach if it changes.
+		mulu.w	#levsel_line_length,d1			; multiply selected line index by line length
+	endif
+		adda.w	d1,a1					; add to menu text offset
+		move.w	#levsel_yellow,d3 			; prepare selected-line VRAM setting
+		move.l	d4,4(a6)				; write to VDP
+		bsr.w	LevSel_ChgLine				; recolour selected line
 
+		; Write sound test numbers
+		move.w	#levsel_white,d3			; draw numbers in white by default
+		cmpi.w	#levsel_sndtest_row,(v_levselitem).w	; is currently selected line the sound test?
+		bne.s	LevSel_DrawSnd				; if not, branch
+		move.w	#levsel_yellow,d3			; draw numbers in yellow
 LevSel_DrawSnd:
-		locVRAM vram_bg+$BB0
-		move.w	(v_levselsound).w,d0
-		addi.w	#$80,d0
-		move.b	d0,d2
-		lsr.b	#4,d0
-		bsr.w	LevSel_ChgSnd
-		move.b	d2,d0
-		bsr.w	LevSel_ChgSnd
+		locVRAM	levsel_vram_sndtestnum			; write sound test number position to VRAM
+		move.w	(v_levselsound).w,d0			; get currently selected sound test number
+		addi.w	#$80,d0					; make sound ID to be drawn $80-based
+		move.b	d0,d2					; backup number
+		lsr.b	#4,d0					; move first digit to lower nybble
+		bsr.w	LevSel_ChgSnd				; draw 1st digit
+		move.b	d2,d0					; restore backup
+		bsr.w	LevSel_ChgSnd				; draw 2nd digit
 		rts
 ; ===========================================================================
 
 LevSel_ChgSnd:
-		andi.w	#$F,d0
-		cmpi.b	#$A,d0
-		blo.s	LevSel_Numb
-		addi.b	#7,d0
-
-LevSel_Numb:
-		add.w	d3,d0
-		move.w	d0,(a6)
+		andi.w	#$F,d0					; mask out upper nybble
+		cmpi.b	#$A,d0					; is digit $A-$F?
+		blo.s	.DrawNum				; if not, branch
+		addi.b	#7,d0					; use letter characters
+.DrawNum:	add.w	d3,d0					; combine number with VRAM setting (white or yellow)
+		move.w	d0,(a6)					; send to VRAM
 		rts
 ; ===========================================================================
 
 LevSel_ChgLine:
-		moveq	#24-1,d2
+		moveq	#levsel_line_length-1,d2		; number of characters per line
 
-LevSel_LineLoop:
-		moveq	#0,d0
-		move.b	(a1)+,d0
-		bpl.s	LevSel_CharOk
-		move.w	#0,(a6)
-		dbf	d2,LevSel_LineLoop
-
+.LineLoop:	moveq	#0,d0
+		move.b	(a1)+,d0				; get current character
+		bpl.s	.CharOk					; is it a valid ASCII character? if yes, branch
+		move.w	#0,(a6)					; draw a blank character
+		dbf	d2,.LineLoop				; loop until all characters are drawn
 		rts
-; ===========================================================================
 
-LevSel_CharOk:
-		add.w	d3,d0
-		move.w	d0,(a6)
-		dbf	d2,LevSel_LineLoop
-
+.CharOk:	add.w	d3,d0					; combine char with VRAM setting (white or yellow)
+		move.w	d0,(a6)					; send to VRAM
+		dbf	d2,.LineLoop				; loop until all characters are drawn
 		rts
-; ===========================================================================
+; End of function LevSelTextLoad
 
-LevelSelectText:
-		charset ' ', $FF
-		charset '0','9',$00
-		charset '$', $0A
-		charset '-', $0B
-		charset '=', $0C
-		charset '>', $0D
-		;charset '>', $0E ; there are two right arrows in the font for some reason
-		charset 'Y','Z',$0F ; Y and Z come before A-X
-		charset 'A','X',$11
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Level select menu text
+; ---------------------------------------------------------------------------
+; This is just for the actual text. For the level pointers, see: LevSel_Ptrs
+; ---------------------------------------------------------------------------
+
+LevelMenuText:
+	charset ' ', $FF
+	charset '0','9',$00
+	charset '$', $0A
+	charset '-', $0B
+	charset '=', $0C
+	charset '>', $0D
+	;charset '>', $0E ; there are two right arrows in the font for some reason
+	charset 'Y','Z',$0F ; Y and Z come before A-X
+	charset 'A','X',$11
 
 		dc.b "GREEN HILL ZONE STAGE 1 "
 		dc.b "                STAGE 2 "
@@ -1914,93 +2074,149 @@ LevelSelectText:
 		dc.b "SPECIAL STAGE           "
 		dc.b "SOUND SELECT            "
 
-		charset
+	if MOMPASS=1
+		if *-(levsel_line_count*levsel_line_length)<>LevelMenuText
+			warning "LevelMenuText does not match expected line count/length."
+		endif
+		; disable warning by default
+		;if (LevSel_PtrsEnd-LevSel_Ptrs)/2<>levsel_line_count
+		;	warning "LevSel_Ptrs does not match expected line count."
+		;endif
+	endif
 
-LevelSelectText_End:
+	charset
+	even
 
-; ---------------------------------------------------------------------------
-; Music playlist
-; ---------------------------------------------------------------------------
-MusicList:
-		dc.b	bgm_GHZ
-		dc.b	bgm_LZ
-		dc.b	bgm_MZ
-		dc.b	bgm_SLZ
-		dc.b	bgm_SZ
-		dc.b	bgm_CWZ
-		even
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Music playlist for the start of a level. Note that restarting the music
+; after invincibility has worn off is controlled in MusicList2 (part of
+; Sonic's object). Bosses have the post-defeat music hardcoded.
+; ---------------------------------------------------------------------------
 
+MusicList:
+		dc.b bgm_GHZ		; GHZ
+		dc.b bgm_LZ		; LZ
+		dc.b bgm_MZ		; MZ
+		dc.b bgm_SLZ		; SLZ
+		dc.b bgm_SZ		; SZ
+		dc.b bgm_CWZ		; CWZ
+		even
+
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Level
 ; ---------------------------------------------------------------------------
 
-GM_Level:
-		move.b	#bgm_Fade,d0
-		bsr.w	QueueSound2
-		locVRAM ArtTile_Title_Card*tile_size
-		lea	(Nem_TitleCard).l,a0
-		bsr.w	NemDec
-		bsr.w	ClearPLC
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#4,d0
-		lea	(LevelHeaders).l,a2
-		lea	(a2,d0.w),a2
-		moveq	#0,d0
-		move.b	(a2),d0
-		beq.s	loc_2C0A
-		bsr.w	AddPLC
+; Level:
+GM_Level:	; fading out from previous game mode
+		move.b	#bgm_Fade,d0				; queue music fade-out command
+		bsr.w	QueueSound2				; fade out music
+; ---------------------------------------------------------------------------
 
-loc_2C0A:
-		moveq	#plcid_Main2,d0
-		bsr.w	AddPLC
-		bsr.w	PaletteFadeOut
-		bsr.w	ClearScreen
-		lea	(vdp_control_port).l,a6
-		move.w	#vreg_mode3|%0011,(a6)
-		move.w	#vreg_fgvram|(vram_fg>>10),(a6)
-		move.w	#vreg_bgvram|(vram_bg>>13),(a6)
-		move.w	#vreg_spritevram|(vram_sprites>>9),(a6)
-		move.w	#0,(v_unused13).w
+		; load title cards, queue PLCs, setup screen, play music
+		locVRAM ArtTile_Title_Card*tile_size		; set VRAM target location for title cards
+		lea	(Nem_TitleCard).l,a0			; load title card patterns
+		bsr.w	NemDec					; decompress Nemesis-compressed patterns directly to VRAM
+
+		bsr.w	ClearPLC				; clear any remaining PLC entries
+
+		moveq	#0,d0
+		move.b	(v_zone).w,d0				; get current Zone ID
+		lsl.w	#4,d0					; multiply by $10 (number of bytes per level header entry)
+		lea	(LevelHeaders).l,a2			; load level headers
+		lea	(a2,d0.w),a2				; get relevant header for current level
+		moveq	#0,d0
+		move.b	(a2),d0					; get first PLC entry
+		beq.s	Level_NoPLC				; if it's null, branch (never the case)
+		bsr.w	AddPLC					; load level patterns for current Zone
+
+; loc_2C0A:
+Level_NoPLC:
+		moveq	#plcid_Main2,d0				; load secondary standard patterns (monitors, etc.)
+		bsr.w	AddPLC					; (these can be overwritten by stuff like the sign post art)
+
+		bsr.w	PaletteFadeOut				; fade out from the previous screen
+		bsr.w	ClearScreen				; wipe the screen
+		lea	(vdp_control_port).l,a6			; load VDP control port
+		move.w	#vreg_mode3|%0011,(a6)			; line scroll mode (per-row horizontally, full-screen vertically)
+		move.w	#vreg_fgvram|(vram_fg>>10),(a6)		; set foreground nametable address
+		move.w	#vreg_bgvram|(vram_bg>>13),(a6)		; set background nametable address
+		move.w	#vreg_spritevram|(vram_sprites>>9),(a6)	; set sprite table address
+		move.w	#0,(v_unused13).w			; set an unused variable to 0
 		move.w	#vreg_hintrate|175,(v_hblank_hreg).w	; set HBlank counter to scanline 175 (even though horizontal interrupts aren't normally used here...)
-		move.w	#vreg_mode1|%0100,(a6)
-		move.w	#vreg_bgcolor|%00100000,(a6)
+		move.w	#vreg_mode1|%000100,(a6)		; use 8-colour mode
+		move.w	#vreg_bgcolor|2<<4|0,(a6)		; set background colour (line 3; colour 0)
 
-		clearRAM v_objspace,v_objspace_end
-		clearRAM v_misc_variables,v_misc_variables_end
-		clearRAM v_timingandscreenvariables,v_timingandscreenvariables_end
+		clearRAM v_objspace				; clear object RAM
+		clearRAM v_misc_variables			; clear various miscellaneous RAM
+		clearRAM v_timingandscreenvariables		; clear various timing and screen RAM (for animated tiles, etc.)
 
-		moveq	#palid_Sonic,d0
-		bsr.w	PalLoad2
+		moveq	#palid_Sonic,d0				; load Sonic's palette...
+		bsr.w	PalLoad					; ...directly to active palette (for title cards)
+
 		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lea	(MusicList).l,a1
-		move.b	(a1,d0.w),d0
-		bsr.w	QueueSound1
+		move.b	(v_zone).w,d0				; get current Zone ID
+		lea	(MusicList).l,a1			; load music playlist
+		move.b	(a1,d0.w),d0				; get music ID for current level
+		bsr.w	QueueSound1				; play music
 		move.b	#id_TitleCard,(v_titlecard).w		; load title card object
+; ---------------------------------------------------------------------------
 
-Level_TtlCardLoop:
-		move.b	#id_VBlank_0C,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	ExecuteObjects
-		bsr.w	BuildSprites
-		bsr.w	RunPLC
-		move.w	(v_ttlcardact+obX).w,d0
-		cmp.w	(v_ttlcardact+card_mainX).w,d0
-		bne.s	Level_TtlCardLoop
-		tst.l	(v_plc_buffer).w
-		bne.s	Level_TtlCardLoop
-		bsr.w	DebugPosLoadArt
-		jsr	(Hud_Base).l
-		moveq	#palid_Sonic,d0
-		bsr.w	PalLoad1
-		bsr.w	LevelSizeLoad
-		bsr.w	DeformLayers
-		bsr.w	LevelDataLoad
-		bsr.w	LoadAnimatedBlocks
-		bsr.w	LoadTilesFromStart
-		jsr	(ConvertCollisionArray).l
+Level_TtlCardLoop: ; move in title cards, stay on them until PLCs have finished
+		move.b	#id_VBlank_0C,(v_vblank_routine).w ; set VBlank routine to $0C
+		bsr.w	WaitForVBlank				; wait until VBlank has finished
+		bsr.w	ExecuteObjects				; execute title cards object
+		bsr.w	BuildSprites				; build sprites to show title cards
+		bsr.w	RunPLC					; decompress level graphics
+	if FixBugs=0
+		move.w	(v_ttlcardact+obX).w,d0			; get current position of the "ACT" element of the title cards
+		cmp.w	(v_ttlcardact+card_mainX).w,d0		; has "ACT" element reached its target position?
+		bne.s	Level_TtlCardLoop			; if not, loop until it has
+	else
+		; Check if *every* title card element has reached their target position.
+		; Decompression is normally slow enough that every element is able
+		; to reach their target position before it's finished, but if
+		; decompression is upgraded with something faster, then the risk
+		; of decompression finishing and exiting this loop before all of the title
+		; card is finished moving into place is increased.
+		lea	(v_titlecard).w,a0			; get title card elements
+		moveq	#4-1,d1					; number of title card elements
+
+Level_CheckTtlCard:
+		move.w	obX(a0),d0				; get current position of a title card element
+		cmp.w	card_mainX(a0),d0			; has this title card element reached its target position?
+		bne.s	Level_TtlCardLoop			; if not, loop until it has
+		lea	object_size(a0),a0			; next title card element
+		dbf	d1,Level_CheckTtlCard			; loop until every element has reached its target position
+	endif
+		tst.l	(v_plc_buffer).w			; have patterns been fully decompressed and loaded?
+		bne.s	Level_TtlCardLoop			; if not, loop until they have
+; ---------------------------------------------------------------------------
+
+		; PLCs have finished, load/initialize remaining data
+
+	if FixBugs
+		; Do VBlank for one extra frame to provide enough processing time
+		; for the remaining data initialization below. Without it, it's
+		; possible for VBlank to interrupt in the middle of a transfer,
+		; resulting in visual corruption. This will also make title cards
+		; smoother should decompression get upgraded with something faster.
+		move.b	#id_VBlank_TitleCards,(v_vblank_routine).w ; set VBlank routine to $0C
+		bsr.w	WaitForVBlank				; wait until VBlank has finished
+	endif
+
+		bsr.w	DebugPosLoadArt				; call a routine that immediately returns (this is a disabled development function)
+		jsr	(Hud_Base).l				; load basic HUD graphics (only in levels, not in the ending demos)
+
+		moveq	#palid_Sonic,d0				; load Sonic's palette to fade-in buffer
+		bsr.w	PalLoad_Fade				; (doesn't actually do anything, the PalFadeIn_Alt call below skips the first palette line)
+		bsr.w	LevelSizeLoad				; load level size and set default level boundaries
+		bsr.w	DeformLayers				; initialize background deformation
+		bsr.w	LevelDataLoad				; load block mappings and palettes
+		bsr.w	LoadAnimatedBlocks			; load animated block mappings
+		bsr.w	LoadTilesFromStart			; fully draw the foreground and background once before fade-in
+		jsr	(ConvertCollisionArray).l		; call a routine that immediately returns (this is a disabled development function)
 		move.l	#Col_GHZ,(v_collindex).w		; load Green Hill's collision
 		cmpi.b	#id_LZ,(v_zone).w			; is the current zone Labyrinth?
 		bne.s	.notLZ					; if not, go to the next condition
@@ -2027,146 +2243,169 @@ Level_TtlCardLoop:
 		move.l	#Col_CWZ,(v_collindex).w		; load Clock Work's collision
 
 .notCWZ:
-		move.b	#id_SonicPlayer,(v_player).w
-		move.b	#id_HUD,(v_hud).w
-		btst	#bitA,(v_jpadhold1).w			; is button A held?
+		move.b	#id_SonicPlayer,(v_player).w		; load Sonic object
+
+		move.b	#id_HUD,(v_hud).w			; load HUD object
+
+		btst	#bitA,(v_jpadhold1).w			; is A button held?
 		beq.s	loc_2D54				; if not, branch
-		move.b	#1,(f_debugmode).w
+		move.b	#1,(f_debugmode).w			; enable debug mode
 
 loc_2D54:
-		move.w	#0,(v_jpadhold2).w
-		move.w	#0,(v_jpadhold1).w
-		bsr.w	ObjPosLoad
-		bsr.w	ExecuteObjects
-		bsr.w	BuildSprites
+		move.w	#0,(v_jpadhold2).w			; clear button input states for Sonic player object
+		move.w	#0,(v_jpadhold1).w			; clear actual button input states for controller 1
+
+		bsr.w	ObjPosLoad				; initialize object manager
+		bsr.w	ExecuteObjects				; load objects that are already visible during fade-in
+		bsr.w	BuildSprites				; build sprites for objects before fade-in
+
 		moveq	#0,d0
-		move.w	d0,(v_rings).w
-		move.b	d0,(v_lifecount).w
-		move.l	d0,(v_time).w
-		move.b	d0,(v_shield).w
-		move.b	d0,(v_invinc).w
-		move.b	d0,(v_shoes).w
-		move.b	d0,(v_unused1).w
-		move.w	d0,(v_debuguse).w
-		move.w	d0,(f_restart).w
-		move.w	d0,(v_framecount).w
-		bsr.w	OscillateNumInit
-		move.b	#1,(f_scorecount).w
-		move.b	#1,(f_ringcount).w
-		move.b	#1,(f_timecount).w
-		move.w	#0,(v_btnpushtime1).w
-		lea	(DemoDataPtr).l,a1
+		move.w	d0,(v_rings).w				; clear rings
+		move.b	d0,(v_lifecount).w			; clear extra lives flags when getting 50/100 rings
+		move.l	d0,(v_time).w				; clear time
+		move.b	d0,(v_shield).w				; clear shield
+		move.b	d0,(v_invinc).w				; clear invincibility
+		move.b	d0,(v_shoes).w				; clear speed shoes
+		move.b	d0,(v_unused1).w			; clear unused flag (goggles?)
+		move.w	d0,(v_debuguse).w			; exit debug mode if necessary
+		move.w	d0,(f_restart).w			; clear level restart flag
+		move.w	d0,(v_framecount).w			; reset frames since level start to 0
+		bsr.w	OscillateNumInit			; initialize oscillation values
+		move.b	#1,(f_scorecount).w			; update score counter
+		move.b	#1,(f_ringcount).w			; update ring counter
+		move.b	#1,(f_timecount).w			; update time counter
+
+		move.w	#0,(v_btnpushtime1).w			; clear button push counters for demos
+		lea	(DemoDataPtr).l,a1			; load demo data
 		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#2,d0
-		movea.l	(a1,d0.w),a1
-		move.b	1(a1),(v_btnpushtime2).w
-		subq.b	#1,(v_btnpushtime2).w
-		move.w	#1800,(v_generictimer).w
-		move.b	#id_VBlank_08,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		move.w	#$202F,(v_pfade_start).w
-		bsr.w	PalFadeIn_Alt
-		addq.b	#2,(v_ttlcardname+obRoutine).w
-		addq.b	#4,(v_ttlcardzone+obRoutine).w
-		addq.b	#4,(v_ttlcardact+obRoutine).w
-		addq.b	#4,(v_ttlcardoval+obRoutine).w
+		move.b	(v_zone).w,d0				; get current Zone ID
+		lsl.w	#2,d0					; multiply by 4 for longword-based indexing
+		movea.l	(a1,d0.w),a1				; get demo pointer for current level
+		move.b	1(a1),(v_btnpushtime2).w		; load initial demo key press duration
+		subq.b	#1,(v_btnpushtime2).w			; subtract 1 from demo key pressduration
+		move.w	#1800,(v_generictimer).w		; run regular demos for 30 seconds
 
-GM_LevelLoop:
-		bsr.w	PauseGame
-		move.b	#id_VBlank_08,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		addq.w	#1,(v_framecount).w
-		bsr.w	WaterFeatures
-		bsr.w	MoveSonicInDemo
-		move.w	(v_jpadhold1).w,(v_jpadhold2).w
-		bsr.w	ExecuteObjects
-		tst.w	(v_debuguse).w
-		bne.s	loc_2E2A
-		cmpi.b	#6,(v_player+obRoutine).w
-		bhs.s	loc_2E2E
+		move.b	#id_VBlank_08,(v_vblank_routine).w	; set VBlank routine to $08
+		bsr.w	WaitForVBlank				; wait until VBlank has finished
 
-loc_2E2A:
-		bsr.w	DeformLayers
+		move.w	#$202F,(v_pfade_start).w		; set to fade in 2nd, 3rd & 4th palette lines
+		bsr.w	PalFadeIn_Alt				; fade-in main palette
+; ---------------------------------------------------------------------------
 
-loc_2E2E:
-		bsr.w	BuildSprites
-		bsr.w	ObjPosLoad
-		bsr.w	PaletteCycle
-		bsr.w	RunPLC
-		bsr.w	OscillateNumDo
-		bsr.w	SynchroAnimate
-		bsr.w	SignpostArtLoad
-		cmpi.b	#id_Demo,(v_gamemode).w
-		beq.s	loc_2E66
-		tst.w	(f_restart).w
-		bne.w	GM_Level
-		cmpi.b	#id_Level,(v_gamemode).w
-		beq.w	GM_LevelLoop
-		rts
+		; level has faded in, make title cards move and enter main loop
+		addq.b	#2,(v_ttlcardname+obRoutine).w		; make title card move (name)
+		addq.b	#4,(v_ttlcardzone+obRoutine).w		; make title card move ("ZONE")
+		addq.b	#4,(v_ttlcardact+obRoutine).w		; make title card move ("ACT")
+		addq.b	#4,(v_ttlcardoval+obRoutine).w		; make title card move (blue oval)
+		; enter main loop...
+
+; ---------------------------------------------------------------------------
+; Main level loop (when all title card and loading sequences are finished)
+; ---------------------------------------------------------------------------
+
+Level_MainLoop:
+		bsr.w	PauseGame				; handle pausing the game when pressing start
+		move.b	#id_VBlank_08,(v_vblank_routine).w	; set VBlank routine to $08
+		bsr.w	WaitForVBlank				; wait until VBlank has finished
+		addq.w	#1,(v_framecount).w			; add 1 to level timer
+
+		bsr.w	WaterFeatures				; apply water features
+		bsr.w	MoveSonicInDemo				; simulate controls in demos (immediately returns outside demos)
+		move.w	(v_jpadhold1).w,(v_jpadhold2).w		; copy player inputs to secondary inputs
+		bsr.w	ExecuteObjects				; execute all objects in object RAM
+
+		tst.w	(v_debuguse).w				; is debug mode being used?
+		bne.s	Level_DoScroll				; if yes, continue plane scrolling even when dying
+		cmpi.b	#6,(v_player+obRoutine).w		; has Sonic just died?
+		bhs.s	Level_SkipScroll			; if yes, don't do plane scrolling
+
+Level_DoScroll:
+		bsr.w	DeformLayers				; scroll planes and do background deformation
+
+Level_SkipScroll:
+		bsr.w	BuildSprites				; build sprite table
+		bsr.w	ObjPosLoad				; run the object manager to load level objects
+		bsr.w	PaletteCycle				; run palette cycles
+		bsr.w	RunPLC					; run PLC, if any
+		bsr.w	OscillateNumDo				; advance oscillation values
+		bsr.w	SynchroAnimate				; advance animation timers
+		bsr.w	SignpostArtLoad				; check if sign post art needs to be loaded and lock left boundary
+
+Level_CheckRestart:
+		cmpi.b	#id_Demo,(v_gamemode).w			; are we in a demo?
+		beq.s	Level_ChkDemo				; if yes, branch
+		tst.w	(f_restart).w				; is the level set to restart?
+		bne.w	GM_Level				; if yes, restart level
+		cmpi.b	#id_Level,(v_gamemode).w		; is game mode still set to level?
+		beq.w	Level_MainLoop				; if yes, loop level game mode
+		rts						; if game mode changed, return to MainGameLoop
 ; ===========================================================================
 
-loc_2E66:
-		tst.w	(f_restart).w
-		bne.s	loc_2E84
-		tst.w	(v_generictimer).w
-		beq.s	loc_2E84
-		cmpi.b	#id_Demo,(v_gamemode).w
-		beq.w	GM_LevelLoop
-		move.b	#id_Sega,(v_gamemode).w
-		rts
+Level_ChkDemo:
+		tst.w	(f_restart).w				; is level set to restart?
+		bne.s	Level_EndDemo				; if yes, branch
+		tst.w	(v_generictimer).w			; is there time left on the demo?
+		beq.s	Level_EndDemo				; if not, branch
+		cmpi.b	#id_Demo,(v_gamemode).w			; is game mode still demo?
+		beq.w	Level_MainLoop				; if yes, loop level game mode
+		move.b	#id_Sega,(v_gamemode).w			; otherwise, return to Sega screen
+		rts						; return to MainGameLoop
 ; ===========================================================================
 
-loc_2E84:
-		cmpi.b	#id_Demo,(v_gamemode).w
-		bne.s	loc_2E92
-		move.b	#id_Sega,(v_gamemode).w
+Level_EndDemo:
+		cmpi.b	#id_Demo,(v_gamemode).w			; is game mode still demo?
+		bne.s	Level_FadeDemo				; if not, slowly fade-out demo
+		move.b	#id_Sega,(v_gamemode).w			; return to Sega screen
 
-loc_2E92:
-		move.w	#60,(v_generictimer).w
-		move.w	#$3F,(v_pfade_start).w
+Level_FadeDemo:
+		move.w	#60,(v_generictimer).w			; run fade-out for one second
+		move.w	#$003F,(v_pfade_start).w		; set palette fade-out position and size
 
-loc_2E9E:
-		move.b	#id_VBlank_08,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	MoveSonicInDemo
-		bsr.w	ExecuteObjects
-		bsr.w	BuildSprites
-		bsr.w	ObjPosLoad
-		subq.w	#1,(v_palchgspeed).w
-		bpl.s	loc_2EC8
-		move.w	#3-1,(v_palchgspeed).w
-		bsr.w	FadeOut_ToBlack
+Level_FDLoop:
+		move.b	#id_VBlank_08,(v_vblank_routine).w	; set VBlank routine to $08
+		bsr.w	WaitForVBlank				; wait until VBlank has finished
+		bsr.w	MoveSonicInDemo				; continue updating demo controls during fade-out
+		bsr.w	ExecuteObjects				; continue executing objects during fade-out
+		bsr.w	BuildSprites				; continue building sprites during fade-out
+		bsr.w	ObjPosLoad				; continue running object manager during fade-out
 
-loc_2EC8:
-		tst.w	(v_generictimer).w
-		bne.s	loc_2E9E
-		rts
-; ===========================================================================
+		subq.w	#1,(v_palchgspeed).w			; decrement palette fade-out delay
+		bpl.s	Level_FDLoop_NoDim			; if time remains, branch
+		move.w	#2,(v_palchgspeed).w			; reset palette fade-out delay
+		bsr.w	FadeOut_ToBlack				; dim palette further
 
-		include "leftovers/routines/Debug Coordinate Sprites.asm"
-		include	"leftovers/routines/Window Plane Mask.asm"
-
-		include "_include/WaterFeatures.asm"
-		include	"_include/MoveSonicInDemo.asm"
+; loc_2EC8:
+Level_FDLoop_NoDim:
+		tst.w	(v_generictimer).w			; has fade-out loop finished?
+		bne.s	Level_FDLoop				; if not, loop
+		rts						; return to MainGameLoop
+; End of function GM_Level
 
 ; ===========================================================================
+; >>> Misc level logic for specific circumstances
+	include "leftovers/routines/Debug Coordinate Sprites.asm"
+	include	"leftovers/routines/Window Plane Mask.asm"
+	include "_include/WaterFeatures.asm"
+	include	"_include/MoveSonicInDemo.asm"
 
-;sub_314C:
+; ===========================================================================
+
+; sub_314C:
+Zone6_LoadAnimatedChunks:
 		cmpi.b	#id_06,(v_zone).w			; is this Zone 6?
 		bne.s	locret_3176				; if not, branch
 		bsr.w	sub_3178
-		lea	(v_256x256+$900).l,a1
+		lea	(v_256x256+chunk_size*4+$100).l,a1
 		bsr.s	sub_3166
-		lea	(v_256x256+$3380).l,a1
+		lea	(v_256x256+chunk_size*25+$180).l,a1
 
 sub_3166:
 		lea	(Anim256Unk1).l,a0
-		move.w	#(Anim256Unk1_End-Anim256Unk1)/2-1,d1
+		move.w	#(Anim256Unk1_end-Anim256Unk1)/2-1,d1
 
-.loadchunks:
+.loadChunks:
 		move.w	(a0)+,(a1)+
-		dbf	d1,.loadchunks
+		dbf	d1,.loadChunks
 
 locret_3176:
 		rts
@@ -2175,23 +2414,19 @@ locret_3176:
 sub_3178:
 		lea	(v_256x256).l,a1
 		lea	(Anim256Unk2).l,a0
-		move.w	#(Anim256Unk2_End-Anim256Unk2)/2-1,d1
+		move.w	#(Anim256Unk2_end-Anim256Unk2)/2-1,d1
 
-.loadchunks2:
+.loadChunks2:
 		move.w	(a0)+,d0
 		ori.w	#$2000,(a1,d0.w)
-		dbf	d1,.loadchunks2
+		dbf	d1,.loadChunks2
 		rts
 ; ===========================================================================
-Anim256Unk1:
-		binclude	"level/map256/Anim Unknown 1.bin"
-Anim256Unk1_End:
-		even
 
-Anim256Unk2:
-		binclude	"level/map256/Anim Unknown 2.bin"
-Anim256Unk2_End:
-		even
+Anim256Unk1:	bincludeEndMarker	"level/map256/Anim Unknown 1.bin"
+
+Anim256Unk2:	bincludeEndMarker	"level/map256/Anim Unknown 2.bin"
+
 ; ===========================================================================
 
 LoadAnimatedBlocks:
@@ -2203,37 +2438,33 @@ LoadAnimatedBlocks:
 		bne.s	.notGHZ					; if not, branch
 
 .SLZ:
-		lea	(v_16x16+$1790).w,a1			; load ROM address for animated blocks to load in the main block RAM into a1
-		lea	(Anim16GHZ).l,a0			; load animated GHZ blocks into a0
-		move.w	#(Anim16GHZ_End-Anim16GHZ)/2-1,d1	; load approx. size of the blocks into d1
+		lea	(v_16x16+block_size*$2F2).w,a1		; load ROM address for animated blocks to load in the main block RAM
+		lea	(Anim16GHZ).l,a0			; load animated GHZ blocks
+		move.w	#(Anim16GHZ_end-Anim16GHZ)/2-1,d1	; load approx. size of the blocks
 
-	.loadGHZ:
+	.load_GHZ_Blocks:
 		move.w	(a0)+,(a1)+
-		dbf	d1,.loadGHZ
+		dbf	d1,.load_GHZ_Blocks
 
 .notGHZ:
 		rts
 ; ===========================================================================
 
 .MZ:
-		lea	(v_16x16+$17A0).w,a1			; load ROM address for animated blocks to load in the main block RAM into a1
-		lea	(Anim16MZ).l,a0				; load animated MZ blocks into a0
-		move.w	#(Anim16MZ_End-Anim16MZ)/2-1,d1		; load approx. size of the blocks into d1
+		lea	(v_16x16+block_size*$2F4).w,a1		; load ROM address for animated blocks to load in the main block RAM
+		lea	(Anim16MZ).l,a0				; load animated MZ blocks
+		move.w	#(Anim16MZ_end-Anim16MZ)/2-1,d1		; load approx. size of the blocks
 
-	.loadMZ:
+	.load_MZ_Blocks:
 		move.w	(a0)+,(a1)+
-		dbf	d1,.loadMZ
+		dbf	d1,.load_MZ_Blocks
 		rts
 ; ===========================================================================
-Anim16GHZ:
-		binclude	"level/map16/Anim GHZ.bin"
-Anim16GHZ_End:
-		even
 
-Anim16MZ:
-		binclude	"level/map16/Anim MZ.bin"
-Anim16MZ_End:
-		even
+Anim16GHZ:	bincludeEndMarker	"level/map16/Anim GHZ.bin"
+
+Anim16MZ:	bincludeEndMarker	"level/map16/Anim MZ.bin"
+
 ; ===========================================================================
 
 DebugPosLoadArt:
@@ -2273,11 +2504,15 @@ DebugPosLoadArt:
 ; ===========================================================================
 
 .1bpp:
-		dc.b	0, 6, $60, $66
+		dc.b	$00, $06, $60, $66
 		even
 
-		include "_include/Oscillatory Routines.asm"
+; ===========================================================================
+; >>> Routines to set and update values that change on a fixed timer
+	include	"_include/Oscillatory Routines.asm"
 
+
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to change synchronised animation variables (rings)
 ; ---------------------------------------------------------------------------
@@ -2286,96 +2521,105 @@ SynchroAnimate:
 
 ; Used for GHZ spiked log
 Sync1:
-		subq.b	#1,(v_ani0_time).w ; has timer reached 0?
-		bpl.s	Sync2		; if not, branch
-		move.b	#12-1,(v_ani0_time).w ; reset timer
-		subq.b	#1,(v_ani0_frame).w ; next frame
-		andi.b	#8-1,(v_ani0_frame).w ; max frame is 7
+		subq.b	#1,(v_ani0_time).w			; has first timer reached 0?
+		bpl.s	Sync2					; if not, branch
+		move.b	#12-1,(v_ani0_time).w			; reset first timer to 12 frames
+		subq.b	#1,(v_ani0_frame).w			; go to next frame (backwards)
+		andi.b	#7,(v_ani0_frame).w 			; limit to frames 0-7
 
-; Used for rings
+; Used for rings and giant rings
 Sync2:
-		subq.b	#1,(v_ani1_time).w
-		bpl.s	Sync3
-		move.b	#8-1,(v_ani1_time).w
-		addq.b	#1,(v_ani1_frame).w
-		andi.b	#4-1,(v_ani1_frame).w
+		subq.b	#1,(v_ani1_time).w			; has second timer reached 0?
+		bpl.s	Sync3					; if not, branch
+		move.b	#8-1,(v_ani1_time).w			; reset second timer to 8 frames
+		addq.b	#1,(v_ani1_frame).w			; go to next frame
+		andi.b	#3,(v_ani1_frame).w			; limit to frames 0-3
 
 ; Used for nothing
 Sync3:
-		subq.b	#1,(v_ani2_time).w
-		bpl.s	Sync4
-		move.b	#8-1,(v_ani2_time).w
-		addq.b	#1,(v_ani2_frame).w
-		cmpi.b	#6,(v_ani2_frame).w
-		blo.s	Sync4
-		move.b	#0,(v_ani2_frame).w
+		subq.b	#1,(v_ani2_time).w			; has third timer reached 0?
+		bpl.s	Sync4					; if not, branch
+		move.b	#8-1,(v_ani2_time).w			; reset third timer to 8 frames
+		addq.b	#1,(v_ani2_frame).w			; go to next frame
+		cmpi.b	#6,(v_ani2_frame).w			; limit to frames 0-5
+		blo.s	Sync4					; if still frame 0-5, branch
+		move.b	#0,(v_ani2_frame).w			; set to frame 0 when it reached frame 6
 
 ; Used for bouncing rings
 Sync4:
-		tst.b	(v_ani3_time).w
-		beq.s	SyncEnd
+		tst.b	(v_ani3_time).w				; is ring loss timer active at all?
+		beq.s	SyncEnd					; if not, don't advance animation
 		moveq	#0,d0
-		move.b	(v_ani3_time).w,d0
-		add.w	(v_ani3_buf).w,d0
-		move.w	d0,(v_ani3_buf).w
-		rol.w	#7,d0
-		andi.w	#3,d0
-		move.b	d0,(v_ani3_frame).w
-		subq.b	#1,(v_ani3_time).w
+		move.b	(v_ani3_time).w,d0			; get remaining ring loss timer
+		add.w	(v_ani3_buf).w,d0			; add buffered timer value
+		move.w	d0,(v_ani3_buf).w			; set that as new buffered timer
+		rol.w	#7,d0					; align for speed
+		andi.w	#3,d0					; limit to frames 0-3
+		move.b	d0,(v_ani3_frame).w			; set as current frame for lost rings
+		subq.b	#1,(v_ani3_time).w			; decrease ring loss timer
 
 SyncEnd:
 		rts
 ; End of function SynchroAnimate
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; End-of-act signpost pattern loading subroutine
+; End-of-act signpost pattern loading subroutine. Also locks left boundary.
 ; ---------------------------------------------------------------------------
 
 SignpostArtLoad:
-		tst.w	(v_debuguse).w
-		bne.w	.exit
+		tst.w	(v_debuguse).w				; is debug mode being used?
+		bne.w	.return					; if yes, do not lock screen or load art
 		cmpi.w	#id_MZ_act3,(v_zone).w			; is this MZ3?
 		beq.s	.isMZ3					; if so, load the signpost
-		cmpi.b	#act3,(v_act).w
-		beq.s	.exit
+		cmpi.b	#act3,(v_act).w				; is this a third act?
+		beq.s	.return					; if yes, don't load art (due to the boss fight)
 
 	.isMZ3:
-		move.w	(v_scrposx).w,d0
-		move.w	(v_limitright2).w,d1
-		subi.w	#$100,d1
-		cmp.w	d1,d0
-		blt.s	.exit
-		tst.b	(f_timecount).w
-		beq.s	.exit
-		cmp.w	(v_limitleft2).w,d1
-		beq.s	.exit
-		move.w	d1,(v_limitleft2).w
-		moveq	#plcid_Signpost,d0
-		bra.w	NewPLC
+		move.w	(v_scrposx).w,d0			; get current X-camera position
+		move.w	(v_limitright2).w,d1			; get right level boundary
+		subi.w	#$100,d1				; check for $100 pixels before the right boundary
+		cmp.w	d1,d0					; has Sonic reached the right edge of the level?
+		blt.s	.return					; if not, branch
 
-	.exit:
+		tst.b	(f_timecount).w				; has time already stopped from touching the signpost?
+		beq.s	.return					; if yes, branch
+		cmp.w	(v_limitleft2).w,d1			; has left boundary already been locked?
+		beq.s	.return					; if yes, branch
+		move.w	d1,(v_limitleft2).w			; lock left level boundary to current screen position
+		moveq	#plcid_Signpost,d0			; load signpost, hidden points, giant ring flash patterns
+		bra.w	NewPLC					; add to new PLC queue
+
+.return:
 		rts
 ; End of function SignpostArtLoad
 
-; ===========================================================================
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Special Stage
+; ---------------------------------------------------------------------------
+
+; SpecialStage:
 GM_Special:
-		bsr.w	PaletteFadeOut
+		bsr.w	PaletteFadeOut				; fade out from the previous screen
 		disable_display					; disable screen output
 		bsr.w	ClearScreen				; wipe screen
+; ---------------------------------------------------------------------------
 
+		; load special stage patterns
 		fillVRAM 0, ArtTile_SS_Plane_1*tile_size+plane_size_64x32, ArtTile_SS_Plane_5*tile_size ; clear nametables
 		moveq	#plcid_SpecialStage,d0			; load special stage patterns
 		bsr.w	QuickPLC				; execute PLCs immediately (no queue)
 		bsr.w	SS_BGLoad				; load background clouds/bubbles/birds/fish mappings
 
-		clearRAM v_objspace,v_objspace_end
-		clearRAM v_misc_variables,v_misc_variables_end
-		clearRAM v_timingandscreenvariables,v_timingandscreenvariables_end
-		clearRAM v_ngfx_buffer,v_ngfx_buffer_end
+		clearRAM v_objspace				; clear object RAM space
+		clearRAM v_misc_variables			; clear various level variables
+		clearRAM v_timingandscreenvariables		; clear various timing variables
+		clearRAM v_ngfx_buffer				; clear Nemesis decompression buffer
 
 		moveq	#palid_Special,d0			; load special stage palette...
-		bsr.w	PalLoad1				; ...into the palette fade-in buffer
+		bsr.w	PalLoad_Fade				; ...into the palette fade-in buffer
 		jsr	(SS_Load).l				; load SS layout data
 
 		move.l	#0,(v_scrposx).w			; reset X-camera position
@@ -2388,7 +2632,7 @@ GM_Special:
 		move.w	#vreg_mode3|%0011,(a6)			; line scroll mode (per-row horizontally, full-screen vertically)
 		move.w	#vreg_mode1|%000100,(a6)		; use 8-colour mode
 		move.w	#vreg_hintrate|175,(v_hblank_hreg).w	; set HBlank counter to scanline 175 (even though horizontal interrupts aren't used here...)
-		move.w	#$9011,(a6)				; 128-cell hscroll size
+		move.w	#vreg_planesize|%010001,(a6)		; 128-cell hscroll size
 		bsr.w	PalCycle_SS				; initialize palette cycle and background for fade-in
 		clr.w	(v_ssangle).w				; set stage angle to "upright"
 		move.w	#$40,(v_ssrotate).w			; set initial stage rotation speed ($40, see object 09)
@@ -2398,7 +2642,7 @@ GM_Special:
 		move.w	#0,(v_btnpushtime1).w			; clear button push counters for demos
 		lea	(DemoDataPtr).l,a1			; load demo data
 		moveq	#0,d0
-		move.b	(v_zone).w,d0
+		move.b	(v_zone).w,d0				; get current Zone ID
 		lsl.w	#2,d0					; multiply by 4 for longword-based indexing
 		movea.l	(a1,d0.w),a1				; get demo pointer for current level
 		move.b	1(a1),(v_btnpushtime2).w		; load initial demo key press duration
@@ -2948,16 +3192,16 @@ Nem_MZ:		binclude	"artnem/8x8 - MZ.nem"
 Blk256_MZ:	binclude	"level/map256/MZ.kos"
 		even
 
-;0x3DA48
+; 0x3DA48
 ; Duplicate cut-off chunk data from MZ.
 		dc.w $F0, 0, 0, 0, 0, 0, 0, 0
 
-;0x3DA58
+; 0x3DA58
 ; Cut-off chunk data.
 		binclude	"leftovers/level/map256/Chunk Data.kos"
 		even
 
-;0x3DB78
+; 0x3DB78
 		binclude	"unknown/3DB78.dat"
 		even
 
@@ -2982,7 +3226,7 @@ Nem_CWZ:	binclude	"artnem/8x8 - CWZ.nem"
 Blk256_CWZ:	binclude	"level/map256/CWZ.kos"
 		even
 
-;0x570DC
+; 0x570DC
 ; Duplicate cut-off chunk data from CWZ.
 		dc.w $FFF8, $FCAA, $AAFF, $F8FC, $FFF8, $FCFF, $F8FC, $FFF8
 		dc.w $FC00, $F001, $FFF8, $FCFF, $F8FC, $FFF8, $FC02, $FF
@@ -2990,7 +3234,7 @@ Blk256_CWZ:	binclude	"level/map256/CWZ.kos"
 ; And another duplicate of cut-off chunk data from CWZ.
 		dc.w $F89F, $F0, 0, 0, 0, 0, 0, 0
 
-;0x5711C
+; 0x5711C
 		binclude	"unknown/5711C.dat"
 		even
 

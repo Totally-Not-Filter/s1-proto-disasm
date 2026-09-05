@@ -106,6 +106,7 @@ spritetable_entrysize:	equ 8					; 8 bytes per linked sprite table entry (2 y-po
 
 ; Various sizes
 tile_size:		equ 8*8/2				; size of a single 8x8 tile
+block_size:		equ 2+2+2+2				; size of a single 16x16 block
 chunk_size:		equ $200				; size of a single 256x256 chunk
 plane_size_64x32:	equ 64*32*2				; size of plane in 512x256 mode
 
@@ -411,16 +412,16 @@ TBBAK:			equ	$85		; table pointer set next data
 ; Boss locations
 ; The main values are based on where the camera boundaries mainly lie
 ; The end values are where the camera scrolls towards after defeat
-boss_ghz_x:	equ $2960		; Green Hill Zone
-boss_ghz_y:	equ $300
-boss_ghz_end:	equ boss_ghz_x+$160
+boss_ghz_x:		equ $2960		; Green Hill Zone
+boss_ghz_y:		equ $300
+boss_ghz_end:		equ boss_ghz_x+$160
 
 ; Tile flags (replaces the old "make_art_tile" function)
-Tile_Prio:	equ	1<<15
-Tile_Pal1:	equ	0<<13
-Tile_Pal2:	equ	1<<13
-Tile_Pal3:	equ	2<<13
-Tile_Pal4:	equ	3<<13
+Tile_Prio:		equ	1<<15
+Tile_Pal1:		equ	0<<13
+Tile_Pal2:		equ	1<<13
+Tile_Pal3:		equ	2<<13
+Tile_Pal4:		equ	3<<13
 
 ; VRAM ArtTile definitions
 ; Multiply by $20 (tile_size) to get the actual location in VRAM
@@ -479,7 +480,7 @@ ArtTile_Ball_Hog:		equ $400
 ArtTile_Bomb:			equ $400
 ArtTile_Crabmeat:		equ $400
 ArtTile_Cannonball:		equ $418
-ArtTile_UnusedExplosion:	equ $41C ; Unused
+ArtTile_UnusedExplosion:	equ $41C			; Unused
 ArtTile_Buzz_Bomber:		equ $444
 ArtTile_Chopper:		equ $47B
 ArtTile_Yadrin:			equ $47B

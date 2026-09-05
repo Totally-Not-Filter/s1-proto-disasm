@@ -240,3 +240,13 @@ incbin:		macro path
 
 pcmLoopCounter function sampleRate,baseCycles, 1+(53693175/15/(sampleRate)-(baseCycles)+(13/2))/13
 dpcmLoopCounter function sampleRate, pcmLoopCounter(sampleRate,420/2) ; 420 is the number of cycles zPlayPCMLoop takes.
+
+; ---------------------------------------------------------------------------
+; Macro to binclude something with an end marker
+; ---------------------------------------------------------------------------
+
+bincludeEndMarker macro path,{INTLABEL}
+__LABEL__:	label	 *
+		binclude path
+__LABEL___end:	label	 *
+		endm

@@ -1,16 +1,20 @@
-		include	"s1.sounddriver.ram.asm"
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; RAM Variables
+; ---------------------------------------------------------------------------
 
-; sign-extends a 32-bit integer to 64-bit
-; all RAM addresses are run through this function to allow them to work in both 16-bit and 32-bit addressing modes
+	include	"s1.sounddriver.ram.asm"
+
+; Sign-extends a 32-bit integer to 64-bit
+; (All RAM addresses are run through this function to allow them to work in both 16-bit and 32-bit addressing modes.)
 ramaddr function x,(-(x&$80000000)<<1)|x
 
-; Variables (v) and Flags (f)
-
-	phase ramaddr($FFFF0000)
+; v = Variables // f = Flags
+	phase ramaddr ( $FFFF0000 )
 v_ram_start_def:
 v_ram_start:		equ	v_ram_start_def&$FFFFFF		; 24-bit addressing
 
-v_256x256_def:		ds.b	$52*chunk_size			; 256x256 tile mappings ($A400 bytes)
+v_256x256_def:		ds.b	chunk_size*$52			; 256x256 tile mappings ($52 chunks)
 v_256x256:		equ	v_256x256_def&$FFFFFF		; 24-bit addressing
 v_256x256_end:
 
@@ -20,13 +24,12 @@ v_lvllayout_bg:		equ	v_lvllayout+layout_row_interlaced ; start address of backgr
 v_lvllayout_end:
 
 v_bgscroll_buffer:	ds.b	$200				; background scroll buffer
-
 v_ngfx_buffer:		ds.b	$200				; Nemesis graphics decompression buffer
 v_ngfx_buffer_end:
 
-v_spritequeue:		ds.b	$400
+v_spritequeue:		ds.b	spritelayer_num*spritelayer_size ; sprite display queue, in order of priority (8*$80=$400 bytes)
 
-v_16x16:		ds.w	4*$300				; 16x16 tile mappings ($1800 bytes)
+v_16x16:		ds.b	block_size*$300			; 16x16 tile mappings ($300 blocks)
 v_16x16_end:
 
 v_sgfx_buffer:		ds.b	tile_size*23			; buffered Sonic graphics ($17 cells)
@@ -137,16 +140,18 @@ v_levselitem:		ds.w	1				; level select - item selected (2 bytes)
 v_levselsound:		ds.w	1				; level select - sound selected (2 bytes)
 			ds.b	$14				; unused
 
-v_plc_buffer:		ds.b	6*16				; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
+plc_slot_size:		equ	4+2				; size of a single PLC slot: 6 bytes = 4 bytes (data address) + 2 bytes (VRAM target address)
+v_plc_buffer:		ds.b	plc_slot_size*16		; pattern load cues buffer (maximum $10 PLCs)
+v_plc_buffer_dest:	equ	v_plc_buffer+4			; VRAM destination for 1st item in PLC buffer (2 bytes)
 v_plc_buffer_only_end:
-v_plc_ptrnemcode:	ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_repeatcount:	ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_paletteindex:	ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_previousrow:	ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_dataword:		ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_shiftvalue:	ds.l	1				; pattern load cues buffer (4 bytes)
-v_plc_patternsleft:	ds.w	1				; flag set for pattern load cue execution (2 bytes)
-v_plc_framepatternsleft:	ds.w	1
+v_plc_ptrnemcode:	ds.l	1				; pointer for nemesis decompression code ($1502 or $150C)
+v_plc_repeatcount:	ds.l	1
+v_plc_paletteindex:	ds.l	1
+v_plc_previousrow:	ds.l	1
+v_plc_dataword:		ds.l	1
+v_plc_shiftvalue:	ds.l	1
+v_plc_patternsleft:	ds.w	1
+v_plc_framepatternsleft:ds.w	1
 			ds.b	4				; unused
 v_plc_buffer_end:
 

@@ -36,7 +36,7 @@ LevelDataLoad:
 	; --- Palette ---
 		move.w	(a2),d0					; load palette ID
 		andi.w	#$FF,d0					; only use lower byte (palette ID is duplicated in headers)
-		bsr.w	PalLoad1				; load specified palette into fade-in buffer
+		bsr.w	PalLoad_Fade				; load specified palette into fade-in buffer
 
 	; --- 2nd PLC ---
 		movea.l	(sp)+,a2				; restore base level header pointer

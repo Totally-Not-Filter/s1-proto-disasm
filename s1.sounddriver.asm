@@ -2815,7 +2815,7 @@ cfFE_SpcFM3Mode:
 
 cfSSG_Reg:
 		lea	SSG_Reg_Table(pc),a1
-		moveq	#(SSG_Reg_Table_End-SSG_Reg_Table)/2-1,d3
+		moveq	#(SSG_Reg_Table_end-SSG_Reg_Table)/2-1,d3
 
 .loop:
 		move.b	(a1)+,d0
@@ -2834,13 +2834,13 @@ SSG_Reg_Table:
 		dc.b $98, $58
 		dc.b $94, $54
 		dc.b $9C, $5C
-SSG_Reg_Table_End:
+SSG_Reg_Table_end:
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; DAC driver
 ; ---------------------------------------------------------------------------
 DACDriver:	include	"sound/z80.asm"
-DACDriver_End:
+DACDriver_end:
 
 ; ---------------------------------------------------------------------------
 ; SMPS2ASM - A collection of macros that make SMPS's bytecode human-readable.
