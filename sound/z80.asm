@@ -37,7 +37,7 @@ zSampleRate:	equ	11			; sample rate
 ; ===========================================================================
 
 ;Z80Driver_Start:
-	di					; Disable interrupts
+	di					; disable interrupts
 	di
 	di
 	ld	sp,zStack
@@ -51,7 +51,7 @@ zSampleRate:	equ	11			; sample rate
 
 zBankLoop:
 	ld	(zBankRegister),a
-	rrca					; Move next bit into position
+	rrca					; move next bit into position
 	djnz	zBankLoop
 	jr	zCheckForSamples
 ; ===========================================================================
@@ -92,8 +92,8 @@ zWaitDACLoop:
 	ld	(hl),a
 	ld	de,0
 	ld	iy,zPCM_Table
-	cp	6				; Is the sample 87h or higher?
-	jr	c,loc_73			; If not, branch
+	cp	6				; is the sample 87h or higher?
+	jr	c,loc_73			; if not, branch
 	ld	(zVoiceFlag),a
 	ld	(zDAC_Update),a
 	ld	iy,(zVoiceTblAdr)
@@ -105,7 +105,7 @@ loc_73:
 	ld	c,a
 	add	a,a
 	add	a,c
-	ld	c,a				; Multiply by 12
+	ld	c,a				; multiply by 12
 	ld	b,0
 	add	iy,bc
 	ld	e,(iy+zLowAdr)
@@ -247,25 +247,25 @@ loc_153:
 ; ===========================================================================
 
 zPCMMetadata macro label,loopFlag,priority,loopLabel,sampleRate
-	dw	label	; Start
-	dw	label_End-label	; Length
+	dw	label				; Start
+	dw	label_End-label			; Length
 	if loopFlag
-		db	80h	; Loop Flag
+		db	80h			; Loop Flag
 	else
-		db	0	; Loop Flag
+		db	0			; Loop Flag
 	endif
 	if priority
-		db	80h	; Priority
+		db	80h			; Priority
 	else
-		db	0	; Priority
+		db	0			; Priority
 	endif
 	if loopLabel
-		dw	loopLabel	; Loop Start
+		dw	loopLabel		; Loop Start
 		dw	loopLabel_End-loopLabel	; Loop Length
 	else
 		ds	4
 	endif
-	db	0	; Padding
+	db	0				; Padding
 	db	dpcmLoopCounter(sampleRate)	; Pitch
 	endm
 
